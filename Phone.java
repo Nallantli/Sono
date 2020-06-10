@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -11,14 +9,12 @@ class secondaryArticulation {
 	private List<Matrix> requirements;
 	private Phone.Secondary restrictions[];
 
-	public secondaryArticulation(String segment, Matrix matrix,
-			Phone.Secondary restrictions[], List<Matrix> requirements) {
+	public secondaryArticulation(String segment, Matrix matrix, Phone.Secondary restrictions[],
+			List<Matrix> requirements) {
 		this.matrix = matrix;
 		this.restrictions = restrictions;
 		this.segment = segment;
 		this.requirements = requirements;
-
-		System.out.println(requirements);
 	}
 
 	public secondaryArticulation(String segment, Phone.Feature feature, Phone.Quality value,
@@ -60,6 +56,8 @@ class secondaryArticulation {
 }
 
 public class Phone implements Comparable<Phone> {
+	private PhoneLibrary pm;
+
 	public static enum Quality {
 		TRUE {
 			public String toString() {
@@ -140,6 +138,11 @@ public class Phone implements Comparable<Phone> {
 				return "nasal";
 			}
 		},
+		STRIDENT {
+			public String toString() {
+				return "str";
+			}
+		},
 		VOICE {
 			public String toString() {
 				return "voice";
@@ -157,7 +160,7 @@ public class Phone implements Comparable<Phone> {
 		},
 		LABIAL {
 			public String toString() {
-				return "labial";
+				return "LAB";
 			}
 		},
 		ROUND {
@@ -172,7 +175,7 @@ public class Phone implements Comparable<Phone> {
 		},
 		CORONAL {
 			public String toString() {
-				return "cor";
+				return "COR";
 			}
 		},
 		ANTERIOR {
@@ -185,19 +188,14 @@ public class Phone implements Comparable<Phone> {
 				return "dist";
 			}
 		},
-		STRIDENT {
-			public String toString() {
-				return "str";
-			}
-		},
 		LATERAL {
 			public String toString() {
-				return "lat";
+				return "LAT";
 			}
 		},
 		DORSAL {
 			public String toString() {
-				return "dor";
+				return "DOR";
 			}
 		},
 		HIGH {
@@ -232,48 +230,48 @@ public class Phone implements Comparable<Phone> {
 		VELARIZATION, PHARYNGEALIZATION, ASPIRATION, LENGTH
 	}
 
-	private static final Map<Feature, List<Feature>> majorClasses = Map.ofEntries(
-			entry(Feature.LABIAL, Arrays.asList(Feature.ROUND, Feature.LABIODENTAL)),
-			entry(Feature.CORONAL, Arrays.asList(Feature.ANTERIOR, Feature.DISTRIBUTED)),
-			entry(Feature.DORSAL,
-					Arrays.asList(Feature.HIGH, Feature.LOW, Feature.FRONT, Feature.BACK, Feature.TENSE)));
+	static final Map<Feature, List<Feature>> majorClasses = Map.ofEntries(
+			entry(Feature.LABIAL, List.of(Feature.ROUND, Feature.LABIODENTAL)),
+			entry(Feature.CORONAL, List.of(Feature.ANTERIOR, Feature.DISTRIBUTED)), entry(Feature.DORSAL,
+					List.of(Feature.HIGH, Feature.LOW, Feature.FRONT, Feature.BACK, Feature.TENSE)));
 
-	private static final Map<Secondary, secondaryArticulation> secondaryLibrary = Map.ofEntries(
+	static final Map<Secondary, secondaryArticulation> secondaryLibrary = Map.ofEntries(
 			entry(Secondary.VOCALIC,
 					new secondaryArticulation("̩", Feature.SYLLABIC, Quality.TRUE, new Secondary[] {},
-							Arrays.asList(new Matrix(entry(Feature.CONSONANTAL, Quality.TRUE),
+							List.of(new Matrix(entry(Feature.CONSONANTAL, Quality.TRUE),
 									entry(Feature.SONORANT, Quality.TRUE))))),
 			entry(Secondary.RETRACTED,
 					new secondaryArticulation("̠",
 							new Matrix(entry(Feature.FRONT, Quality.FALSE), entry(Feature.BACK, Quality.TRUE)),
 							new Secondary[] { Secondary.ADVANCED },
-							Arrays.asList(new Matrix(entry(Feature.DORSAL, Quality.TRUE))))),
+							List.of(new Matrix(entry(Feature.CORONAL, Quality.TRUE))))),
 			entry(Secondary.ADVANCED,
 					new secondaryArticulation("̟",
 							new Matrix(entry(Feature.FRONT, Quality.TRUE), entry(Feature.BACK, Quality.FALSE)),
 							new Secondary[] { Secondary.RETRACTED },
-							Arrays.asList(new Matrix(entry(Feature.DORSAL, Quality.TRUE))))),
+							List.of(new Matrix(entry(Feature.CORONAL, Quality.TRUE))))),
 			entry(Secondary.DENTAL,
-					new secondaryArticulation("̪", new Matrix(entry(Feature.ANTERIOR, Quality.TRUE),
-							entry(Feature.DISTRIBUTED, Quality.TRUE)), new Secondary[] { Secondary.PALATOALVEOLAR },
-							Arrays.asList(new Matrix(entry(Feature.CORONAL, Quality.TRUE))))),
+					new secondaryArticulation("̪",
+							new Matrix(entry(Feature.ANTERIOR, Quality.TRUE), entry(Feature.DISTRIBUTED, Quality.TRUE)),
+							new Secondary[] { Secondary.PALATOALVEOLAR },
+							List.of(new Matrix(entry(Feature.CORONAL, Quality.TRUE))))),
 			entry(Secondary.PALATOALVEOLAR,
 					new secondaryArticulation("̺",
 							new Matrix(entry(Feature.ANTERIOR, Quality.FALSE),
 									entry(Feature.DISTRIBUTED, Quality.TRUE)),
 							new Secondary[] { Secondary.DENTAL },
-							Arrays.asList(new Matrix(entry(Feature.CORONAL, Quality.TRUE))))),
+							List.of(new Matrix(entry(Feature.CORONAL, Quality.TRUE))))),
 			entry(Secondary.DEVOICING,
 					new secondaryArticulation("̥", Feature.VOICE, Quality.FALSE, new Secondary[] {},
-							Arrays.asList(new Matrix(entry(Feature.VOICE, Quality.TRUE))))),
+							List.of(new Matrix(entry(Feature.VOICE, Quality.TRUE))))),
 			entry(Secondary.NASALIZATION,
 					new secondaryArticulation("̃", Feature.NASAL, Quality.TRUE, new Secondary[] {},
-							Arrays.asList(new Matrix(entry(Feature.SONORANT, Quality.TRUE))))),
+							List.of(new Matrix(entry(Feature.SONORANT, Quality.TRUE))))),
 			entry(Secondary.LABIALIZATION,
 					new secondaryArticulation("ʷ",
 							new Matrix(entry(Feature.LABIAL, Quality.TRUE), entry(Feature.ROUND, Quality.TRUE)),
 							new Secondary[] {},
-							Arrays.asList(
+							List.of(
 									new Matrix(entry(Feature.CONSONANTAL, Quality.TRUE),
 											entry(Feature.SYLLABIC, Quality.FALSE)),
 									new Matrix(entry(Feature.CONSONANTAL, Quality.FALSE),
@@ -284,7 +282,7 @@ public class Phone implements Comparable<Phone> {
 									entry(Feature.LOW, Quality.FALSE), entry(Feature.FRONT, Quality.TRUE),
 									entry(Feature.BACK, Quality.FALSE)),
 							new Secondary[] { Secondary.VELARIZATION, Secondary.PHARYNGEALIZATION },
-							Arrays.asList(
+							List.of(
 									new Matrix(entry(Feature.CONSONANTAL, Quality.TRUE),
 											entry(Feature.SYLLABIC, Quality.FALSE)),
 									new Matrix(entry(Feature.CONSONANTAL, Quality.FALSE),
@@ -295,7 +293,7 @@ public class Phone implements Comparable<Phone> {
 									entry(Feature.LOW, Quality.FALSE), entry(Feature.FRONT, Quality.FALSE),
 									entry(Feature.BACK, Quality.TRUE)),
 							new Secondary[] { Secondary.PALATALIZATION, Secondary.PHARYNGEALIZATION },
-							Arrays.asList(
+							List.of(
 									new Matrix(entry(Feature.CONSONANTAL, Quality.TRUE),
 											entry(Feature.SYLLABIC, Quality.FALSE)),
 									new Matrix(entry(Feature.CONSONANTAL, Quality.FALSE),
@@ -306,7 +304,7 @@ public class Phone implements Comparable<Phone> {
 									entry(Feature.LOW, Quality.TRUE), entry(Feature.FRONT, Quality.FALSE),
 									entry(Feature.BACK, Quality.TRUE)),
 							new Secondary[] { Secondary.VELARIZATION, Secondary.PALATALIZATION },
-							Arrays.asList(
+							List.of(
 									new Matrix(entry(Feature.CONSONANTAL, Quality.TRUE),
 											entry(Feature.SYLLABIC, Quality.FALSE)),
 									new Matrix(entry(Feature.CONSONANTAL, Quality.FALSE),
@@ -316,160 +314,49 @@ public class Phone implements Comparable<Phone> {
 							new Matrix(entry(Feature.SPREAD_GLOTTIS, Quality.TRUE),
 									entry(Feature.CONSTRICTED_GLOTTIS, Quality.FALSE)),
 							new Secondary[] {},
-							Arrays.asList(
+							List.of(
 									new Matrix(entry(Feature.CONSONANTAL, Quality.TRUE),
 											entry(Feature.SYLLABIC, Quality.FALSE)),
 									new Matrix(entry(Feature.CONSONANTAL, Quality.FALSE),
 											entry(Feature.SYLLABIC, Quality.FALSE))))),
 			entry(Secondary.LENGTH,
-					new secondaryArticulation("ː", Feature.LONG, Quality.TRUE, new Secondary[] {}, Arrays.asList())));
-
-	public static List<Phone> phoneLibrary = new ArrayList<Phone>();
-	public static List<String> baseValues = new ArrayList<String>();
+					new secondaryArticulation("ː", Feature.LONG, Quality.TRUE, new Secondary[] {}, List.of())));
 
 	private String segment;
 	private Matrix features;
 
-	public Phone(String segment, Matrix features) {
+	public Phone(PhoneLibrary pm, String segment, Matrix features) {
+		this.pm = pm;
 		this.segment = segment;
 		this.features = features;
 
-		if (!this.segment.equals("*")) {
-			if (!phoneLibrary.contains(this)) {
-				phoneLibrary.add(this);
-			} else if (phoneLibrary.get(phoneLibrary.indexOf(this)).segment.length() > this.segment.length()) {
-				phoneLibrary.get(phoneLibrary.indexOf(this)).segment = this.segment;
-			}
-
-			if (!baseValues.contains(this.segment)) {
-				if ((this.segment.length() == 3 && this.segment.charAt(1) == '_') || this.segment.length() == 1)
-					baseValues.add(this.segment);
-			}
-		}
+		pm.add(this);
 	}
 
-	private static List<Phone> getPhones(Feature features[], Quality values[]) {
-		List<Phone> phones = new ArrayList<Phone>();
-
-		for (int i = 0; i < phoneLibrary.size(); i++) {
-			if (phoneLibrary.get(i).hasFeatures(features, values))
-				phones.add(phoneLibrary.get(i));
-		}
-
-		return phones;
-	}
-
-	public static List<Phone> getPhones(Matrix map) {
-		Feature features[] = new Feature[map.size()];
-		Quality values[] = new Quality[map.size()];
-		int i = 0;
-		for (Map.Entry<Feature, Quality> e : map.entrySet()) {
-			features[i] = e.getKey();
-			values[i] = e.getValue();
-			i++;
-		}
-		return getPhones(features, values);
-	}
-
-	private static boolean isSecondary(char c) {
+	static boolean isSecondary(char c) {
 		for (Map.Entry<Secondary, secondaryArticulation> e : secondaryLibrary.entrySet()) {
 			if (e.getValue().getSegment().charAt(0) == c)
 				return true;
 		}
 		return false;
 	}
-
-	public static List<Phone> interpretSequence(String s) {
-		List<Phone> phones = new ArrayList<Phone>();
-		int i = 0;
-		while (i < s.length()) {
-			StringBuilder curr = new StringBuilder();
-			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString()))) {
-				curr.append(s.charAt(i++));
-			}
-			while (i < s.length() && isSecondary(s.charAt(i))) {
-				curr.append(s.charAt(i++));
-			}
-			if (curr.length() > 0) {
-				phones.add(interpretSegment(curr.toString()));
-			}
-		}
-		return phones;
-	}
-
-	public static Phone interpretSegment(String s) {
-		String segment;
-		if (s.length() >= 3 && s.charAt(1) == '_') {
-			segment = s.substring(0, 3);
-			s = s.substring(3);
-		} else {
-			segment = s.substring(0, 1);
-			s = s.substring(1);
-		}
-		Phone base = null;
-		for (Phone p : phoneLibrary) {
-			if (p.getSegment().equals(segment)) {
-				base = p;
-				break;
-			}
-		}
-		if (base == null) {
-			System.err.println("ERROR: Cannot interpret " + segment + s);
-			return null;
-		}
-		List<Secondary> applied = new ArrayList<Secondary>();
-		for (int i = 0; i < s.length(); i++) {
-			boolean flag = false;
-			for (Map.Entry<Secondary, secondaryArticulation> e : secondaryLibrary.entrySet()) {
-				if (s.charAt(i) == e.getValue().getSegment().charAt(0)) {
-					flag = true;
-					if (e.getValue().canApply(base, applied)) {
-						applied.add(e.getKey());
-						base = base.apply(e.getKey());
-					} else {
-						System.err.println("ERROR: Cannot interpret " + segment + s);
-						return null;
-					}
-					break;
-				}
-			}
-			if (!flag) {
-				System.err.println("ERROR: Cannot interpret " + segment + s);
-				return null;
-			}
-		}
-		return base;
-	}
-
-	private boolean hasFeatures(Feature features[], Quality values[]) {
-		for (int i = 0; i < features.length; i++) {
-			if (getFeatureQuality(features[i]) != values[i]) {
+	
+	public boolean hasFeatures(Matrix map) {
+		for (Map.Entry<Feature, Quality> e : map.entrySet()) {
+			if (getFeatureQuality(e.getKey()) != e.getValue()) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public boolean hasFeatures(Matrix map) {
-		Feature features[] = new Feature[map.size()];
-		Quality values[] = new Quality[map.size()];
-		int i = 0;
-		for (Map.Entry<Feature, Quality> e : map.entrySet()) {
-			features[i] = e.getKey();
-			values[i] = e.getValue();
-			i++;
-		}
-		return hasFeatures(features, values);
-	}
-
 	public Quality getFeatureQuality(Feature feature) {
 		return features.get(feature);
 	}
 
-	public Matrix getMap() {
+	public Matrix getMatrix() {
 		Matrix map = new Matrix();
-		for (Map.Entry<Feature, Quality> e : features.entrySet())
-			map.put(e.getKey(), e.getValue());
+		map.putAll(features);
 
 		return map;
 	}
@@ -484,11 +371,11 @@ public class Phone implements Comparable<Phone> {
 		return values;
 	}
 
-	public String getDataString() {
+	public String getDataString(String split) {
 		String s = segment;
 		Quality values[] = getQualityArray();
 		for (int i = 0; i < values.length; i++) {
-			s += "\t";
+			s += split;
 			switch (values[i]) {
 				case FALSE:
 					s += "-";
@@ -517,9 +404,13 @@ public class Phone implements Comparable<Phone> {
 		}
 		return null;
 	}
+	
+	public Phone transform(Matrix matrix, boolean search) {
+		return transform("*", matrix, search);
+	}
 
-	public Phone transform(String segment, Matrix matrix, boolean search) {
-		Matrix new_features = getMap();
+	private Phone transform(String segment, Matrix matrix, boolean search) {
+		Matrix new_features = getMatrix();
 
 		for (Map.Entry<Feature, Quality> e : matrix.entrySet()) {
 			new_features.put(e.getKey(), e.getValue());
@@ -542,10 +433,10 @@ public class Phone implements Comparable<Phone> {
 			}
 		}
 
-		Phone p = new Phone(segment, new_features);
-		if (!phoneLibrary.contains(p)) {
+		Phone p = new Phone(pm, segment, new_features);
+		if (!pm.contains(p)) {
 			if (search) {
-				Phone fuzzy = fuzzySearch(p);
+				Phone fuzzy = pm.fuzzySearch(p);
 				if (fuzzy != null)
 					return fuzzy;
 				else
@@ -553,26 +444,7 @@ public class Phone implements Comparable<Phone> {
 			} else
 				return p;
 		}
-		return phoneLibrary.get(phoneLibrary.indexOf(p));
-	}
-
-	private static Phone fuzzySearch(Phone p) {
-		Matrix features = p.getMap();
-		for (int i = 0; i < phoneLibrary.size(); i++) {
-			Phone temp = phoneLibrary.get(i);
-			boolean flag = true;
-			for (Map.Entry<Feature, Quality> e : features.entrySet()) {
-				if (e.getValue() == Quality.NULL)
-					continue;
-				if (e.getValue() != temp.getFeatureQuality(e.getKey())) {
-					flag = false;
-					break;
-				}
-			}
-			if (flag)
-				return phoneLibrary.get(i);
-		}
-		return null;
+		return pm.validate(p);
 	}
 
 	public Phone apply(Secondary secondary) {

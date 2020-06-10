@@ -11,8 +11,8 @@ public class Matrix {
 	}
 
 	@SafeVarargs
-	public Matrix(Entry<Phone.Feature, Phone.Quality> ... entries) {
-		holder = Map.ofEntries(entries);
+	public Matrix(Entry<Phone.Feature, Phone.Quality>... entries) {
+		holder = new HashMap<Phone.Feature, Phone.Quality>(Map.ofEntries(entries));
 	}
 
 	public Phone.Quality get(Phone.Feature key) {

@@ -22,6 +22,51 @@ public class Rule {
 
 	protected boolean assimilate;
 
+	
+	public Rule(Object search, Object trans, Object init, Object fin, boolean assimilate) {
+		if (search == null || search.getClass() == Matrix.class) {
+			this.searchType = SegmentType.MATRIX;
+			this.search_matrix = (Matrix) search;
+			this.search_phone = null;
+		} else {
+			this.searchType = SegmentType.PHONE;
+			this.search_matrix = null;
+			this.search_phone = (Phone) search;
+		}
+
+		if (trans == null || trans.getClass() == Matrix.class) {
+			this.transType = SegmentType.MATRIX;
+			this.trans_matrix = (Matrix) trans;
+			this.trans_phone = null;
+		} else {
+			this.transType = SegmentType.PHONE;
+			this.trans_matrix = null;
+			this.trans_phone = (Phone) trans;
+		}
+
+		if (init == null || init.getClass() == Matrix.class) {
+			this.initType = SegmentType.MATRIX;
+			this.init_matrix = (Matrix) init;
+			this.init_phone = null;
+		} else {
+			this.initType = SegmentType.PHONE;
+			this.init_matrix = null;
+			this.init_phone = (Phone) search;
+		}
+
+		if (fin == null || fin.getClass() == Matrix.class) {
+			this.finType = SegmentType.MATRIX;
+			this.fin_matrix = (Matrix) fin;
+			this.fin_phone = null;
+		} else {
+			this.finType = SegmentType.PHONE;
+			this.fin_matrix = null;
+			this.fin_phone = (Phone) fin;
+		}
+
+		this.assimilate = assimilate;
+	}
+
 	public List<Phone> transform(List<Phone> sequence) {
 		List<Phone> result = new ArrayList<Phone>();
 		boolean a_flag = false;
@@ -119,7 +164,7 @@ public class Rule {
 						flag = true;
 						switch (initType) {
 							case MATRIX:
-								if (temp_init_matrix != null) {
+								if (init_matrix != null) {
 									if (last == null)
 										flag = false;
 									else if (!last.hasFeatures(temp_init_matrix))
@@ -137,7 +182,7 @@ public class Rule {
 						}
 						switch (finType) {
 							case MATRIX:
-								if (temp_fin_matrix != null) {
+								if (fin_matrix != null) {
 									if (next == null)
 										flag = false;
 									else if (!next.hasFeatures(temp_fin_matrix))
@@ -160,7 +205,7 @@ public class Rule {
 						flag = true;
 						switch (initType) {
 							case MATRIX:
-								if (temp_init_matrix != null) {
+								if (init_matrix != null) {
 									if (last == null)
 										flag = false;
 									else if (!last.hasFeatures(temp_init_matrix))
@@ -178,7 +223,7 @@ public class Rule {
 						}
 						switch (finType) {
 							case MATRIX:
-								if (temp_fin_matrix != null) {
+								if (fin_matrix != null) {
 									if (next == null)
 										flag = false;
 									else if (!next.hasFeatures(temp_fin_matrix))
@@ -218,7 +263,7 @@ public class Rule {
 									break;
 							}
 						}
-						result.add(p.transform("*", temp_trans_matrix, true));
+						result.add(p.transform(temp_trans_matrix, true));
 						break;
 					case PHONE:
 						result.add(trans_phone);
