@@ -3,8 +3,9 @@ package main;
 import java.io.IOException;
 import java.util.Scanner;
 
-import intr.*;
 import phl.*;
+import sonolang.*;
+import sonolang.err.SonoException;
 
 public class Main {
 	public static void main(String[] args) {
@@ -15,8 +16,9 @@ public class Main {
 		}
 
 		try {
-			PhoneLoader pl = new PhoneLoader(args[0]);
-			Interpreter sono = new Interpreter(new Scope(null), pl.getManager());
+			CommandManager command = new CommandManager();
+			PhoneLoader pl = new PhoneLoader(args[0], false);
+			Interpreter sono = new Interpreter(new Scope(null), pl.getManager(), command);
 
 			try (Scanner sc = new Scanner(System.in)) {
 				while (true) {

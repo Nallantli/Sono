@@ -1,3 +1,5 @@
+load "console";
+
 let transformation = {
 	# All consonants that are followed by another consonant (except nasals) are [+long]; /kk/ -> /kː/
 	Af : [-syl, -nasal] -> [+long] // null ~ [-syl, -approx],
@@ -27,3 +29,5 @@ let transformation = {
 let s = word "koɴpjɯɯtaa";
 
 let result = str (s >> transformation);
+
+print(result);

@@ -1,4 +1,4 @@
-package intr;
+package sonolang;
 
 import java.util.Map;
 import java.util.ArrayDeque;
@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 
 import phl.Phone;
+import sonolang.err.SonoCompilationException;
 
 import static java.util.Map.entry;
 
@@ -15,10 +16,10 @@ public class Tokenizer {
 		throw new IllegalStateException("Utility class");
 	}
 
-	protected static final Map<String, Integer> operators = Map.ofEntries(entry("load", -13), entry("let", -13),
-			entry("return", 2), entry("=>", 12), entry("len", -11), entry("word", -11), entry("str", -11),
+	protected static final Map<String, Integer> operators = Map.ofEntries(entry("_OUTER_CALL_", 20), entry("load", -13), entry("let", -13),
+			entry("return", 2), entry("=>", 12), entry("len", -11), entry("word", -11), entry("str", -11), entry("join", -11),
 			entry("from", 10), entry("mat", -11), entry("num", -11), entry("list", -11), entry("com", -11),
-			entry(".negative", -11), entry(".positive", -11), entry(".index", -15), entry("&", -15), entry(".exec", -15), entry(".", 14),
+			entry(".negative", -11), entry(".positive", -11), entry(".index", 15), entry("&", -15), entry(".exec", -15), entry(".", 14),
 			entry("**", -10), entry("*", 9), entry("/", 9), entry("%", 9), entry("+", 8), entry("-", 8), entry(">>", 8),
 			entry("?>", 8), entry("==", 6), entry("!=", 6), entry("<", 6), entry(">", 6), entry("<=", 6),
 			entry(">=", 6), entry("&&", 5), entry("||", 5), entry("=", -4), entry("->", 7), entry("//", 6),
@@ -55,6 +56,7 @@ public class Tokenizer {
 							lastChar = (char) newChar;
 							continue;
 						} else {
+							tokens.get(tokens.size() - 1).deleteCharAt(tokens.get(tokens.size() - 1).length() - 1);
 							switch (c) {
 								case '\\':
 									tokens.get(tokens.size() - 1).append('\\');

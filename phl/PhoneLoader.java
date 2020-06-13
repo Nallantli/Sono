@@ -50,45 +50,55 @@ public class PhoneLoader {
 		}
 	}
 
-	public PhoneLoader(String baseFilename) throws IOException {
-		try (FileInputStream fis = new FileInputStream(new File(".cache", baseFilename + ".data"));
-				ObjectInputStream ois = new ObjectInputStream(fis);) {
-			this.pm = (PhoneManager) ois.readObject();
-		} catch (Exception e) {
-			this.pm = new PhoneManager();
-			System.out.println("Cache not initialized...");
-			try {
-				System.out.println("Reading file <" + baseFilename + ">...");
-				readFile(pm, null, baseFilename, "\t");
+	private void initCache(String baseFilename) throws IOException {
+		String cacheFilename = baseFilename.replaceFirst(".*?\\/", "");
+		this.pm = new PhoneManager();
+		System.out.println("Cache not initialized...");
+		try {
+			System.out.println("Reading file <" + baseFilename + ">...");
+			readFile(pm, null, baseFilename, "\t");
 
-				List<Phone> base = new ArrayList<>();
-				base.addAll(pm.getAllPhones());
+			List<Phone> base = new ArrayList<>();
+			base.addAll(pm.getAllPhones());
 
-				System.out.println("Generating variants...");
+			System.out.println("Generating variants...");
 
-				for (Phone p : base) {
-					System.out.println("\tVariants of " + p);
-					recursiveApply(p, new ArrayList<>(), new ArrayList<>(List.of(Phone.Secondary.values())));
-				}
+			for (Phone p : base) {
+				System.out.println("\tVariants of " + p);
+				recursiveApply(p, new ArrayList<>(), new ArrayList<>(List.of(Phone.Secondary.values())));
+			}
 
-				System.out.println("Saving cache...");
-				List<Phone> sorted = new ArrayList<>();
-				sorted.addAll(pm.getAllPhones());
-				Collections.sort(sorted);
+			System.out.println("Saving cache...");
+			List<Phone> sorted = new ArrayList<>();
+			sorted.addAll(pm.getAllPhones());
+			Collections.sort(sorted);
 
-				File directory = new File(".cache");
-				if (!directory.exists())
-					directory.mkdir();
+			File directory = new File(".cache");
+			if (!directory.exists())
+				directory.mkdir();
 
-				try (FileOutputStream fos = new FileOutputStream(new File(".cache", baseFilename + ".data"));
-						ObjectOutputStream oos = new ObjectOutputStream(fos);) {
-					oos.writeObject(this.pm);
-					System.out.println("Done.");
-				} catch (Exception e3) {
-					throw new IOException("Cannot save cache.");
-				}
-			} catch (Exception e2) {
-				throw new IOException("File <" + baseFilename + "> not in directory, cannot load base phones");
+			try (FileOutputStream fos = new FileOutputStream(new File(".cache", cacheFilename + ".data"));
+					ObjectOutputStream oos = new ObjectOutputStream(fos);) {
+				oos.writeObject(this.pm);
+				System.out.println("Done.");
+			} catch (Exception e3) {
+				throw new IOException("Cannot save cache.");
+			}
+		} catch (Exception e2) {
+			throw new IOException("File <" + baseFilename + "> not in directory, cannot load base phones");
+		}
+	}
+
+	public PhoneLoader(String baseFilename, boolean force) throws IOException {
+		if (force)
+			initCache(baseFilename);
+		else {
+			String cacheFilename = baseFilename.replaceFirst(".*?\\/", "");
+			try (FileInputStream fis = new FileInputStream(new File(".cache", cacheFilename + ".data"));
+					ObjectInputStream ois = new ObjectInputStream(fis);) {
+				this.pm = (PhoneManager) ois.readObject();
+			} catch (Exception e) {
+				initCache(baseFilename);
 			}
 		}
 	}

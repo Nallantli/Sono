@@ -1,0 +1,3 @@
+let print = (message) => {
+	"CONSOLE.PRINT" _OUTER_CALL_ message;
+};

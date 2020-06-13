@@ -1,8 +1,6 @@
-package intr;
+package sonolang;
 
 import java.util.List;
-
-import phl.PhoneManager;
 
 public class Function {
 	private Scope parent;
@@ -17,7 +15,7 @@ public class Function {
 		this.body = body;
 	}
 
-	public Datum execute(List<Datum> paramValues, PhoneManager pl) {
+	public Datum execute(List<Datum> paramValues, Interpreter interpreter) {
 		Scope scope = new Scope(parent);
 		for (int i = 0; i < paramKeys.size(); i++) {
 			if (i < paramValues.size()) {
@@ -33,7 +31,7 @@ public class Function {
 			}
 		}
 
-		Datum r = body.evaluate(scope, pl);
+		Datum r = body.evaluate(scope, interpreter);
 		if (r.getRet()) {
 			r.setRet(false);
 			return r;

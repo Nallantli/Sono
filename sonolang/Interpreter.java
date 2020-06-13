@@ -1,4 +1,4 @@
-package intr;
+package sonolang;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,18 +11,21 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
+import main.CommandManager;
 import phl.*;
 
 public class Interpreter {
-	Scope main;
-	PhoneManager pl;
+	private Scope main;
+	private PhoneManager pl;
+	private CommandManager console;
 
 	List<String> loadedFiles;
 
-	public Interpreter(Scope main, PhoneManager pl) {
+	public Interpreter(Scope main, PhoneManager pl, CommandManager console) {
 		this.main = main;
 		this.pl = pl;
 		this.loadedFiles = new ArrayList<>();
+		this.console = console;
 		List<Datum> data = new ArrayList<>();
 		for (Phone p : pl.getAllPhones()) {
 			data.add(new Datum(p));
@@ -33,14 +36,20 @@ public class Interpreter {
 	}
 
 	public Datum runCode(String directory, String code) throws IOException {
-		List<String> tokens = null;
-		tokens = Tokenizer.tokenize(code);
-		tokens = Tokenizer.infixToPostfix(tokens);
-		return evaluate(parse(directory, tokens));
+		return evaluate(parse(directory, tokenize(code)));
 	}
 
 	public Datum evaluate(Operator o) {
-		return o.evaluate(main, pl);
+		return o.evaluate(main, this);
+	}
+
+	private List<String> tokenize(String code) {
+		List<String> tokens = null;
+		tokens = Tokenizer.tokenize(code);
+		System.out.println(tokens);
+		tokens = Tokenizer.infixToPostfix(tokens);
+		System.out.println(tokens);
+		return tokens;
 	}
 
 	public List<String> loadFile(String directory, String filename) throws IOException {
@@ -51,7 +60,7 @@ public class Interpreter {
 			String line;
 			while ((line = br.readLine()) != null)
 				contents.append(line + "\n");
-			return Tokenizer.infixToPostfix(Tokenizer.tokenize(contents.toString()));
+			return tokenize(contents.toString());
 		}
 	}
 
@@ -110,6 +119,10 @@ public class Interpreter {
 				if (token.equals("word")) {
 					Operator a = o.pollLast();
 					o.addLast(new Operator.SeqDec(a));
+				}
+				if (token.equals("join")) {
+					Operator a = o.pollLast();
+					o.addLast(new Operator.Join(a));
 				}
 				if (token.equals("list")) {
 					Operator a = o.pollLast();
@@ -275,6 +288,11 @@ public class Interpreter {
 					((Operator.IfElse) a).setElse(b);
 					o.addLast(a);
 				}
+				if (token.equals("_OUTER_CALL_")) {
+					Operator b = o.pollLast();
+					Operator a = o.pollLast();
+					o.addLast(new Operator.OuterCall(a, b));
+				}
 				if (token.equals(":")) {
 					Rule.Type rtype = null;
 					Operator b = o.pollLast();
@@ -349,5 +367,13 @@ public class Interpreter {
 		}
 		s.append(fin);
 		return s.toString();
+	}
+
+	public PhoneManager getManager() {
+		return this.pl;
+	}
+
+	public CommandManager getCommandManager() {
+		return this.console;
 	}
 }

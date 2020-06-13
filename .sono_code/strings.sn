@@ -1,0 +1,66 @@
+let match = (string, pattern) => {
+	return "CONSOLE.REGEX" _OUTER_CALL_ { pattern, string };
+};
+
+let split = (string, pattern) => {
+	let stringArray = list string;
+	let coords = string.match(pattern);
+	let array = {};
+	let mode = true;
+	let c = 0;
+	let curr = {};
+	i in {0 until len string} do {
+		c < len coords then {
+			coords[c][1] == i then {
+				mode = true;
+				c = c + 1;
+			};
+			c < len coords then {
+				coords[c][0] == i then {
+					array = array + { join curr };
+					curr = {};
+					mode = false;
+				};
+			};
+		};
+		mode then {
+			curr = curr + { stringArray[i] };
+		};
+	};
+	curr != {} then {
+		array = array + { join curr };
+	};
+	return array;
+};
+
+let replace = (&string, pattern, value) => {
+	let stringArray = list string;
+	let coords = string.match(pattern);
+	let array = {};
+	let mode = true;
+	let c = 0;
+	let curr = {};
+	i in {0 until len string} do {
+		c < len coords then {
+			coords[c][1] == i then {
+				mode = true;
+				c = c + 1;
+			};
+			c < len coords then {
+				coords[c][0] == i then {
+					array = array + { join curr, value };
+					curr = {};
+					mode = false;
+				};
+			};
+		};
+		mode then {
+			curr = curr + { stringArray[i] };
+		};
+	};
+	curr != {} then {
+		array = array + { join curr };
+	};
+	string = join array;
+	return string;
+};

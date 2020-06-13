@@ -1,19 +1,21 @@
-package intr;
+package sonolang;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import phl.*;
+import sonolang.err.SonoRuntimeException;
 
 public abstract class Operator {
 	public enum Type {
 		VARIABLE, DATUM, SET, TRANSFORM, SOFT_LIST, HARD_LIST, RULE_DEC, ARROW, SLASH, UNDERSCORE, MATRIX_DEC, SEQ_DEC,
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NEQUAL, LESS, MORE, ELESS, EMORE, MATRIX_CONV, NUMBER_CONV,
-		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC, FIND_DEC, AND, OR, LEN, INNER, REF_DEC,
+		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
+		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, JOIN,
 
 		// INTERPRETER USE
-		UNARY, BINARY, SEQUENCE, EXECUTE
+		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
 	}
 
 	protected Type type;
@@ -66,7 +68,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return scope.getVariable(varName);
 		}
 
@@ -93,7 +95,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return datum;
 		}
 
@@ -109,9 +111,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			datumA.set(datumB);
 			return datumA;
 		}
@@ -128,9 +130,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			if (datumB.getType() == Datum.Type.MATRIX)
 				return new Datum(datumA.getPhone().transform(datumB.getMatrix(), true));
 			if (datumB.getType() == Datum.Type.RULE) {
@@ -141,7 +143,7 @@ public abstract class Operator {
 				Datum curr = datumA;
 				for (Datum t : transformation)
 					curr = (new Operator.Transform(new Operator.Container(curr), new Operator.Container(t)))
-							.evaluate(scope, pl);
+							.evaluate(scope, interpreter);
 				return curr;
 			} else {
 				throw new SonoRuntimeException(
@@ -161,13 +163,13 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			List<Datum> data = new ArrayList<>();
 			for (Operator o : operators) {
 				if (o.type == Type.RANGE_UNTIL)
-					data.addAll(((RangeUntil) o).getRange(scope, pl));
+					data.addAll(((RangeUntil) o).getRange(scope, interpreter));
 				else {
-					Datum d = o.evaluate(scope, pl);
+					Datum d = o.evaluate(scope, interpreter);
 					if (d.getType() == Datum.Type.I_BREAK)
 						return d;
 					if (d.getRet())
@@ -192,14 +194,14 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			List<Datum> data = new ArrayList<>();
 			Scope newScope = new Scope(scope);
 			for (Operator o : operators) {
 				if (o.type == Type.RANGE_UNTIL)
-					data.addAll(((RangeUntil) o).getRange(newScope, pl));
+					data.addAll(((RangeUntil) o).getRange(newScope, interpreter));
 				else {
-					Datum d = o.evaluate(newScope, pl);
+					Datum d = o.evaluate(newScope, interpreter);
 					if (d.getType() == Datum.Type.I_BREAK)
 						return d;
 					if (d.getRet())
@@ -222,10 +224,10 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			Matrix matrix = new Matrix();
 			for (Operator o : operators)
-				matrix.put(o.evaluate(scope, pl).getPair());
+				matrix.put(o.evaluate(scope, interpreter).getPair());
 			return new Datum(matrix);
 		}
 
@@ -240,17 +242,17 @@ public abstract class Operator {
 			super(Type.RANGE_UNTIL, a, b);
 		}
 
-		public List<Datum> getRange(Scope scope, PhoneManager pl) {
+		public List<Datum> getRange(Scope scope, Interpreter interpreter) {
 			List<Datum> data = new ArrayList<>();
-			BigDecimal datumA = a.evaluate(scope, pl).getNumber();
-			BigDecimal datumB = b.evaluate(scope, pl).getNumber();
+			BigDecimal datumA = a.evaluate(scope, interpreter).getNumber();
+			BigDecimal datumB = b.evaluate(scope, interpreter).getNumber();
 			for (BigDecimal i = datumA; i.compareTo(datumB) < 0; i = i.add(new BigDecimal(1)))
 				data.add(new Datum(i));
 			return data;
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return null;
 		}
 
@@ -266,7 +268,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return null;
 		}
 
@@ -278,6 +280,7 @@ public abstract class Operator {
 
 	public static class Ref extends Operator {
 		String varName;
+
 		public Ref(String varName) {
 			super(Type.REF_DEC);
 			this.varName = varName;
@@ -288,7 +291,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return null;
 		}
 
@@ -305,7 +308,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return null;
 		}
 
@@ -321,7 +324,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return null;
 		}
 
@@ -337,7 +340,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return null;
 		}
 
@@ -353,14 +356,14 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			List<Datum> values = ((Iterator) a).getB().evaluate(scope, pl).getList();
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			List<Datum> values = ((Iterator) a).getB().evaluate(scope, interpreter).getList();
 			String variable = ((Variable) ((Iterator) a).getA()).getKey();
 			List<Datum> results = new ArrayList<>();
 			for (Datum d : values) {
 				Scope loopScope = new Scope(scope);
 				loopScope.setVariable(variable, d);
-				Datum result = b.evaluate(loopScope, pl);
+				Datum result = b.evaluate(loopScope, interpreter);
 				if (result.getType() == Datum.Type.I_BREAK)
 					break;
 				if (result.getRet())
@@ -385,13 +388,13 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			while (a.type != Type.SLASH)
 				a = ((Sequence) a).operators.get(0);
-			Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, pl);
-			Datum dtrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, pl);
-			Datum dinit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, pl);
-			Datum dfin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope, pl);
+			Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, interpreter);
+			Datum dtrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, interpreter);
+			Datum dinit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, interpreter);
+			Datum dfin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope, interpreter);
 
 			Object search = null;
 			Object trans = null;
@@ -440,15 +443,15 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
 			if (datumA.getType() == Datum.Type.LIST) {
 				List<Phone> phones = new ArrayList<>();
 				for (Datum d : datumA.getList())
 					phones.add(d.getPhone());
 				return new Datum(new Word(phones));
 			} else if (datumA.getType() == Datum.Type.STRING) {
-				return new Datum(pl.interpretSequence(datumA.getString()));
+				return new Datum(interpreter.getManager().interpretSequence(datumA.getString()));
 			}
 			throw new SonoRuntimeException("Value <" + datumA.toString() + "> cannot be converted to a Word.");
 		}
@@ -465,9 +468,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			List<Datum> list = new ArrayList<>();
-			Datum datumA = a.evaluate(scope, pl);
+			Datum datumA = a.evaluate(scope, interpreter);
 			switch (datumA.getType()) {
 				case MATRIX:
 					for (Pair p : datumA.getMatrix())
@@ -501,8 +504,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			String s = a.evaluate(scope, pl).toRawString();
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			String s = a.evaluate(scope, interpreter).toRawString();
 			return new Datum(s);
 		}
 
@@ -512,14 +515,34 @@ public abstract class Operator {
 		}
 	}
 
+	public static class Join extends Unary {
+		public Join(Operator a) {
+			super(Type.JOIN, a);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			List<Datum> list = a.evaluate(scope, interpreter).getList();
+			StringBuilder s = new StringBuilder();
+			for (Datum d : list)
+				s.append(d.getString());
+			return new Datum(s.toString());
+		}
+
+		@Override
+		public String toString() {
+			return "join " + a.toString();
+		}
+	}
+
 	public static class MatConv extends Unary {
 		public MatConv(Operator a) {
 			super(Type.MATRIX_CONV, a);
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
 			if (datumA.getType() == Datum.Type.LIST) {
 				List<Datum> list = datumA.getList();
 				Matrix m = new Matrix();
@@ -544,13 +567,13 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Matrix matrix = a.evaluate(scope, pl).getMatrix();
-			List<Datum> data = b.evaluate(scope, pl).getList();
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Matrix matrix = a.evaluate(scope, interpreter).getMatrix();
+			List<Datum> data = b.evaluate(scope, interpreter).getList();
 			List<Phone> phones = new ArrayList<>();
 			for (Datum d : data)
 				phones.add(d.getPhone());
-			List<Phone> list = pl.getPhones(phones, matrix);
+			List<Phone> list = interpreter.getManager().getPhones(phones, matrix);
 			List<Datum> newData = new ArrayList<>();
 			for (Phone p : list) {
 				newData.add(new Datum(p));
@@ -570,8 +593,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			return new Datum(new BigDecimal(a.evaluate(scope, pl).getString()));
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			return new Datum(new BigDecimal(a.evaluate(scope, interpreter).getString()));
 		}
 
 		@Override
@@ -586,8 +609,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
 			switch (datumA.getType()) {
 				case STRING:
 					return new Datum(BigDecimal.valueOf(datumA.getString().length()));
@@ -614,8 +637,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
 			datumA.setRet(true);
 			return datumA;
 		}
@@ -632,11 +655,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			if (datumA.getType() != datumB.getType())
-				throw new SonoRuntimeException("Cannot add values <" + datumA.toString() + "> and <" + datumB.toString() + ">, of types: " + datumA.getType() + ", " + datumB.getType());
+				throw new SonoRuntimeException("Cannot add values <" + datumA.toString() + "> and <" + datumB.toString()
+						+ ">, of types: " + datumA.getType() + ", " + datumB.getType());
 			switch (datumA.getType()) {
 				case NUMBER:
 					return new Datum(datumA.getNumber().add(datumB.getNumber()));
@@ -674,9 +698,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			return new Datum(datumA.getNumber().subtract(datumB.getNumber()));
 		}
 
@@ -692,9 +716,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			return new Datum(datumA.getNumber().multiply(datumB.getNumber()));
 		}
 
@@ -710,9 +734,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			return new Datum(datumA.getNumber().divide(datumB.getNumber()));
 		}
 
@@ -728,9 +752,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			return new Datum(new BigDecimal(datumA.getNumber().longValue() % datumB.getNumber().longValue()));
 		}
 
@@ -746,9 +770,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			return datumA.getList().get(datumB.getNumber().intValue());
 		}
 
@@ -764,9 +788,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			return new Datum(datumA.equals(datumB) ? new BigDecimal(1) : new BigDecimal(0));
 		}
 
@@ -782,9 +806,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
 			return new Datum(datumA.equals(datumB) ? new BigDecimal(0) : new BigDecimal(1));
 		}
 
@@ -800,8 +824,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			return new Datum(pl.getContrast(a.evaluate(scope, pl).getPhone(), b.evaluate(scope, pl).getPhone()));
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			return new Datum(interpreter.getManager().getContrast(a.evaluate(scope, interpreter).getPhone(),
+					b.evaluate(scope, interpreter).getPhone()));
 		}
 
 		@Override
@@ -816,12 +841,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			List<Datum> data = a.evaluate(scope, pl).getList();
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			List<Datum> data = a.evaluate(scope, interpreter).getList();
 			List<Phone> phones = new ArrayList<>();
 			for (Datum d : data)
 				phones.add(d.getPhone());
-			return new Datum(pl.getCommon(phones));
+			return new Datum(interpreter.getManager().getCommon(phones));
 		}
 
 		@Override
@@ -840,7 +865,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return scope.setVariable(varName, new Datum());
 		}
 
@@ -857,7 +882,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			return new Datum.Break();
 		}
 
@@ -881,12 +906,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum condition = a.evaluate(scope, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum condition = a.evaluate(scope, interpreter);
 			if (condition.getNumber().compareTo(new BigDecimal(1)) == 0) {
-				return b.evaluate(scope, pl);
+				return b.evaluate(scope, interpreter);
 			} else if (c != null) {
-				return c.evaluate(scope, pl);
+				return c.evaluate(scope, interpreter);
 			}
 			return new Datum();
 		}
@@ -903,7 +928,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
 			List<String> pNames = new ArrayList<>();
 			List<Boolean> pRefs = new ArrayList<>();
 			for (Operator d : ((Sequence) a).getList()) {
@@ -930,10 +955,10 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			List<Datum> pValues = b.evaluate(scope, pl).getList();
-			Function f = a.evaluate(scope, pl).getFunction();
-			return f.execute(pValues, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			List<Datum> pValues = b.evaluate(scope, interpreter).getList();
+			Function f = a.evaluate(scope, interpreter).getFunction();
+			return f.execute(pValues, interpreter);
 		}
 
 		@Override
@@ -948,10 +973,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
-			return new Datum(datumA.getNumber().compareTo(datumB.getNumber()) < 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
+			return new Datum(
+					datumA.getNumber().compareTo(datumB.getNumber()) < 0 ? new BigDecimal(1) : new BigDecimal(0));
 		}
 
 		@Override
@@ -966,10 +992,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
-			return new Datum(datumA.getNumber().compareTo(datumB.getNumber()) > 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
+			return new Datum(
+					datumA.getNumber().compareTo(datumB.getNumber()) > 0 ? new BigDecimal(1) : new BigDecimal(0));
 		}
 
 		@Override
@@ -984,10 +1011,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
-			return new Datum(datumA.getNumber().compareTo(datumB.getNumber()) <= 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
+			return new Datum(
+					datumA.getNumber().compareTo(datumB.getNumber()) <= 0 ? new BigDecimal(1) : new BigDecimal(0));
 		}
 
 		@Override
@@ -1002,10 +1030,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
-			return new Datum(datumA.getNumber().compareTo(datumB.getNumber()) >= 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
+			return new Datum(
+					datumA.getNumber().compareTo(datumB.getNumber()) >= 0 ? new BigDecimal(1) : new BigDecimal(0));
 		}
 
 		@Override
@@ -1020,10 +1049,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
-			return new Datum(datumA.getNumber().compareTo(BigDecimal.valueOf(1)) == 0 && datumB.getNumber().compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
+			return new Datum(datumA.getNumber().compareTo(BigDecimal.valueOf(1)) == 0
+					&& datumB.getNumber().compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1)
+							: new BigDecimal(0));
 		}
 
 		@Override
@@ -1038,10 +1069,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Datum datumA = a.evaluate(scope, pl);
-			Datum datumB = b.evaluate(scope, pl);
-			return new Datum(datumA.getNumber().compareTo(BigDecimal.valueOf(1)) == 0 || datumB.getNumber().compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumB = b.evaluate(scope, interpreter);
+			return new Datum(datumA.getNumber().compareTo(BigDecimal.valueOf(1)) == 0
+					|| datumB.getNumber().compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1)
+							: new BigDecimal(0));
 		}
 
 		@Override
@@ -1049,18 +1082,18 @@ public abstract class Operator {
 			return a.toString() + " || " + b.toString();
 		}
 	}
-	
+
 	public static class Inner extends Binary {
 		public Inner(Operator a, Operator b) {
 			super(Type.INNER, a, b);
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, PhoneManager pl) {
-			Function f = ((Execute)b).getA().evaluate(scope, pl).getFunction();
-			List<Datum> params = ((Execute)b).getB().evaluate(scope, pl).getList();
-			params.add(0, a.evaluate(scope, pl));
-			return f.execute(params, pl);
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			Function f = ((Execute) b).getA().evaluate(scope, interpreter).getFunction();
+			List<Datum> params = ((Execute) b).getB().evaluate(scope, interpreter).getList();
+			params.add(0, a.evaluate(scope, interpreter));
+			return f.execute(params, interpreter);
 		}
 
 		@Override
@@ -1069,11 +1102,28 @@ public abstract class Operator {
 		}
 	}
 
+	public static class OuterCall extends Binary {
+		public OuterCall(Operator a, Operator b) {
+			super(Type.OUTER_CALL, a, b);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter) {
+			return interpreter.getCommandManager().execute(a.evaluate(scope, interpreter).getString(),
+					b.evaluate(scope, interpreter));
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " _OUTER_CALL_ " + b.toString();
+		}
+	}
+
 	public Operator(Type type) {
 		this.type = type;
 	}
 
-	public abstract Datum evaluate(Scope scope, PhoneManager pl);
+	public abstract Datum evaluate(Scope scope, Interpreter interpreter);
 
 	public abstract String toString();
 }
