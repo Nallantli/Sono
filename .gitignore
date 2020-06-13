@@ -1,6 +1,6 @@
 bin
 test.txt
 notes.txt
-.*cache
+.cache
 ~$FEATURES.xlsx
 *.class
