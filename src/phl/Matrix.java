@@ -1,9 +1,10 @@
-package phl;
+package src.phl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class Matrix implements Iterable<Pair>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -128,6 +129,8 @@ class MatrixIterator implements Iterator<Pair> {
 
 	@Override
 	public Pair next() {
+		if (i >= holder.size())
+			throw new NoSuchElementException("Matrix iterator out of bounds: " + i);
 		return holder.get(i++);
 	}
 }

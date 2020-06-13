@@ -1,9 +1,9 @@
-package sonolang;
+package src.sono;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import sonolang.err.SonoRuntimeException;
+import src.sono.err.SonoRuntimeException;
 
 public class Scope {
 	Map<String, Datum> data;

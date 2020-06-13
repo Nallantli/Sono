@@ -1,4 +1,4 @@
-package sonolang.err;
+package src.sono.err;
 
 public class SonoCompilationException extends SonoException {
 	private static final long serialVersionUID = 1L;

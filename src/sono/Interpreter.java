@@ -1,4 +1,4 @@
-package sonolang;
+package src.sono;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
-import main.CommandManager;
-import phl.*;
+import src.main.CommandManager;
+import src.phl.*;
 
 public class Interpreter {
 	private Scope main;
@@ -46,9 +46,7 @@ public class Interpreter {
 	private List<String> tokenize(String code) {
 		List<String> tokens = null;
 		tokens = Tokenizer.tokenize(code);
-		System.out.println(tokens);
 		tokens = Tokenizer.infixToPostfix(tokens);
-		System.out.println(tokens);
 		return tokens;
 	}
 

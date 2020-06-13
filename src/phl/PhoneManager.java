@@ -1,11 +1,11 @@
-package phl;
+package src.phl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import phl.Phone.Quality;
+import src.phl.Phone.Quality;
 
 public class PhoneManager implements Serializable {
 	private static final long serialVersionUID = 1L;

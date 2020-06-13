@@ -1,11 +1,11 @@
-package sonolang;
+package src.sono;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import phl.*;
-import sonolang.err.SonoRuntimeException;
+import src.phl.*;
+import src.sono.err.SonoRuntimeException;
 
 public abstract class Operator {
 	public enum Type {

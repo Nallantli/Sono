@@ -1,11 +1,13 @@
-package main;
+package src.main;
 
 import java.io.IOException;
 import java.util.Scanner;
 
-import phl.*;
-import sonolang.*;
-import sonolang.err.SonoException;
+import src.phl.PhoneLoader;
+import src.sono.Datum;
+import src.sono.Interpreter;
+import src.sono.Scope;
+import src.sono.err.SonoException;
 
 public class Main {
 	public static void main(String[] args) {

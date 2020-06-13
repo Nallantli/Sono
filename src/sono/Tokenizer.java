@@ -1,15 +1,15 @@
-package sonolang;
+package src.sono;
 
-import java.util.Map;
+import static java.util.Map.entry;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
-import phl.Phone;
-import sonolang.err.SonoCompilationException;
-
-import static java.util.Map.entry;
+import src.phl.Phone;
+import src.sono.err.SonoCompilationException;
 
 public class Tokenizer {
 	private Tokenizer() {

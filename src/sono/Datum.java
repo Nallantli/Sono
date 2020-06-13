@@ -1,11 +1,11 @@
-package sonolang;
+package src.sono;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import phl.*;
-import sonolang.err.SonoRuntimeException;
+import src.phl.*;
+import src.sono.err.SonoRuntimeException;
 
 public class Datum {
 	public enum Type {
@@ -217,7 +217,7 @@ public class Datum {
 				throw new SonoRuntimeException("Unknown value.");
 		}
 	}
-	
+
 	public String toRawString() {
 		switch (type) {
 			case LIST:

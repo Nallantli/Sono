@@ -1,4 +1,4 @@
-package phl;
+package src.phl;
 
 public class Rule {
 	private enum SegmentType {

@@ -1,4 +1,4 @@
-package sonolang;
+package src.sono;
 
 import java.util.List;
 
