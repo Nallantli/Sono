@@ -1,0 +1,79 @@
+Vector::pop(&this) => {
+	var nl = {};
+	i in {0 until (len this - 1)} do {
+		nl += { this[i] };
+	};
+	this = nl;
+	return this;
+};
+
+Vector::shift(&this) => {
+	var nl = {};
+	i in {1 until len this} do {
+		nl += { this[i] };
+	};
+	this = nl;
+	return this;
+};
+
+Vector::front(&this) => {
+	return this[0];
+};
+
+Vector::back(&this) => {
+	return this[len this - 1];
+};
+
+Vector::isEmpty(&this) => {
+	return (len this == 0);
+};
+
+Vector::contains(&this, value) => {
+	i in this do {
+		i == value then {
+			return true;
+		};
+	};
+	return false;
+};
+
+Vector::push(&this, value) => {
+	this += { value };
+	return this;
+};
+
+Vector::join(&this, del) => {
+	del == null then {
+		del = "";
+	};
+	var string = "";
+	e in this do {
+		string += str e;
+	};
+	return string;
+};
+
+Vector::sort(&this, comp) => {
+	comp == null then {
+		comp = (a, b) => {
+			return a < b;
+		};
+	};
+	Vector::merge_sort(&this) => {
+		len this <= 1 then {
+			return this;
+		};
+		var a = {};
+		var b = {};
+		i in {1 until len this} do {
+			comp(this[i], this[0]) then {
+				a += { this[i] };
+			} else {
+				b += { this[i] };
+			};
+		};
+		this = a.merge_sort() + { this[0] } + b.merge_sort();
+		return this;
+	};
+	return this.merge_sort();
+};

@@ -1,0 +1,11 @@
+print(message) => {
+	"CONSOLE.PRINT" _OUTER_CALL_ (str message);
+};
+
+exit() => {
+	"CONSOLE.EXIT" _OUTER_CALL_ null;
+};
+
+var match = String::(string, pattern) => {
+	return "CONSOLE.REGEX" _OUTER_CALL_ { pattern, string };
+};

@@ -1,3 +1,4 @@
 .cache
 ~$FEATURES.xlsx
 bin/src
+bin/.config

@@ -1,0 +1,41 @@
+Number::abs(n) => {
+	n < 0 then {
+		return n * -1;
+	} else {
+		return n;
+	};
+};
+
+Number::floor(n) => {
+	var d = ((n * 10) % 10) / 10;
+	return n - d;
+};
+
+Number::ceil(n) => {
+	var d = ((n * 10) % 10) / 10;
+	n > 0 then {
+		d > 0 then {
+			return n - d + 1;
+		} else {
+			return n;
+		};
+	} else {
+		d < 0 then {
+			return n - d - 1;
+		} else {
+			return n;
+		};
+	};
+};
+
+Number::round(n) => {
+	var f = n.floor();
+	var c = n.ceil();
+	var df = (n - f).abs();
+	var dc = (n - c).abs();
+	df < dc then {
+		return f;
+	} else {
+		return c;
+	};
+};

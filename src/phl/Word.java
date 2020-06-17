@@ -27,7 +27,9 @@ public class Word {
 	}
 
 	public Phone get(int i) {
-		return this.internal.get(i);
+		if (i < this.size() && i >= 0)
+			return this.internal.get(i);
+		return null;
 	}
 
 	@Override

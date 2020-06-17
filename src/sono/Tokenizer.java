@@ -16,15 +16,17 @@ public class Tokenizer {
 		throw new IllegalStateException("Utility class");
 	}
 
-	protected static final Map<String, Integer> operators = Map.ofEntries(entry("_OUTER_CALL_", 20), entry("load", -13), entry("let", -13),
-			entry("return", 2), entry("=>", 12), entry("len", -11), entry("word", -11), entry("str", -11), entry("join", -11),
-			entry("from", 10), entry("mat", -11), entry("num", -11), entry("list", -11), entry("com", -11),
-			entry(".negative", -11), entry(".positive", -11), entry(".index", 15), entry("&", -15), entry(".exec", -15), entry(".", 14),
-			entry("**", -10), entry("*", 9), entry("/", 9), entry("%", 9), entry("+", 8), entry("-", 8), entry(">>", 8),
-			entry("?>", 8), entry("==", 6), entry("!=", 6), entry("<", 6), entry(">", 6), entry("<=", 6),
-			entry(">=", 6), entry("&&", 5), entry("||", 5), entry("=", -4), entry("->", 7), entry("//", 6),
-			entry("~", 7), entry("in", 3), entry("switch", 3), entry("do", 3), entry(":", 5), entry("until", 4),
-			entry("then", 3), entry("else", -3), entry(",", 2), entry(";", -1));
+	protected static final Map<String, Integer> operators = Map.ofEntries(entry("_OUTER_CALL_", 20), entry("load", -13),
+			entry("new", -14), entry("var", -13), entry("struct", -14), entry("static", -14), entry("class", 13),
+			entry("return", 2), entry("=>", 12), entry("len", -11), entry("word", -11), entry("str", -11),
+			entry("type", -11), entry("from", 10), entry("mat", -11), entry("num", -11), entry("vec", -11),
+			entry("com", -11), entry("::", 16), entry(".negative", -11), entry(".positive", -11), entry(".index", 15),
+			entry("&", -15), entry(".exec", -15), entry(".", 14), entry("**", -10), entry("*", 9), entry("/", 9),
+			entry("%", 9), entry("+", 8), entry("-", 8), entry(">>", 8), entry("?>", 8), entry("==", 6), entry("!=", 6),
+			entry("<", 6), entry(">", 6), entry("<=", 6), entry(">=", 6), entry("&&", 5), entry("||", 5),
+			entry("=", -4), entry("+=", -4), entry("-=", -4), entry("*=", -4), entry("/=", -4), entry("%=", -4), entry("->", 7), entry("//", 6), entry("~", 7), entry("in", 3), entry("switch", 3),
+			entry("do", 3), entry(":", 5), entry("until", 4), entry("then", 3), entry("else", -3), entry(",", 2),
+			entry(";", -1));
 
 	public static List<String> tokenize(String str) {
 		char pChar = 0;
@@ -153,11 +155,11 @@ public class Tokenizer {
 			if (t.equals("#[") || t.equals("#]"))
 				continue;
 			if (t.equals("[")
-					&& ((Character.isLetterOrDigit(last.charAt(0)) || last.charAt(0) == '\"' || last.charAt(0) == '`')
+					&& ((Character.isLetterOrDigit(last.charAt(0)) || last.charAt(0) == '_' || last.charAt(0) == '`')
 							|| last.equals(")") || last.equals("]") || last.equals("}"))
 					&& !operators.containsKey(last))
 				newTokens.add(".index");
-			if (t.equals("(") && ((Character.isLetterOrDigit(last.charAt(0)) || last.charAt(0) == '`')
+			if (t.equals("(") && ((Character.isLetterOrDigit(last.charAt(0)) || last.charAt(0) == '_')
 					|| last.equals(")") || last.equals("]") || last.equals("}")) && !operators.containsKey(last))
 				newTokens.add(".exec");
 			if (t.equals("-")
@@ -234,8 +236,9 @@ public class Tokenizer {
 		int cCount = 0;
 
 		for (String token : tokens) {
-			if ((Character.isLetterOrDigit(token.charAt(0)) || token.charAt(0) == '_' || token.charAt(0) == '\"' || token.charAt(0) == '@'
-					|| token.charAt(0) == '\'' || token.charAt(0) == '`') && !operators.containsKey(token))
+			if ((Character.isLetterOrDigit(token.charAt(0)) || token.charAt(0) == '_' || token.charAt(0) == '\"'
+					|| token.charAt(0) == '@' || token.charAt(0) == '\'' || token.charAt(0) == '`')
+					&& !operators.containsKey(token))
 				output.addLast(token);
 			else if (operators.containsKey(token)) {
 				if (!stack.isEmpty()) {

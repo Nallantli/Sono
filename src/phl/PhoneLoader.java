@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import src.main.Main;
+
 public class PhoneLoader {
 	private PhoneManager pm;
 
@@ -51,7 +53,7 @@ public class PhoneLoader {
 	}
 
 	private void initCache(String baseFilename) throws IOException {
-		String cacheFilename = baseFilename.replaceFirst(".*?\\/", "");
+		String cacheFilename = baseFilename.replaceFirst(".*\\\\", "");
 		this.pm = new PhoneManager();
 		System.out.println("Cache not initialized...");
 		try {
@@ -73,11 +75,11 @@ public class PhoneLoader {
 			sorted.addAll(pm.getAllPhones());
 			Collections.sort(sorted);
 
-			File directory = new File(".cache");
+			File directory = new File(Main.getGlobalOption("PATH"), ".config/cache");
 			if (!directory.exists())
 				directory.mkdir();
 
-			try (FileOutputStream fos = new FileOutputStream(new File(".cache", cacheFilename + ".data"));
+			try (FileOutputStream fos = new FileOutputStream(new File(directory, cacheFilename + ".data"));
 					ObjectOutputStream oos = new ObjectOutputStream(fos);) {
 				oos.writeObject(this.pm);
 				System.out.println("Done.");
@@ -93,8 +95,9 @@ public class PhoneLoader {
 		if (force)
 			initCache(baseFilename);
 		else {
-			String cacheFilename = baseFilename.replaceFirst(".*?\\/", "");
-			try (FileInputStream fis = new FileInputStream(new File(".cache", cacheFilename + ".data"));
+			File directory = new File(Main.getGlobalOption("PATH"), ".config/cache");
+			String cacheFilename = baseFilename.replaceFirst(".*\\\\", "");
+			try (FileInputStream fis = new FileInputStream(new File(directory, cacheFilename + ".data"));
 					ObjectInputStream ois = new ObjectInputStream(fis);) {
 				this.pm = (PhoneManager) ois.readObject();
 			} catch (Exception e) {

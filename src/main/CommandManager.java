@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import src.sono.Datum;
 
 interface Command {
-	public Datum execute(Datum datum);
+	public Datum execute(Datum datum, List<String> trace);
 }
 
 public class CommandManager {
@@ -19,13 +19,13 @@ public class CommandManager {
 
 	public CommandManager() {
 		commands = new HashMap<>();
-		commands.put("CONSOLE.PRINT", (Datum datum) -> {
-			System.out.println(datum.getString());
+		commands.put("CONSOLE.PRINT", (Datum datum, List<String> trace) -> {
+			System.out.println(datum.getString(trace));
 			return new Datum();
 		});
-		commands.put("CONSOLE.REGEX", (Datum datum) -> {
-			Pattern pattern = Pattern.compile(datum.getList().get(0).getString());
-			String line = datum.getList().get(1).getString();
+		commands.put("CONSOLE.REGEX", (Datum datum, List<String> trace) -> {
+			Pattern pattern = Pattern.compile(datum.getVector(trace).get(0).getString(trace));
+			String line = datum.getVector(trace).get(1).getString(trace);
 			Matcher m = pattern.matcher(line);
 			List<Datum> list = new ArrayList<>();
 			while (m.find()) {
@@ -36,9 +36,13 @@ public class CommandManager {
 			}
 			return new Datum(list);
 		});
+		commands.put("CONSOLE.EXIT", (Datum datum, List<String> trace) -> {
+			System.exit(0);
+			return datum;
+		});
 	}
 
-	public Datum execute(String key, Datum datum) {
-		return commands.get(key).execute(datum);
+	public Datum execute(String key, Datum datum, List<String> trace) {
+		return commands.get(key).execute(datum, trace);
 	}
 }

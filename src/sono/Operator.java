@@ -1,18 +1,21 @@
 package src.sono;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import src.phl.*;
 import src.sono.err.SonoRuntimeException;
 
 public abstract class Operator {
+
 	public enum Type {
 		VARIABLE, DATUM, SET, TRANSFORM, SOFT_LIST, HARD_LIST, RULE_DEC, ARROW, SLASH, UNDERSCORE, MATRIX_DEC, SEQ_DEC,
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NEQUAL, LESS, MORE, ELESS, EMORE, MATRIX_CONV, NUMBER_CONV,
 		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
-		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, JOIN,
+		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONV, TYPE_DEC, STRUCT_DEC, STATIC_DEC, CLASS_DEC, NEW_DEC, POW,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
@@ -54,26 +57,33 @@ public abstract class Operator {
 			this.operators = operators;
 		}
 
-		public List<Operator> getList() {
+		public List<Operator> getVector() {
 			return operators;
 		}
 	}
 
-	public static class Variable extends Operator {
-		private String varName;
+	public abstract static class Casting extends Operator {
+		protected String varName;
 
-		public Variable(String varName) {
-			super(Type.VARIABLE);
+		public Casting(Type type, String varName) {
+			super(type);
 			this.varName = varName;
-		}
-
-		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			return scope.getVariable(varName);
 		}
 
 		public String getKey() {
 			return varName;
+		}
+	}
+
+	public static class Variable extends Casting {
+		public Variable(String varName) {
+			super(Type.VARIABLE, varName);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			return scope.getVariable(varName, trace);
 		}
 
 		@Override
@@ -95,7 +105,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			return datum;
 		}
 
@@ -111,10 +122,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			datumA.set(datumB);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			datumA.set(datumB, trace);
 			return datumA;
 		}
 
@@ -130,24 +142,25 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (datumB.getType() == Datum.Type.MATRIX)
-				return new Datum(datumA.getPhone().transform(datumB.getMatrix(), true));
+				return new Datum(datumA.getPhone(trace).transform(datumB.getMatrix(trace), true));
 			if (datumB.getType() == Datum.Type.RULE) {
-				Word result = datumB.getRule().transform(datumA.getWord());
+				Word result = datumB.getRule(trace).transform(datumA.getWord(trace));
 				return new Datum(result);
-			} else if (datumB.getType() == Datum.Type.LIST) {
-				List<Datum> transformation = datumB.getList();
+			} else if (datumB.getType() == Datum.Type.VECTOR) {
+				List<Datum> transformation = datumB.getVector(trace);
 				Datum curr = datumA;
 				for (Datum t : transformation)
 					curr = (new Operator.Transform(new Operator.Container(curr), new Operator.Container(t)))
-							.evaluate(scope, interpreter);
+							.evaluate(scope, interpreter, new ArrayList<>(trace));
 				return curr;
 			} else {
-				throw new SonoRuntimeException(
-						"Cannot transform value <" + datumA + "> with non-Matrix value <" + datumB + ">");
+				throw new SonoRuntimeException("Cannot transform value <" + datumA.toStringTrace(trace)
+						+ "> with non-Matrix value <" + datumB.toStringTrace(trace) + ">", trace);
 			}
 		}
 
@@ -163,13 +176,14 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			List<Datum> data = new ArrayList<>();
 			for (Operator o : operators) {
 				if (o.type == Type.RANGE_UNTIL)
-					data.addAll(((RangeUntil) o).getRange(scope, interpreter));
+					data.addAll(((RangeUntil) o).getRange(scope, interpreter, new ArrayList<>(trace)));
 				else {
-					Datum d = o.evaluate(scope, interpreter);
+					Datum d = o.evaluate(scope, interpreter, new ArrayList<>(trace));
 					if (d.getType() == Datum.Type.I_BREAK)
 						return d;
 					if (d.getRet())
@@ -194,14 +208,15 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			List<Datum> data = new ArrayList<>();
 			Scope newScope = new Scope(scope);
 			for (Operator o : operators) {
 				if (o.type == Type.RANGE_UNTIL)
-					data.addAll(((RangeUntil) o).getRange(newScope, interpreter));
+					data.addAll(((RangeUntil) o).getRange(newScope, interpreter, new ArrayList<>(trace)));
 				else {
-					Datum d = o.evaluate(newScope, interpreter);
+					Datum d = o.evaluate(newScope, interpreter, new ArrayList<>(trace));
 					if (d.getType() == Datum.Type.I_BREAK)
 						return d;
 					if (d.getRet())
@@ -224,10 +239,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			Matrix matrix = new Matrix();
 			for (Operator o : operators)
-				matrix.put(o.evaluate(scope, interpreter).getPair());
+				matrix.put(o.evaluate(scope, interpreter, new ArrayList<>(trace)).getPair(new ArrayList<>(trace)));
 			return new Datum(matrix);
 		}
 
@@ -242,17 +258,19 @@ public abstract class Operator {
 			super(Type.RANGE_UNTIL, a, b);
 		}
 
-		public List<Datum> getRange(Scope scope, Interpreter interpreter) {
+		public List<Datum> getRange(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			List<Datum> data = new ArrayList<>();
-			BigDecimal datumA = a.evaluate(scope, interpreter).getNumber();
-			BigDecimal datumB = b.evaluate(scope, interpreter).getNumber();
+			BigDecimal datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getNumber(trace);
+			BigDecimal datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace)).getNumber(trace);
 			for (BigDecimal i = datumA; i.compareTo(datumB) < 0; i = i.add(new BigDecimal(1)))
 				data.add(new Datum(i));
 			return data;
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			return null;
 		}
 
@@ -268,7 +286,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			return null;
 		}
 
@@ -278,20 +297,15 @@ public abstract class Operator {
 		}
 	}
 
-	public static class Ref extends Operator {
-		String varName;
-
+	public static class Ref extends Casting {
 		public Ref(String varName) {
-			super(Type.REF_DEC);
+			super(Type.REF_DEC, varName);
 			this.varName = varName;
 		}
 
-		public String getKey() {
-			return varName;
-		}
-
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			return null;
 		}
 
@@ -308,7 +322,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			return null;
 		}
 
@@ -324,7 +339,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			return null;
 		}
 
@@ -340,7 +356,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			return null;
 		}
 
@@ -350,20 +367,73 @@ public abstract class Operator {
 		}
 	}
 
+	public static class StructDec extends Casting {
+		public StructDec(String varName) {
+			super(Type.STRUCT_DEC, varName);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			return "struct " + varName;
+		}
+	}
+
+	public static class StaticDec extends Casting {
+		public StaticDec(String varName) {
+			super(Type.STATIC_DEC, varName);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			return "static " + varName;
+		}
+	}
+
+	public static class TypeDec extends Binary {
+		public TypeDec(Operator a, Operator b) {
+			super(Type.TYPE_DEC, a, b);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " :: " + b.toString();
+		}
+	}
+
 	public static class Loop extends Binary {
 		public Loop(Operator a, Operator b) {
 			super(Type.LOOP, a, b);
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			List<Datum> values = ((Iterator) a).getB().evaluate(scope, interpreter).getList();
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			List<Datum> values = ((Iterator) a).getB().evaluate(scope, interpreter, new ArrayList<>(trace))
+					.getVector(trace);
 			String variable = ((Variable) ((Iterator) a).getA()).getKey();
 			List<Datum> results = new ArrayList<>();
 			for (Datum d : values) {
 				Scope loopScope = new Scope(scope);
-				loopScope.setVariable(variable, d);
-				Datum result = b.evaluate(loopScope, interpreter);
+				loopScope.setVariable(variable, d, trace);
+				Datum result = b.evaluate(loopScope, interpreter, new ArrayList<>(trace));
 				if (result.getType() == Datum.Type.I_BREAK)
 					break;
 				if (result.getRet())
@@ -388,35 +458,78 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			while (a.type != Type.SLASH)
 				a = ((Sequence) a).operators.get(0);
-			Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, interpreter);
-			Datum dtrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, interpreter);
-			Datum dinit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, interpreter);
-			Datum dfin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope, interpreter);
+			Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, interpreter, new ArrayList<>(trace));
+			List<Datum> dtrans = ((Binary) ((Binary) a).getA()).getB()
+					.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
+			List<Datum> dinit = ((Binary) ((Binary) a).getB()).getA()
+					.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
+			List<Datum> dfin = ((Binary) ((Binary) a).getB()).getB()
+					.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
 
 			Object search = null;
-			Object trans = null;
-			Object init = null;
-			Object fin = null;
+			List<Object> trans = new ArrayList<>();
+			List<Object> init = new ArrayList<>();
+			List<Object> fin = new ArrayList<>();
 
 			if (dsearch.getType() == Datum.Type.MATRIX)
-				search = dsearch.getMatrix();
+				search = dsearch.getMatrix(trace);
 			else if (dsearch.getType() == Datum.Type.PHONE)
-				search = dsearch.getPhone();
-			if (dtrans.getType() == Datum.Type.MATRIX)
-				trans = dtrans.getMatrix();
-			else if (dtrans.getType() == Datum.Type.PHONE)
-				trans = dtrans.getPhone();
-			if (dinit.getType() == Datum.Type.MATRIX)
-				init = dinit.getMatrix();
-			else if (dinit.getType() == Datum.Type.PHONE)
-				init = dinit.getPhone();
-			if (dfin.getType() == Datum.Type.MATRIX)
-				fin = dfin.getMatrix();
-			else if (dfin.getType() == Datum.Type.PHONE)
-				fin = dfin.getPhone();
+				search = dsearch.getPhone(trace);
+			for (Datum d : dtrans) {
+				if (d.type == Datum.Type.PHONE)
+					trans.add(d.getPhone(trace));
+				else if (d.type == Datum.Type.MATRIX)
+					trans.add(d.getMatrix(trace));
+				else
+					throw new SonoRuntimeException("Value <" + d.toStringTrace(new ArrayList<>(trace))
+							+ "> cannot be used in a Rule declaration.", trace);
+			}
+			for (Datum d : dinit) {
+				if (d.type == Datum.Type.PHONE)
+					init.add(d.getPhone(trace));
+				else if (d.type == Datum.Type.MATRIX)
+					init.add(d.getMatrix(trace));
+				else if (d.type == Datum.Type.STRING) {
+					switch (d.getString(trace)) {
+						case "#":
+							init.add(Rule.Variants.WORD_INITIAL);
+							break;
+						case "$":
+							init.add(Rule.Variants.SYLLABLE);
+							break;
+						default:
+							break;
+					}
+				} else {
+					throw new SonoRuntimeException("Value <" + d.toStringTrace(new ArrayList<>(trace))
+							+ "> cannot be used in a Rule declaration.", trace);
+				}
+			}
+			for (Datum d : dfin) {
+				if (d.type == Datum.Type.PHONE)
+					fin.add(d.getPhone(trace));
+				else if (d.type == Datum.Type.MATRIX)
+					fin.add(d.getMatrix(trace));
+				else if (d.type == Datum.Type.STRING) {
+					switch (d.getString(trace)) {
+						case "#":
+							fin.add(Rule.Variants.WORD_FINAL);
+							break;
+						case "$":
+							fin.add(Rule.Variants.SYLLABLE);
+							break;
+						default:
+							break;
+					}
+				} else {
+					throw new SonoRuntimeException("Value <" + d.toStringTrace(new ArrayList<>(trace))
+							+ "> cannot be used in a Rule declaration.", trace);
+				}
+			}
 
 			switch (ruleType) {
 				case A_BACKWARD:
@@ -443,17 +556,20 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			if (datumA.getType() == Datum.Type.LIST) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			if (datumA.getType() == Datum.Type.VECTOR) {
 				List<Phone> phones = new ArrayList<>();
-				for (Datum d : datumA.getList())
-					phones.add(d.getPhone());
+				for (Datum d : datumA.getVector(trace))
+					phones.add(d.getPhone(trace));
 				return new Datum(new Word(phones));
 			} else if (datumA.getType() == Datum.Type.STRING) {
-				return new Datum(interpreter.getManager().interpretSequence(datumA.getString()));
+				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(trace)));
 			}
-			throw new SonoRuntimeException("Value <" + datumA.toString() + "> cannot be converted to a Word.");
+			throw new SonoRuntimeException(
+					"Value <" + datumA.toStringTrace(new ArrayList<>(trace)) + "> cannot be converted to a Word.",
+					trace);
 		}
 
 		@Override
@@ -468,26 +584,31 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			List<Datum> list = new ArrayList<>();
-			Datum datumA = a.evaluate(scope, interpreter);
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			switch (datumA.getType()) {
 				case MATRIX:
-					for (Pair p : datumA.getMatrix())
+					for (Pair p : datumA.getMatrix(trace))
 						list.add(new Datum(p));
 					break;
 				case STRING:
-					for (char c : datumA.getString().toCharArray())
+					for (char c : datumA.getString(trace).toCharArray())
 						list.add(new Datum(String.valueOf(c)));
 					break;
 				case WORD:
-					for (int i = 0; i < datumA.getWord().size(); i++)
-						list.add(new Datum(datumA.getWord().get(i)));
+					for (int i = 0; i < datumA.getWord(trace).size(); i++)
+						list.add(new Datum(datumA.getWord(trace).get(i)));
 					break;
-				case LIST:
+				case VECTOR:
 					return datumA;
+				case STRUCTURE:
+					return datumA.getStructure(trace).getScope().getVariable("getList", trace)
+							.getFunction(Datum.Type.ANY, trace).execute(new ArrayList<>(), new ArrayList<>(trace));
 				default:
-					throw new SonoRuntimeException("Cannot convert value <" + datumA + "> into a List");
+					throw new SonoRuntimeException(
+							"Cannot convert value <" + datumA.toStringTrace(trace) + "> into a List", trace);
 			}
 			return new Datum(list);
 		}
@@ -504,8 +625,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			String s = a.evaluate(scope, interpreter).toRawString();
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			String s = a.evaluate(scope, interpreter, new ArrayList<>(trace)).toRawStringTrace(new ArrayList<>(trace));
 			return new Datum(s);
 		}
 
@@ -515,23 +637,21 @@ public abstract class Operator {
 		}
 	}
 
-	public static class Join extends Unary {
-		public Join(Operator a) {
-			super(Type.JOIN, a);
+	public static class TypeConv extends Unary {
+		public TypeConv(Operator a) {
+			super(Type.TYPE_CONV, a);
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			List<Datum> list = a.evaluate(scope, interpreter).getList();
-			StringBuilder s = new StringBuilder();
-			for (Datum d : list)
-				s.append(d.getString());
-			return new Datum(s.toString());
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getTypeString());
 		}
 
 		@Override
 		public String toString() {
-			return "join " + a.toString();
+			return "type " + a.toString();
 		}
 	}
 
@@ -541,18 +661,20 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			if (datumA.getType() == Datum.Type.LIST) {
-				List<Datum> list = datumA.getList();
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			if (datumA.getType() == Datum.Type.VECTOR) {
+				List<Datum> list = datumA.getVector(trace);
 				Matrix m = new Matrix();
 				for (Datum d : list)
-					m.put(d.getPair());
+					m.put(d.getPair(new ArrayList<>(trace)));
 				return new Datum(m);
 			} else if (datumA.getType() == Datum.Type.PHONE) {
-				return new Datum(datumA.getPhone().getMatrix());
+				return new Datum(datumA.getPhone(trace).getMatrix());
 			}
-			throw new SonoRuntimeException("Cannot convert value <" + datumA.toString() + "> to a Matrix.");
+			throw new SonoRuntimeException(
+					"Cannot convert value <" + datumA.toStringTrace(new ArrayList<>(trace)) + "> to a Matrix.", trace);
 		}
 
 		@Override
@@ -567,12 +689,13 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Matrix matrix = a.evaluate(scope, interpreter).getMatrix();
-			List<Datum> data = b.evaluate(scope, interpreter).getList();
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Matrix matrix = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getMatrix(trace);
+			List<Datum> data = b.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
 			List<Phone> phones = new ArrayList<>();
 			for (Datum d : data)
-				phones.add(d.getPhone());
+				phones.add(d.getPhone(trace));
 			List<Phone> list = interpreter.getManager().getPhones(phones, matrix);
 			List<Datum> newData = new ArrayList<>();
 			for (Phone p : list) {
@@ -593,8 +716,22 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			return new Datum(new BigDecimal(a.evaluate(scope, interpreter).getString()));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			if (datumA.getType() == Datum.Type.NUMBER) {
+				return datumA;
+			} else if (datumA.getType() == Datum.Type.STRING) {
+				try {
+					return new Datum(new BigDecimal(datumA.getString(trace)));
+				} catch (Exception e) {
+					return new Datum();
+				}
+			} else {
+				throw new SonoRuntimeException(
+						"Cannot convert value <" + datumA.toStringTrace(new ArrayList<>(trace)) + "> to a Number.",
+						trace);
+			}
 		}
 
 		@Override
@@ -609,19 +746,24 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			switch (datumA.getType()) {
 				case STRING:
-					return new Datum(BigDecimal.valueOf(datumA.getString().length()));
+					return new Datum(BigDecimal.valueOf(datumA.getString(trace).length()));
 				case WORD:
-					return new Datum(BigDecimal.valueOf(datumA.getWord().size()));
-				case LIST:
-					return new Datum(BigDecimal.valueOf(datumA.getList().size()));
+					return new Datum(BigDecimal.valueOf(datumA.getWord(trace).size()));
+				case VECTOR:
+					return new Datum(BigDecimal.valueOf(datumA.getVector(trace).size()));
 				case MATRIX:
-					return new Datum(BigDecimal.valueOf(datumA.getMatrix().size()));
+					return new Datum(BigDecimal.valueOf(datumA.getMatrix(trace).size()));
+				case STRUCTURE:
+					return datumA.getStructure(trace).getScope().getVariable("getLen", trace)
+							.getFunction(Datum.Type.ANY, trace).execute(new ArrayList<>(), new ArrayList<>(trace));
 				default:
-					throw new SonoRuntimeException("Cannot get length of value <" + datumA.toString() + ">");
+					throw new SonoRuntimeException(
+							"Cannot get length of value <" + datumA.toStringTrace(new ArrayList<>(trace)) + ">", trace);
 			}
 		}
 
@@ -637,8 +779,9 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			datumA.setRet(true);
 			return datumA;
 		}
@@ -655,34 +798,36 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (datumA.getType() != datumB.getType())
-				throw new SonoRuntimeException("Cannot add values <" + datumA.toString() + "> and <" + datumB.toString()
-						+ ">, of types: " + datumA.getType() + ", " + datumB.getType());
+				throw new SonoRuntimeException("Cannot add values <" + datumA.toStringTrace(new ArrayList<>(trace))
+						+ "> and <" + datumB.toStringTrace(new ArrayList<>(trace)) + ">, of types: " + datumA.getType()
+						+ ", " + datumB.getType(), trace);
 			switch (datumA.getType()) {
 				case NUMBER:
-					return new Datum(datumA.getNumber().add(datumB.getNumber()));
-				case LIST:
+					return new Datum(datumA.getNumber(trace).add(datumB.getNumber(trace)));
+				case VECTOR:
 					List<Datum> newList = new ArrayList<>();
-					newList.addAll(datumA.getList());
-					newList.addAll(datumB.getList());
+					newList.addAll(datumA.getVector(trace));
+					newList.addAll(datumB.getVector(trace));
 					return new Datum(newList);
 				case MATRIX:
 					Matrix newMatrix = new Matrix();
-					newMatrix.putAll(datumA.getMatrix());
-					newMatrix.putAll(datumB.getMatrix());
+					newMatrix.putAll(datumA.getMatrix(trace));
+					newMatrix.putAll(datumB.getMatrix(trace));
 					return new Datum(newMatrix);
 				case WORD:
 					Word newWord = new Word();
-					newWord.addAll(datumA.getWord());
-					newWord.addAll(datumB.getWord());
+					newWord.addAll(datumA.getWord(trace));
+					newWord.addAll(datumB.getWord(trace));
 					return new Datum(newWord);
 				case STRING:
-					return new Datum(datumA.getString() + datumB.getString());
+					return new Datum(datumA.getString(trace) + datumB.getString(trace));
 				default:
-					throw new SonoRuntimeException("Values of type <" + datumA.getType() + "> cannot be added.");
+					throw new SonoRuntimeException("Values of type <" + datumA.getType() + "> cannot be added.", trace);
 			}
 		}
 
@@ -698,10 +843,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(datumA.getNumber().subtract(datumB.getNumber()));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getNumber(trace).subtract(datumB.getNumber(trace)));
 		}
 
 		@Override
@@ -716,10 +862,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(datumA.getNumber().multiply(datumB.getNumber()));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getNumber(trace).multiply(datumB.getNumber(trace), MathContext.DECIMAL128));
 		}
 
 		@Override
@@ -734,10 +881,15 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(datumA.getNumber().divide(datumB.getNumber()));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			try {
+				return new Datum(datumA.getNumber(trace).divide(datumB.getNumber(trace), MathContext.DECIMAL128));
+			} catch (Exception e) {
+				return new Datum();
+			}
 		}
 
 		@Override
@@ -752,15 +904,44 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(new BigDecimal(datumA.getNumber().longValue() % datumB.getNumber().longValue()));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			try {
+				return new Datum(datumA.getNumber(trace).remainder(datumB.getNumber(trace)));
+			} catch (Exception e) {
+				return new Datum();
+			}
 		}
 
 		@Override
 		public String toString() {
 			return a.toString() + " % " + b.toString();
+		}
+	}
+
+	public static class Pow extends Binary {
+		public Pow(Operator a, Operator b) {
+			super(Type.POW, a, b);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			try {
+				return new Datum(BigDecimal.valueOf(
+						Math.pow(datumA.getNumber(trace).doubleValue(), datumB.getNumber(trace).doubleValue())));
+			} catch (Exception e) {
+				return new Datum();
+			}
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " ** " + b.toString();
 		}
 	}
 
@@ -770,15 +951,24 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return datumA.getList().get(datumB.getNumber().intValue());
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			if (datumA.getType() == Datum.Type.VECTOR) {
+				return datumA.getVector(trace).get(datumB.getNumber(trace).intValue());
+			} else if (datumA.getType() == Datum.Type.STRUCTURE) {
+				return datumA.getStructure(trace).getScope().getVariable("getIndex", trace)
+						.getFunction(Datum.Type.ANY, trace)
+						.execute(new ArrayList<>(Arrays.asList(datumB)), new ArrayList<>(trace));
+			}
+			throw new SonoRuntimeException("Cannot index value <" + datumA.toStringTrace(new ArrayList<>(trace)) + ">",
+					trace);
 		}
 
 		@Override
 		public String toString() {
-			return a.toString() + " .index " + b.toString();
+			return a.toString() + Interpreter.stringFromList(((Sequence) b).getVector(), "[", "]");
 		}
 	}
 
@@ -788,9 +978,10 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
 			return new Datum(datumA.equals(datumB) ? new BigDecimal(1) : new BigDecimal(0));
 		}
 
@@ -806,9 +997,10 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
 			return new Datum(datumA.equals(datumB) ? new BigDecimal(0) : new BigDecimal(1));
 		}
 
@@ -824,9 +1016,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			return new Datum(interpreter.getManager().getContrast(a.evaluate(scope, interpreter).getPhone(),
-					b.evaluate(scope, interpreter).getPhone()));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			return new Datum(interpreter.getManager().getContrast(
+					a.evaluate(scope, interpreter, new ArrayList<>(trace)).getPhone(trace),
+					b.evaluate(scope, interpreter, new ArrayList<>(trace)).getPhone(trace)));
 		}
 
 		@Override
@@ -841,11 +1035,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			List<Datum> data = a.evaluate(scope, interpreter).getList();
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			List<Datum> data = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
 			List<Phone> phones = new ArrayList<>();
 			for (Datum d : data)
-				phones.add(d.getPhone());
+				phones.add(d.getPhone(trace));
 			return new Datum(interpreter.getManager().getCommon(phones));
 		}
 
@@ -865,15 +1060,15 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			return scope.setVariable(varName, new Datum());
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			return scope.setVariable(varName, null, trace);
 		}
 
 		@Override
 		public String toString() {
 			return "let " + varName;
 		}
-
 	}
 
 	public static class Break extends Operator {
@@ -882,7 +1077,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			return new Datum.Break();
 		}
 
@@ -906,12 +1102,13 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum condition = a.evaluate(scope, interpreter);
-			if (condition.getNumber().compareTo(new BigDecimal(1)) == 0) {
-				return b.evaluate(scope, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum condition = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			if (condition.getNumber(trace).compareTo(new BigDecimal(1)) == 0) {
+				return b.evaluate(scope, interpreter, new ArrayList<>(trace));
 			} else if (c != null) {
-				return c.evaluate(scope, interpreter);
+				return c.evaluate(scope, interpreter, new ArrayList<>(trace));
 			}
 			return new Datum();
 		}
@@ -928,19 +1125,39 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
 			List<String> pNames = new ArrayList<>();
 			List<Boolean> pRefs = new ArrayList<>();
-			for (Operator d : ((Sequence) a).getList()) {
-				if (d.type == Type.REF_DEC) {
-					pRefs.add(true);
-					pNames.add(((Ref) d).getKey());
-				} else {
-					pNames.add(((Variable) d).getKey());
-					pRefs.add(false);
+			Datum.Type fType = Datum.Type.ANY;
+			if (a.type == Type.HARD_LIST) {
+				for (Operator d : ((Sequence) a).getVector()) {
+					if (d.type == Type.REF_DEC) {
+						pRefs.add(true);
+						pNames.add(((Ref) d).getKey());
+					} else {
+						pNames.add(((Variable) d).getKey());
+						pRefs.add(false);
+					}
+				}
+			} else if (a.type == Type.TYPE_DEC) {
+				Datum t = ((TypeDec) a).getA().evaluate(scope, interpreter, new ArrayList<>(trace));
+				if (!t.isTemplative())
+					throw new SonoRuntimeException(
+							"Value <" + t.toStringTrace(trace) + "> cannot be used to designate an objective function.",
+							trace);
+				fType = t.getType();
+				for (Operator d : ((Sequence) ((TypeDec) a).getB()).getVector()) {
+					if (d.type == Type.REF_DEC) {
+						pRefs.add(true);
+						pNames.add(((Ref) d).getKey());
+					} else {
+						pNames.add(((Variable) d).getKey());
+						pRefs.add(false);
+					}
 				}
 			}
-			return new Datum(new Function(scope, pNames, pRefs, b));
+			return new Datum(fType, new Function(scope, pNames, pRefs, b, interpreter));
 		}
 
 		@Override
@@ -955,15 +1172,18 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			List<Datum> pValues = b.evaluate(scope, interpreter).getList();
-			Function f = a.evaluate(scope, interpreter).getFunction();
-			return f.execute(pValues, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			List<Datum> pValues = b.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
+			Function f = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getFunction(Datum.Type.ANY, trace);
+			if (f == null)
+				throw new SonoRuntimeException("This function is required to be used post-objectively.", trace);
+			return f.execute(pValues, new ArrayList<>(trace));
 		}
 
 		@Override
 		public String toString() {
-			return a.toString() + " (" + b.toString() + ")";
+			return a.toString() + Interpreter.stringFromList(((Sequence) b).getVector(), "(", ")");
 		}
 	}
 
@@ -973,11 +1193,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(
-					datumA.getNumber().compareTo(datumB.getNumber()) < 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getNumber(trace).compareTo(datumB.getNumber(trace)) < 0 ? new BigDecimal(1)
+					: new BigDecimal(0));
 		}
 
 		@Override
@@ -992,11 +1213,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(
-					datumA.getNumber().compareTo(datumB.getNumber()) > 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getNumber(trace).compareTo(datumB.getNumber(trace)) > 0 ? new BigDecimal(1)
+					: new BigDecimal(0));
 		}
 
 		@Override
@@ -1011,11 +1233,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(
-					datumA.getNumber().compareTo(datumB.getNumber()) <= 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getNumber(trace).compareTo(datumB.getNumber(trace)) <= 0 ? new BigDecimal(1)
+					: new BigDecimal(0));
 		}
 
 		@Override
@@ -1030,11 +1253,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(
-					datumA.getNumber().compareTo(datumB.getNumber()) >= 0 ? new BigDecimal(1) : new BigDecimal(0));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getNumber(trace).compareTo(datumB.getNumber(trace)) >= 0 ? new BigDecimal(1)
+					: new BigDecimal(0));
 		}
 
 		@Override
@@ -1049,11 +1273,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(datumA.getNumber().compareTo(BigDecimal.valueOf(1)) == 0
-					&& datumB.getNumber().compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1)
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getNumber(trace).compareTo(BigDecimal.valueOf(1)) == 0
+					&& datumB.getNumber(trace).compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1)
 							: new BigDecimal(0));
 		}
 
@@ -1069,11 +1294,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Datum datumA = a.evaluate(scope, interpreter);
-			Datum datumB = b.evaluate(scope, interpreter);
-			return new Datum(datumA.getNumber().compareTo(BigDecimal.valueOf(1)) == 0
-					|| datumB.getNumber().compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1)
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(datumA.getNumber(trace).compareTo(BigDecimal.valueOf(1)) == 0
+					|| datumB.getNumber(trace).compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1)
 							: new BigDecimal(0));
 		}
 
@@ -1089,16 +1315,37 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			Function f = ((Execute) b).getA().evaluate(scope, interpreter).getFunction();
-			List<Datum> params = ((Execute) b).getB().evaluate(scope, interpreter).getList();
-			params.add(0, a.evaluate(scope, interpreter));
-			return f.execute(params, interpreter);
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum object = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			if (object.type != Datum.Type.STRUCTURE) {
+				if (b.type == Type.EXECUTE) {
+					List<Datum> params = ((Execute) b).getB().evaluate(scope, interpreter, new ArrayList<>(trace))
+							.getVector(trace);
+					Datum fHolder = ((Execute) b).getA().evaluate(scope, interpreter, new ArrayList<>(trace));
+					params.add(0, object);
+					Function f = fHolder.getFunction(object.getType(), trace);
+					if (f == null)
+						f = fHolder.getFunction(Datum.Type.ANY, trace);
+					if (f == null)
+						throw new SonoRuntimeException("Function does not accept type <" + object.getType() + ">",
+								trace);
+					return f.execute(params, new ArrayList<>(trace));
+				} else {
+					if (!object.isTemplative())
+						throw new SonoRuntimeException("Value <" + object.toStringTrace(new ArrayList<>(trace))
+								+ "> is not templative and therefore cannot extract objective methods.", trace);
+					Datum fHolder = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+					return new Datum(object.getType(), fHolder.getFunction(object.getType(), trace));
+				}
+			} else {
+				return b.evaluate(object.getStructure(trace).getScope(), interpreter, new ArrayList<>(trace));
+			}
 		}
 
 		@Override
 		public String toString() {
-			return a.toString() + " . " + b.toString();
+			return a.toString() + "." + b.toString();
 		}
 	}
 
@@ -1108,9 +1355,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(Scope scope, Interpreter interpreter) {
-			return interpreter.getCommandManager().execute(a.evaluate(scope, interpreter).getString(),
-					b.evaluate(scope, interpreter));
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			return interpreter.getCommandManager().execute(
+					a.evaluate(scope, interpreter, new ArrayList<>(trace)).getString(trace),
+					b.evaluate(scope, interpreter, new ArrayList<>(trace)), trace);
 		}
 
 		@Override
@@ -1119,11 +1368,56 @@ public abstract class Operator {
 		}
 	}
 
+	public static class ClassDec extends Binary {
+		public ClassDec(Operator a, Operator b) {
+			super(Type.CLASS_DEC, a, b);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			boolean stat = false;
+			String varName = ((Casting) a).getKey();
+			if (a.type == Type.STATIC_DEC)
+				stat = true;
+			Structure structure = new Structure(stat, scope, b, varName, interpreter);
+			if (stat)
+				b.evaluate(structure.getScope(), interpreter, new ArrayList<>(trace));
+			return scope.setVariable(varName, new Datum(structure), trace);
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " class " + b.toString();
+		}
+	}
+
+	public static class NewDec extends Unary {
+		public NewDec(Operator a) {
+			super(Type.NEW_DEC, a);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Structure struct = ((Execute) a).getA().evaluate(scope, interpreter, new ArrayList<>(trace))
+					.getStructure(trace);
+			List<Datum> params = ((Execute) a).getB().evaluate(scope, interpreter, new ArrayList<>(trace))
+					.getVector(trace);
+			return struct.instantiate(params, new ArrayList<>(trace));
+		}
+
+		@Override
+		public String toString() {
+			return "new " + a.toString();
+		}
+	}
+
 	public Operator(Type type) {
 		this.type = type;
 	}
 
-	public abstract Datum evaluate(Scope scope, Interpreter interpreter);
+	public abstract Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace);
 
 	public abstract String toString();
 }

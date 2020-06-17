@@ -1,0 +1,80 @@
+struct Map class {
+	struct Pair class {
+		var key;
+		var value;
+		init(&key, &value) => {
+			this.key = key;
+			this.value = value;
+		};
+		getStr() => {
+			return str key + "=" + str value;
+		};
+	};
+
+	var inner;
+
+	init() => {
+		this.inner = {};
+	};
+
+	isEmpty() => {
+		return (len this.inner == 0)
+	};
+
+	getIndex(&key) => {
+		e in inner do {
+			e.key == key then {
+				return e.value;
+			};
+		};
+		var p = put(key, null);
+		return p.value;
+	};
+
+	remove(&key) => {
+		var nInner = {};
+		i in {0 until len inner} do {
+			var e = inner[i];
+			e.key != key then {
+				nInner = nInner + { e };
+			};
+		};
+		inner = nInner;
+	};
+
+	containsKey(&key) => {
+		e in inner do {
+			e.key == key then {
+				return true;
+			};
+		};
+		return false;
+	};
+
+	containsValue(&value) => {
+		e in inner do {
+			e.value == value then {
+				return true;
+			};
+		};
+		return false;
+	};
+
+	put(&key, &value) => {
+		var p = new Pair(key, value);
+		inner = inner + { p };
+		return p;
+	};
+
+	getList() => {
+		return inner;
+	};
+
+	getLen() => {
+		return len inner;
+	};
+
+	getStr() => {
+		return str inner;
+	};
+};
