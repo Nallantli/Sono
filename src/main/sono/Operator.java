@@ -1,4 +1,4 @@
-package src.sono;
+package main.sono;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
-import src.phl.*;
-import src.sono.err.SonoRuntimeException;
+import main.phl.*;
+import main.sono.err.SonoRuntimeException;
 
 public abstract class Operator {
 
@@ -177,7 +177,8 @@ public abstract class Operator {
 
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
-			trace.add(this.toString());
+			if (operators.size() != 1)
+				trace.add(this.toString());
 			List<Datum> data = new ArrayList<>();
 			for (Operator o : operators) {
 				if (o.type == Type.RANGE_UNTIL)
@@ -209,7 +210,8 @@ public abstract class Operator {
 
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
-			trace.add(this.toString());
+			if (operators.size() != 1)
+				trace.add(this.toString());
 			List<Datum> data = new ArrayList<>();
 			Scope newScope = new Scope(scope);
 			for (Operator o : operators) {

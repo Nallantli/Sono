@@ -1,4 +1,4 @@
-package src.sono;
+package main.sono;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
-import src.main.CommandManager;
-import src.main.Main;
-import src.phl.*;
-import src.sono.err.SonoCompilationException;
+import main.base.CommandManager;
+import main.Main;
+import main.phl.*;
+import main.sono.err.SonoCompilationException;
 
 public class Interpreter {
 	private Scope main;
@@ -87,6 +87,18 @@ public class Interpreter {
 					if (!loadedFiles.contains(fileDirectory + "/" + filename)) {
 						loadedFiles.add(fileDirectory + "/" + filename);
 						o.addLast(parse(fileDirectory, loadFile(fileDirectory, filename)));
+					}
+				}
+				if (token.equals("import")) {
+					String path = ((Operator.Container) o.pollLast()).getDatum().getString(new ArrayList<>());
+					String[] split = (new StringBuilder(path)).reverse().toString().split("/", 2);
+					String filename = (new StringBuilder(split[0])).reverse().toString() + ".jar";
+					String fileDirectory = directory;
+					if (split.length > 1)
+						fileDirectory += "/" + (new StringBuilder(split[1])).reverse().toString();
+					if (!loadedFiles.contains(fileDirectory + "/" + filename)) {
+						loadedFiles.add(fileDirectory + "/" + filename);
+						console.importLibrary(fileDirectory, filename, "ext." + path);
 					}
 				}
 				if (token.equals(".negative")) {

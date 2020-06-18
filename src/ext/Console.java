@@ -1,29 +1,26 @@
-package src.main;
+package ext;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import src.sono.Datum;
+import main.base.Command;
+import main.base.Library;
+import main.sono.Datum;
 
-interface Command {
-	public Datum execute(Datum datum, List<String> trace);
-}
+import java.util.List;
 
-public class CommandManager {
-	private Map<String, Command> commands;
-
-	public CommandManager() {
-		commands = new HashMap<>();
-		commands.put("CONSOLE.PRINT", (Datum datum, List<String> trace) -> {
+public class Console extends Library {
+	public Console() {
+		Map<String, Command> commands = new HashMap<>();
+		commands.put("Console.PRINT", (Datum datum, List<String> trace) -> {
 			System.out.println(datum.getString(trace));
 			return new Datum();
 		});
-		commands.put("CONSOLE.REGEX", (Datum datum, List<String> trace) -> {
+		commands.put("Console.REGEX", (Datum datum, List<String> trace) -> {
 			Pattern pattern = Pattern.compile(datum.getVector(trace).get(0).getString(trace));
 			String line = datum.getVector(trace).get(1).getString(trace);
 			Matcher m = pattern.matcher(line);
@@ -36,13 +33,10 @@ public class CommandManager {
 			}
 			return new Datum(list);
 		});
-		commands.put("CONSOLE.EXIT", (Datum datum, List<String> trace) -> {
+		commands.put("Console.EXIT", (Datum datum, List<String> trace) -> {
 			System.exit(0);
 			return datum;
 		});
-	}
-
-	public Datum execute(String key, Datum datum, List<String> trace) {
-		return commands.get(key).execute(datum, trace);
+		setCommands(commands);
 	}
 }

@@ -1,4 +1,4 @@
-package src.main;
+package main;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,11 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import src.phl.PhoneLoader;
-import src.sono.Datum;
-import src.sono.Interpreter;
-import src.sono.Scope;
-import src.sono.err.SonoException;
+import main.base.CommandManager;
+import main.phl.PhoneLoader;
+import main.sono.Datum;
+import main.sono.Interpreter;
+import main.sono.Scope;
+import main.sono.err.SonoException;
 
 public class Main {
 	private static Map<String, String> globalOptions = new HashMap<>();

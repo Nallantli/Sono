@@ -1,10 +1,10 @@
-package src.sono;
+package main.sono;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
-import src.sono.err.SonoRuntimeException;
+import main.sono.err.SonoRuntimeException;
 
 public class Scope {
 	private Map<String, Datum> data;

@@ -1,4 +1,4 @@
-package src.phl;
+package main.phl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import src.main.Main;
+import main.Main;
 
 public class PhoneLoader {
 	private PhoneManager pm;

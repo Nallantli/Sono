@@ -1,4 +1,4 @@
-package src.sono;
+package main.sono;
 
 import java.util.List;
 import java.util.ArrayList;

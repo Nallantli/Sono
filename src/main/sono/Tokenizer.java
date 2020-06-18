@@ -1,4 +1,4 @@
-package src.sono;
+package main.sono;
 
 import static java.util.Map.entry;
 
@@ -8,15 +8,15 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
-import src.phl.Phone;
-import src.sono.err.SonoCompilationException;
+import main.phl.Phone;
+import main.sono.err.SonoCompilationException;
 
 public class Tokenizer {
 	private Tokenizer() {
 		throw new IllegalStateException("Utility class");
 	}
 
-	protected static final Map<String, Integer> operators = Map.ofEntries(entry("_OUTER_CALL_", 20), entry("load", -13),
+	protected static final Map<String, Integer> operators = Map.ofEntries(entry("_OUTER_CALL_", 20), entry("load", -13), entry("import", -13),
 			entry("new", -14), entry("var", -13), entry("struct", -14), entry("static", -14), entry("class", 13),
 			entry("return", 2), entry("=>", 12), entry("len", -11), entry("word", -11), entry("str", -11),
 			entry("type", -11), entry("from", 10), entry("mat", -11), entry("num", -11), entry("vec", -11),

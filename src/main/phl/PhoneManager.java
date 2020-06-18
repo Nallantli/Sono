@@ -1,11 +1,9 @@
-package src.phl;
+package main.phl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import src.phl.Phone.Quality;
 
 public class PhoneManager implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -199,7 +197,7 @@ public class PhoneManager implements Serializable {
 		Matrix contrast = new Matrix();
 		for (int i = 0; i < Phone.Feature.values().length; i++) {
 			if (a.getFeatureQuality(Phone.Feature.values()[i]) != b.getFeatureQuality(Phone.Feature.values()[i])
-					&& b.getFeatureQuality(Phone.Feature.values()[i]) != Quality.NULL) {
+					&& b.getFeatureQuality(Phone.Feature.values()[i]) != Phone.Quality.NULL) {
 				contrast.put(Phone.Feature.values()[i], b.getFeatureQuality(Phone.Feature.values()[i]));
 			}
 		}

@@ -1,4 +1,4 @@
-package src.sono.err;
+package main.sono.err;
 
 import java.util.Collections;
 import java.util.List;

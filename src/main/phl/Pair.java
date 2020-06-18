@@ -1,4 +1,4 @@
-package src.phl;
+package main.phl;
 
 import java.io.Serializable;
 
