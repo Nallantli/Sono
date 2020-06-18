@@ -53,6 +53,15 @@ Vector::join(&this, del) => {
 	return string;
 };
 
+Vector::reverse(&this) => {
+	var nv = {};
+	i in {0 until len this} do {
+		nv += { this[len this - i - 1] };
+	};
+	this = nv;
+	return this;
+};
+
 Vector::sort(&this, comp) => {
 	comp == null then {
 		comp = (a, b) => {

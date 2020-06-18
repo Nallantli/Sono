@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import main.Main;
 import main.base.Command;
 import main.base.Library;
 import main.sono.Datum;
@@ -32,6 +33,18 @@ public class Console extends Library {
 				list.add(new Datum(temp));
 			}
 			return new Datum(list);
+		});
+		commands.put("Console.GET.LINE", (Datum datum, List<String> trace) -> {
+			if (Main.getScanner() == null)
+				Main.initScanner();
+			String s = Main.getScanner().nextLine();
+			return new Datum(s);
+		});
+		commands.put("Console.GET.NUMBER", (Datum datum, List<String> trace) -> {
+			if (Main.getScanner() == null)
+				Main.initScanner();
+			BigDecimal i = Main.getScanner().nextBigDecimal();
+			return new Datum(i);
 		});
 		commands.put("Console.EXIT", (Datum datum, List<String> trace) -> {
 			System.exit(0);

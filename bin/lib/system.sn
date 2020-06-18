@@ -8,6 +8,15 @@ exit() => {
 	"Console.EXIT" _OUTER_CALL_ null;
 };
 
+static Input class {
+	line() => {
+		return ("Console.GET.LINE" _OUTER_CALL_ null);
+	};
+	number() => {
+		return ("Console.GET.NUMBER" _OUTER_CALL_ null);
+	};
+};
+
 var match = String::(string, pattern) => {
 	return "Console.REGEX" _OUTER_CALL_ { pattern, string };
 };

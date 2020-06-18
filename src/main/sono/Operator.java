@@ -428,10 +428,11 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			List<Datum> results = new ArrayList<>();
+			if (a.type == Type.ITERATOR) {
 			List<Datum> values = ((Iterator) a).getB().evaluate(scope, interpreter, new ArrayList<>(trace))
 					.getVector(trace);
 			String variable = ((Variable) ((Iterator) a).getA()).getKey();
-			List<Datum> results = new ArrayList<>();
 			for (Datum d : values) {
 				Scope loopScope = new Scope(scope);
 				loopScope.setVariable(variable, d, trace);
@@ -442,7 +443,18 @@ public abstract class Operator {
 					return result;
 				results.add(result);
 			}
-			return new Datum(results);
+		} else {
+			while (a.evaluate(scope, interpreter, new ArrayList<>(trace)).getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
+				Scope loopScope = new Scope(scope);
+				Datum result = b.evaluate(loopScope, interpreter, new ArrayList<>(trace));
+				if (result.getType() == Datum.Type.I_BREAK)
+					break;
+				if (result.getRet())
+					return result;
+				results.add(result);
+			}
+		}
+		return new Datum(results);
 		}
 
 		@Override
@@ -1069,7 +1081,7 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return "let " + varName;
+			return "var " + varName;
 		}
 	}
 
@@ -1177,9 +1189,18 @@ public abstract class Operator {
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
 			List<Datum> pValues = b.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
-			Function f = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getFunction(Datum.Type.ANY, trace);
-			if (f == null)
-				throw new SonoRuntimeException("This function is required to be used post-objectively.", trace);
+			Function f;
+			if (a.type == Type.INNER) {
+				Datum datumA = ((Inner)a).getA().evaluate(scope, interpreter, new ArrayList<>(trace));
+				if (datumA.getType() != Datum.Type.STRUCTURE) {
+					pValues.add(0, datumA);
+					f = ((Inner)a).getB().evaluate(scope, interpreter, new ArrayList<>(trace)).getFunction(datumA.getType(), trace);
+				} else {
+					f = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getFunction(Datum.Type.ANY, trace);
+				}
+			} else {
+				f = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getFunction(Datum.Type.ANY, trace);
+			}
 			return f.execute(pValues, new ArrayList<>(trace));
 		}
 
@@ -1321,25 +1342,11 @@ public abstract class Operator {
 			trace.add(this.toString());
 			Datum object = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (object.type != Datum.Type.STRUCTURE) {
-				if (b.type == Type.EXECUTE) {
-					List<Datum> params = ((Execute) b).getB().evaluate(scope, interpreter, new ArrayList<>(trace))
-							.getVector(trace);
-					Datum fHolder = ((Execute) b).getA().evaluate(scope, interpreter, new ArrayList<>(trace));
-					params.add(0, object);
-					Function f = fHolder.getFunction(object.getType(), trace);
-					if (f == null)
-						f = fHolder.getFunction(Datum.Type.ANY, trace);
-					if (f == null)
-						throw new SonoRuntimeException("Function does not accept type <" + object.getType() + ">",
-								trace);
-					return f.execute(params, new ArrayList<>(trace));
-				} else {
 					if (!object.isTemplative())
 						throw new SonoRuntimeException("Value <" + object.toStringTrace(new ArrayList<>(trace))
 								+ "> is not templative and therefore cannot extract objective methods.", trace);
 					Datum fHolder = b.evaluate(scope, interpreter, new ArrayList<>(trace));
 					return new Datum(object.getType(), fHolder.getFunction(object.getType(), trace));
-				}
 			} else {
 				return b.evaluate(object.getStructure(trace).getScope(), interpreter, new ArrayList<>(trace));
 			}

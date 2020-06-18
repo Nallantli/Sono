@@ -21,6 +21,7 @@ import main.sono.err.SonoException;
 
 public class Main {
 	private static Map<String, String> globalOptions = new HashMap<>();
+	private static Scanner sc = null;
 
 	private static String getOption(String option, String[] args) {
 		for (int i = 0; i < args.length; i++) {
@@ -34,6 +35,14 @@ public class Main {
 		if (globalOptions.containsKey(key))
 			return globalOptions.get(key);
 		return null;
+	}
+
+	public static Scanner getScanner() {
+		return sc;
+	}
+
+	public static void initScanner() {
+		sc = new Scanner(System.in);
 	}
 
 	public static void main(String[] args) {
@@ -79,7 +88,8 @@ public class Main {
 			PhoneLoader pl = new PhoneLoader(globalOptions.get("DATA"), false);
 			Interpreter sono = new Interpreter(new Scope(null), pl.getManager(), command);
 
-			try (Scanner sc = new Scanner(System.in)) {
+			try {
+				sc = new Scanner(System.in);
 				while (true) {
 					System.out.print("> ");
 					String line = sc.nextLine();
@@ -97,9 +107,13 @@ public class Main {
 						e.printStackTrace();
 					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				sc.close();
 			}
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }

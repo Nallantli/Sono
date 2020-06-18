@@ -21,7 +21,7 @@ public class Tokenizer {
 			entry("return", 2), entry("=>", 12), entry("len", -11), entry("word", -11), entry("str", -11),
 			entry("type", -11), entry("from", 10), entry("mat", -11), entry("num", -11), entry("vec", -11),
 			entry("com", -11), entry("::", 16), entry(".negative", -11), entry(".positive", -11), entry(".index", 15),
-			entry("&", -15), entry(".exec", -15), entry(".", 14), entry("**", -10), entry("*", 9), entry("/", 9),
+			entry("&", -15), entry(".exec", 15), entry(".", 15), entry("**", -10), entry("*", 9), entry("/", 9),
 			entry("%", 9), entry("+", 8), entry("-", 8), entry(">>", 8), entry("?>", 8), entry("==", 6), entry("!=", 6),
 			entry("<", 6), entry(">", 6), entry("<=", 6), entry(">=", 6), entry("&&", 5), entry("||", 5),
 			entry("=", -4), entry("+=", -4), entry("-=", -4), entry("*=", -4), entry("/=", -4), entry("%=", -4), entry("->", 7), entry("//", 6), entry("~", 7), entry("in", 3), entry("switch", 3),
