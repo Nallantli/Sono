@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 import main.base.CommandManager;
 import main.phl.PhoneLoader;
+import main.phl.PhoneManager;
 import main.sono.Datum;
 import main.sono.Interpreter;
 import main.sono.Scope;
@@ -25,8 +26,12 @@ public class Main {
 
 	private static String getOption(String option, String[] args) {
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals(option))
-				return args[i + 1];
+			if (args[i].equals(option)) {
+				if (i + 1 < args.length)
+					return args[i + 1];
+				else
+					return "NA";
+			}
 		}
 		return null;
 	}
@@ -85,32 +90,55 @@ public class Main {
 
 		try {
 			CommandManager command = new CommandManager();
-			PhoneLoader pl = new PhoneLoader(globalOptions.get("DATA"), false);
-			Interpreter sono = new Interpreter(new Scope(null), pl.getManager(), command);
+			PhoneLoader pl = null;
+			Interpreter sono = null;
+			if (getOption("-l", args) != null) {
+				globalOptions.put("LING", "FALSE");
+				sono = new Interpreter(new Scope(null), new PhoneManager(), command);
+			} else {
+				globalOptions.put("LING", "TRUE");
+				pl = new PhoneLoader(globalOptions.get("DATA"), false);
+				sono = new Interpreter(new Scope(null), pl.getManager(), command);
+			}
 
-			try {
-				sc = new Scanner(System.in);
-				while (true) {
-					System.out.print("> ");
-					String line = sc.nextLine();
-					try {
-						Datum result = sono.runCode(".", line);
-						if (result.getType() == Datum.Type.VECTOR) {
-							int i = 0;
-							for (Datum d : result.getVector(new ArrayList<>()))
-								System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(new ArrayList<>()));
-						} else {
-							System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
-						}
-					} catch (SonoException e) {
-						System.err.println(e.getMessage());
-						e.printStackTrace();
-					}
+			if (args.length > 0 && args[0].charAt(0) != '-') {
+				try {
+					sono.runCode(".", "load \"" + args[0] + "\"");
+				} catch (SonoException e) {
+					System.err.println(e.getMessage());
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				sc.close();
+			} else {
+				try {
+					System.out.println("Sono 1.0.0");
+					if (globalOptions.get("LING").equals("TRUE")) {
+						System.out.println("Phonological Data Loaded From <" + globalOptions.get("DATA") + ">");
+					} else {
+						System.out.println("Phonological Operations Disabled");
+					}
+					sc = new Scanner(System.in);
+					while (true) {
+						System.out.print("> ");
+						String line = sc.nextLine();
+						try {
+							Datum result = sono.runCode(".", line);
+							if (result.getType() == Datum.Type.VECTOR) {
+								int i = 0;
+								for (Datum d : result.getVector(new ArrayList<>()))
+									System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(new ArrayList<>()));
+							} else {
+								System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
+							}
+						} catch (SonoException e) {
+							System.err.println(e.getMessage());
+							e.printStackTrace();
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					sc.close();
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

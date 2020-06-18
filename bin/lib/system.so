@@ -17,6 +17,6 @@ static Input class {
 	};
 };
 
-var match = String::(string, pattern) => {
+String::match(string, pattern) => {
 	return "Console.REGEX" _OUTER_CALL_ { pattern, string };
 };

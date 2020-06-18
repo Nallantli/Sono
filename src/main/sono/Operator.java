@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
+import main.Main;
 import main.phl.*;
 import main.sono.err.SonoRuntimeException;
 
@@ -16,6 +17,7 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NEQUAL, LESS, MORE, ELESS, EMORE, MATRIX_CONV, NUMBER_CONV,
 		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
 		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONV, TYPE_DEC, STRUCT_DEC, STATIC_DEC, CLASS_DEC, NEW_DEC, POW,
+		FEAT_DEC, THROW, TRY_CATCH,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
@@ -144,6 +146,9 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			Datum datumB = b.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (datumB.getType() == Datum.Type.MATRIX)
@@ -243,6 +248,9 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			Matrix matrix = new Matrix();
 			for (Operator o : operators)
 				matrix.put(o.evaluate(scope, interpreter, new ArrayList<>(trace)).getPair(new ArrayList<>(trace)));
@@ -314,6 +322,82 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return "&" + varName;
+		}
+	}
+
+	public static class FeatDec extends Unary {
+		public FeatDec(Operator a) {
+			super(Type.FEAT_DEC, a);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			return new Datum(interpreter.getManager().interpretFeature(datumA.getString(trace)));
+		}
+
+		@Override
+		public String toString() {
+			return "feat " + a.toString();
+		}
+	}
+
+	public static class Throw extends Unary {
+		public Throw(Operator a) {
+			super(Type.THROW, a);
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			throw new SonoRuntimeException(datumA.getString(trace), trace);
+		}
+
+		@Override
+		public String toString() {
+			return "throw " + a.toString();
+		}
+	}
+
+	public static class TryCatch extends Unary {
+		private Operator b = null;
+
+		public TryCatch(Operator a) {
+			super(Type.TRY_CATCH, a);
+		}
+
+		public void setCatch(Operator b) {
+			this.b = b;
+		}
+
+		@Override
+		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
+			trace.add(this.toString());
+			try {
+				return a.evaluate(scope, interpreter, new ArrayList<>(trace));
+			} catch (SonoRuntimeException e) {
+				if (b != null) {
+					Scope catchScope = new Scope(scope);
+					catchScope.setVariable("_e", new Datum(e.getMessage()), trace);
+					List<Datum> list = new ArrayList<>();
+					for (String s : trace)
+						list.add(0, new Datum(s));
+					catchScope.setVariable("_trace", new Datum(list), trace);
+					return b.evaluate(catchScope, interpreter, new ArrayList<>(trace));
+				} else {
+					return new Datum();
+				}
+			}
+		}
+
+		@Override
+		public String toString() {
+			return "try " + a.toString() + (b != null ? " catch " + b.toString() : "");
 		}
 	}
 
@@ -430,31 +514,32 @@ public abstract class Operator {
 			trace.add(this.toString());
 			List<Datum> results = new ArrayList<>();
 			if (a.type == Type.ITERATOR) {
-			List<Datum> values = ((Iterator) a).getB().evaluate(scope, interpreter, new ArrayList<>(trace))
-					.getVector(trace);
-			String variable = ((Variable) ((Iterator) a).getA()).getKey();
-			for (Datum d : values) {
-				Scope loopScope = new Scope(scope);
-				loopScope.setVariable(variable, d, trace);
-				Datum result = b.evaluate(loopScope, interpreter, new ArrayList<>(trace));
-				if (result.getType() == Datum.Type.I_BREAK)
-					break;
-				if (result.getRet())
-					return result;
-				results.add(result);
+				List<Datum> values = ((Iterator) a).getB().evaluate(scope, interpreter, new ArrayList<>(trace))
+						.getVector(trace);
+				String variable = ((Variable) ((Iterator) a).getA()).getKey();
+				for (Datum d : values) {
+					Scope loopScope = new Scope(scope);
+					loopScope.setVariable(variable, d, trace);
+					Datum result = b.evaluate(loopScope, interpreter, new ArrayList<>(trace));
+					if (result.getType() == Datum.Type.I_BREAK)
+						break;
+					if (result.getRet())
+						return result;
+					results.add(result);
+				}
+			} else {
+				while (a.evaluate(scope, interpreter, new ArrayList<>(trace)).getNumber(trace)
+						.compareTo(BigDecimal.ZERO) != 0) {
+					Scope loopScope = new Scope(scope);
+					Datum result = b.evaluate(loopScope, interpreter, new ArrayList<>(trace));
+					if (result.getType() == Datum.Type.I_BREAK)
+						break;
+					if (result.getRet())
+						return result;
+					results.add(result);
+				}
 			}
-		} else {
-			while (a.evaluate(scope, interpreter, new ArrayList<>(trace)).getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
-				Scope loopScope = new Scope(scope);
-				Datum result = b.evaluate(loopScope, interpreter, new ArrayList<>(trace));
-				if (result.getType() == Datum.Type.I_BREAK)
-					break;
-				if (result.getRet())
-					return result;
-				results.add(result);
-			}
-		}
-		return new Datum(results);
+			return new Datum(results);
 		}
 
 		@Override
@@ -474,6 +559,9 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			while (a.type != Type.SLASH)
 				a = ((Sequence) a).operators.get(0);
 			Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, interpreter, new ArrayList<>(trace));
@@ -572,6 +660,9 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				List<Phone> phones = new ArrayList<>();
@@ -604,6 +695,10 @@ public abstract class Operator {
 			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			switch (datumA.getType()) {
 				case MATRIX:
+					if (Main.getGlobalOption("LING").equals("FALSE"))
+						throw new SonoRuntimeException(
+								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
+								trace);
 					for (Pair p : datumA.getMatrix(trace))
 						list.add(new Datum(p));
 					break;
@@ -612,6 +707,10 @@ public abstract class Operator {
 						list.add(new Datum(String.valueOf(c)));
 					break;
 				case WORD:
+					if (Main.getGlobalOption("LING").equals("FALSE"))
+						throw new SonoRuntimeException(
+								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
+								trace);
 					for (int i = 0; i < datumA.getWord(trace).size(); i++)
 						list.add(new Datum(datumA.getWord(trace).get(i)));
 					break;
@@ -677,6 +776,9 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				List<Datum> list = datumA.getVector(trace);
@@ -705,6 +807,9 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			Matrix matrix = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getMatrix(trace);
 			List<Datum> data = b.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
 			List<Phone> phones = new ArrayList<>();
@@ -767,10 +872,18 @@ public abstract class Operator {
 				case STRING:
 					return new Datum(BigDecimal.valueOf(datumA.getString(trace).length()));
 				case WORD:
+					if (Main.getGlobalOption("LING").equals("FALSE"))
+						throw new SonoRuntimeException(
+								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
+								trace);
 					return new Datum(BigDecimal.valueOf(datumA.getWord(trace).size()));
 				case VECTOR:
 					return new Datum(BigDecimal.valueOf(datumA.getVector(trace).size()));
 				case MATRIX:
+					if (Main.getGlobalOption("LING").equals("FALSE"))
+						throw new SonoRuntimeException(
+								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
+								trace);
 					return new Datum(BigDecimal.valueOf(datumA.getMatrix(trace).size()));
 				case STRUCTURE:
 					return datumA.getStructure(trace).getScope().getVariable("getLen", trace)
@@ -829,11 +942,19 @@ public abstract class Operator {
 					newList.addAll(datumB.getVector(trace));
 					return new Datum(newList);
 				case MATRIX:
+					if (Main.getGlobalOption("LING").equals("FALSE"))
+						throw new SonoRuntimeException(
+								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
+								trace);
 					Matrix newMatrix = new Matrix();
 					newMatrix.putAll(datumA.getMatrix(trace));
 					newMatrix.putAll(datumB.getMatrix(trace));
 					return new Datum(newMatrix);
 				case WORD:
+					if (Main.getGlobalOption("LING").equals("FALSE"))
+						throw new SonoRuntimeException(
+								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
+								trace);
 					Word newWord = new Word();
 					newWord.addAll(datumA.getWord(trace));
 					newWord.addAll(datumB.getWord(trace));
@@ -1032,6 +1153,9 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			return new Datum(interpreter.getManager().getContrast(
 					a.evaluate(scope, interpreter, new ArrayList<>(trace)).getPhone(trace),
 					b.evaluate(scope, interpreter, new ArrayList<>(trace)).getPhone(trace)));
@@ -1051,6 +1175,9 @@ public abstract class Operator {
 		@Override
 		public Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace) {
 			trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			List<Datum> data = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
 			List<Phone> phones = new ArrayList<>();
 			for (Datum d : data)
@@ -1191,10 +1318,11 @@ public abstract class Operator {
 			List<Datum> pValues = b.evaluate(scope, interpreter, new ArrayList<>(trace)).getVector(trace);
 			Function f;
 			if (a.type == Type.INNER) {
-				Datum datumA = ((Inner)a).getA().evaluate(scope, interpreter, new ArrayList<>(trace));
+				Datum datumA = ((Inner) a).getA().evaluate(scope, interpreter, new ArrayList<>(trace));
 				if (datumA.getType() != Datum.Type.STRUCTURE) {
 					pValues.add(0, datumA);
-					f = ((Inner)a).getB().evaluate(scope, interpreter, new ArrayList<>(trace)).getFunction(datumA.getType(), trace);
+					f = ((Inner) a).getB().evaluate(scope, interpreter, new ArrayList<>(trace))
+							.getFunction(datumA.getType(), trace);
 				} else {
 					f = a.evaluate(scope, interpreter, new ArrayList<>(trace)).getFunction(Datum.Type.ANY, trace);
 				}
@@ -1342,11 +1470,11 @@ public abstract class Operator {
 			trace.add(this.toString());
 			Datum object = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (object.type != Datum.Type.STRUCTURE) {
-					if (!object.isTemplative())
-						throw new SonoRuntimeException("Value <" + object.toStringTrace(new ArrayList<>(trace))
-								+ "> is not templative and therefore cannot extract objective methods.", trace);
-					Datum fHolder = b.evaluate(scope, interpreter, new ArrayList<>(trace));
-					return new Datum(object.getType(), fHolder.getFunction(object.getType(), trace));
+				if (!object.isTemplative())
+					throw new SonoRuntimeException("Value <" + object.toStringTrace(new ArrayList<>(trace))
+							+ "> is not templative and therefore cannot extract objective methods.", trace);
+				Datum fHolder = b.evaluate(scope, interpreter, new ArrayList<>(trace));
+				return new Datum(object.getType(), fHolder.getFunction(object.getType(), trace));
 			} else {
 				return b.evaluate(object.getStructure(trace).getScope(), interpreter, new ArrayList<>(trace));
 			}

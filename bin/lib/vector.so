@@ -64,9 +64,9 @@ Vector::reverse(&this) => {
 
 Vector::sort(&this, comp) => {
 	comp == null then {
-		comp = (a, b) => {
-			return a < b;
-		};
+		comp = (a, b) => { return a < b; };
+	} else type comp != "Function" then {
+		throw "Parameter <comp> of Vector::sort() must be of type Function";
 	};
 	Vector::merge_sort(&this) => {
 		len this <= 1 then {

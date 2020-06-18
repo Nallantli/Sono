@@ -11,9 +11,15 @@ var line;
 (line = Input.line()) != "" do {
 	print("Client Sending:\t" + line);
 	output.send(line);
+	line == "exit" then {
+		break;
+	};
 	print("Client Recieved:\t" + input.read());
 };
+print("Exiting Client...");
+output.send("");
 
 output.close();
 input.close();
 client.close();
+print("Done.");

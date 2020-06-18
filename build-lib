@@ -1,17 +1,17 @@
-@echo off
-echo Compiling Console.java...
+#!/bin/bash
+echo "Compiling Console.java..."
 javac -cp src src/ext/Console.java -encoding utf8 -d bin/lib
-echo Compiling FileIO.java...
+echo "Compiling FileIO.java..."
 javac -cp src src/ext/FileIO.java -encoding utf8 -d bin/lib
-echo Compiling Sock.java...
+echo "Compiling Sock.java..."
 javac -cp src src/ext/Sock.java -encoding utf8 -d bin/lib
 cd bin/lib
-echo Creating Console.jar...
+echo "Creating Console.jar..."
 jar cvfe Console.jar ext.Console ./ext
-echo Creating FileIO.jar...
+echo "Creating FileIO.jar..."
 jar cvfe FileIO.jar ext.FileIO ./ext
-echo Creating Sock.jar...
+echo "Creating Sock.jar..."
 jar cvfe Sock.jar ext.Sock ./ext
-rmdir /s /q ext
-rmdir /s /q main
-echo Done.
+rm -rf ext
+rm -rf main
+echo "Done."

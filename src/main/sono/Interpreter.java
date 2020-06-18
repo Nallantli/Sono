@@ -80,7 +80,7 @@ public class Interpreter {
 				if (token.equals("load")) {
 					String path = ((Operator.Container) o.pollLast()).getDatum().getString(new ArrayList<>());
 					String[] split = (new StringBuilder(path)).reverse().toString().split("/", 2);
-					String filename = (new StringBuilder(split[0])).reverse().toString() + ".sn";
+					String filename = (new StringBuilder(split[0])).reverse().toString() + ".so";
 					String fileDirectory = directory;
 					if (split.length > 1)
 						fileDirectory += "/" + (new StringBuilder(split[1])).reverse().toString();
@@ -164,6 +164,18 @@ public class Interpreter {
 				if (token.equals("str")) {
 					Operator a = o.pollLast();
 					o.addLast(new Operator.StringDec(a));
+				}
+				if (token.equals("feat")) {
+					Operator a = o.pollLast();
+					o.addLast(new Operator.FeatDec(a));
+				}
+				if (token.equals("throw")) {
+					Operator a = o.pollLast();
+					o.addLast(new Operator.Throw(a));
+				}
+				if (token.equals("try")) {
+					Operator a = o.pollLast();
+					o.addLast(new Operator.TryCatch(a));
 				}
 				if (token.equals("=")) {
 					Operator b = o.pollLast();
@@ -378,6 +390,12 @@ public class Interpreter {
 					((Operator.IfElse) a).setElse(b);
 					o.addLast(a);
 				}
+				if (token.equals("catch")) {
+					Operator b = o.pollLast();
+					Operator a = o.pollLast();
+					((Operator.TryCatch) a).setCatch(b);
+					o.addLast(a);
+				}
 				if (token.equals("_OUTER_CALL_")) {
 					Operator b = o.pollLast();
 					Operator a = o.pollLast();
@@ -417,12 +435,18 @@ public class Interpreter {
 				}
 				o.addLast(new Operator.HardList(list));
 			} else if (token.charAt(0) == '\'') {
+				if (Main.getGlobalOption("LING").equals("FALSE"))
+					throw new SonoCompilationException("Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				Phone p = pl.interpretSegment(token.substring(1));
 				o.addLast(new Operator.Container(new Datum(p)));
 			} else if (token.charAt(0) == '@') {
+				if (Main.getGlobalOption("LING").equals("FALSE"))
+					throw new SonoCompilationException("Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				Pair p = pl.interpretFeature(token.substring(1));
 				o.addLast(new Operator.Container(new Datum(p)));
 			} else if (token.charAt(0) == '`') {
+				if (Main.getGlobalOption("LING").equals("FALSE"))
+					throw new SonoCompilationException("Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				Word p = pl.interpretSequence(token.substring(1));
 				o.addLast(new Operator.Container(new Datum(p)));
 			} else if (token.charAt(0) == '\"') {
