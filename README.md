@@ -1,7 +1,7 @@
 # Sono 1.0.0
 
 <div align="center">
-<img src="docs/Sono.svg" alt="Sono Logo" width="100">
+<img src="docs/Sono.svg" alt="Sono Logo" width="150">
 </div>
 
 ---
