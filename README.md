@@ -1,4 +1,4 @@
-# Sono 1.0.0
+# Sono Beta 1.0.1
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -135,7 +135,7 @@ Rule declarations have five components: Type, Search parameter, Transformation p
 
 The Type is one of three values `S`, `Af`, and `Ab`. Their usage was explained above.
 
-The Search parameter must be of type `Matrix` or `Phone`. The `Rule`, when applied, will search the sequence sequentially for a value applicable ot the Search parameter.
+The Search parameter must be of type `Matrix` or `Phone`. The `Rule`, when applied, will search the sequence sequentially for a value applicable ot the Search parameter. The Search parameter can also be `null`, in which case the `Rule` will look only with concern to the boundary parameters.
 
 The Transformation parameter must be of type `Vector`, containing `Matrix` or `Phone` values. If the Search parameter is satisfied, the values within the Transformation parameter will be applied to the found `Phone`. For a `Matrix` value in the parameter, the application will generate a `Phone` with the values of the Search transformed by the `Matrix`. For a `Phone` value in the parameter, there is no transformation and the value is simply appended in place of the Search parameter. Using a `Vector` with multiple values allows for the creation of multiple new `Phone` values with their sequential transformations or replacements with respect to the Search parameter.
 

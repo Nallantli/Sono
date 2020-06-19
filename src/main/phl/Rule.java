@@ -87,7 +87,7 @@ public class Rule {
 
 			if (o.getClass() == Phone.class) {
 				Phone p = (Phone) o;
-				if (search.getClass() == Matrix.class) {
+				if (search != null && search.getClass() == Matrix.class) {
 					tempSearch = new Matrix();
 					((Matrix) tempSearch).putAll((Matrix) search);
 					for (Pair se : (Matrix) tempSearch)
@@ -109,7 +109,7 @@ public class Rule {
 					}
 				}
 				for (int j = 0; j < fin.size(); j++) {
-					Object target = sequence.get(i + j + 1);
+					Object target = sequence.get(i + j + (search != null ? 1 : 0));
 					Object e = fin.get(j);
 					if (target != null && target.getClass() == Phone.class && e.getClass() == Matrix.class) {
 						Matrix temp = new Matrix();
@@ -124,7 +124,7 @@ public class Rule {
 				}
 
 				if (!alphaMap.isEmpty()) {
-					if (tempSearch.getClass() == Matrix.class)
+					if (tempSearch != null && tempSearch.getClass() == Matrix.class)
 						for (Pair e : alphaMap)
 							if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.ALPHA)
 								((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
@@ -141,7 +141,7 @@ public class Rule {
 				}
 
 				if (!betaMap.isEmpty()) {
-					if (tempSearch.getClass() == Matrix.class)
+					if (tempSearch != null && tempSearch.getClass() == Matrix.class)
 						for (Pair e : betaMap)
 							if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.BETA)
 								((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
@@ -158,7 +158,7 @@ public class Rule {
 				}
 
 				if (!gammaMap.isEmpty()) {
-					if (tempSearch.getClass() == Matrix.class)
+					if (tempSearch != null && tempSearch.getClass() == Matrix.class)
 						for (Pair e : gammaMap)
 							if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.GAMMA)
 								((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
@@ -175,7 +175,7 @@ public class Rule {
 				}
 
 				boolean flag = false;
-				if (applicable(i, sequence, tempSearch)) {
+				if (tempSearch == null || applicable(i, sequence, tempSearch)) {
 					flag = true;
 					for (int j = 0; j < tempInit.size(); j++) {
 						if (!applicable((i - tempInit.size()) + j, sequence, tempInit.get(j))) {
@@ -184,7 +184,7 @@ public class Rule {
 						}
 					}
 					for (int j = 0; j < tempFin.size(); j++) {
-						if (!applicable(i + j + 1, sequence, tempFin.get(j))) {
+						if (!applicable(i + j + (search != null ? 1 : 0), sequence, tempFin.get(j))) {
 							flag = false;
 							break;
 						}
@@ -219,6 +219,8 @@ public class Rule {
 							addition = (Phone) e;
 						}
 						result.add(addition);
+						if (search == null)
+							result.add(p);
 					}
 					if (type == Type.A_FORWARD)
 						assimilateFlag = true;
@@ -270,7 +272,10 @@ public class Rule {
 				s.append("S : ");
 				break;
 		}
-		s.append(search.toString());
+		if (search != null)
+			s.append(search.toString());
+		else
+			s.append("null");
 		s.append(" -> ");
 		s.append(trans.toString());
 		s.append(" // ");
@@ -287,7 +292,9 @@ public class Rule {
 		Rule r = (Rule) o;
 		if (type != r.type)
 			return false;
-		if (!search.equals(r.search))
+		if (search != null && !search.equals(r.search))
+			return false;
+		else if (search == null && r.search != null)
 			return false;
 		for (int i = 0; i < trans.size(); i++)
 			if (!trans.get(i).equals(r.trans.get(i)))

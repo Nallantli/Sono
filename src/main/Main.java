@@ -21,6 +21,8 @@ import main.sono.Scope;
 import main.sono.err.SonoException;
 
 public class Main {
+	private static final String VERSION = "Beta 1.0.1";
+
 	private static Map<String, String> globalOptions = new HashMap<>();
 	private static Scanner sc = null;
 
@@ -110,7 +112,7 @@ public class Main {
 				}
 			} else {
 				try {
-					System.out.println("Sono 1.0.0");
+					System.out.println("Sono " + VERSION);
 					if (globalOptions.get("LING").equals("TRUE")) {
 						System.out.println("Phonological Data Loaded From <" + globalOptions.get("DATA") + ">");
 					} else {
