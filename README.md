@@ -160,7 +160,7 @@ S : [+syl, -cons] -> {[+nasal]} // {} ~ {[-syl, +cons, +nasal]};
 Af : [+syl, -cons] -> {[+nasal]} // {} ~ {[-syl, +cons, +nasal]};
 # `bɔn` -> `bɔ̃`
 
-# Palatalized /h/ becomes [ç] before a consonant (Japanese)
+# Palatalized /h/ becomes [ç] before a vowel (Japanese)
 S : 'hʲ' -> {'ç'} // {} ~ {[+syl]};
 # `hʲito` -> `çito`
 
