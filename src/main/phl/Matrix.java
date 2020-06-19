@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 
 public class Matrix implements Iterable<Pair>, Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private List<Pair> holder;
 
 	public Matrix() {
@@ -26,11 +26,11 @@ public class Matrix implements Iterable<Pair>, Serializable {
 		return -1;
 	}
 
-	public Phone.Quality get(Phone.Feature key) {
+	public String get(Phone.Feature key) {
 		int i = getIndexOf(key);
 		if (i >= 0)
 			return holder.get(i).getQuality();
-		return Phone.Quality.NULL;
+		return "0";
 	}
 
 	public Pair get(int i) {
@@ -38,22 +38,22 @@ public class Matrix implements Iterable<Pair>, Serializable {
 	}
 
 	public void put(Pair p) {
-		if (Phone.majorClasses.containsKey(p.getFeature()) && (p.getQuality() == Phone.Quality.FALSE || p.getQuality() == Phone.Quality.ANY)) {
+		if (Phone.majorClasses.containsKey(p.getFeature()) && (p.getQuality().equals("-") || p.getQuality().equals("~"))) {
 			for (Phone.Feature f : Phone.majorClasses.get(p.getFeature()))
-				put(f, Phone.Quality.NULL);
+				put(f, "0");
 		} else {
 			Phone.Feature im = Phone.inMajorClass(p.getFeature());
-			if (im != null && get(im) == Phone.Quality.ANY) {
-				p = new Pair(p.getFeature(), Phone.Quality.NULL);
+			if (im != null && get(im).equals("~")) {
+				p = new Pair(p.getFeature(), "0");
 			}
 		}
 
 		int i = getIndexOf(p.getFeature());
 
-		if (p.getQuality() == Phone.Quality.NULL && i >= 0) {
+		if (p.getQuality().equals("0") && i >= 0) {
 			holder.remove(i);
 			return;
-		} else if (p.getQuality() == Phone.Quality.NULL) {
+		} else if (p.getQuality().equals("0")) {
 			return;
 		}
 
@@ -63,16 +63,16 @@ public class Matrix implements Iterable<Pair>, Serializable {
 			holder.add(p);
 	}
 
-	public void put(Phone.Feature f, Phone.Quality q) {
+	public void put(Phone.Feature f, String q) {
 		put(new Pair(f, q));
 	}
 
 	public void putAll(Matrix m) {
 		for (Pair p : m.holder) {
-			if ((get(p.getFeature()) == Phone.Quality.TRUE && p.getQuality() == Phone.Quality.FALSE) || (get(p.getFeature()) == Phone.Quality.FALSE && p.getQuality() == Phone.Quality.TRUE))
-				put(new Pair(p.getFeature(), Phone.Quality.ANY));
-			else if (get(p.getFeature()) == Phone.Quality.ANY || p.getQuality() == Phone.Quality.ANY)
-				put(new Pair(p.getFeature(), Phone.Quality.ANY));
+			if ((get(p.getFeature()).equals("+") && p.getQuality().equals("-")) || (get(p.getFeature()).equals("-") && p.getQuality().equals("+")))
+				put(new Pair(p.getFeature(), "~"));
+			else if (get(p.getFeature()).equals("~") || p.getQuality().equals("~"))
+				put(new Pair(p.getFeature(), "~"));
 			else
 				put(p);
 		}
@@ -106,7 +106,7 @@ public class Matrix implements Iterable<Pair>, Serializable {
 		if (size() != m.size())
 			return false;
 		for (Pair p : holder) {
-			if (m.get(p.getFeature()) != p.getQuality())
+			if (!m.get(p.getFeature()).equals(p.getQuality()))
 				return false;
 		}
 		return true;

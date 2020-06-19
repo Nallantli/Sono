@@ -1,0 +1,24 @@
+load "system";
+load "rule";
+
+var ruleSet = {
+	# Process in the development of Nahuatl where /t/ -> [tɬ] at the beginning of a syllable followed by a nucleus /aː/
+	# This rule is not universal (c.f. /is.ta+tɬ/ -> [is.tatɬ] "salt", /tat+tɬ/ -> [taʔ.tɬi] "father")
+	S : 't' -> {'t_ɬ'} // {"$"} ~ {[-|high, +|low, -|front, -|back, -|tense]},
+	# Because the language is strictly (C)V(C), a consonant clustur is broken up by /i/
+	S : 't_ɬ' -> {'t_ɬ', 'i'} // {[-|syl, +|cons], "+"} ~ {"#"},
+	# Assimilation of /tɬ/ to just [l] when suffixed to a root ending in /l/
+	# This only occurs at morpheme boundaries, [ll] does not naturally occur in roots
+	S : 't_ɬ' -> {'l'} // {'l', "+"} ~ {}
+};
+
+var words = {
+	`taː.wiːl+t_ɬ`,
+	`te.oː.kʷi.ta+t_ɬ`
+};
+
+var applied = words.apply(ruleSet);
+
+i in {0 until len words} do {
+	println("/" + str words[i] + "/ -> [" + str applied[i] + "]");
+};

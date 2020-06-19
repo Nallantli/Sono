@@ -1,0 +1,18 @@
+load "system";
+load "rule";
+
+# I can't think of a language that does this but I'd still like to give it as an example
+# Insertion of a [ə] between two subsequent nasals
+var rule = S : null -> {'ə'} // {[-|syl, +|nasal]} ~ {[-|syl, +|nasal]};
+
+var words = {
+	`amma`,
+	`anma`,
+	`anŋomno`
+};
+
+var applied = words.apply(rule);
+
+i in {0 until len words} do {
+	println("/" + str words[i] + "/ -> [" + str applied[i] + "]");
+};

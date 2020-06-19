@@ -16,46 +16,64 @@ public class Word {
 			public String toString() {
 				return "+";
 			}
+		},
+		NULL {
+			@Override
+			public String toString() {
+				return "";
+			}
 		}
 	}
 
-	private List<Object> internal;
+	private List<Phone> phones;
+	private List<SyllableDelim> delims;
 
 	public Word() {
-		this.internal = new ArrayList<>();
+		this.phones = new ArrayList<>();
+		this.delims = new ArrayList<>();
 	}
 
-	public Word(List<Object> internal) {
-		this.internal = internal;
+	public Word(List<Phone> phones, List<SyllableDelim> delims) {
+		this.phones = phones;
+		this.delims = delims;
 	}
 
-	public void add(Object p) {
-		this.internal.add(p);
+	public void add(Phone p) {
+		this.phones.add(p);
 	}
 
 	public void remove(int i) {
-		this.internal.remove(i);
+		this.phones.remove(i);
 	}
 
 	public void addAll(Word w) {
-		this.internal.addAll(w.internal);
+		this.phones.addAll(w.phones);
+		this.delims.addAll(w.delims);
 	}
 
 	public int size() {
-		return this.internal.size();
+		return this.phones.size();
 	}
 
-	public Object get(int i) {
+	public Phone get(int i) {
 		if (i < this.size() && i >= 0)
-			return this.internal.get(i);
+			return this.phones.get(i);
 		return null;
+	}
+
+	public SyllableDelim getDelim(int i) {
+		if (i < this.size() && i >= 0)
+			return this.delims.get(i);
+		return SyllableDelim.NULL;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		for (Object p : internal)
-			s.append(p.toString());
+		for (int i = 0; i < phones.size(); i++) {
+			s.append(delims.get(i).toString());
+			s.append(phones.get(i).toString());
+		}
 		return s.toString();
 	}
 
@@ -70,6 +88,8 @@ public class Word {
 			return false;
 		for (int i = 0; i < this.size(); i++) {
 			if (!w.get(i).equals(this.get(i)))
+				return false;
+			if (!w.getDelim(i).equals(this.getDelim(i)))
 				return false;
 		}
 		return true;

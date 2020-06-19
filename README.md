@@ -1,4 +1,4 @@
-# Sono Beta 1.0.1
+# Sono Beta 1.1.0
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -71,9 +71,9 @@ Type | Notes | Examples of Literals
 `Vector` | List of any values, including mixed types | `{1,2,3,4}`, `{"Hello", 1}`, `{{1,2}, 3}`
 `Phone` | Phonological segment or phoneme, support for all segments in the user selected feature file and various secondary articulations (`◌̩`, `◌̠`, `◌̟`, `◌̪`, `◌̺`, `◌̥`, `◌̥`, `◌̃`, `◌ʷ`, `◌ʲ`, `◌ˠ`, `◌ˤ`, `◌ʰ`, `◌ː`, a segment may use multiple secondary articulations, but those that contrast with each other will give error *c.f. `*[o̟̠]`*)<br>Currently there is no support for X-SAMPA<br>Affricates must have an underscore to bind them | `'s'`, `'t_ɕ'`, `rʷː`
 `Word` | Sequence of Phones, with the addition of syllable delimiters `.` and morpheme boundary markers `+` | `` `foʊnɒləd_ʒi` ``, `` `soʊ.noʊ` ``, `` `naː.wa+tɬ` ``
-`Feature` | Distinctive feature and its quality | `+long`, `-LAB`
-`Matrix` | Grouping of Features for transformations | `[+long, -tense]`
-`Rule` | Phonological transformation rules using a combination of Phones, Strings, and Matrices<br>The initial character determines whether it is assimilatory: `S` indicates no assimilation (does not remove any segments), `Af` indicates forward assimilation (removes the following segment), `Ab` indicates backward assimilation (removes the previous segment) | `S : 't' -> {'t_ɬ'} // {"$"} ~ {[-high, +low, -front, -back, -tense]}`
+`Feature` | Distinctive feature and its quality | `+|long`, `-|LAB`
+`Matrix` | Grouping of Features for transformations | `[+|long, -|tense]`
+`Rule` | Phonological transformation rules using a combination of Phones, Strings, and Matrices<br>The initial character determines whether it is assimilatory: `S` indicates no assimilation (does not remove any segments), `Af` indicates forward assimilation (removes the following segment), `Ab` indicates backward assimilation (removes the previous segment) | `S : 't' -> {'t_ɬ'} // {"$"} ~ {[-|high, +|low, -|front, -|back, -|tense]}`
 `Function` | Basic parameterized anonymous function | `(a, b) => {return a * b;};`
 
 ## Syntax
@@ -99,7 +99,7 @@ var a = 1; # Variable 'a' is type 'Number' with value '1'
 a = "Hello World"; # Now variable 'a' is type 'String' with value '"Hello World"'
 ```
 
-Operators are strictly typed however, and thus a variable of type `Number` cannot be added to a variable of type `String`, etc. Explicit conversion is necessary using the following keywords. All keywords are reflexive for their own types:
+Operators are strictly typed however, and thus a variable of type `Number` cannot be added to a variable of type `String`, etc. Explicit conversion is necessary using the following keywords. All keywords are reflexive for their own types, and reversable with the exception of `str` (if `a` is a `Vector`, then `vec word a == a`):
 
 Keyword | Conversion | Values
 -|-|-
@@ -107,7 +107,7 @@ Keyword | Conversion | Values
 `vec` | Converts to a `Vector` | `String`, `Matrix`, `Word`
 `mat` | Converts to a `Matrix` | `Vector` (of Features)
 `num` | Converts to a `Number` | `String`
-`word` | Converts to a `Word` | `String`
+`word` | Converts to a `Word` | `String`, `Vector`
 `feat` | Converts to a `Feature` | `String`
 
 ### Operators
@@ -124,6 +124,42 @@ Operator | Function | Values
 `a from b` | Returns all `Phone` values from `b` that contain features expressed in `a` | `Matrix` and `Vector` (of Phones)
 `a >> b` | Transforms `a` by `b` | `Word` and `Rule`, `Phone` and `Matrix`
 `a until b` | Creates a `Vector` of values within the range of `a` and `b` (exclusive) | `Number`
+
+### Objects
+
+Objects are declared using two modifiers, either `static` or `struct`, and then the name of the object, followed by `class`.
+
+Objects declared as `static` cannot be instantiated, they exist as "holders" for methods and values. Objects declared with `struct` however are able to be instantiated with the `new`.
+
+`struct` objects _must_ have a method `init`, which is called during instantiation as the constructor method. Other methods may be overrided:
+
+Method | Arguments | Use
+-|-|-
+`getStr`|None|Returns a `String` representation of the object when the object is called with `str`
+`getIndex`|Any single value|Overrides the `Vector` indexing operator `[]`
+`getList`|None|Returns a `Vector` representation of the object when the object is called with `vec`
+`getLen`|None|Returns the length of the object when called with `len`
+
+While it is possible to override these methods to return values of any time, that practice may lead to some confusion (for instance, `getList` returning a `Number`).
+
+An example object and its instantiation are as follows:
+
+```sono
+struct Point class {
+ var x;
+ var y;
+ init(x, y) => {
+  this.x = x;
+  this.y = y
+ };
+ getStr() => {
+  return "(" + str x + ", " + str y + ")";
+ };
+};
+
+var p = new Point(1, 2);
+print(p); # Prints "(1, 2)"
+```
 
 ### Rules
 
@@ -174,7 +210,7 @@ S : null -> {'ə'} // {[-syl, +cons]} ~ {[-syl, +cons]};
 # `asta` -> `asəta`
 ```
 
-In addition, there are further `Feature` assimilation options. Denoting features with qualities `A-`, `B-`, or `C-` creates a variable feature linked to the quality in the Search parameter, Lower Bound, and Upper Bound respectively.
+In addition, there are further `Feature` assimilation options. Denoting features with numeric qualities (e.g. `0`, `1`, `2`, ...) creates a variable feature linked to the quality in the `Phone` or `Matrix` that corresponds to that integer read from left to right.
 
 For instance, a rather complicated nasal assimilation rule in Japanese:
 

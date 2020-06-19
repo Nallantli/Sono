@@ -6,27 +6,27 @@ var server = new Server(5000);
 
 var s;
 s != "exit" do {
-	print("Awaiting Client...");
+	println("Awaiting Client...");
 	var socket = server.accept();
-	print("Client Connected.");
+	println("Client Connected.");
 
 	var input = socket.getInput();
 	var output = socket.getOutput();
 
 	s = input.read();
 	s != "" && s != "exit" do {
-		print("Server Recieved:\t" + s);
+		println("Server Recieved:\t" + s);
 		var res = (vec s).reverse().join();
-		print("Sending Back:\t" + res);
+		println("Sending Back:\t" + res);
 		output.send(res);
 		s = input.read();
 	};
 	input.close();
 	output.close();
 	socket.close();
-	print("Client Disconnected.");
+	println("Client Disconnected.");
 };
-print("Server Shutting Down...");
+println("Server Shutting Down...");
 
 server.close();
-print("Done.");
+println("Done.");

@@ -4,6 +4,10 @@ print(message) => {
 	"Console.PRINT" _OUTER_CALL_ (str message);
 };
 
+println(message) => {
+	print(str message + "\n");
+};
+
 exit() => {
 	"Console.EXIT" _OUTER_CALL_ null;
 };

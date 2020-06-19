@@ -1,0 +1,16 @@
+load "system";
+load "rule";
+
+# German devoicing of final consonant, just a silly example to demonstrate using "#"
+var rule = S : [-|syl, +|cons, +|voice, -|nasal] -> {[-|voice]} // {} ~ {"#"};
+
+var words = {
+	`bʊndəstaːg`,
+	`bʊndəstaːgə`
+};
+
+var applied = words.apply(rule);
+
+i in {0 until len words} do {
+	println("/" + str words[i] + "/ -> [" + str applied[i] + "]");
+};

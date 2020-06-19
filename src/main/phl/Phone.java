@@ -23,7 +23,7 @@ class SecondaryArticulation implements Serializable {
 		this.requirements = requirements;
 	}
 
-	public SecondaryArticulation(String segment, Phone.Feature feature, Phone.Quality value,
+	public SecondaryArticulation(String segment, Phone.Feature feature, String value,
 			Phone.Secondary[] restrictions, List<Matrix> requirements) {
 		this(segment, new Matrix(new Pair(feature, value)), restrictions, requirements);
 	}
@@ -44,7 +44,7 @@ class SecondaryArticulation implements Serializable {
 			boolean flag = true;
 			Matrix r = requirements.get(i);
 			for (Pair feature : r) {
-				if (phone.getFeatureQuality(feature.getFeature()) != feature.getQuality()) {
+				if (!phone.getFeatureQuality(feature.getFeature()).equals(feature.getQuality())) {
 					flag = false;
 					break;
 				}
@@ -66,7 +66,7 @@ public class Phone implements Comparable<Phone>, Serializable {
 
 	private PhoneManager pm;
 
-	public enum Quality {
+	/*public enum String {
 		TRUE {
 			@Override
 			public String toString() {
@@ -104,7 +104,7 @@ public class Phone implements Comparable<Phone>, Serializable {
 				return "C-";
 			}
 		},
-		
+
 		// MATRIX ADDITION
 		ANY {
 			@Override
@@ -112,7 +112,7 @@ public class Phone implements Comparable<Phone>, Serializable {
 				return "~";
 			}
 		}
-	}
+	}*/
 
 	public enum Feature {
 		STRESS {
@@ -285,84 +285,84 @@ public class Phone implements Comparable<Phone>, Serializable {
 
 	static final Map<Secondary, SecondaryArticulation> secondaryLibrary = Map.ofEntries(
 			entry(Secondary.VOCALIC,
-					new SecondaryArticulation("̩", Feature.SYLLABIC, Quality.TRUE, new Secondary[] {},
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, Quality.TRUE),
-									new Pair(Feature.SONORANT, Quality.TRUE))))),
+					new SecondaryArticulation("̩", Feature.SYLLABIC, "+", new Secondary[] {},
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
+									new Pair(Feature.SONORANT, "+"))))),
 			entry(Secondary.RETRACTED,
 					new SecondaryArticulation("̠",
-							new Matrix(new Pair(Feature.FRONT, Quality.FALSE), new Pair(Feature.BACK, Quality.TRUE)),
+							new Matrix(new Pair(Feature.FRONT, "-"), new Pair(Feature.BACK, "+")),
 							new Secondary[] { Secondary.ADVANCED },
-							List.of(new Matrix(new Pair(Feature.CORONAL, Quality.TRUE))))),
+							List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
 			entry(Secondary.ADVANCED,
 					new SecondaryArticulation("̟",
-							new Matrix(new Pair(Feature.FRONT, Quality.TRUE), new Pair(Feature.BACK, Quality.FALSE)),
+							new Matrix(new Pair(Feature.FRONT, "+"), new Pair(Feature.BACK, "-")),
 							new Secondary[] { Secondary.RETRACTED },
-							List.of(new Matrix(new Pair(Feature.CORONAL, Quality.TRUE))))),
+							List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
 			entry(Secondary.DENTAL,
-					new SecondaryArticulation("̪", new Matrix(new Pair(Feature.ANTERIOR, Quality.TRUE),
-							new Pair(Feature.DISTRIBUTED, Quality.TRUE)), new Secondary[] { Secondary.PALATOALVEOLAR },
-							List.of(new Matrix(new Pair(Feature.CORONAL, Quality.TRUE))))),
+					new SecondaryArticulation("̪", new Matrix(new Pair(Feature.ANTERIOR, "+"),
+							new Pair(Feature.DISTRIBUTED, "+")), new Secondary[] { Secondary.PALATOALVEOLAR },
+							List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
 			entry(Secondary.PALATOALVEOLAR,
 					new SecondaryArticulation("̺",
-							new Matrix(new Pair(Feature.ANTERIOR, Quality.FALSE),
-									new Pair(Feature.DISTRIBUTED, Quality.TRUE)),
+							new Matrix(new Pair(Feature.ANTERIOR, "-"),
+									new Pair(Feature.DISTRIBUTED, "+")),
 							new Secondary[] { Secondary.DENTAL },
-							List.of(new Matrix(new Pair(Feature.CORONAL, Quality.TRUE))))),
+							List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
 			entry(Secondary.DEVOICING,
-					new SecondaryArticulation("̥", Feature.VOICE, Quality.FALSE, new Secondary[] {},
-							List.of(new Matrix(new Pair(Feature.VOICE, Quality.TRUE))))),
+					new SecondaryArticulation("̥", Feature.VOICE, "-", new Secondary[] {},
+							List.of(new Matrix(new Pair(Feature.VOICE, "+"))))),
 			entry(Secondary.NASALIZATION,
-					new SecondaryArticulation("̃", Feature.NASAL, Quality.TRUE, new Secondary[] {},
-							List.of(new Matrix(new Pair(Feature.SONORANT, Quality.TRUE))))),
+					new SecondaryArticulation("̃", Feature.NASAL, "+", new Secondary[] {},
+							List.of(new Matrix(new Pair(Feature.SONORANT, "+"))))),
 			entry(Secondary.LABIALIZATION,
 					new SecondaryArticulation("ʷ",
-							new Matrix(new Pair(Feature.LABIAL, Quality.TRUE), new Pair(Feature.ROUND, Quality.TRUE)),
+							new Matrix(new Pair(Feature.LABIAL, "+"), new Pair(Feature.ROUND, "+")),
 							new Secondary[] {},
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, Quality.TRUE),
-									new Pair(Feature.SYLLABIC, Quality.FALSE)),
-									new Matrix(new Pair(Feature.CONSONANTAL, Quality.FALSE),
-											new Pair(Feature.SYLLABIC, Quality.FALSE))))),
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
+									new Pair(Feature.SYLLABIC, "-")),
+									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
+											new Pair(Feature.SYLLABIC, "-"))))),
 			entry(Secondary.PALATALIZATION,
 					new SecondaryArticulation("ʲ",
-							new Matrix(new Pair(Feature.DORSAL, Quality.TRUE), new Pair(Feature.HIGH, Quality.TRUE),
-									new Pair(Feature.LOW, Quality.FALSE), new Pair(Feature.FRONT, Quality.TRUE),
-									new Pair(Feature.BACK, Quality.FALSE)),
+							new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "+"),
+									new Pair(Feature.LOW, "-"), new Pair(Feature.FRONT, "+"),
+									new Pair(Feature.BACK, "-")),
 							new Secondary[] { Secondary.VELARIZATION, Secondary.PHARYNGEALIZATION },
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, Quality.TRUE),
-									new Pair(Feature.SYLLABIC, Quality.FALSE)),
-									new Matrix(new Pair(Feature.CONSONANTAL, Quality.FALSE),
-											new Pair(Feature.SYLLABIC, Quality.FALSE))))),
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
+									new Pair(Feature.SYLLABIC, "-")),
+									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
+											new Pair(Feature.SYLLABIC, "-"))))),
 			entry(Secondary.VELARIZATION,
 					new SecondaryArticulation("ˠ",
-							new Matrix(new Pair(Feature.DORSAL, Quality.TRUE), new Pair(Feature.HIGH, Quality.TRUE),
-									new Pair(Feature.LOW, Quality.FALSE), new Pair(Feature.FRONT, Quality.FALSE),
-									new Pair(Feature.BACK, Quality.TRUE)),
+							new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "+"),
+									new Pair(Feature.LOW, "-"), new Pair(Feature.FRONT, "-"),
+									new Pair(Feature.BACK, "+")),
 							new Secondary[] { Secondary.PALATALIZATION, Secondary.PHARYNGEALIZATION },
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, Quality.TRUE),
-									new Pair(Feature.SYLLABIC, Quality.FALSE)),
-									new Matrix(new Pair(Feature.CONSONANTAL, Quality.FALSE),
-											new Pair(Feature.SYLLABIC, Quality.FALSE))))),
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
+									new Pair(Feature.SYLLABIC, "-")),
+									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
+											new Pair(Feature.SYLLABIC, "-"))))),
 			entry(Secondary.PHARYNGEALIZATION,
 					new SecondaryArticulation("ˤ",
-							new Matrix(new Pair(Feature.DORSAL, Quality.TRUE), new Pair(Feature.HIGH, Quality.FALSE),
-									new Pair(Feature.LOW, Quality.TRUE), new Pair(Feature.FRONT, Quality.FALSE),
-									new Pair(Feature.BACK, Quality.TRUE)),
+							new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "-"),
+									new Pair(Feature.LOW, "+"), new Pair(Feature.FRONT, "-"),
+									new Pair(Feature.BACK, "+")),
 							new Secondary[] { Secondary.VELARIZATION, Secondary.PALATALIZATION },
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, Quality.TRUE),
-									new Pair(Feature.SYLLABIC, Quality.FALSE)),
-									new Matrix(new Pair(Feature.CONSONANTAL, Quality.FALSE),
-											new Pair(Feature.SYLLABIC, Quality.FALSE))))),
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
+									new Pair(Feature.SYLLABIC, "-")),
+									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
+											new Pair(Feature.SYLLABIC, "-"))))),
 			entry(Secondary.ASPIRATION,
 					new SecondaryArticulation("ʰ",
 							new Matrix(new Pair(Feature.SPREAD_GLOTTIS,
-									Quality.TRUE), new Pair(Feature.CONSTRICTED_GLOTTIS, Quality.FALSE)),
+									"+"), new Pair(Feature.CONSTRICTED_GLOTTIS, "-")),
 							new Secondary[] {},
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, Quality.TRUE),
-									new Pair(Feature.SYLLABIC, Quality.FALSE)),
-									new Matrix(new Pair(Feature.CONSONANTAL, Quality.FALSE),
-											new Pair(Feature.SYLLABIC, Quality.FALSE))))),
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
+									new Pair(Feature.SYLLABIC, "-")),
+									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
+											new Pair(Feature.SYLLABIC, "-"))))),
 			entry(Secondary.LENGTH,
-					new SecondaryArticulation("ː", Feature.LONG, Quality.TRUE, new Secondary[] {}, List.of())));
+					new SecondaryArticulation("ː", Feature.LONG, "+", new Secondary[] {}, List.of())));
 
 	private String segment;
 	private Matrix features;
@@ -385,27 +385,27 @@ public class Phone implements Comparable<Phone>, Serializable {
 
 	public boolean hasFeatures(Matrix map) {
 		for (Pair e : map) {
-			if (getFeatureQuality(e.getFeature()) != e.getQuality() && e.getQuality() != Quality.ANY) {
+			if (!getFeatureQuality(e.getFeature()).equals(e.getQuality()) && !e.getQuality().equals("~")) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public Quality getFeatureQuality(Feature feature) {
+	public String getFeatureQuality(Feature feature) {
 		return features.get(feature);
 	}
 
 	public Matrix getMatrix() {
 		Matrix map = new Matrix();
 		for (Pair p : features)
-			if (p.getQuality() != Quality.NULL)
+			if (!p.getQuality().equals("0"))
 				map.put(p);
 		return map;
 	}
 
-	private Quality[] getQualityArray() {
-		Quality[] values = new Quality[Feature.values().length];
+	private String[] getQualityArray() {
+		String[] values = new String[Feature.values().length];
 
 		int i = 0;
 		for (Feature v : Feature.values())
@@ -416,22 +416,10 @@ public class Phone implements Comparable<Phone>, Serializable {
 
 	public String getDataString(String split) {
 		StringBuilder s = new StringBuilder(segment);
-		Quality[] values = getQualityArray();
+		String[] values = getQualityArray();
 		for (int i = 0; i < values.length; i++) {
 			s.append(split);
-			switch (values[i]) {
-				case FALSE:
-					s.append("-");
-					break;
-				case NULL:
-					s.append("0");
-					break;
-				case TRUE:
-					s.append("+");
-					break;
-				default:
-					break;
-			}
+			s.append(values[i]);
 		}
 		return s.toString();
 	}
@@ -458,20 +446,20 @@ public class Phone implements Comparable<Phone>, Serializable {
 		for (Pair e : matrix) {
 			new_features.put(e.getFeature(), e.getQuality());
 			Feature im = inMajorClass(e.getFeature());
-			if (im != null && e.getQuality() != Quality.NULL) {
-				new_features.put(im, Quality.TRUE);
+			if (im != null && !e.getQuality().equals("0")) {
+				new_features.put(im, "+");
 				for (Feature f : majorClasses.get(im)) {
-					if (new_features.get(f) == Quality.NULL)
-						new_features.put(f, Quality.FALSE);
+					if (new_features.get(f).equals("0"))
+						new_features.put(f, "-");
 				}
-			} else if (majorClasses.containsKey(e.getFeature()) && e.getQuality() == Quality.TRUE) {
+			} else if (majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("+")) {
 				for (Feature f : majorClasses.get(e.getFeature())) {
-					if (new_features.get(f) == Quality.NULL)
-						new_features.put(f, Quality.FALSE);
+					if (new_features.get(f).equals("0"))
+						new_features.put(f, "-");
 				}
-			} else if (majorClasses.containsKey(e.getFeature()) && e.getQuality() == Quality.FALSE) {
+			} else if (majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("-")) {
 				for (Feature f : majorClasses.get(e.getFeature())) {
-					new_features.put(f, Quality.NULL);
+					new_features.put(f, "0");
 				}
 			}
 		}
@@ -509,11 +497,10 @@ public class Phone implements Comparable<Phone>, Serializable {
 			return false;
 		Phone p = (Phone) o;
 
-		for (Pair e : p.features) {
-			if (e.getQuality() != getFeatureQuality(e.getFeature())) {
+		for (Pair pair : p.getMatrix())
+			if (!pair.getQuality().equals(this.getFeatureQuality(pair.getFeature())))
 				return false;
-			}
-		}
+
 		return true;
 	}
 
@@ -523,18 +510,18 @@ public class Phone implements Comparable<Phone>, Serializable {
 
 	@Override
 	public int compareTo(Phone o) {
-		if (o.getFeatureQuality(Feature.SYLLABIC) != getFeatureQuality(Feature.SYLLABIC))
-			return (getFeatureQuality(Feature.SYLLABIC) == Quality.TRUE ? -1 : 1);
+		/*if (o.getFeatureQuality(Feature.SYLLABIC) != getFeatureQuality(Feature.SYLLABIC))
+			return (getFeatureQuality(Feature.SYLLABIC) == "+" ? -1 : 1);
 		if (o.getFeatureQuality(Feature.CONSONANTAL) != getFeatureQuality(Feature.CONSONANTAL))
-			return (getFeatureQuality(Feature.CONSONANTAL) == Quality.FALSE ? -1 : 1);
+			return (getFeatureQuality(Feature.CONSONANTAL) == "-" ? -1 : 1);
 		if (o.getFeatureQuality(Feature.APPROXIMANT) != getFeatureQuality(Feature.APPROXIMANT))
-			return (getFeatureQuality(Feature.APPROXIMANT) == Quality.TRUE ? -1 : 1);
+			return (getFeatureQuality(Feature.APPROXIMANT) == "+" ? -1 : 1);
 		if (o.getFeatureQuality(Feature.SONORANT) != getFeatureQuality(Feature.SONORANT))
-			return (getFeatureQuality(Feature.SONORANT) == Quality.TRUE ? -1 : 1);
+			return (getFeatureQuality(Feature.SONORANT) == "+" ? -1 : 1);
 		if (o.getFeatureQuality(Feature.CONTINUANT) != getFeatureQuality(Feature.CONTINUANT))
-			return (getFeatureQuality(Feature.CONTINUANT) == Quality.TRUE ? -1 : 1);
+			return (getFeatureQuality(Feature.CONTINUANT) == "+" ? -1 : 1);
 		if (o.getFeatureQuality(Feature.DELAYED_RELEASE) != getFeatureQuality(Feature.DELAYED_RELEASE))
-			return (getFeatureQuality(Feature.DELAYED_RELEASE) == Quality.TRUE ? -1 : 1);
+			return (getFeatureQuality(Feature.DELAYED_RELEASE) == "+" ? -1 : 1);*/
 		return segment.compareTo(o.segment);
 	}
 }

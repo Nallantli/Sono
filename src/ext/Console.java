@@ -18,7 +18,7 @@ public class Console extends Library {
 	public Console() {
 		Map<String, Command> commands = new HashMap<>();
 		commands.put("Console.PRINT", (Datum datum, List<String> trace) -> {
-			System.out.println(datum.getString(trace));
+			System.out.print(datum.getString(trace));
 			return new Datum();
 		});
 		commands.put("Console.REGEX", (Datum datum, List<String> trace) -> {

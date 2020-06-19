@@ -29,22 +29,7 @@ public class PhoneLoader {
 				Matrix features = new Matrix();
 				int i = 1;
 				for (Phone.Feature f : Phone.Feature.values()) {
-					switch (split[i].charAt(0)) {
-						case '-':
-							features.put(f, Phone.Quality.FALSE);
-							break;
-						case '+':
-							features.put(f, Phone.Quality.TRUE);
-							break;
-						case '~':
-							features.put(f, Phone.Quality.ANY);
-							break;
-						case '0':
-							features.put(f, Phone.Quality.NULL);
-							break;
-						default:
-							throw new IOException("Quality <" + split[i] + "> is not applicable (+, -, ~, 0)");
-					}
+					features.put(f, split[i]);
 					i++;
 				}
 				new Phone(pm, segment, features);

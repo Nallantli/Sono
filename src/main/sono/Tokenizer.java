@@ -27,7 +27,8 @@ public class Tokenizer {
 			entry("<=", 6), entry(">=", 6), entry("&&", 5), entry("||", 5), entry("=", -4), entry("+=", -4),
 			entry("-=", -4), entry("*=", -4), entry("/=", -4), entry("%=", -4), entry("->", 7), entry("//", 6),
 			entry("~", 7), entry("in", 3), entry("switch", 3), entry("do", 3), entry(":", 5), entry("until", 4),
-			entry("then", 3), entry("else", -3), entry("try", -4), entry("catch", 3), entry(",", 2), entry(";", -1));
+			entry("then", 3), entry("else", -3), entry("try", -4), entry("catch", 3), entry(",", 2), entry(";", -1),
+			entry("|", 999));
 
 	public static List<String> tokenize(String str) {
 		char pChar = 0;
@@ -190,7 +191,8 @@ public class Tokenizer {
 		Deque<String> postFeatures = new ArrayDeque<>();
 		for (int i = 0; i < newTokens.size(); i++) {
 			String t = newTokens.get(i);
-			if (t.equals(".positive") || t.equals(".negative") || t.equals("~")) {
+			if (t.equals("|")) {
+				String t1 = postFeatures.pollLast();
 				String t2 = newTokens.get(i + 1);
 				boolean flag = false;
 				for (int j = 0; j < Phone.Feature.values().length; j++) {
@@ -200,26 +202,14 @@ public class Tokenizer {
 					}
 				}
 				if (flag) {
-					postFeatures.add("@" + (t.equals(".positive") ? "+" : "-") + t2);
+					if (t1.equals(".positive"))
+						t1 = "+";
+					else if (t1.equals(".negative"))
+						t1 = "-";
+					postFeatures.add("@" + t1 + "|" + t2);
 					i++;
 				} else {
-					postFeatures.add(t);
-				}
-			} else if (t.equals("A") || t.equals("B") || t.equals("C")) {
-				String t2 = newTokens.get(i + 1);
-				String t3 = newTokens.get(i + 2);
-				boolean flag = false;
-				for (int j = 0; j < Phone.Feature.values().length; j++) {
-					if (t3.equals(Phone.Feature.values()[j].toString())) {
-						flag = true;
-						break;
-					}
-				}
-				if (t2.equals("-") && flag) {
-					postFeatures.add("@" + t + t2 + t3);
-					i += 2;
-				} else {
-					postFeatures.add(t);
+					throw new SonoCompilationException("Cannot parse feature <" + t1 + "|" + t2 + ">");
 				}
 			} else {
 				postFeatures.add(t);

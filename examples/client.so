@@ -9,17 +9,17 @@ var input = client.getInput();
 var line;
 
 (line = Input.line()) != "" do {
-	print("Client Sending:\t" + line);
+	println("Client Sending:\t" + line);
 	output.send(line);
 	line == "exit" then {
 		break;
 	};
-	print("Client Recieved:\t" + input.read());
+	println("Client Recieved:\t" + input.read());
 };
-print("Exiting Client...");
+println("Exiting Client...");
 output.send("");
 
 output.close();
 input.close();
 client.close();
-print("Done.");
+println("Done.");

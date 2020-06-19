@@ -17,17 +17,18 @@ public class PhoneManager implements Serializable {
 	}
 
 	public Word interpretSequence(String s) {
-		Word word = new Word();
+		List<Phone> phones = new ArrayList<>();
+		List<Word.SyllableDelim> delims = new ArrayList<>();
 		int i = 0;
 		while (i < s.length()) {
-			if (s.charAt(i) == '.') {
-				word.add(Word.SyllableDelim.DELIM);
+			if (s.charAt(i) == '+') {
+				delims.add(Word.SyllableDelim.MORPHEME);
 				i++;
-				continue;
-			} else if (s.charAt(i) == '+') {
-				word.add(Word.SyllableDelim.MORPHEME);
+			} else if (s.charAt(i) == '.') {
+				delims.add(Word.SyllableDelim.DELIM);
 				i++;
-				continue;
+			} else {
+				delims.add(Word.SyllableDelim.NULL);
 			}
 			StringBuilder curr = new StringBuilder();
 			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString()))) {
@@ -37,10 +38,10 @@ public class PhoneManager implements Serializable {
 				curr.append(s.charAt(i++));
 			}
 			if (curr.length() > 0) {
-				word.add(interpretSegment(curr.toString()));
+				phones.add(interpretSegment(curr.toString()));
 			}
 		}
-		return word;
+		return new Word(phones, delims);
 	}
 
 	public Phone interpretSegment(String s) {
@@ -89,38 +90,9 @@ public class PhoneManager implements Serializable {
 	}
 
 	public Pair interpretFeature(String s) {
-		char q = s.charAt(0);
-		String value;
-		if (s.charAt(1) == '-')
-			value = s.substring(2);
-		else
-			value = s.substring(1);
-		Phone.Quality quality = null;
-		switch (q) {
-			case '+':
-				quality = Phone.Quality.TRUE;
-				break;
-			case '-':
-				quality = Phone.Quality.FALSE;
-				break;
-			case '~':
-				quality = Phone.Quality.ANY;
-				break;
-			case '0':
-				quality = Phone.Quality.NULL;
-				break;
-			case 'A':
-				quality = Phone.Quality.ALPHA;
-				break;
-			case 'B':
-				quality = Phone.Quality.BETA;
-				break;
-			case 'C':
-				quality = Phone.Quality.GAMMA;
-				break;
-			default:
-				throw new IllegalArgumentException("Feature <" + s + "> not able to be interpreted.");
-		}
+		String[] split = s.split("\\|");
+		String quality = split[0];
+		String value = split[1];
 		Phone.Feature feature = null;
 		for (Phone.Feature f : Phone.Feature.values()) {
 			if (f.toString().equals(value)) {
@@ -141,9 +113,9 @@ public class PhoneManager implements Serializable {
 			Phone temp = phoneLibrary.get(i);
 			boolean flag = true;
 			for (Pair e : features) {
-				if (e.getQuality() == Phone.Quality.NULL)
+				if (e.getQuality().equals("0"))
 					continue;
-				if (e.getQuality() != temp.getFeatureQuality(e.getFeature())) {
+				if (!e.getQuality().equals(temp.getFeatureQuality(e.getFeature()))) {
 					flag = false;
 					break;
 				}
@@ -189,14 +161,14 @@ public class PhoneManager implements Serializable {
 	public Matrix getCommon(List<Phone> phones) {
 		Matrix common = new Matrix();
 		for (int i = 0; i < Phone.Feature.values().length; i++) {
-			Phone.Quality f = phones.get(0).getFeatureQuality(Phone.Feature.values()[i]);
+			String f = phones.get(0).getFeatureQuality(Phone.Feature.values()[i]);
 			boolean flag = true;
 			for (int j = 1; j < phones.size(); j++)
-				if (phones.get(j).getFeatureQuality(Phone.Feature.values()[i]) != f) {
+				if (!phones.get(j).getFeatureQuality(Phone.Feature.values()[i]).equals(f)) {
 					flag = false;
 					break;
 				}
-			if (flag && f != Phone.Quality.NULL)
+			if (flag && !f.equals("0"))
 				common.put(Phone.Feature.values()[i], f);
 		}
 		return common;
@@ -205,8 +177,8 @@ public class PhoneManager implements Serializable {
 	public Matrix getContrast(Phone a, Phone b) {
 		Matrix contrast = new Matrix();
 		for (int i = 0; i < Phone.Feature.values().length; i++) {
-			if (a.getFeatureQuality(Phone.Feature.values()[i]) != b.getFeatureQuality(Phone.Feature.values()[i])
-					&& b.getFeatureQuality(Phone.Feature.values()[i]) != Phone.Quality.NULL) {
+			if (!a.getFeatureQuality(Phone.Feature.values()[i]).equals(b.getFeatureQuality(Phone.Feature.values()[i]))
+					&& !b.getFeatureQuality(Phone.Feature.values()[i]).equals("0")) {
 				contrast.put(Phone.Feature.values()[i], b.getFeatureQuality(Phone.Feature.values()[i]));
 			}
 		}

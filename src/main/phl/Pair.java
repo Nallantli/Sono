@@ -6,9 +6,9 @@ public class Pair implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Phone.Feature feature;
-	private Phone.Quality quality;
+	private String quality;
 
-	public Pair(Phone.Feature feature, Phone.Quality quality) {
+	public Pair(Phone.Feature feature, String quality) {
 		this.feature = feature;
 		this.quality = quality;
 	}
@@ -17,13 +17,13 @@ public class Pair implements Serializable {
 		return this.feature;
 	}
 
-	public Phone.Quality getQuality() {
+	public String getQuality() {
 		return this.quality;
 	}
 
 	@Override
 	public String toString() {
-		return quality.toString() + feature.toString();
+		return quality + "|" + feature.toString();
 	}
 
 	@Override
@@ -33,6 +33,6 @@ public class Pair implements Serializable {
 		if (o.getClass() != this.getClass())
 			return false;
 		Pair p = (Pair) o;
-		return feature == p.getFeature() && quality == p.getQuality();
+		return feature == p.getFeature() && quality.equals(p.getQuality());
 	}
 }

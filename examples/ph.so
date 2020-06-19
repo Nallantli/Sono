@@ -1,0 +1,13 @@
+load "system";
+
+println("German");
+load "ph/deu";
+
+println("\nJapanese");
+load "ph/jpn";
+
+println("\nNahuatl");
+load "ph/nah";
+
+println("\nEpenthesis");
+load "ph/epenthesis";

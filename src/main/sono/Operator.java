@@ -156,16 +156,9 @@ public abstract class Operator {
 			if (datumB.getType() == Datum.Type.RULE) {
 				Word result = datumB.getRule(trace).transform(datumA.getWord(trace));
 				return new Datum(result);
-			} else if (datumB.getType() == Datum.Type.VECTOR) {
-				List<Datum> transformation = datumB.getVector(trace);
-				Datum curr = datumA;
-				for (Datum t : transformation)
-					curr = (new Operator.Transform(new Operator.Container(curr), new Operator.Container(t)))
-							.evaluate(scope, interpreter, new ArrayList<>(trace));
-				return curr;
 			} else {
 				throw new SonoRuntimeException("Cannot transform value <" + datumA.toStringTrace(trace)
-						+ "> with non-Matrix value <" + datumB.toStringTrace(trace) + ">", trace);
+						+ "> with value <" + datumB.toStringTrace(trace) + ">", trace);
 			}
 		}
 
@@ -671,10 +664,26 @@ public abstract class Operator {
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (datumA.getType() == Datum.Type.VECTOR) {
-				List<Object> phones = new ArrayList<>();
-				for (Datum d : datumA.getVector(trace))
-					phones.add(d.getPhone(trace));
-				return new Datum(new Word(phones));
+				List<Phone> phones = new ArrayList<>();
+				List<Word.SyllableDelim> delims = new ArrayList<>();
+				for (Datum d : datumA.getVector(trace)) {
+					if (d.getType() == Datum.Type.PHONE) {
+						phones.add(d.getPhone(trace));
+						delims.add(Word.SyllableDelim.NULL);
+					} else if (d.getType() == Datum.Type.STRING) {
+						switch (d.getString(trace)) {
+							case ".":
+								delims.add(Word.SyllableDelim.DELIM);
+								break;
+							case "+":
+								delims.add(Word.SyllableDelim.MORPHEME);
+								break;
+							default:
+								throw new SonoRuntimeException("Value <" + d.getString(trace) + "> is not applicable as a word delimeter", trace);
+						}
+					}
+				}
+				return new Datum(new Word(phones, delims));
 			} else if (datumA.getType() == Datum.Type.STRING) {
 				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(trace)));
 			}
@@ -717,8 +726,11 @@ public abstract class Operator {
 						throw new SonoRuntimeException(
 								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
 								trace);
-					for (int i = 0; i < datumA.getWord(trace).size(); i++)
+					for (int i = 0; i < datumA.getWord(trace).size(); i++) {
+						if (datumA.getWord(trace).getDelim(i) != Word.SyllableDelim.NULL)
+							list.add(new Datum(datumA.getWord(trace).getDelim(i).toString()));
 						list.add(new Datum(datumA.getWord(trace).get(i)));
+					}
 					break;
 				case VECTOR:
 					return datumA;

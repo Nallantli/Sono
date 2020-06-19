@@ -1,0 +1,39 @@
+Vector::apply(&this, ruleset) => {
+	var applied = {};
+	e in this do {
+		type ruleset == "Vector" then {
+			var temp = e;
+			r in ruleset do {
+				temp = temp >> r;
+			};
+			applied += { temp };
+		} else {
+			applied += {e >> ruleset};
+		};
+	};
+	return applied;
+};
+
+Word::apply(&this, ruleset) => {
+	var applied = this;
+	type ruleset == "Vector" then {
+		r in ruleset do {
+			applied = applied >> r;
+		};
+	} else {
+		applied = applied >> ruleset;
+	};
+	return applied;
+};
+
+Word::apply(&this, ruleset) => {
+	var applied = this;
+	type ruleset == "Vector" then {
+		r in ruleset do {
+			applied = applied >> r;
+		};
+	} else {
+		applied = applied >> ruleset;
+	};
+	return applied;
+};
