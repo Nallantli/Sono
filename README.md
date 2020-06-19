@@ -216,7 +216,7 @@ For instance, a rather complicated nasal assimilation rule in Japanese:
 
 ```sono
 # The moraic nasal assimilates to the place of the following consonant
-S : 'ɴ' -> {[C-LAB, C-round, C-ld, C-COR, C-ant, C-dist, C-DOR, C-high, C-low, C-front, C-back]} // {} ~ {[-syl, +cons, C-LAB, C-round, C-ld, C-COR, C-ant, C-dist, C-DOR, C-high, C-low, C-front, C-back]};
+S : 'ɴ' -> {[1|LAB, 1|round, 1|ld, 1|COR, 1|ant, 1|dist, 1|DOR, 1|high, 1|low, 1|front, 1|back]} // {} ~ {[-|syl, +|cons, 1|LAB, 1|round, 1|ld, 1|COR, 1|ant, 1|dist, 1|DOR, 1|high, 1|low, 1|front, 1|back]};
 ```
 
 Place assimilation may be revised in the future using macros for the sake of brevity.
