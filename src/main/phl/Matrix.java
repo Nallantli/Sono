@@ -9,46 +9,47 @@ import java.util.NoSuchElementException;
 public class Matrix implements Iterable<Pair>, Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private List<Pair> holder;
+	private final List<Pair> holder;
 
 	public Matrix() {
 		holder = new ArrayList<>();
 	}
 
-	public Matrix(Pair... entries) {
+	public Matrix(final Pair... entries) {
 		holder = new ArrayList<>(List.of(entries));
 	}
 
-	private int getIndexOf(Phone.Feature key) {
+	private int getIndexOf(final Phone.Feature key) {
 		for (int i = 0; i < holder.size(); i++)
 			if (holder.get(i).getFeature() == key)
 				return i;
 		return -1;
 	}
 
-	public String get(Phone.Feature key) {
-		int i = getIndexOf(key);
+	public String get(final Phone.Feature key) {
+		final int i = getIndexOf(key);
 		if (i >= 0)
 			return holder.get(i).getQuality();
 		return "0";
 	}
 
-	public Pair get(int i) {
+	public Pair get(final int i) {
 		return holder.get(i);
 	}
 
 	public void put(Pair p) {
-		if (Phone.majorClasses.containsKey(p.getFeature()) && (p.getQuality().equals("-") || p.getQuality().equals("~"))) {
-			for (Phone.Feature f : Phone.majorClasses.get(p.getFeature()))
+		if (Phone.majorClasses.containsKey(p.getFeature())
+				&& (p.getQuality().equals("-") || p.getQuality().equals("~"))) {
+			for (final Phone.Feature f : Phone.majorClasses.get(p.getFeature()))
 				put(f, "0");
 		} else {
-			Phone.Feature im = Phone.inMajorClass(p.getFeature());
+			final Phone.Feature im = Phone.inMajorClass(p.getFeature());
 			if (im != null && get(im).equals("~")) {
 				p = new Pair(p.getFeature(), "0");
 			}
 		}
 
-		int i = getIndexOf(p.getFeature());
+		final int i = getIndexOf(p.getFeature());
 
 		if (p.getQuality().equals("0") && i >= 0) {
 			holder.remove(i);
@@ -63,13 +64,14 @@ public class Matrix implements Iterable<Pair>, Serializable {
 			holder.add(p);
 	}
 
-	public void put(Phone.Feature f, String q) {
+	public void put(final Phone.Feature f, final String q) {
 		put(new Pair(f, q));
 	}
 
-	public void putAll(Matrix m) {
-		for (Pair p : m.holder) {
-			if ((get(p.getFeature()).equals("+") && p.getQuality().equals("-")) || (get(p.getFeature()).equals("-") && p.getQuality().equals("+")))
+	public void putAll(final Matrix m) {
+		for (final Pair p : m.holder) {
+			if ((get(p.getFeature()).equals("+") && p.getQuality().equals("-"))
+					|| (get(p.getFeature()).equals("-") && p.getQuality().equals("+")))
 				put(new Pair(p.getFeature(), "~"));
 			else if (get(p.getFeature()).equals("~") || p.getQuality().equals("~"))
 				put(new Pair(p.getFeature(), "~"));
@@ -97,15 +99,15 @@ public class Matrix implements Iterable<Pair>, Serializable {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())
 			return false;
-		Matrix m = (Matrix) o;
+		final Matrix m = (Matrix) o;
 		if (size() != m.size())
 			return false;
-		for (Pair p : holder) {
+		for (final Pair p : holder) {
 			if (!m.get(p.getFeature()).equals(p.getQuality()))
 				return false;
 		}
@@ -114,10 +116,10 @@ public class Matrix implements Iterable<Pair>, Serializable {
 }
 
 class MatrixIterator implements Iterator<Pair> {
-	List<Pair> holder;
-	int i;
+	private final List<Pair> holder;
+	private int i;
 
-	MatrixIterator(List<Pair> holder) {
+	MatrixIterator(final List<Pair> holder) {
 		this.holder = holder;
 		i = 0;
 	}

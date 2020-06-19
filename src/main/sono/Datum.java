@@ -110,72 +110,72 @@ public class Datum {
 		this.type = Type.NULL;
 	}
 
-	public Datum(Datum datum, Scope parent, List<String> trace) {
+	public Datum(final Datum datum, final Scope parent, final List<String> trace) {
 		this.set(datum, trace);
 		if (this.type == Type.FUNCTION) {
-			for (Map.Entry<Type, Function> e : valueFunction.entrySet())
+			for (final Map.Entry<Type, Function> e : valueFunction.entrySet())
 				e.getValue().setParent(parent);
 		}
 	}
 
-	public Datum(Type type) {
+	public Datum(final Type type) {
 		this.type = type;
 		this.mutable = false;
 		this.templative = true;
 	}
 
-	public Datum(List<Datum> valueVector) {
+	public Datum(final List<Datum> valueVector) {
 		this.type = Type.VECTOR;
 		this.valueVector = valueVector;
 	}
 
-	public Datum(Structure valueStructure) {
+	public Datum(final Structure valueStructure) {
 		this.type = Type.STRUCTURE;
 		this.valueStructure = valueStructure;
 	}
 
-	public Datum(String valueString) {
+	public Datum(final String valueString) {
 		this.type = Type.STRING;
 		this.valueString = valueString;
 	}
 
-	public Datum(Phone valuePhone) {
+	public Datum(final Phone valuePhone) {
 		this.type = Type.PHONE;
 		this.valuePhone = valuePhone;
 	}
 
-	public Datum(Pair valuePair) {
+	public Datum(final Pair valuePair) {
 		this.type = Type.PAIR;
 		this.valuePair = valuePair;
 	}
 
-	public Datum(Matrix valueMatrix) {
+	public Datum(final Matrix valueMatrix) {
 		this.type = Type.MATRIX;
 		this.valueMatrix = valueMatrix;
 	}
 
-	public Datum(Rule valueRule) {
+	public Datum(final Rule valueRule) {
 		this.type = Type.RULE;
 		this.valueRule = valueRule;
 	}
 
-	public Datum(BigDecimal valueNumber) {
+	public Datum(final BigDecimal valueNumber) {
 		this.type = Type.NUMBER;
 		this.valueNumber = valueNumber.stripTrailingZeros();
 	}
 
-	public Datum(Type fType, Function valueFunction) {
+	public Datum(final Type fType, final Function valueFunction) {
 		this.type = Type.FUNCTION;
 		this.valueFunction = new EnumMap<>(Type.class);
 		this.valueFunction.put(fType, valueFunction);
 	}
 
-	public Datum(Word valueWord) {
+	public Datum(final Word valueWord) {
 		this.type = Type.WORD;
 		this.valueWord = valueWord;
 	}
 
-	public Datum(Object valuePointer) {
+	public Datum(final Object valuePointer) {
 		this.type = Type.POINTER;
 		this.valuePointer = valuePointer;
 	}
@@ -196,43 +196,43 @@ public class Datum {
 		return this.type.toString();
 	}
 
-	public Phone getPhone(List<String> trace) {
+	public Phone getPhone(final List<String> trace) {
 		if (type != Type.PHONE)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Phone.", trace);
 		return this.valuePhone;
 	}
 
-	public Matrix getMatrix(List<String> trace) {
+	public Matrix getMatrix(final List<String> trace) {
 		if (type != Type.MATRIX)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Matrix.", trace);
 		return this.valueMatrix;
 	}
 
-	public Rule getRule(List<String> trace) {
+	public Rule getRule(final List<String> trace) {
 		if (type != Type.RULE)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Rule.", trace);
 		return this.valueRule;
 	}
 
-	public String getString(List<String> trace) {
+	public String getString(final List<String> trace) {
 		if (type != Type.STRING)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a String.", trace);
 		return this.valueString;
 	}
 
-	public BigDecimal getNumber(List<String> trace) {
+	public BigDecimal getNumber(final List<String> trace) {
 		if (type != Type.NUMBER)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Number.", trace);
 		return this.valueNumber;
 	}
 
-	public Structure getStructure(List<String> trace) {
+	public Structure getStructure(final List<String> trace) {
 		if (type != Type.STRUCTURE)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Structure.", trace);
 		return this.valueStructure;
 	}
 
-	public Function getFunction(Type fType, List<String> trace) {
+	public Function getFunction(final Type fType, final List<String> trace) {
 		if (type != Type.FUNCTION)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Function.", trace);
 		if (this.valueFunction.containsKey(fType))
@@ -241,23 +241,23 @@ public class Datum {
 			return null;
 	}
 
-	public Object getPointer(List<String> trace) {
+	public Object getPointer(final List<String> trace) {
 		if (type != Type.POINTER)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Pointer.", trace);
 		return this.valuePointer;
 	}
 
-	public Word getWord(List<String> trace) {
+	public Word getWord(final List<String> trace) {
 		if (type != Type.WORD)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Word.", trace);
 		return this.valueWord;
 	}
 
-	public void setMutable(boolean mutable) {
+	public void setMutable(final boolean mutable) {
 		this.mutable = mutable;
 	}
 
-	public void set(Datum datum, List<String> trace) {
+	public void set(final Datum datum, final List<String> trace) {
 		if (!mutable)
 			throw new SonoRuntimeException("You cannot set the value of a constant.", trace);
 		this.type = datum.getType();
@@ -275,8 +275,8 @@ public class Datum {
 				this.valuePointer = null;
 
 				this.valueVector = new ArrayList<>();
-				for (Datum d : datum.getVector(trace)) {
-					Datum n = new Datum();
+				for (final Datum d : datum.getVector(trace)) {
+					final Datum n = new Datum();
 					n.set(d, trace);
 					this.valueVector.add(n);
 				}
@@ -294,7 +294,7 @@ public class Datum {
 				this.valuePointer = null;
 
 				this.valueMatrix = new Matrix();
-				for (Pair p : datum.valueMatrix)
+				for (final Pair p : datum.valueMatrix)
 					this.valueMatrix.put(p.getFeature(), p.getQuality());
 				break;
 			case PAIR:
@@ -309,7 +309,7 @@ public class Datum {
 				this.valueStructure = null;
 				this.valuePointer = null;
 
-				Pair temp = datum.getPair(trace);
+				final Pair temp = datum.getPair(trace);
 				this.valuePair = new Pair(temp.getFeature(), temp.getQuality());
 				break;
 			case PHONE:
@@ -444,7 +444,7 @@ public class Datum {
 		}
 	}
 
-	public String toStringTrace(List<String> trace) {
+	public String toStringTrace(final List<String> trace) {
 		if (templative)
 			return "OBJ-" + type;
 		switch (type) {
@@ -477,7 +477,7 @@ public class Datum {
 		}
 	}
 
-	public String toRawStringTrace(List<String> trace) {
+	public String toRawStringTrace(final List<String> trace) {
 		if (templative)
 			return "OBJ-" + type;
 		switch (type) {
@@ -515,19 +515,19 @@ public class Datum {
 		return this.toStringTrace(new ArrayList<>());
 	}
 
-	public Pair getPair(List<String> trace) {
+	public Pair getPair(final List<String> trace) {
 		if (type != Type.PAIR)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Pair.", trace);
 		return valuePair;
 	}
 
-	public List<Datum> getVector(List<String> trace) {
+	public List<Datum> getVector(final List<String> trace) {
 		if (type != Type.VECTOR)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a List.", trace);
 		return valueVector;
 	}
 
-	public void setRet(boolean ret) {
+	public void setRet(final boolean ret) {
 		this.ret = ret;
 	}
 
@@ -540,13 +540,13 @@ public class Datum {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())
 			return false;
 
-		Datum d = (Datum) o;
+		final Datum d = (Datum) o;
 
 		if (type != d.getType())
 			return false;

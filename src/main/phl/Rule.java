@@ -42,7 +42,7 @@ public class Rule {
 	private final List<Object> fin;
 	private final List<Object> trans;
 
-	private Type type;
+	private final Type type;
 
 	public static class DeleteForward extends Rule {
 		public DeleteForward(final Object search, final List<Object> trans, final List<Object> init,
@@ -74,28 +74,28 @@ public class Rule {
 	}
 
 	public Word transform(final Word sequence) {
-		List<Phone> phones = new ArrayList<>();
-		List<Word.SyllableDelim> delims = new ArrayList<>();
+		final List<Phone> phones = new ArrayList<>();
+		final List<Word.SyllableDelim> delims = new ArrayList<>();
 		boolean assimilateFlag = false;
 		for (int i = 0; i < sequence.size(); i++) {
 			if (assimilateFlag) {
 				assimilateFlag = false;
 				continue;
 			}
-			Map<Integer, Matrix> assimilationMaps = new HashMap<>();
-			Phone phone = sequence.get(i);
-			Word.SyllableDelim delim = sequence.getDelim(i);
+			final Map<Integer, Matrix> assimilationMaps = new HashMap<>();
+			final Phone phone = sequence.get(i);
+			final Word.SyllableDelim delim = sequence.getDelim(i);
 
 			Object tempSearch = search;
-			List<Object> tempInit = new ArrayList<>();
-			List<Object> tempFin = new ArrayList<>();
-			List<Object> tempTrans = new ArrayList<>();
+			final List<Object> tempInit = new ArrayList<>();
+			final List<Object> tempFin = new ArrayList<>();
+			final List<Object> tempTrans = new ArrayList<>();
 
 			int currentIndex = 0;
 			if (search != null && search.getClass() == Matrix.class) {
 				tempSearch = new Matrix();
 				((Matrix) tempSearch).putAll((Matrix) search);
-				for (Pair se : (Matrix) tempSearch) {
+				for (final Pair se : (Matrix) tempSearch) {
 					if (se.getQuality().equals(String.valueOf(currentIndex))) {
 						if (assimilationMaps.get(currentIndex) == null)
 							assimilationMaps.put(currentIndex, new Matrix());
@@ -106,13 +106,13 @@ public class Rule {
 			}
 			currentIndex++;
 			for (int j = 0; j < init.size(); j++) {
-				Phone target = sequence.get((i - init.size()) + j);
-				Object e = init.get(j);
+				final Phone target = sequence.get((i - init.size()) + j);
+				final Object e = init.get(j);
 				if (target != null && target.getClass() == Phone.class && e.getClass() == Matrix.class) {
-					Matrix temp = new Matrix();
+					final Matrix temp = new Matrix();
 					temp.putAll((Matrix) e);
 					tempInit.add(0, temp);
-					for (Pair ie : temp) {
+					for (final Pair ie : temp) {
 						if (ie.getQuality().equals(String.valueOf(currentIndex))) {
 							if (assimilationMaps.get(currentIndex) == null)
 								assimilationMaps.put(currentIndex, new Matrix());
@@ -129,13 +129,13 @@ public class Rule {
 				}
 			}
 			for (int j = 0; j < fin.size(); j++) {
-				Phone target = sequence.get(i + j + (search != null ? 1 : 0));
-				Object e = fin.get(j);
+				final Phone target = sequence.get(i + j + (search != null ? 1 : 0));
+				final Object e = fin.get(j);
 				if (target != null && target.getClass() == Phone.class && e.getClass() == Matrix.class) {
-					Matrix temp = new Matrix();
+					final Matrix temp = new Matrix();
 					temp.putAll((Matrix) e);
 					tempFin.add(temp);
-					for (Pair fe : temp) {
+					for (final Pair fe : temp) {
 						if (fe.getQuality().equals(String.valueOf(currentIndex))) {
 							if (assimilationMaps.get(currentIndex) == null)
 								assimilationMaps.put(currentIndex, new Matrix());
@@ -152,9 +152,9 @@ public class Rule {
 				}
 			}
 			for (int j = 0; j < trans.size(); j++) {
-				Object e = trans.get(j);
+				final Object e = trans.get(j);
 				if (e.getClass() == Matrix.class) {
-					Matrix temp = new Matrix();
+					final Matrix temp = new Matrix();
 					temp.putAll((Matrix) e);
 					tempTrans.add(temp);
 				} else {
@@ -162,24 +162,24 @@ public class Rule {
 				}
 			}
 
-			for (Map.Entry<Integer, Matrix> e : assimilationMaps.entrySet()) {
+			for (final Map.Entry<Integer, Matrix> e : assimilationMaps.entrySet()) {
 				if (tempSearch != null && tempSearch.getClass() == Matrix.class)
-					for (Pair feature : e.getValue())
+					for (final Pair feature : e.getValue())
 						if (((Matrix) tempSearch).get(feature.getFeature()).equals(String.valueOf(e.getKey())))
 							((Matrix) tempSearch).put(feature.getFeature(), feature.getQuality());
-				for (Object m : tempInit)
+				for (final Object m : tempInit)
 					if (m.getClass() == Matrix.class)
-						for (Pair feature : e.getValue())
+						for (final Pair feature : e.getValue())
 							if (((Matrix) m).get(feature.getFeature()).equals(String.valueOf(e.getKey())))
 								((Matrix) m).put(feature.getFeature(), feature.getQuality());
-				for (Object m : tempFin)
+				for (final Object m : tempFin)
 					if (m.getClass() == Matrix.class)
-						for (Pair feature : e.getValue())
+						for (final Pair feature : e.getValue())
 							if (((Matrix) m).get(feature.getFeature()).equals(String.valueOf(e.getKey())))
 								((Matrix) m).put(feature.getFeature(), feature.getQuality());
-				for (Object m : tempTrans)
+				for (final Object m : tempTrans)
 					if (m.getClass() == Matrix.class)
-						for (Pair feature : e.getValue())
+						for (final Pair feature : e.getValue())
 							if (((Matrix) m).get(feature.getFeature()).equals(String.valueOf(e.getKey())))
 								((Matrix) m).put(feature.getFeature(), feature.getQuality());
 			}
@@ -215,7 +215,7 @@ public class Rule {
 					phones.remove(phones.size() - 1);
 					delims.remove(delims.size() - 1);
 				}
-				for (Object e : tempTrans) {
+				for (final Object e : tempTrans) {
 					Phone addition = null;
 					if (e.getClass() == Matrix.class) {
 						addition = phone.transform((Matrix) e, true);
@@ -243,7 +243,7 @@ public class Rule {
 		return new Word(phones, delims);
 	}
 
-	private boolean applicable(int index, Word sequence, Object o) {
+	private boolean applicable(final int index, final Word sequence, final Object o) {
 		if (sequence.get(index) != null && (o.getClass() == Phone.class || o.getClass() == Matrix.class)) {
 			if (o.getClass() == Matrix.class) {
 				return ((Phone) sequence.get(index)).hasFeatures((Matrix) o);
@@ -272,7 +272,7 @@ public class Rule {
 
 	@Override
 	public String toString() {
-		StringBuilder s = new StringBuilder();
+		final StringBuilder s = new StringBuilder();
 		switch (type) {
 			case A_BACKWARD:
 				s.append("Ab : ");
@@ -298,10 +298,10 @@ public class Rule {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (o.getClass() != this.getClass())
 			return false;
-		Rule r = (Rule) o;
+		final Rule r = (Rule) o;
 		if (type != r.type)
 			return false;
 		if (search != null && !search.equals(r.search))

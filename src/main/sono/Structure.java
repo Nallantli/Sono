@@ -6,16 +6,16 @@ import java.util.ArrayList;
 import main.sono.err.SonoRuntimeException;
 
 public class Structure {
-	private Scope parent;
-	private Scope mainScope;
-	private Operator main;
-	private boolean stat;
-	private String key;
-	private Interpreter interpreter;
+	private final Scope parent;
+	private final Scope mainScope;
+	private final Operator main;
+	private final boolean stat;
+	private final String key;
+	private final Interpreter interpreter;
 
-	boolean instantiated;
+	private final boolean instantiated;
 
-	public Structure(boolean stat, Scope parent, Operator main, String key, Interpreter interpreter) {
+	public Structure(final boolean stat, final Scope parent, final Operator main, final String key, final Interpreter interpreter) {
 		this.stat = stat;
 		this.parent = parent;
 		this.main = main;
@@ -25,7 +25,8 @@ public class Structure {
 		this.instantiated = false;
 	}
 
-	public Structure(Structure structure, List<String> trace) {
+	public Structure(final Structure structure, final List<String> trace) {
+		this.interpreter = structure.interpreter;
 		this.stat = structure.stat;
 		this.parent = structure.parent;
 		this.main = structure.main;
@@ -42,18 +43,18 @@ public class Structure {
 		return this.mainScope;
 	}
 
-	public Datum instantiate(List<Datum> params, List<String> trace) {
+	public Datum instantiate(final List<Datum> params, final List<String> trace) {
 		if (stat)
 			throw new SonoRuntimeException("Cannot instantiate a static class.", trace);
-		Structure structure = new Structure(this, trace);
+		final Structure structure = new Structure(this, trace);
 		structure.main.evaluate(structure.mainScope, interpreter, new ArrayList<>(trace));
 		structure.mainScope.setVariable("this", new Datum(structure), trace);
-		structure.mainScope.getVariable("init", trace).getFunction(Datum.Type.ANY, trace).execute(params, new ArrayList<>(trace));
-		structure.interpreter = interpreter;
+		structure.mainScope.getVariable("init", trace).getFunction(Datum.Type.ANY, trace).execute(params,
+				new ArrayList<>(trace));
 		return structure.mainScope.getVariable("this", trace);
 	}
 
-	public String toStringTrace(List<String> trace) {
+	public String toStringTrace(final List<String> trace) {
 		if (!instantiated)
 			return (stat ? "STATIC-" : "STRUCT-") + key;
 		else {

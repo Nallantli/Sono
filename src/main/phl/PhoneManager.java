@@ -8,17 +8,17 @@ import java.util.Map;
 public class PhoneManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private List<Phone> phoneLibrary;
-	private List<String> baseValues;
+	private final List<Phone> phoneLibrary;
+	private final List<String> baseValues;
 
 	public PhoneManager() {
 		phoneLibrary = new ArrayList<>();
 		baseValues = new ArrayList<>();
 	}
 
-	public Word interpretSequence(String s) {
-		List<Phone> phones = new ArrayList<>();
-		List<Word.SyllableDelim> delims = new ArrayList<>();
+	public Word interpretSequence(final String s) {
+		final List<Phone> phones = new ArrayList<>();
+		final List<Word.SyllableDelim> delims = new ArrayList<>();
 		int i = 0;
 		while (i < s.length()) {
 			if (s.charAt(i) == '+') {
@@ -30,7 +30,7 @@ public class PhoneManager implements Serializable {
 			} else {
 				delims.add(Word.SyllableDelim.NULL);
 			}
-			StringBuilder curr = new StringBuilder();
+			final StringBuilder curr = new StringBuilder();
 			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString()))) {
 				curr.append(s.charAt(i++));
 			}
@@ -54,7 +54,7 @@ public class PhoneManager implements Serializable {
 			s = s.substring(1);
 		}
 		Phone base = null;
-		for (Phone p : phoneLibrary) {
+		for (final Phone p : phoneLibrary) {
 			if (p.getSegment().equals(segment)) {
 				base = p;
 				break;
@@ -64,10 +64,10 @@ public class PhoneManager implements Serializable {
 			throw new IllegalArgumentException(
 					"Cannot interpret [" + segment + s + "], no base phone found from data.");
 
-		List<Phone.Secondary> applied = new ArrayList<>();
+		final List<Phone.Secondary> applied = new ArrayList<>();
 		for (int i = 0; i < s.length(); i++) {
 			boolean flag = false;
-			for (Map.Entry<Phone.Secondary, SecondaryArticulation> e : Phone.secondaryLibrary.entrySet()) {
+			for (final Map.Entry<Phone.Secondary, SecondaryArticulation> e : Phone.secondaryLibrary.entrySet()) {
 				if (s.charAt(i) == e.getValue().getSegment().charAt(0)) {
 					flag = true;
 					if (e.getValue().canApply(base, applied)) {
@@ -89,12 +89,12 @@ public class PhoneManager implements Serializable {
 		return base;
 	}
 
-	public Pair interpretFeature(String s) {
-		String[] split = s.split("\\|");
-		String quality = split[0];
-		String value = split[1];
+	public Pair interpretFeature(final String s) {
+		final String[] split = s.split("\\|");
+		final String quality = split[0];
+		final String value = split[1];
 		Phone.Feature feature = null;
-		for (Phone.Feature f : Phone.Feature.values()) {
+		for (final Phone.Feature f : Phone.Feature.values()) {
 			if (f.toString().equals(value)) {
 				feature = f;
 				break;
@@ -107,12 +107,12 @@ public class PhoneManager implements Serializable {
 		return new Pair(feature, quality);
 	}
 
-	public Phone fuzzySearch(Phone p) {
-		Matrix features = p.getMatrix();
+	public Phone fuzzySearch(final Phone p) {
+		final Matrix features = p.getMatrix();
 		for (int i = 0; i < phoneLibrary.size(); i++) {
-			Phone temp = phoneLibrary.get(i);
+			final Phone temp = phoneLibrary.get(i);
 			boolean flag = true;
-			for (Pair e : features) {
+			for (final Pair e : features) {
 				if (e.getQuality().equals("0"))
 					continue;
 				if (!e.getQuality().equals(temp.getFeatureQuality(e.getFeature()))) {
@@ -126,8 +126,8 @@ public class PhoneManager implements Serializable {
 		return null;
 	}
 
-	public List<Phone> getPhones(List<Phone> library, Matrix map) {
-		List<Phone> phones = new ArrayList<>();
+	public List<Phone> getPhones(final List<Phone> library, final Matrix map) {
+		final List<Phone> phones = new ArrayList<>();
 
 		for (int i = 0; i < library.size(); i++) {
 			if (library.get(i).hasFeatures(map))
@@ -137,11 +137,11 @@ public class PhoneManager implements Serializable {
 		return phones;
 	}
 
-	public boolean contains(Phone phone) {
+	public boolean contains(final Phone phone) {
 		return phoneLibrary.contains(phone);
 	}
 
-	public void add(Phone phone) {
+	public void add(final Phone phone) {
 		if (!phone.getSegment().equals("*")) {
 			if (!phoneLibrary.contains(phone)) {
 				phoneLibrary.add(phone);
@@ -158,10 +158,10 @@ public class PhoneManager implements Serializable {
 		}
 	}
 
-	public Matrix getCommon(List<Phone> phones) {
-		Matrix common = new Matrix();
+	public Matrix getCommon(final List<Phone> phones) {
+		final Matrix common = new Matrix();
 		for (int i = 0; i < Phone.Feature.values().length; i++) {
-			String f = phones.get(0).getFeatureQuality(Phone.Feature.values()[i]);
+			final String f = phones.get(0).getFeatureQuality(Phone.Feature.values()[i]);
 			boolean flag = true;
 			for (int j = 1; j < phones.size(); j++)
 				if (!phones.get(j).getFeatureQuality(Phone.Feature.values()[i]).equals(f)) {
@@ -174,8 +174,8 @@ public class PhoneManager implements Serializable {
 		return common;
 	}
 
-	public Matrix getContrast(Phone a, Phone b) {
-		Matrix contrast = new Matrix();
+	public Matrix getContrast(final Phone a, final Phone b) {
+		final Matrix contrast = new Matrix();
 		for (int i = 0; i < Phone.Feature.values().length; i++) {
 			if (!a.getFeatureQuality(Phone.Feature.values()[i]).equals(b.getFeatureQuality(Phone.Feature.values()[i]))
 					&& !b.getFeatureQuality(Phone.Feature.values()[i]).equals("0")) {
@@ -189,7 +189,7 @@ public class PhoneManager implements Serializable {
 		return phoneLibrary;
 	}
 
-	public Phone validate(Phone p) {
+	public Phone validate(final Phone p) {
 		return phoneLibrary.get(phoneLibrary.indexOf(p));
 	}
 }

@@ -5,10 +5,10 @@ import java.io.Serializable;
 public class Pair implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Phone.Feature feature;
-	private String quality;
+	private final Phone.Feature feature;
+	private final String quality;
 
-	public Pair(Phone.Feature feature, String quality) {
+	public Pair(final Phone.Feature feature, final String quality) {
 		this.feature = feature;
 		this.quality = quality;
 	}
@@ -27,12 +27,12 @@ public class Pair implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())
 			return false;
-		Pair p = (Pair) o;
+		final Pair p = (Pair) o;
 		return feature == p.getFeature() && quality.equals(p.getQuality());
 	}
 }

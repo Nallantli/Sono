@@ -30,16 +30,16 @@ public class Tokenizer {
 			entry("then", 3), entry("else", -3), entry("try", -4), entry("catch", 3), entry(",", 2), entry(";", -1),
 			entry("|", 999));
 
-	public static List<String> tokenize(String str) {
+	public static List<String> tokenize(final String str) {
 		char pChar = 0;
 		int mode = 0;
 		char lastChar = 0;
 		boolean comment = false;
-		List<StringBuilder> tokens = new ArrayList<>();
+		final List<StringBuilder> tokens = new ArrayList<>();
 		tokens.add(new StringBuilder("#["));
 
 		for (int i = 0; i < str.length(); i++) {
-			char c = str.charAt(i);
+			final char c = str.charAt(i);
 			if (comment) {
 				if (c == '\n' || c == '\r') {
 					comment = false;
@@ -54,7 +54,7 @@ public class Tokenizer {
 					if (lastChar == '\\') {
 						tokens.get(tokens.size() - 1).substring(0, tokens.get(tokens.size() - 1).length() - 1);
 						if (Character.isDigit(c)) {
-							int newChar = (c * 100) + (str.charAt(i + 1) * 10) + (str.charAt(i + 2));
+							final int newChar = (c * 100) + (str.charAt(i + 1) * 10) + (str.charAt(i + 2));
 							i += 2;
 							tokens.get(tokens.size() - 1).append(newChar);
 							lastChar = (char) newChar;
@@ -150,10 +150,10 @@ public class Tokenizer {
 		if (pChar != 0)
 			throw new SonoCompilationException("Unclosed string or char literal!");
 
-		List<String> newTokens = new ArrayList<>();
+		final List<String> newTokens = new ArrayList<>();
 		String last = "+";
-		for (StringBuilder raw : tokens) {
-			String t = raw.toString();
+		for (final StringBuilder raw : tokens) {
+			final String t = raw.toString();
 			if (t.equals("#[") || t.equals("#]"))
 				continue;
 			if (t.equals("[")
@@ -179,7 +179,7 @@ public class Tokenizer {
 			if (Character.isDigit(t.charAt(0)) && last.equals(".")
 					&& Character.isDigit(newTokens.get(newTokens.size() - 2).charAt(0))) {
 				newTokens.remove(newTokens.size() - 1);
-				String temp = newTokens.get(newTokens.size() - 1) + "." + t + "D";
+				final String temp = newTokens.get(newTokens.size() - 1) + "." + t + "D";
 				newTokens.set(newTokens.size() - 1, temp);
 				last = t;
 				continue;
@@ -188,12 +188,12 @@ public class Tokenizer {
 			last = t;
 		}
 
-		Deque<String> postFeatures = new ArrayDeque<>();
+		final Deque<String> postFeatures = new ArrayDeque<>();
 		for (int i = 0; i < newTokens.size(); i++) {
-			String t = newTokens.get(i);
+			final String t = newTokens.get(i);
 			if (t.equals("|")) {
 				String t1 = postFeatures.pollLast();
-				String t2 = newTokens.get(i + 1);
+				final String t2 = newTokens.get(i + 1);
 				boolean flag = false;
 				for (int j = 0; j < Phone.Feature.values().length; j++) {
 					if (t2.equals(Phone.Feature.values()[j].toString())) {
@@ -219,14 +219,14 @@ public class Tokenizer {
 		return new ArrayList<>(postFeatures);
 	}
 
-	public static List<String> infixToPostfix(List<String> tokens) {
-		Deque<String> stack = new ArrayDeque<>();
-		Deque<String> output = new ArrayDeque<>();
+	public static List<String> infixToPostfix(final List<String> tokens) {
+		final Deque<String> stack = new ArrayDeque<>();
+		final Deque<String> output = new ArrayDeque<>();
 		int pCount = 0;
 		int bCount = 0;
 		int cCount = 0;
 
-		for (String token : tokens) {
+		for (final String token : tokens) {
 			if ((Character.isLetterOrDigit(token.charAt(0)) || token.charAt(0) == '_' || token.charAt(0) == '\"'
 					|| token.charAt(0) == '@' || token.charAt(0) == '\'' || token.charAt(0) == '`')
 					&& !operators.containsKey(token))
@@ -320,7 +320,7 @@ public class Tokenizer {
 		return new ArrayList<>(output);
 	}
 
-	private static int getPrecedence(String token) {
+	private static int getPrecedence(final String token) {
 		if (operators.containsKey(token))
 			return operators.get(token);
 

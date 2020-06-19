@@ -8,16 +8,17 @@ import java.net.URLClassLoader;
 import main.sono.err.SonoCompilationException;
 
 public class ExtensionLoader<C> {
-	public C loadClass(File file, String classpath, Class<C> parentClass) throws ClassNotFoundException {
+	public C loadClass(final File file, final String classpath, final Class<C> parentClass)
+			throws ClassNotFoundException {
 		try {
-			ClassLoader loader = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() },
+			final ClassLoader loader = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() },
 					getClass().getClassLoader());
-			Class<?> clazz = Class.forName(classpath, true, loader);
-			Class<? extends C> newClass = clazz.asSubclass(parentClass);
-			Constructor<? extends C> constructor = newClass.getConstructor();
+			final Class<?> clazz = Class.forName(classpath, true, loader);
+			final Class<? extends C> newClass = clazz.asSubclass(parentClass);
+			final Constructor<? extends C> constructor = newClass.getConstructor();
 			return constructor.newInstance();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		throw new SonoCompilationException(

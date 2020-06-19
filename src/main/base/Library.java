@@ -8,7 +8,7 @@ import main.sono.err.SonoRuntimeException;
 public class Library {
 	private Map<String, Command> commands;
 
-	protected void setCommands(Map<String, Command> commands) {
+	protected void setCommands(final Map<String, Command> commands) {
 		this.commands = commands;
 	}
 
@@ -16,7 +16,7 @@ public class Library {
 		return commands;
 	}
 
-	protected SonoRuntimeException error(String message, List<String> trace) {
+	protected SonoRuntimeException error(final String message, final List<String> trace) {
 		return new SonoRuntimeException(message, trace);
 	}
 }

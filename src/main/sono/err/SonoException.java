@@ -6,7 +6,7 @@ import java.util.List;
 public class SonoException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	private final List<String> trace;
-	public SonoException(String message, List<String> trace) {
+	public SonoException(final String message, final List<String> trace) {
 		super(message);
 		this.trace = trace;
 	}
@@ -14,7 +14,7 @@ public class SonoException extends RuntimeException {
 	@Override
 	public void printStackTrace() {
 		Collections.reverse(trace);
-		for (String o : trace) {
+		for (final String o : trace) {
 			String s = o.substring(0, Math.min(100,o.length()));
 			if (!s.equals(o))
 				s += " ... (+" + (o.length() - 100) + ")";

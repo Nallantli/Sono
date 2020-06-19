@@ -5,12 +5,13 @@ import java.util.ArrayList;
 
 public class Function {
 	private Scope parent;
-	private List<String> paramKeys;
-	private List<Boolean> paramRefs;
-	private Operator body;
-	private Interpreter interpreter;
+	private final List<String> paramKeys;
+	private final List<Boolean> paramRefs;
+	private final Operator body;
+	private final Interpreter interpreter;
 
-	public Function(Scope parent, List<String> paramKeys, List<Boolean> paramRefs, Operator body, Interpreter interpreter) {
+	public Function(final Scope parent, final List<String> paramKeys, final List<Boolean> paramRefs,
+			final Operator body, final Interpreter interpreter) {
 		this.paramKeys = paramKeys;
 		this.paramRefs = paramRefs;
 		this.parent = parent;
@@ -18,12 +19,12 @@ public class Function {
 		this.interpreter = interpreter;
 	}
 
-	public Datum execute(List<Datum> paramValues, List<String> trace) {
-		Scope scope = new Scope(parent);
+	public Datum execute(final List<Datum> paramValues, final List<String> trace) {
+		final Scope scope = new Scope(parent);
 		for (int i = 0; i < paramKeys.size(); i++) {
 			if (i < paramValues.size()) {
 				if (Boolean.FALSE.equals(paramRefs.get(i))) {
-					Datum d = new Datum();
+					final Datum d = new Datum();
 					d.set(paramValues.get(i), trace);
 					scope.setVariable(paramKeys.get(i), d, trace);
 				} else {
@@ -34,7 +35,7 @@ public class Function {
 			}
 		}
 
-		Datum r = body.evaluate(scope, interpreter, new ArrayList<>(trace));
+		final Datum r = body.evaluate(scope, interpreter, new ArrayList<>(trace));
 		if (r.getRet()) {
 			r.setRet(false);
 			return r;
@@ -42,13 +43,13 @@ public class Function {
 		return new Datum();
 	}
 
-	public void setParent(Scope parent) {
+	public void setParent(final Scope parent) {
 		this.parent = parent;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder s = new StringBuilder();
+		final StringBuilder s = new StringBuilder();
 		s.append(Interpreter.stringFromList(paramKeys, "(", ")"));
 		s.append(" => ");
 		s.append(body.toString());

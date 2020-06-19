@@ -21,12 +21,12 @@ import main.sono.Scope;
 import main.sono.err.SonoException;
 
 public class Main {
-	private static final String VERSION = "Beta 1.1.0";
+	private static final String VERSION = "Beta 1.1.1";
 
 	private static Map<String, String> globalOptions = new HashMap<>();
 	private static Scanner sc = null;
 
-	private static String getOption(String option, String[] args) {
+	private static String getOption(final String option, final String[] args) {
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals(option)) {
 				if (i + 1 < args.length)
@@ -38,7 +38,7 @@ public class Main {
 		return null;
 	}
 
-	public static String getGlobalOption(String key) {
+	public static String getGlobalOption(final String key) {
 		if (globalOptions.containsKey(key))
 			return globalOptions.get(key);
 		return null;
@@ -52,46 +52,46 @@ public class Main {
 		sc = new Scanner(System.in);
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		try {
 			String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			path = URLDecoder.decode(path, "UTF-8");
 			path = path.replace("/SonoLang.jar", "");
 			globalOptions.put("PATH", path);
-			File directory = new File(path, ".config");
+			final File directory = new File(path, ".config");
 			if (!directory.exists())
 				directory.mkdir();
 
-			File config = new File(directory, "config");
+			final File config = new File(directory, "config");
 			if (!config.createNewFile() && getOption("-d", args) == null) {
 				try (FileReader fr = new FileReader(config); BufferedReader br = new BufferedReader(fr);) {
 					String line;
 					while ((line = br.readLine()) != null) {
-						String[] s = line.split("=");
+						final String[] s = line.split("=");
 						globalOptions.put(s[0], s[1]);
 					}
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					System.err.println("Error reading from /config file.");
 					System.exit(1);
 				}
 			} else {
 				try (FileWriter fw = new FileWriter(config); BufferedWriter bw = new BufferedWriter(fw);) {
-					String tsvpath = getOption("-d", args);
-					File data = new File(tsvpath);
+					final String tsvpath = getOption("-d", args);
+					final File data = new File(tsvpath);
 					globalOptions.put("DATA", data.getAbsolutePath());
 					bw.write("DATA=" + globalOptions.get("DATA"));
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					System.err.println("Error writing to /config file.");
 					System.exit(1);
 				}
 			}
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			System.err.println("Error detecting application folder.");
 			System.exit(1);
 		}
 
 		try {
-			CommandManager command = new CommandManager();
+			final CommandManager command = new CommandManager();
 			PhoneLoader pl = null;
 			Interpreter sono = null;
 			if (getOption("-l", args) != null) {
@@ -106,7 +106,7 @@ public class Main {
 			if (args.length > 0 && args[0].charAt(0) != '-') {
 				try {
 					sono.runCode(".", "load \"" + args[0] + "\"");
-				} catch (SonoException e) {
+				} catch (final SonoException e) {
 					System.err.println(e.getMessage());
 					e.printStackTrace();
 				}
@@ -121,28 +121,28 @@ public class Main {
 					sc = new Scanner(System.in);
 					while (true) {
 						System.out.print("> ");
-						String line = sc.nextLine();
+						final String line = sc.nextLine();
 						try {
-							Datum result = sono.runCode(".", line);
+							final Datum result = sono.runCode(".", line);
 							if (result.getType() == Datum.Type.VECTOR) {
 								int i = 0;
-								for (Datum d : result.getVector(new ArrayList<>()))
+								for (final Datum d : result.getVector(new ArrayList<>()))
 									System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(new ArrayList<>()));
 							} else {
 								System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
 							}
-						} catch (SonoException e) {
+						} catch (final SonoException e) {
 							System.err.println(e.getMessage());
 							e.printStackTrace();
 						}
 					}
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 				} finally {
 					sc.close();
 				}
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}

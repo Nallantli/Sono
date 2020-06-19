@@ -10,21 +10,21 @@ import java.io.Serializable;
 class SecondaryArticulation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String segment;
-	private Matrix matrix;
-	private List<Matrix> requirements;
-	private Phone.Secondary[] restrictions;
+	private final String segment;
+	private final Matrix matrix;
+	private final List<Matrix> requirements;
+	private final Phone.Secondary[] restrictions;
 
-	public SecondaryArticulation(String segment, Matrix matrix, Phone.Secondary[] restrictions,
-			List<Matrix> requirements) {
+	public SecondaryArticulation(final String segment, final Matrix matrix, final Phone.Secondary[] restrictions,
+			final List<Matrix> requirements) {
 		this.matrix = matrix;
 		this.restrictions = restrictions;
 		this.segment = segment;
 		this.requirements = requirements;
 	}
 
-	public SecondaryArticulation(String segment, Phone.Feature feature, String value,
-			Phone.Secondary[] restrictions, List<Matrix> requirements) {
+	public SecondaryArticulation(final String segment, final Phone.Feature feature, final String value,
+			final Phone.Secondary[] restrictions, final List<Matrix> requirements) {
 		this(segment, new Matrix(new Pair(feature, value)), restrictions, requirements);
 	}
 
@@ -32,7 +32,7 @@ class SecondaryArticulation implements Serializable {
 		return matrix;
 	}
 
-	public boolean canApply(Phone phone, List<Phone.Secondary> applied) {
+	public boolean canApply(final Phone phone, final List<Phone.Secondary> applied) {
 		for (int i = 0; i < restrictions.length; i++)
 			if (applied.contains(restrictions[i]))
 				return false;
@@ -42,8 +42,8 @@ class SecondaryArticulation implements Serializable {
 
 		for (int i = 0; i < requirements.size(); i++) {
 			boolean flag = true;
-			Matrix r = requirements.get(i);
-			for (Pair feature : r) {
+			final Matrix r = requirements.get(i);
+			for (final Pair feature : r) {
 				if (!phone.getFeatureQuality(feature.getFeature()).equals(feature.getQuality())) {
 					flag = false;
 					break;
@@ -64,55 +64,27 @@ class SecondaryArticulation implements Serializable {
 public class Phone implements Comparable<Phone>, Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private PhoneManager pm;
+	private final PhoneManager pm;
 
-	/*public enum String {
-		TRUE {
-			@Override
-			public String toString() {
-				return "+";
-			}
-		},
-		FALSE {
-			@Override
-			public String toString() {
-				return "-";
-			}
-		},
-		NULL {
-			@Override
-			public String toString() {
-				return "0";
-			}
-		},
-		// RULE ONLY
-		ALPHA {
-			@Override
-			public String toString() {
-				return "A-";
-			}
-		},
-		BETA {
-			@Override
-			public String toString() {
-				return "B-";
-			}
-		},
-		GAMMA {
-			@Override
-			public String toString() {
-				return "C-";
-			}
-		},
-
-		// MATRIX ADDITION
-		ANY {
-			@Override
-			public String toString() {
-				return "~";
-			}
-		}
-	}*/
+	/*
+	 * public enum String { TRUE {
+	 *
+	 * @Override public String toString() { return "+"; } }, FALSE {
+	 *
+	 * @Override public String toString() { return "-"; } }, NULL {
+	 *
+	 * @Override public String toString() { return "0"; } }, // RULE ONLY ALPHA {
+	 *
+	 * @Override public String toString() { return "A-"; } }, BETA {
+	 *
+	 * @Override public String toString() { return "B-"; } }, GAMMA {
+	 *
+	 * @Override public String toString() { return "C-"; } },
+	 *
+	 * // MATRIX ADDITION ANY {
+	 *
+	 * @Override public String toString() { return "~"; } } }
+	 */
 
 	public enum Feature {
 		STRESS {
@@ -286,28 +258,20 @@ public class Phone implements Comparable<Phone>, Serializable {
 	static final Map<Secondary, SecondaryArticulation> secondaryLibrary = Map.ofEntries(
 			entry(Secondary.VOCALIC,
 					new SecondaryArticulation("̩", Feature.SYLLABIC, "+", new Secondary[] {},
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
-									new Pair(Feature.SONORANT, "+"))))),
-			entry(Secondary.RETRACTED,
-					new SecondaryArticulation("̠",
-							new Matrix(new Pair(Feature.FRONT, "-"), new Pair(Feature.BACK, "+")),
-							new Secondary[] { Secondary.ADVANCED },
-							List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
-			entry(Secondary.ADVANCED,
-					new SecondaryArticulation("̟",
-							new Matrix(new Pair(Feature.FRONT, "+"), new Pair(Feature.BACK, "-")),
-							new Secondary[] { Secondary.RETRACTED },
-							List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
-			entry(Secondary.DENTAL,
-					new SecondaryArticulation("̪", new Matrix(new Pair(Feature.ANTERIOR, "+"),
-							new Pair(Feature.DISTRIBUTED, "+")), new Secondary[] { Secondary.PALATOALVEOLAR },
-							List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"), new Pair(Feature.SONORANT, "+"))))),
+			entry(Secondary.RETRACTED, new SecondaryArticulation("̠",
+					new Matrix(new Pair(Feature.FRONT, "-"), new Pair(Feature.BACK, "+")),
+					new Secondary[] { Secondary.ADVANCED }, List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
+			entry(Secondary.ADVANCED, new SecondaryArticulation("̟",
+					new Matrix(new Pair(Feature.FRONT, "+"), new Pair(Feature.BACK, "-")),
+					new Secondary[] { Secondary.RETRACTED }, List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
+			entry(Secondary.DENTAL, new SecondaryArticulation("̪",
+					new Matrix(new Pair(Feature.ANTERIOR, "+"), new Pair(Feature.DISTRIBUTED, "+")),
+					new Secondary[] { Secondary.PALATOALVEOLAR }, List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
 			entry(Secondary.PALATOALVEOLAR,
 					new SecondaryArticulation("̺",
-							new Matrix(new Pair(Feature.ANTERIOR, "-"),
-									new Pair(Feature.DISTRIBUTED, "+")),
-							new Secondary[] { Secondary.DENTAL },
-							List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
+							new Matrix(new Pair(Feature.ANTERIOR, "-"), new Pair(Feature.DISTRIBUTED, "+")),
+							new Secondary[] { Secondary.DENTAL }, List.of(new Matrix(new Pair(Feature.CORONAL, "+"))))),
 			entry(Secondary.DEVOICING,
 					new SecondaryArticulation("̥", Feature.VOICE, "-", new Secondary[] {},
 							List.of(new Matrix(new Pair(Feature.VOICE, "+"))))),
@@ -316,58 +280,40 @@ public class Phone implements Comparable<Phone>, Serializable {
 							List.of(new Matrix(new Pair(Feature.SONORANT, "+"))))),
 			entry(Secondary.LABIALIZATION,
 					new SecondaryArticulation("ʷ",
-							new Matrix(new Pair(Feature.LABIAL, "+"), new Pair(Feature.ROUND, "+")),
-							new Secondary[] {},
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
-									new Pair(Feature.SYLLABIC, "-")),
-									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
-											new Pair(Feature.SYLLABIC, "-"))))),
-			entry(Secondary.PALATALIZATION,
-					new SecondaryArticulation("ʲ",
-							new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "+"),
-									new Pair(Feature.LOW, "-"), new Pair(Feature.FRONT, "+"),
-									new Pair(Feature.BACK, "-")),
-							new Secondary[] { Secondary.VELARIZATION, Secondary.PHARYNGEALIZATION },
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
-									new Pair(Feature.SYLLABIC, "-")),
-									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
-											new Pair(Feature.SYLLABIC, "-"))))),
-			entry(Secondary.VELARIZATION,
-					new SecondaryArticulation("ˠ",
-							new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "+"),
-									new Pair(Feature.LOW, "-"), new Pair(Feature.FRONT, "-"),
-									new Pair(Feature.BACK, "+")),
-							new Secondary[] { Secondary.PALATALIZATION, Secondary.PHARYNGEALIZATION },
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
-									new Pair(Feature.SYLLABIC, "-")),
-									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
-											new Pair(Feature.SYLLABIC, "-"))))),
-			entry(Secondary.PHARYNGEALIZATION,
-					new SecondaryArticulation("ˤ",
-							new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "-"),
-									new Pair(Feature.LOW, "+"), new Pair(Feature.FRONT, "-"),
-									new Pair(Feature.BACK, "+")),
-							new Secondary[] { Secondary.VELARIZATION, Secondary.PALATALIZATION },
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
-									new Pair(Feature.SYLLABIC, "-")),
-									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
-											new Pair(Feature.SYLLABIC, "-"))))),
+							new Matrix(new Pair(Feature.LABIAL, "+"), new Pair(Feature.ROUND, "+")), new Secondary[] {},
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"), new Pair(Feature.SYLLABIC, "-")),
+									new Matrix(new Pair(Feature.CONSONANTAL, "-"), new Pair(Feature.SYLLABIC, "-"))))),
+			entry(Secondary.PALATALIZATION, new SecondaryArticulation("ʲ",
+					new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "+"), new Pair(Feature.LOW, "-"),
+							new Pair(Feature.FRONT, "+"), new Pair(Feature.BACK, "-")),
+					new Secondary[] { Secondary.VELARIZATION, Secondary.PHARYNGEALIZATION },
+					List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"), new Pair(Feature.SYLLABIC, "-")),
+							new Matrix(new Pair(Feature.CONSONANTAL, "-"), new Pair(Feature.SYLLABIC, "-"))))),
+			entry(Secondary.VELARIZATION, new SecondaryArticulation("ˠ",
+					new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "+"), new Pair(Feature.LOW, "-"),
+							new Pair(Feature.FRONT, "-"), new Pair(Feature.BACK, "+")),
+					new Secondary[] { Secondary.PALATALIZATION, Secondary.PHARYNGEALIZATION },
+					List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"), new Pair(Feature.SYLLABIC, "-")),
+							new Matrix(new Pair(Feature.CONSONANTAL, "-"), new Pair(Feature.SYLLABIC, "-"))))),
+			entry(Secondary.PHARYNGEALIZATION, new SecondaryArticulation("ˤ",
+					new Matrix(new Pair(Feature.DORSAL, "+"), new Pair(Feature.HIGH, "-"), new Pair(Feature.LOW, "+"),
+							new Pair(Feature.FRONT, "-"), new Pair(Feature.BACK, "+")),
+					new Secondary[] { Secondary.VELARIZATION, Secondary.PALATALIZATION },
+					List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"), new Pair(Feature.SYLLABIC, "-")),
+							new Matrix(new Pair(Feature.CONSONANTAL, "-"), new Pair(Feature.SYLLABIC, "-"))))),
 			entry(Secondary.ASPIRATION,
 					new SecondaryArticulation("ʰ",
-							new Matrix(new Pair(Feature.SPREAD_GLOTTIS,
-									"+"), new Pair(Feature.CONSTRICTED_GLOTTIS, "-")),
+							new Matrix(
+									new Pair(Feature.SPREAD_GLOTTIS, "+"), new Pair(Feature.CONSTRICTED_GLOTTIS, "-")),
 							new Secondary[] {},
-							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"),
-									new Pair(Feature.SYLLABIC, "-")),
-									new Matrix(new Pair(Feature.CONSONANTAL, "-"),
-											new Pair(Feature.SYLLABIC, "-"))))),
-			entry(Secondary.LENGTH,
-					new SecondaryArticulation("ː", Feature.LONG, "+", new Secondary[] {}, List.of())));
+							List.of(new Matrix(new Pair(Feature.CONSONANTAL, "+"), new Pair(Feature.SYLLABIC, "-")),
+									new Matrix(new Pair(Feature.CONSONANTAL, "-"), new Pair(Feature.SYLLABIC, "-"))))),
+			entry(Secondary.LENGTH, new SecondaryArticulation("ː", Feature.LONG, "+", new Secondary[] {}, List.of())));
 
-	private String segment;
-	private Matrix features;
+	private final String segment;
+	private final Matrix features;
 
-	public Phone(PhoneManager pm, String segment, Matrix features) {
+	public Phone(final PhoneManager pm, final String segment, final Matrix features) {
 		this.pm = pm;
 		this.segment = segment;
 		this.features = features;
@@ -375,16 +321,16 @@ public class Phone implements Comparable<Phone>, Serializable {
 		pm.add(this);
 	}
 
-	static boolean isSecondary(char c) {
-		for (Map.Entry<Secondary, SecondaryArticulation> e : secondaryLibrary.entrySet()) {
+	static boolean isSecondary(final char c) {
+		for (final Map.Entry<Secondary, SecondaryArticulation> e : secondaryLibrary.entrySet()) {
 			if (e.getValue().getSegment().charAt(0) == c)
 				return true;
 		}
 		return false;
 	}
 
-	public boolean hasFeatures(Matrix map) {
-		for (Pair e : map) {
+	public boolean hasFeatures(final Matrix map) {
+		for (final Pair e : map) {
 			if (!getFeatureQuality(e.getFeature()).equals(e.getQuality()) && !e.getQuality().equals("~")) {
 				return false;
 			}
@@ -392,31 +338,31 @@ public class Phone implements Comparable<Phone>, Serializable {
 		return true;
 	}
 
-	public String getFeatureQuality(Feature feature) {
+	public String getFeatureQuality(final Feature feature) {
 		return features.get(feature);
 	}
 
 	public Matrix getMatrix() {
-		Matrix map = new Matrix();
-		for (Pair p : features)
+		final Matrix map = new Matrix();
+		for (final Pair p : features)
 			if (!p.getQuality().equals("0"))
 				map.put(p);
 		return map;
 	}
 
 	private String[] getQualityArray() {
-		String[] values = new String[Feature.values().length];
+		final String[] values = new String[Feature.values().length];
 
 		int i = 0;
-		for (Feature v : Feature.values())
+		for (final Feature v : Feature.values())
 			values[i++] = getFeatureQuality(v);
 
 		return values;
 	}
 
-	public String getDataString(String split) {
-		StringBuilder s = new StringBuilder(segment);
-		String[] values = getQualityArray();
+	public String getDataString(final String split) {
+		final StringBuilder s = new StringBuilder(segment);
+		final String[] values = getQualityArray();
 		for (int i = 0; i < values.length; i++) {
 			s.append(split);
 			s.append(values[i]);
@@ -424,50 +370,50 @@ public class Phone implements Comparable<Phone>, Serializable {
 		return s.toString();
 	}
 
-	public boolean canApply(Secondary secondary, List<Secondary> applied) {
+	public boolean canApply(final Secondary secondary, final List<Secondary> applied) {
 		return secondaryLibrary.get(secondary).canApply(this, applied);
 	}
 
-	public static Feature inMajorClass(Feature feature) {
-		for (Map.Entry<Feature, List<Feature>> e : majorClasses.entrySet()) {
+	public static Feature inMajorClass(final Feature feature) {
+		for (final Map.Entry<Feature, List<Feature>> e : majorClasses.entrySet()) {
 			if (e.getValue().contains(feature))
 				return e.getKey();
 		}
 		return null;
 	}
 
-	public Phone transform(Matrix matrix, boolean search) {
+	public Phone transform(final Matrix matrix, final boolean search) {
 		return transform("*", matrix, search);
 	}
 
-	private Phone transform(String segment, Matrix matrix, boolean search) {
-		Matrix new_features = getMatrix();
+	private Phone transform(final String segment, final Matrix matrix, final boolean search) {
+		final Matrix new_features = getMatrix();
 
-		for (Pair e : matrix) {
+		for (final Pair e : matrix) {
 			new_features.put(e.getFeature(), e.getQuality());
-			Feature im = inMajorClass(e.getFeature());
+			final Feature im = inMajorClass(e.getFeature());
 			if (im != null && !e.getQuality().equals("0")) {
 				new_features.put(im, "+");
-				for (Feature f : majorClasses.get(im)) {
+				for (final Feature f : majorClasses.get(im)) {
 					if (new_features.get(f).equals("0"))
 						new_features.put(f, "-");
 				}
 			} else if (majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("+")) {
-				for (Feature f : majorClasses.get(e.getFeature())) {
+				for (final Feature f : majorClasses.get(e.getFeature())) {
 					if (new_features.get(f).equals("0"))
 						new_features.put(f, "-");
 				}
 			} else if (majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("-")) {
-				for (Feature f : majorClasses.get(e.getFeature())) {
+				for (final Feature f : majorClasses.get(e.getFeature())) {
 					new_features.put(f, "0");
 				}
 			}
 		}
 
-		Phone p = new Phone(pm, segment, new_features);
+		final Phone p = new Phone(pm, segment, new_features);
 		if (!pm.contains(p)) {
 			if (search) {
-				Phone fuzzy = pm.fuzzySearch(p);
+				final Phone fuzzy = pm.fuzzySearch(p);
 				if (fuzzy != null)
 					return fuzzy;
 				else
@@ -479,8 +425,8 @@ public class Phone implements Comparable<Phone>, Serializable {
 		return pm.validate(p);
 	}
 
-	public Phone apply(Secondary secondary) {
-		SecondaryArticulation sa = secondaryLibrary.get(secondary);
+	public Phone apply(final Secondary secondary) {
+		final SecondaryArticulation sa = secondaryLibrary.get(secondary);
 		return transform(getSegment() + sa.getSegment(), sa.getMatrix(), false);
 	}
 
@@ -490,14 +436,14 @@ public class Phone implements Comparable<Phone>, Serializable {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())
 			return false;
-		Phone p = (Phone) o;
+		final Phone p = (Phone) o;
 
-		for (Pair pair : p.getMatrix())
+		for (final Pair pair : p.getMatrix())
 			if (!pair.getQuality().equals(this.getFeatureQuality(pair.getFeature())))
 				return false;
 
@@ -509,7 +455,7 @@ public class Phone implements Comparable<Phone>, Serializable {
 	}
 
 	@Override
-	public int compareTo(Phone o) {
+	public int compareTo(final Phone o) {
 		/*if (o.getFeatureQuality(Feature.SYLLABIC) != getFeatureQuality(Feature.SYLLABIC))
 			return (getFeatureQuality(Feature.SYLLABIC) == "+" ? -1 : 1);
 		if (o.getFeatureQuality(Feature.CONSONANTAL) != getFeatureQuality(Feature.CONSONANTAL))
