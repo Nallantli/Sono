@@ -26,6 +26,12 @@ public class Rule {
 			public String toString() {
 				return "$";
 			}
+		},
+		MORPHEME {
+			@Override
+			public String toString() {
+				return "+";
+			}
 		}
 	}
 
@@ -39,6 +45,12 @@ public class Rule {
 	public static class DeleteForward extends Rule {
 		public DeleteForward(Object search, List<Object> trans, List<Object> init, List<Object> fin) {
 			super(search, trans, init, fin, Type.A_FORWARD);
+		}
+	}
+
+	public static class DeleteBackward extends Rule {
+		public DeleteBackward(Object search, List<Object> trans, List<Object> init, List<Object> fin) {
+			super(search, trans, init, fin, Type.A_BACKWARD);
 		}
 	}
 
@@ -67,162 +79,165 @@ public class Rule {
 			Matrix alphaMap = new Matrix();
 			Matrix betaMap = new Matrix();
 			Matrix gammaMap = new Matrix();
-			Phone p = sequence.get(i);
-			/*
-			 * Phone last = null; if (i > 0) last = sequence.get(i - 1); Phone next = null;
-			 * if (i < sequence.size() - 1) next = sequence.get(i + 1);
-			 */
+			Object o = sequence.get(i);
 
 			Object tempSearch = search;
 			List<Object> tempInit = new ArrayList<>();
 			List<Object> tempFin = new ArrayList<>();
 
-			if (search.getClass() == Matrix.class) {
-				tempSearch = new Matrix();
-				((Matrix) tempSearch).putAll((Matrix) search);
-				for (Pair se : (Matrix) tempSearch)
-					if (se.getQuality() == Phone.Quality.ALPHA)
-						alphaMap.put(se.getFeature(), p.getFeatureQuality(se.getFeature()));
-			}
-			for (int j = 0; j < init.size(); j++) {
-				Phone target = sequence.get((i - init.size()) + j);
-				Object e = init.get(j);
-				if (target != null && e.getClass() == Matrix.class) {
-					Matrix temp = new Matrix();
-					temp.putAll((Matrix) e);
-					tempInit.add(temp);
-					for (Pair ie : temp)
-						if (ie.getQuality() == Phone.Quality.BETA)
-							betaMap.put(ie.getFeature(), target.getFeatureQuality(ie.getFeature()));
-				} else {
-					tempInit.add(e);
+			if (o.getClass() == Phone.class) {
+				Phone p = (Phone) o;
+				if (search.getClass() == Matrix.class) {
+					tempSearch = new Matrix();
+					((Matrix) tempSearch).putAll((Matrix) search);
+					for (Pair se : (Matrix) tempSearch)
+						if (se.getQuality() == Phone.Quality.ALPHA)
+							alphaMap.put(se.getFeature(), p.getFeatureQuality(se.getFeature()));
 				}
-			}
-			for (int j = 0; j < fin.size(); j++) {
-				Phone target = sequence.get(i + j + 1);
-				Object e = fin.get(j);
-				if (target != null && e.getClass() == Matrix.class) {
-					Matrix temp = new Matrix();
-					temp.putAll((Matrix) e);
-					tempFin.add(temp);
-					for (Pair fe : temp)
-						if (fe.getQuality() == Phone.Quality.GAMMA)
-							gammaMap.put(fe.getFeature(), target.getFeatureQuality(fe.getFeature()));
-				} else {
-					tempFin.add(e);
-				}
-			}
-
-			if (!alphaMap.isEmpty()) {
-				if (tempSearch.getClass() == Matrix.class)
-					for (Pair e : alphaMap)
-						if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.ALPHA)
-							((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
-				for (Object m : tempInit)
-					if (m.getClass() == Matrix.class)
-						for (Pair e : alphaMap)
-							if (((Matrix) m).get(e.getFeature()) == Phone.Quality.ALPHA)
-								((Matrix) m).put(e.getFeature(), e.getQuality());
-				for (Object m : tempFin)
-					if (m.getClass() == Matrix.class)
-						for (Pair e : alphaMap)
-							if (((Matrix) m).get(e.getFeature()) == Phone.Quality.ALPHA)
-								((Matrix) m).put(e.getFeature(), e.getQuality());
-			}
-
-			if (!betaMap.isEmpty()) {
-				if (tempSearch.getClass() == Matrix.class)
-					for (Pair e : betaMap)
-						if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.BETA)
-							((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
-				for (Object m : tempInit)
-					if (m.getClass() == Matrix.class)
-						for (Pair e : betaMap)
-							if (((Matrix) m).get(e.getFeature()) == Phone.Quality.BETA)
-								((Matrix) m).put(e.getFeature(), e.getQuality());
-				for (Object m : tempFin)
-					if (m.getClass() == Matrix.class)
-						for (Pair e : betaMap)
-							if (((Matrix) m).get(e.getFeature()) == Phone.Quality.BETA)
-								((Matrix) m).put(e.getFeature(), e.getQuality());
-			}
-
-			if (!gammaMap.isEmpty()) {
-				if (tempSearch.getClass() == Matrix.class)
-					for (Pair e : gammaMap)
-						if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.GAMMA)
-							((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
-				for (Object m : tempInit)
-					if (m.getClass() == Matrix.class)
-						for (Pair e : gammaMap)
-							if (((Matrix) m).get(e.getFeature()) == Phone.Quality.GAMMA)
-								((Matrix) m).put(e.getFeature(), e.getQuality());
-				for (Object m : tempFin)
-					if (m.getClass() == Matrix.class)
-						for (Pair e : gammaMap)
-							if (((Matrix) m).get(e.getFeature()) == Phone.Quality.GAMMA)
-								((Matrix) m).put(e.getFeature(), e.getQuality());
-			}
-
-			boolean flag = false;
-			if (applicable(i, sequence, tempSearch)) {
-				flag = true;
-				for (int j = 0; j < tempInit.size(); j++) {
-					if (!applicable((i - tempInit.size()) + j, sequence, tempInit.get(j))) {
-						flag = false;
-						break;
+				for (int j = 0; j < init.size(); j++) {
+					Object target = sequence.get((i - init.size()) + j);
+					Object e = init.get(j);
+					if (target != null && target.getClass() == Phone.class && e.getClass() == Matrix.class) {
+						Matrix temp = new Matrix();
+						temp.putAll((Matrix) e);
+						tempInit.add(temp);
+						for (Pair ie : temp)
+							if (ie.getQuality() == Phone.Quality.BETA)
+								betaMap.put(ie.getFeature(), ((Phone) target).getFeatureQuality(ie.getFeature()));
+					} else {
+						tempInit.add(e);
 					}
 				}
-				for (int j = 0; j < tempFin.size(); j++) {
-					if (!applicable(i + j + 1, sequence, tempFin.get(j))) {
-						flag = false;
-						break;
+				for (int j = 0; j < fin.size(); j++) {
+					Object target = sequence.get(i + j + 1);
+					Object e = fin.get(j);
+					if (target != null && target.getClass() == Phone.class && e.getClass() == Matrix.class) {
+						Matrix temp = new Matrix();
+						temp.putAll((Matrix) e);
+						tempFin.add(temp);
+						for (Pair fe : temp)
+							if (fe.getQuality() == Phone.Quality.GAMMA)
+								gammaMap.put(fe.getFeature(), ((Phone) target).getFeatureQuality(fe.getFeature()));
+					} else {
+						tempFin.add(e);
 					}
 				}
-			}
 
-			if (flag) {
-				for (Object e : trans) {
-					Phone addition = null;
-					if (e.getClass() == Matrix.class) {
-						Matrix tempTrans = new Matrix();
-						for (Pair te : (Matrix) e) {
-							switch (te.getQuality()) {
-								case ALPHA:
-									tempTrans.put(te.getFeature(), alphaMap.get(te.getFeature()));
-									break;
-								case BETA:
-									tempTrans.put(te.getFeature(), betaMap.get(te.getFeature()));
-									break;
-								case GAMMA:
-									tempTrans.put(te.getFeature(), gammaMap.get(te.getFeature()));
-									break;
-								default:
-									tempTrans.put(te.getFeature(), te.getQuality());
-									break;
-							}
+				if (!alphaMap.isEmpty()) {
+					if (tempSearch.getClass() == Matrix.class)
+						for (Pair e : alphaMap)
+							if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.ALPHA)
+								((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
+					for (Object m : tempInit)
+						if (m.getClass() == Matrix.class)
+							for (Pair e : alphaMap)
+								if (((Matrix) m).get(e.getFeature()) == Phone.Quality.ALPHA)
+									((Matrix) m).put(e.getFeature(), e.getQuality());
+					for (Object m : tempFin)
+						if (m.getClass() == Matrix.class)
+							for (Pair e : alphaMap)
+								if (((Matrix) m).get(e.getFeature()) == Phone.Quality.ALPHA)
+									((Matrix) m).put(e.getFeature(), e.getQuality());
+				}
+
+				if (!betaMap.isEmpty()) {
+					if (tempSearch.getClass() == Matrix.class)
+						for (Pair e : betaMap)
+							if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.BETA)
+								((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
+					for (Object m : tempInit)
+						if (m.getClass() == Matrix.class)
+							for (Pair e : betaMap)
+								if (((Matrix) m).get(e.getFeature()) == Phone.Quality.BETA)
+									((Matrix) m).put(e.getFeature(), e.getQuality());
+					for (Object m : tempFin)
+						if (m.getClass() == Matrix.class)
+							for (Pair e : betaMap)
+								if (((Matrix) m).get(e.getFeature()) == Phone.Quality.BETA)
+									((Matrix) m).put(e.getFeature(), e.getQuality());
+				}
+
+				if (!gammaMap.isEmpty()) {
+					if (tempSearch.getClass() == Matrix.class)
+						for (Pair e : gammaMap)
+							if (((Matrix) tempSearch).get(e.getFeature()) == Phone.Quality.GAMMA)
+								((Matrix) tempSearch).put(e.getFeature(), e.getQuality());
+					for (Object m : tempInit)
+						if (m.getClass() == Matrix.class)
+							for (Pair e : gammaMap)
+								if (((Matrix) m).get(e.getFeature()) == Phone.Quality.GAMMA)
+									((Matrix) m).put(e.getFeature(), e.getQuality());
+					for (Object m : tempFin)
+						if (m.getClass() == Matrix.class)
+							for (Pair e : gammaMap)
+								if (((Matrix) m).get(e.getFeature()) == Phone.Quality.GAMMA)
+									((Matrix) m).put(e.getFeature(), e.getQuality());
+				}
+
+				boolean flag = false;
+				if (applicable(i, sequence, tempSearch)) {
+					flag = true;
+					for (int j = 0; j < tempInit.size(); j++) {
+						if (!applicable((i - tempInit.size()) + j, sequence, tempInit.get(j))) {
+							flag = false;
+							break;
 						}
-						addition = p.transform(tempTrans, true);
-					} else if (e.getClass() == Phone.class) {
-						addition = (Phone) e;
 					}
-					result.add(addition);
+					for (int j = 0; j < tempFin.size(); j++) {
+						if (!applicable(i + j + 1, sequence, tempFin.get(j))) {
+							flag = false;
+							break;
+						}
+					}
 				}
-				if (type != Type.SIMPLE)
-					assimilateFlag = true;
+
+				if (flag) {
+					if (type == Type.A_BACKWARD)
+						sequence.remove(sequence.size() - 1);
+					for (Object e : trans) {
+						Phone addition = null;
+						if (e.getClass() == Matrix.class) {
+							Matrix tempTrans = new Matrix();
+							for (Pair te : (Matrix) e) {
+								switch (te.getQuality()) {
+									case ALPHA:
+										tempTrans.put(te.getFeature(), alphaMap.get(te.getFeature()));
+										break;
+									case BETA:
+										tempTrans.put(te.getFeature(), betaMap.get(te.getFeature()));
+										break;
+									case GAMMA:
+										tempTrans.put(te.getFeature(), gammaMap.get(te.getFeature()));
+										break;
+									default:
+										tempTrans.put(te.getFeature(), te.getQuality());
+										break;
+								}
+							}
+							addition = p.transform(tempTrans, true);
+						} else if (e.getClass() == Phone.class) {
+							addition = (Phone) e;
+						}
+						result.add(addition);
+					}
+					if (type == Type.A_FORWARD)
+						assimilateFlag = true;
+				} else {
+					result.add(p);
+				}
 			} else {
-				result.add(p);
+				result.add(o);
 			}
 		}
 		return result;
 	}
 
 	private boolean applicable(int index, Word sequence, Object o) {
-		if (sequence.get(index) != null) {
+		if (sequence.get(index) != null && sequence.get(index).getClass() == Phone.class) {
 			if (o.getClass() == Matrix.class) {
-				return sequence.get(index).hasFeatures((Matrix) o);
+				return ((Phone) sequence.get(index)).hasFeatures((Matrix) o);
 			} else if (o.getClass() == Phone.class) {
-				return sequence.get(index).equals(o);
+				return ((Phone) sequence.get(index)).equals(o);
 			}
 		} else if (o.getClass() != Matrix.class && o.getClass() != Phone.class) {
 			switch ((Variants) o) {
@@ -230,6 +245,10 @@ public class Rule {
 					return index == sequence.size();
 				case WORD_INITIAL:
 					return index == -1;
+				case SYLLABLE:
+					return index == sequence.size() || index == -1 || sequence.get(index).equals(Word.SyllableDelim.DELIM) || sequence.get(index).equals(Word.SyllableDelim.MORPHEME);
+				case MORPHEME:
+					return index == sequence.size() || index == -1 || sequence.get(index).equals(Word.SyllableDelim.MORPHEME);
 				default:
 					return false;
 			}

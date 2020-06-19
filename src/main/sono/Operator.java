@@ -603,6 +603,9 @@ public abstract class Operator {
 						case "$":
 							init.add(Rule.Variants.SYLLABLE);
 							break;
+						case "+":
+							init.add(Rule.Variants.MORPHEME);
+							break;
 						default:
 							break;
 					}
@@ -623,6 +626,9 @@ public abstract class Operator {
 							break;
 						case "$":
 							fin.add(Rule.Variants.SYLLABLE);
+							break;
+						case "+":
+							fin.add(Rule.Variants.MORPHEME);
 							break;
 						default:
 							break;
@@ -665,7 +671,7 @@ public abstract class Operator {
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			Datum datumA = a.evaluate(scope, interpreter, new ArrayList<>(trace));
 			if (datumA.getType() == Datum.Type.VECTOR) {
-				List<Phone> phones = new ArrayList<>();
+				List<Object> phones = new ArrayList<>();
 				for (Datum d : datumA.getVector(trace))
 					phones.add(d.getPhone(trace));
 				return new Datum(new Word(phones));
@@ -728,7 +734,7 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return "list " + a.toString();
+			return "vec " + a.toString();
 		}
 	}
 

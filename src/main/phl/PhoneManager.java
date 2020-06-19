@@ -20,6 +20,15 @@ public class PhoneManager implements Serializable {
 		Word word = new Word();
 		int i = 0;
 		while (i < s.length()) {
+			if (s.charAt(i) == '.') {
+				word.add(Word.SyllableDelim.DELIM);
+				i++;
+				continue;
+			} else if (s.charAt(i) == '+') {
+				word.add(Word.SyllableDelim.MORPHEME);
+				i++;
+				continue;
+			}
 			StringBuilder curr = new StringBuilder();
 			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString()))) {
 				curr.append(s.charAt(i++));

@@ -4,18 +4,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Word {
-	private List<Phone> internal;
+	public enum SyllableDelim {
+		DELIM {
+			@Override
+			public String toString() {
+				return ".";
+			}
+		},
+		MORPHEME {
+			@Override
+			public String toString() {
+				return "+";
+			}
+		}
+	}
+
+	private List<Object> internal;
 
 	public Word() {
 		this.internal = new ArrayList<>();
 	}
 
-	public Word(List<Phone> internal) {
+	public Word(List<Object> internal) {
 		this.internal = internal;
 	}
 
-	public void add(Phone p) {
+	public void add(Object p) {
 		this.internal.add(p);
+	}
+
+	public void remove(int i) {
+		this.internal.remove(i);
 	}
 
 	public void addAll(Word w) {
@@ -26,7 +45,7 @@ public class Word {
 		return this.internal.size();
 	}
 
-	public Phone get(int i) {
+	public Object get(int i) {
 		if (i < this.size() && i >= 0)
 			return this.internal.get(i);
 		return null;
@@ -35,7 +54,7 @@ public class Word {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		for (Phone p : internal)
+		for (Object p : internal)
 			s.append(p.toString());
 		return s.toString();
 	}

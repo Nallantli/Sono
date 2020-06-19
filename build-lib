@@ -1,17 +1,17 @@
 #!/bin/bash
-echo "Compiling Console.java..."
-javac -cp src src/ext/Console.java -encoding utf8 -d bin/lib
-echo "Compiling FileIO.java..."
-javac -cp src src/ext/FileIO.java -encoding utf8 -d bin/lib
-echo "Compiling Sock.java..."
-javac -cp src src/ext/Sock.java -encoding utf8 -d bin/lib
+for f in src/ext/*.java
+do
+	filename=`basename $f .java`
+	echo "Compiling $filename.java..."
+	javac -cp src src/ext/$filename.java -encoding utf8 -d bin/lib
+done
 cd bin/lib
-echo "Creating Console.jar..."
-jar cvfe Console.jar ext.Console ./ext
-echo "Creating FileIO.jar..."
-jar cvfe FileIO.jar ext.FileIO ./ext
-echo "Creating Sock.jar..."
-jar cvfe Sock.jar ext.Sock ./ext
+for f in ext/*.class
+do
+	filename=`basename $f .class`
+	echo "Creating $filename.jar..."
+	jar cvfe $filename.jar ext.$filename ./ext
+done
 rm -rf ext
 rm -rf main
 echo "Done."
