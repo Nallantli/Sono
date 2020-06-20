@@ -1,0 +1,3 @@
+load "system";
+
+println("Hello World!");
