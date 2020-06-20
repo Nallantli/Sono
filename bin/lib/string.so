@@ -30,13 +30,13 @@ String::at(&this, &index) => {
 String::push(&this, &value) => {
 	this += str value;
 	return this;
-}
+};
 
-String::contains(&this, pattern) => {
+String::contains(&this, &pattern) => {
 	return (len this.match(pattern) > 0);
 };
 
-String::split(&this, pattern) => {
+String::split(&this, &pattern) => {
 	var stringArray = vec this;
 	var coords = this.match(pattern);
 	var array = {};
@@ -67,7 +67,7 @@ String::split(&this, pattern) => {
 	return array;
 };
 
-String::replace(&this, pattern, value) => {
+String::replace(&this, &pattern, &value) => {
 	var stringArray = vec this;
 	var coords = this.match(pattern);
 	var array = {};

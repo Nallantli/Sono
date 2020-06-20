@@ -9,10 +9,12 @@ public class PhoneManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final List<Phone> phoneLibrary;
+	private final List<Phone> baseLibrary;
 	private final List<String> baseValues;
 
 	public PhoneManager() {
 		phoneLibrary = new ArrayList<>();
+		baseLibrary = new ArrayList<>();
 		baseValues = new ArrayList<>();
 	}
 
@@ -153,8 +155,10 @@ public class PhoneManager implements Serializable {
 
 			if (!baseValues.contains(phone.getSegment())
 					&& ((phone.getSegment().length() == 3 && phone.getSegment().charAt(1) == '_')
-							|| phone.getSegment().length() == 1))
+							|| phone.getSegment().length() == 1)) {
 				baseValues.add(phone.getSegment());
+				baseLibrary.add(phone);
+			}
 		}
 	}
 
@@ -187,6 +191,10 @@ public class PhoneManager implements Serializable {
 
 	public List<Phone> getAllPhones() {
 		return phoneLibrary;
+	}
+
+	public List<Phone> getBasePhones() {
+		return baseLibrary;
 	}
 
 	public Phone validate(final Phone p) {

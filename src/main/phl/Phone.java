@@ -66,26 +66,6 @@ public class Phone implements Comparable<Phone>, Serializable {
 
 	private final PhoneManager pm;
 
-	/*
-	 * public enum String { TRUE {
-	 *
-	 * @Override public String toString() { return "+"; } }, FALSE {
-	 *
-	 * @Override public String toString() { return "-"; } }, NULL {
-	 *
-	 * @Override public String toString() { return "0"; } }, // RULE ONLY ALPHA {
-	 *
-	 * @Override public String toString() { return "A-"; } }, BETA {
-	 *
-	 * @Override public String toString() { return "B-"; } }, GAMMA {
-	 *
-	 * @Override public String toString() { return "C-"; } },
-	 *
-	 * // MATRIX ADDITION ANY {
-	 *
-	 * @Override public String toString() { return "~"; } } }
-	 */
-
 	public enum Feature {
 		STRESS {
 			@Override

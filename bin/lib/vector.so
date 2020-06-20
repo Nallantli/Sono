@@ -62,6 +62,17 @@ Vector::reverse(&this) => {
 	return this;
 };
 
+Vector::remove(&this, index) => {
+	var nv = {};
+	i in {0 until len this} do {
+		i != index then {
+			nv += { this[i] };
+		}
+	};
+	this = nv;
+	return this;
+};
+
 Vector::sort(&this, comp) => {
 	comp == null then {
 		comp = (a, b) => { return a < b; };

@@ -1,4 +1,4 @@
-# Sono Beta 1.2.0
+# Sono Beta 1.2.1
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -81,6 +81,8 @@ Type | Notes | Examples of Literals
 The syntax is mostly C-style with minor alterations regarding flow segments and usage of semi-colons. All lines (including the end of scopes `{}`) must use a semi-colon. The exception to this is single-lined scopes, where a semi-colon is not necessary. For example, the function `(a, b) => {return a * b;};` may also be written as `(a, b) => {return a * b};`.
 
 ### Variables
+
+There are two default, immutable variables: `_all` and `_base`. The former encompasses all generated phones, including those that exist in `_base` and their derivatives, while `_base` only contains the phones established in the TSV data file.
 
 Variables can have any key that falls within `[a-zA-Z_][\da-zA-Z_]*`. Examples:
 

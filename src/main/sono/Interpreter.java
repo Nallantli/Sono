@@ -21,7 +21,7 @@ public class Interpreter {
 	private final CommandManager console;
 	private static List<String> variableHash = new ArrayList<>();
 
-	private List<String> loadedFiles;
+	private final List<String> loadedFiles;
 
 	public static final int INIT = 0;
 	public static final int THIS = 1;
@@ -47,8 +47,14 @@ public class Interpreter {
 		for (final Phone p : pl.getAllPhones()) {
 			data.add(new Datum(p));
 		}
+		final List<Datum> dataBase = new ArrayList<>();
+		for (final Phone p : pl.getBasePhones()) {
+			dataBase.add(new Datum(p));
+		}
 		final Datum d = new Datum(data);
 		d.setMutable(false);
+		final Datum db = new Datum(dataBase);
+		db.setMutable(false);
 
 		hashVariable("init");
 		hashVariable("this");
@@ -65,7 +71,8 @@ public class Interpreter {
 		hashVariable("{");
 		hashVariable("(");
 
-		main.setVariable(hashVariable("all"), d, new ArrayList<>());
+		main.setVariable(hashVariable("_all"), d, new ArrayList<>());
+		main.setVariable(hashVariable("_base"), db, new ArrayList<>());
 	}
 
 	private static int hashVariable(final String key) {

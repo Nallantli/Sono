@@ -1,0 +1,6 @@
+load "string";
+
+Feature::getPair(&this) => {
+	var s = (str this).split("\\|");
+	return s;
+};
