@@ -189,24 +189,24 @@ Some examples of rules include:
 
 ```sono
 # Vowel nasalized before a nasal consonant (English)
-S : [+syl, -cons] -> {[+nasal]} // {} ~ {[-syl, +cons, +nasal]};
+S : [+|syl, -|cons] -> {[+|nasal]} // {} ~ {[-|syl, +|cons, +|nasal]};
 # `mæn` -> `mæ̃n`
 
 # Vowel nasalized before a nasal consonant, and the consonant is deleted (French)
-Af : [+syl, -cons] -> {[+nasal]} // {} ~ {[-syl, +cons, +nasal]};
+Af : [+|syl, -|cons] -> {[+|nasal]} // {} ~ {[-|syl, +|cons, +|nasal]};
 # `bɔn` -> `bɔ̃`
 
 # Palatalized /h/ becomes [ç] before a vowel (Japanese)
-S : 'hʲ' -> {'ç'} // {} ~ {[+syl]};
+S : 'hʲ' -> {'ç'} // {} ~ {[+|syl]};
 # `hʲito` -> `çito`
 
 # Final non-nasal consonant is devoiced (German)
-S : [-syl, +cons, +voice, -nasal] -> {[-voice]} // {} ~ {"#"};
+S : [-|syl, +|cons, +|voice, -|nasal] -> {[-|voice]} // {} ~ {"#"};
 # `taːg` -> `taːk`
 # `taːgə` -> `taːgə` (Unchanged)
 
 # An epenthetic [ə] is inserted between sequential consonants (Not based on a real language)
-S : null -> {'ə'} // {[-syl, +cons]} ~ {[-syl, +cons]};
+S : null -> {'ə'} // {[-|syl, +|cons]} ~ {[-|syl, +|cons]};
 # `asta` -> `asəta`
 ```
 
