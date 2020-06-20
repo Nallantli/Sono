@@ -3,7 +3,7 @@ import "FileIO";
 struct File class {
 	var pointer;
 
-	init(filename) => {
+	init(&filename) => {
 		this.pointer = ("FileIO.INIT" _OUTER_CALL_ filename);
 	};
 
@@ -30,7 +30,7 @@ struct File class {
 	struct Reader class {
 		var pointer;
 
-		init(pointer) => {
+		init(&pointer) => {
 			this.pointer = ("FileIO.READER.INIT" _OUTER_CALL_ pointer);
 		};
 
@@ -60,7 +60,7 @@ struct File class {
 		};
 
 		close() => {
-			return "FileIO.READER.CLOSE" _OUTER_CALL_ pointer;
+			"FileIO.READER.CLOSE" _OUTER_CALL_ pointer;
 			pointer = null;
 		};
 
@@ -68,20 +68,20 @@ struct File class {
 			return str this.pointer;
 		};
 	};
-	
+
 	struct Writer class {
 		var pointer;
 
-		init(pointer) => {
+		init(&pointer) => {
 			this.pointer = ("FileIO.WRITER.INIT" _OUTER_CALL_ pointer);
 		};
 
-		write(string) => {
-			var line = ("FileIO.WRITER.WRITE" _OUTER_CALL_ {pointer, string});
+		write(&string) => {
+			"FileIO.WRITER.WRITE" _OUTER_CALL_ {pointer, string};
 		};
 
 		close() => {
-			return "FileIO.WRITER.CLOSE" _OUTER_CALL_ pointer;
+			"FileIO.WRITER.CLOSE" _OUTER_CALL_ pointer;
 			pointer = null;
 		};
 

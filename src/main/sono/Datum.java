@@ -192,7 +192,7 @@ public class Datum {
 
 	public String getTypeString() {
 		if (this.type == Type.STRUCTURE)
-			return this.valueStructure.getKey();
+			return Interpreter.deHash(this.valueStructure.getKey());
 		return this.type.toString();
 	}
 

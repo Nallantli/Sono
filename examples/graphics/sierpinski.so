@@ -1,0 +1,31 @@
+load "graphics";
+load "system";
+
+var window = new Window("Sierpinski's Triangle", 500, 500, () => {
+	println("Sierpinski!");
+	exit();
+});
+var graphics = window.getGraphics();
+
+drawTriangle(x, y, s) => {
+	graphics.add(new Shape.Line(Color.BLACK, x, y + s, x + s, y + s));
+	graphics.add(new Shape.Line(Color.BLACK, x, y + s, x + s / 2, y));
+	graphics.add(new Shape.Line(Color.BLACK, x + s, y + s, x + s / 2, y));
+};
+
+drawLevel(x, y, s, c) => {
+	drawTriangle(s / 2 + x, s / 2 + y, s / 2);
+	drawTriangle(x, s / 2 + y, s / 2);
+	drawTriangle(s / 4 + x, y, s / 2);
+	c -= 1;
+	s /= 2;
+	c > 0 then {
+		drawLevel(x + s/2, y, s, c);
+		drawLevel(x, y + s, s, c);
+		drawLevel(x + s, y + s, s, c);
+	};
+};
+
+drawLevel(10, 10, 480, 6);
+
+window.repaint();

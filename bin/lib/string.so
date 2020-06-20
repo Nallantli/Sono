@@ -23,11 +23,11 @@ String::isEmpty(&this) => {
 	return (len this == 0);
 };
 
-String::at(&this, index) => {
+String::at(&this, &index) => {
 	return (vec this)[index];
 };
 
-String::push(&this, value) => {
+String::push(&this, &value) => {
 	this += str value;
 	return this;
 }

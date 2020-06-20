@@ -8,30 +8,26 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import main.base.Command;
 import main.base.Library;
 import main.sono.Datum;
 
 import java.util.List;
 
-public class FileIO extends Library {
-	public FileIO() {
-		final Map<String, Command> commands = new HashMap<>();
-		commands.put("FileIO.INIT", (final Datum datum, final List<String> trace) -> {
+public class LIB_FileIO extends Library {
+	public LIB_FileIO() {
+		super();
+		commands.put("LIB_FileIO.INIT", (final Datum datum, final List<String> trace) -> {
 			final File file = new File(datum.getString(trace));
 			return new Datum((Object) file);
 		});
-		commands.put("FileIO.EXISTS", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.EXISTS", (final Datum datum, final List<String> trace) -> {
 			final File file = (File) datum.getPointer(trace);
 			if (file.exists())
 				return new Datum(BigDecimal.ONE);
 			else
 				return new Datum(BigDecimal.ZERO);
 		});
-		commands.put("FileIO.CREATE", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.CREATE", (final Datum datum, final List<String> trace) -> {
 			final File file = (File) datum.getPointer(trace);
 			try {
 				if (file.createNewFile())
@@ -42,7 +38,7 @@ public class FileIO extends Library {
 				throw error("Cannot create file <" + file.toString() + ">", trace);
 			}
 		});
-		commands.put("FileIO.READER.INIT", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.READER.INIT", (final Datum datum, final List<String> trace) -> {
 			final File file = (File) datum.getPointer(trace);
 			BufferedReader br;
 			try {
@@ -52,7 +48,7 @@ public class FileIO extends Library {
 				throw error("Cannot initiate reader for file <" + file.toString() + ">", trace);
 			}
 		});
-		commands.put("FileIO.READER.GETLINE", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.READER.GETLINE", (final Datum datum, final List<String> trace) -> {
 			final BufferedReader br = (BufferedReader) datum.getPointer(trace);
 			try {
 				final String s = br.readLine();
@@ -64,7 +60,7 @@ public class FileIO extends Library {
 				throw error("Cannot read from reader <" + br.toString() + ">", trace);
 			}
 		});
-		commands.put("FileIO.READER.GET", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.READER.GET", (final Datum datum, final List<String> trace) -> {
 			final BufferedReader br = (BufferedReader) datum.getPointer(trace);
 			try {
 				final int c = br.read();
@@ -76,7 +72,7 @@ public class FileIO extends Library {
 				throw error("Cannot read from reader <" + br.toString() + ">", trace);
 			}
 		});
-		commands.put("FileIO.READER.CLOSE", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.READER.CLOSE", (final Datum datum, final List<String> trace) -> {
 			final BufferedReader br = (BufferedReader) datum.getPointer(trace);
 			try {
 				br.close();
@@ -85,7 +81,7 @@ public class FileIO extends Library {
 				throw error("Cannot close reader <" + br.toString() + ">", trace);
 			}
 		});
-		commands.put("FileIO.WRITER.INIT", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.WRITER.INIT", (final Datum datum, final List<String> trace) -> {
 			final File file = (File) datum.getPointer(trace);
 			BufferedWriter bw;
 			try {
@@ -95,7 +91,7 @@ public class FileIO extends Library {
 				throw error("Cannot initiate writer for file <" + file.toString() + ">", trace);
 			}
 		});
-		commands.put("FileIO.WRITER.WRITE", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.WRITER.WRITE", (final Datum datum, final List<String> trace) -> {
 			final BufferedWriter bw = (BufferedWriter) datum.getVector(trace).get(0).getPointer(trace);
 			try {
 				bw.write(datum.getVector(trace).get(1).getString(trace));
@@ -104,7 +100,7 @@ public class FileIO extends Library {
 				throw error("Cannot write from write <" + bw.toString() + ">", trace);
 			}
 		});
-		commands.put("FileIO.WRITER.CLOSE", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_FileIO.WRITER.CLOSE", (final Datum datum, final List<String> trace) -> {
 			final BufferedWriter bw = (BufferedWriter) datum.getPointer(trace);
 			try {
 				bw.close();
@@ -113,6 +109,5 @@ public class FileIO extends Library {
 				throw error("Cannot close reader <" + bw.toString() + ">", trace);
 			}
 		});
-		setCommands(commands);
 	}
 }

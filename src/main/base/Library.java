@@ -1,15 +1,17 @@
 package main.base;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.base.CommandManager.Command;
 import main.sono.err.SonoRuntimeException;
 
 public class Library {
-	private Map<String, Command> commands;
+	protected Map<String, Command> commands;
 
-	protected void setCommands(final Map<String, Command> commands) {
-		this.commands = commands;
+	protected Library() {
+		this.commands = new HashMap<>();
 	}
 
 	public Map<String, Command> getCommands() {

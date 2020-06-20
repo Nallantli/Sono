@@ -28,7 +28,7 @@ Vector::isEmpty(&this) => {
 	return (len this == 0);
 };
 
-Vector::contains(&this, value) => {
+Vector::contains(&this, &value) => {
 	i in this do {
 		i == value then {
 			return true;
@@ -37,7 +37,7 @@ Vector::contains(&this, value) => {
 	return false;
 };
 
-Vector::push(&this, value) => {
+Vector::push(&this, &value) => {
 	this += { value };
 	return this;
 };

@@ -1,16 +1,19 @@
 package main.sono;
 
 import java.util.List;
+
+import main.Main;
+
 import java.util.ArrayList;
 
 public class Function {
 	private Scope parent;
-	private final List<String> paramKeys;
+	private final List<Integer> paramKeys;
 	private final List<Boolean> paramRefs;
 	private final Operator body;
 	private final Interpreter interpreter;
 
-	public Function(final Scope parent, final List<String> paramKeys, final List<Boolean> paramRefs,
+	public Function(final Scope parent, final List<Integer> paramKeys, final List<Boolean> paramRefs,
 			final Operator body, final Interpreter interpreter) {
 		this.paramKeys = paramKeys;
 		this.paramRefs = paramRefs;
@@ -35,7 +38,7 @@ public class Function {
 			}
 		}
 
-		final Datum r = body.evaluate(scope, interpreter, new ArrayList<>(trace));
+		final Datum r = body.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
 		if (r.getRet()) {
 			r.setRet(false);
 			return r;

@@ -19,8 +19,24 @@ public class Interpreter {
 	private final Scope main;
 	private final PhoneManager pl;
 	private final CommandManager console;
+	private static List<String> variableHash = new ArrayList<>();
 
-	List<String> loadedFiles;
+	private List<String> loadedFiles;
+
+	public static final int INIT = 0;
+	public static final int THIS = 1;
+	public static final int GETSTR = 2;
+	public static final int GETLEN = 3;
+	public static final int GETINDEX = 4;
+	public static final int GETLIST = 5;
+	public static final int ERROR = 6;
+	public static final int TRACE = 7;
+	public static final int SRULE = 8;
+	public static final int AFRULE = 9;
+	public static final int ABRULE = 10;
+	public static final int SQUAREBRACKET = 11;
+	public static final int CURLYBRACKET = 12;
+	public static final int PARANTHESIS = 13;
 
 	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console) {
 		this.main = main;
@@ -33,7 +49,33 @@ public class Interpreter {
 		}
 		final Datum d = new Datum(data);
 		d.setMutable(false);
-		main.setVariable("all", d, new ArrayList<>());
+
+		hashVariable("init");
+		hashVariable("this");
+		hashVariable("getStr");
+		hashVariable("getLen");
+		hashVariable("getIndex");
+		hashVariable("getList");
+		hashVariable("_e");
+		hashVariable("_trace");
+		hashVariable("S");
+		hashVariable("Af");
+		hashVariable("Ab");
+		hashVariable("[");
+		hashVariable("{");
+		hashVariable("(");
+
+		main.setVariable(hashVariable("all"), d, new ArrayList<>());
+	}
+
+	private static int hashVariable(final String key) {
+		if (!variableHash.contains(key))
+			variableHash.add(key);
+		return variableHash.indexOf(key);
+	}
+
+	public static String deHash(final int key) {
+		return variableHash.get(key);
 	}
 
 	public Datum runCode(final String directory, final String code) {
@@ -404,34 +446,37 @@ public class Interpreter {
 				if (token.equals(":")) {
 					Rule.Type rtype = null;
 					final Operator b = o.pollLast();
-					final String a = ((Operator.Variable) o.pollLast()).getKey();
-					if (a.equals("S"))
+					final int a = ((Operator.Variable) o.pollLast()).getKey();
+					if (a == SRULE)
 						rtype = Rule.Type.SIMPLE;
-					if (a.equals("Af"))
+					if (a == AFRULE)
 						rtype = Rule.Type.A_FORWARD;
-					if (a.equals("Ab"))
+					if (a == ABRULE)
 						rtype = Rule.Type.A_BACKWARD;
 					o.addLast(new Operator.RuleDec(rtype, b));
 				}
 			} else if (token.equals("]")) {
 				final List<Operator> list = new ArrayList<>();
-				Operator curr = null;
-				while (!(curr = o.pollLast()).toString().equals("[")) {
+				Operator curr = o.pollLast();
+				while (!(curr.type == Operator.Type.VARIABLE && ((Operator.Variable) curr).getKey() == Interpreter.SQUAREBRACKET)) {
 					list.add(0, curr);
+					curr = o.pollLast();
 				}
 				o.addLast(new Operator.MatrixDec(list));
 			} else if (token.equals(")")) {
 				final List<Operator> list = new ArrayList<>();
-				Operator curr = null;
-				while (!(curr = o.pollLast()).toString().equals("(")) {
+				Operator curr = o.pollLast();
+				while (!(curr.type == Operator.Type.VARIABLE && ((Operator.Variable) curr).getKey() == Interpreter.PARANTHESIS)) {
 					list.add(0, curr);
+					curr = o.pollLast();
 				}
 				o.addLast(new Operator.SoftList(list));
 			} else if (token.equals("}")) {
 				final List<Operator> list = new ArrayList<>();
-				Operator curr = null;
-				while (!(curr = o.pollLast()).toString().equals("{")) {
+				Operator curr = o.pollLast();
+				while (!(curr.type == Operator.Type.VARIABLE && ((Operator.Variable) curr).getKey() == Interpreter.CURLYBRACKET)) {
 					list.add(0, curr);
+					curr = o.pollLast();
 				}
 				o.addLast(new Operator.HardList(list));
 			} else if (token.charAt(0) == '\'') {
@@ -486,7 +531,7 @@ public class Interpreter {
 			} else if (token.equals("break")) {
 				o.addLast(new Operator.Break());
 			} else {
-				o.addLast(new Operator.Variable(token));
+				o.addLast(new Operator.Variable(hashVariable(token)));
 			}
 		}
 

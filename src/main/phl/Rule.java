@@ -304,9 +304,7 @@ public class Rule {
 		final Rule r = (Rule) o;
 		if (type != r.type)
 			return false;
-		if (search != null && !search.equals(r.search))
-			return false;
-		else if (search == null && r.search != null)
+		if ((search != null && !search.equals(r.search)) || (search == null && r.search != null))
 			return false;
 		for (int i = 0; i < trans.size(); i++)
 			if (!trans.get(i).equals(r.trans.get(i)))

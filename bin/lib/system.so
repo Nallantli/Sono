@@ -1,26 +1,41 @@
-import "Console";
+import "LIB_Console";
+load "math";
 
-print(message) => {
-	"Console.PRINT" _OUTER_CALL_ (str message);
+print(&message) => {
+	"LIB_Console.PRINT" _OUTER_CALL_ (str message);
 };
 
-println(message) => {
+println(&message) => {
 	print(str message + "\n");
 };
 
 exit() => {
-	"Console.EXIT" _OUTER_CALL_ null;
+	"LIB_Console.EXIT" _OUTER_CALL_ null;
+};
+
+timeMS() => {
+	return ("LIB_Console.TIME" _OUTER_CALL_ null);
+};
+
+static Random class {
+	float() => {
+		return ("LIB_Console.RAND" _OUTER_CALL_ null);
+	};
+
+	int(&lower, &upper) => {
+		return (float() * (upper - lower) + lower).round();
+	};
 };
 
 static Input class {
 	line() => {
-		return ("Console.GET.LINE" _OUTER_CALL_ null);
+		return ("LIB_Console.GET.LINE" _OUTER_CALL_ null);
 	};
 	number() => {
-		return ("Console.GET.NUMBER" _OUTER_CALL_ null);
+		return ("LIB_Console.GET.NUMBER" _OUTER_CALL_ null);
 	};
 };
 
-String::match(string, pattern) => {
-	return "Console.REGEX" _OUTER_CALL_ { pattern, string };
+String::match(&string, &pattern) => {
+	return "LIB_Console.REGEX" _OUTER_CALL_ { pattern, string };
 };

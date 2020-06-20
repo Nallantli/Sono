@@ -1,4 +1,4 @@
-Vector::apply(&this, ruleset) => {
+Vector::apply(&this, &ruleset) => {
 	var applied = {};
 	e in this do {
 		type ruleset == "Vector" then {
@@ -14,7 +14,7 @@ Vector::apply(&this, ruleset) => {
 	return applied;
 };
 
-Word::apply(&this, ruleset) => {
+Word::apply(&this, &ruleset) => {
 	var applied = this;
 	type ruleset == "Vector" then {
 		r in ruleset do {
@@ -26,7 +26,7 @@ Word::apply(&this, ruleset) => {
 	return applied;
 };
 
-Word::apply(&this, ruleset) => {
+Word::apply(&this, &ruleset) => {
 	var applied = this;
 	type ruleset == "Vector" then {
 		r in ruleset do {

@@ -21,7 +21,8 @@ import main.sono.Scope;
 import main.sono.err.SonoException;
 
 public class Main {
-	private static final String VERSION = "Beta 1.1.1";
+	private static final String VERSION = "Beta 1.2.0";
+	public static boolean DEBUG;
 
 	private static Map<String, String> globalOptions = new HashMap<>();
 	private static Scanner sc = null;
@@ -56,7 +57,7 @@ public class Main {
 		try {
 			String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			path = URLDecoder.decode(path, "UTF-8");
-			path = path.replace("/SonoLang.jar", "");
+			path = path.replace("/res/sono.jar", "");
 			globalOptions.put("PATH", path);
 			final File directory = new File(path, ".config");
 			if (!directory.exists())
@@ -101,6 +102,12 @@ public class Main {
 				globalOptions.put("LING", "TRUE");
 				pl = new PhoneLoader(globalOptions.get("DATA"), false);
 				sono = new Interpreter(new Scope(null), pl.getManager(), command);
+			}
+
+			if (getOption("-g", args) != null) {
+				DEBUG = true;
+			} else {
+				DEBUG = false;
 			}
 
 			if (args.length > 0 && args[0].charAt(0) != '-') {

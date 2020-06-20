@@ -1,12 +1,12 @@
 #!/bin/bash
-for f in src/ext/*.java
+for f in src/ext/LIB_*.java
 do
 	filename=`basename $f .java`
 	echo "Compiling $filename.java..."
 	javac -cp src src/ext/$filename.java -encoding utf8 -d bin/lib
 done
 cd bin/lib
-for f in ext/*.class
+for f in ext/LIB_*.class
 do
 	filename=`basename $f .class`
 	echo "Creating $filename.jar..."

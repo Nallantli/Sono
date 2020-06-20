@@ -10,6 +10,10 @@ import main.sono.Datum;
 import main.sono.err.SonoCompilationException;
 
 public class CommandManager {
+	public interface Command {
+		public Datum execute(Datum datum, List<String> trace);
+	}
+
 	private final Map<String, Command> commands;
 
 	public CommandManager() {
