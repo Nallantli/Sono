@@ -8,7 +8,7 @@
 
 ## Overview
 
-Sono is a high-level programming language developed with linguistic capabilities in mind. For that it supports multiple operators revolving around phonological analysis based upon distinctive features.
+Sono is a high-level object-oriented and procedural scripting language developed with linguistic capabilities in mind. For that it supports multiple operators revolving around phonological analysis based upon distinctive features.
 
 While the included file [hayes.tsv](assets/hayes.tsv) is used for the example codes under [examples/](examples), the use may load any set of qualities for the distinctive features so long as the same set of distinctive features is used. Currently the features supported are:
 
