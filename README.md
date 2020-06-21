@@ -1,4 +1,4 @@
-# Sono Beta 1.2.1
+# Sono Beta 1.2.2
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -45,7 +45,7 @@ Place features (`LAB`, `COR`, `LAT`, and `DOR`) have sub-features that are consi
 
 The first argument (if the user wishes to run a file) must be the path to the file. Otherwise the CLI interpreter will be opened, from which commands may be run per user input.
 
-There are currently only two command line arguments: `-l` which disables all phonological features of the language (for use as a general scripting language) and `-d` which takes in a file path for phonological base data.
+There are currently only three command line arguments: `-l` which disables all phonological features of the language (for use as a general scripting language), `-d` which takes in a file path for phonological base data, and `-g`, which activates debug mode which will create a stack trace for any caught error.
 
 During the initial run, `-d` will be required to develop a cache for the phonological data, and this process will take time depending on the extent of the data file given. Thereafter however the interpreter will automatically load the cached data at a significantly faster rate.
 
@@ -73,10 +73,12 @@ Type | Notes | Examples of Literals
 `Word` | Sequence of Phones, with the addition of syllable delimiters `.` and morpheme boundary markers `+` | `` `foʊnɒləd_ʒi` ``, `` `soʊ.noʊ` ``, `` `naː.wa+tɬ` ``
 `Feature` | Distinctive feature and its quality | `+|long`, `-|LAB`
 `Matrix` | Grouping of Features for transformations | `[+|long, -|tense]`
-`Rule` | Phonological transformation rules using a combination of Phones, Strings, and Matrices<br>The initial character determines whether it is assimilatory: `S` indicates no assimilation (does not remove any segments), `Af` indicates forward assimilation (removes the following segment), `Ab` indicates backward assimilation (removes the previous segment) | `S : 't' -> {'t_ɬ'} // {"$"} ~ {[-|high, +|low, -|front, -|back, -|tense]}`
+`Rule` | Phonological transformation rules using a combination of Phones, Strings, and Matrices<br>The initial character determines whether it is assimilatory: `S` indicates no assimilation (does not remove any segments), `Af` indicates forward assimilation (removes the following segment), `Ab` indicates backward assimilation (removes the previous segment) | `S : 't' -> 't_ɬ' // "$" ~ [-|high, +|low, -|front, -|back, -|tense]`
 `Function` | Basic parameterized anonymous function | `(a, b) => {return a * b;};`
 
 ## Syntax
+
+Please note that syntax may change during the course of updates due to the novelty of the language. After the beta is complete the final syntax will have been established.
 
 The syntax is mostly C-style with minor alterations regarding flow segments and usage of semi-colons. All lines (including the end of scopes `{}`) must use a semi-colon. The exception to this is single-lined scopes, where a semi-colon is not necessary. For example, the function `(a, b) => {return a * b;};` may also be written as `(a, b) => {return a * b};`.
 
@@ -142,7 +144,9 @@ Method | Arguments | Use
 `getList`|None|Returns a `Vector` representation of the object when the object is called with `vec`
 `getLen`|None|Returns the length of the object when called with `len`
 
-While it is possible to override these methods to return values of any time, that practice may lead to some confusion (for instance, `getList` returning a `Number`).
+While it is possible to override these methods to return values of any type, that practice may lead to some confusion (for instance, `getList` returning a `Number`).
+
+There is currently no draw to implement an override for the `==` operator, as the scripter may wish to compare whether two objects point to the same object in one circumstance and to establish equivalency by value in a different circumstance. For that reason it is recommended to implement an `equals` method.
 
 An example object and its instantiation are as follows:
 
@@ -175,7 +179,7 @@ The Type is one of three values `S`, `Af`, and `Ab`. Their usage was explained a
 
 The Search parameter must be of type `Matrix` or `Phone`. The `Rule`, when applied, will search the sequence sequentially for a value applicable ot the Search parameter. The Search parameter can also be `null`, in which case the `Rule` will look only with concern to the boundary parameters.
 
-The Transformation parameter must be of type `Vector`, containing `Matrix` or `Phone` values. If the Search parameter is satisfied, the values within the Transformation parameter will be applied to the found `Phone`. For a `Matrix` value in the parameter, the application will generate a `Phone` with the values of the Search transformed by the `Matrix`. For a `Phone` value in the parameter, there is no transformation and the value is simply appended in place of the Search parameter. Using a `Vector` with multiple values allows for the creation of multiple new `Phone` values with their sequential transformations or replacements with respect to the Search parameter.
+The Transformation parameter must be of type `Vector`, containing `Matrix` or `Phone` values, or a `Matrix`, `Phone`, or `String` value that will be inserted as a 1-element `Vector`. A `Vector` value is used to transform into sequences of greater length than a single segment, e.g. `... -> {'n', 'd'}`. If the Search parameter is satisfied, the values within the Transformation parameter will be applied to the found `Phone`. For a `Matrix` value in the parameter, the application will generate a `Phone` with the values of the Search transformed by the `Matrix`. For a `Phone` value in the parameter, there is no transformation and the value is simply appended in place of the Search parameter. Using a `Vector` with multiple values allows for the creation of multiple new `Phone` values with their sequential transformations or replacements with respect to the Search parameter.
 
 The Boundary parameters follow the same format as the Transformation parameter, but scan the sequence in the manner of the Search parameter. They must be declared as `Vector`. In addition to the values allowed for the Transformation parameter, Boundary parameters may also contain the following `String` values:
 
@@ -191,34 +195,34 @@ Some examples of rules include:
 
 ```sono
 # Vowel nasalized before a nasal consonant (English)
-S : [+|syl, -|cons] -> {[+|nasal]} // {} ~ {[-|syl, +|cons, +|nasal]};
+S : [+|syl, -|cons] -> [+|nasal] // null ~ [-|syl, +|cons, +|nasal];
 # `mæn` -> `mæ̃n`
 
 # Vowel nasalized before a nasal consonant, and the consonant is deleted (French)
-Af : [+|syl, -|cons] -> {[+|nasal]} // {} ~ {[-|syl, +|cons, +|nasal]};
+Af : [+|syl, -|cons] -> [+|nasal] // null ~ [-|syl, +|cons, +|nasal];
 # `bɔn` -> `bɔ̃`
 
 # Palatalized /h/ becomes [ç] before a vowel (Japanese)
-S : 'hʲ' -> {'ç'} // {} ~ {[+|syl]};
+S : 'hʲ' -> 'ç' // null ~ [+|syl];
 # `hʲito` -> `çito`
 
 # Final non-nasal consonant is devoiced (German)
-S : [-|syl, +|cons, +|voice, -|nasal] -> {[-|voice]} // {} ~ {"#"};
+S : [-|syl, +|cons, +|voice, -|nasal] -> [-|voice] // null ~ "#";
 # `taːg` -> `taːk`
 # `taːgə` -> `taːgə` (Unchanged)
 
 # An epenthetic [ə] is inserted between sequential consonants (Not based on a real language)
-S : null -> {'ə'} // {[-|syl, +|cons]} ~ {[-|syl, +|cons]};
+S : null -> 'ə' // [-|syl, +|cons] ~ [-|syl, +|cons];
 # `asta` -> `asəta`
 ```
 
-In addition, there are further `Feature` assimilation options. Denoting features with numeric qualities (e.g. `0`, `1`, `2`, ...) creates a variable feature linked to the quality in the `Phone` or `Matrix` that corresponds to that integer read from left to right.
+In addition, there are further `Feature` assimilation options. Denoting features with numeric qualities (e.g. `1`, `2`, `3`, ...) creates a variable feature linked to the quality in the `Phone` or `Matrix` that corresponds to that integer read from left to right.
 
 For instance, a rather complicated nasal assimilation rule in Japanese:
 
 ```sono
 # The moraic nasal assimilates to the place of the following consonant
-S : 'ɴ' -> {[1|LAB, 1|round, 1|ld, 1|COR, 1|ant, 1|dist, 1|DOR, 1|high, 1|low, 1|front, 1|back]} // {} ~ {[-|syl, +|cons, 1|LAB, 1|round, 1|ld, 1|COR, 1|ant, 1|dist, 1|DOR, 1|high, 1|low, 1|front, 1|back]};
+S : 'ɴ' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null ~ [-|syl, +|cons, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back];
 ```
 
 Place assimilation may be revised in the future using macros for the sake of brevity.

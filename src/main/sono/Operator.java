@@ -581,16 +581,15 @@ public abstract class Operator {
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			while (a.type != Type.SLASH)
 				a = ((Sequence) a).operators.get(0);
-			final Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, interpreter,
-					(Main.DEBUG ? new ArrayList<>(trace) : trace));
-			final List<Datum> dtrans = ((Binary) ((Binary) a).getA()).getB()
-					.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace)).getVector(trace);
-			final List<Datum> dinit = ((Binary) ((Binary) a).getB()).getA()
-					.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace)).getVector(trace);
-			final List<Datum> dfin = ((Binary) ((Binary) a).getB()).getB()
-					.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace)).getVector(trace);
+			final Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+			final Datum rawTrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+			final Datum rawInit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+			final Datum rawFin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
 
 			Object search = null;
+			List<Datum> dtrans;
+			List<Datum> dinit;
+			List<Datum> dfin;
 			final List<Object> trans = new ArrayList<>();
 			final List<Object> init = new ArrayList<>();
 			final List<Object> fin = new ArrayList<>();
@@ -599,17 +598,29 @@ public abstract class Operator {
 				search = dsearch.getMatrix(trace);
 			else if (dsearch.getType() == Datum.Type.PHONE)
 				search = dsearch.getPhone(trace);
+
+			if (rawTrans.getType() == Datum.Type.VECTOR)
+				dtrans = rawTrans.getVector(trace);
+			else
+				dtrans = Arrays.asList(rawTrans);
+
 			for (final Datum d : dtrans) {
 				if (d.type == Datum.Type.PHONE)
 					trans.add(d.getPhone(trace));
 				else if (d.type == Datum.Type.MATRIX)
 					trans.add(d.getMatrix(trace));
-				else
+				else if (d.getType() != Datum.Type.NULL)
 					throw new SonoRuntimeException(
 							"Value <" + d.toStringTrace((Main.DEBUG ? new ArrayList<>(trace) : trace))
 									+ "> cannot be used in a Rule declaration.",
 							trace);
 			}
+
+			if (rawInit.getType() == Datum.Type.VECTOR)
+				dinit = rawInit.getVector(trace);
+			else
+				dinit = Arrays.asList(rawInit);
+
 			for (final Datum d : dinit) {
 				if (d.type == Datum.Type.PHONE)
 					init.add(d.getPhone(trace));
@@ -629,13 +640,19 @@ public abstract class Operator {
 						default:
 							break;
 					}
-				} else {
+				}else if (d.getType() != Datum.Type.NULL) {
 					throw new SonoRuntimeException(
 							"Value <" + d.toStringTrace((Main.DEBUG ? new ArrayList<>(trace) : trace))
 									+ "> cannot be used in a Rule declaration.",
 							trace);
 				}
 			}
+
+			if (rawFin.getType() == Datum.Type.VECTOR)
+				dfin = rawFin.getVector(trace);
+			else
+				dfin = Arrays.asList(rawFin);
+
 			for (final Datum d : dfin) {
 				if (d.type == Datum.Type.PHONE)
 					fin.add(d.getPhone(trace));
@@ -655,7 +672,7 @@ public abstract class Operator {
 						default:
 							break;
 					}
-				} else {
+				}else if (d.getType() != Datum.Type.NULL) {
 					throw new SonoRuntimeException(
 							"Value <" + d.toStringTrace((Main.DEBUG ? new ArrayList<>(trace) : trace))
 									+ "> cannot be used in a Rule declaration.",

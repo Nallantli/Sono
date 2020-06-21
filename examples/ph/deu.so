@@ -2,7 +2,7 @@ load "system";
 load "rule";
 
 # German devoicing of final consonant, just a silly example to demonstrate using "#"
-var rule = S : [-|syl, +|cons, +|voice, -|nasal] -> {[-|voice]} // {} ~ {"#"};
+var rule = S : [-|syl, +|cons, +|voice, -|nasal] -> [-|voice] // null ~ "#";
 
 var words = {
 	`bʊndəstaːg`,

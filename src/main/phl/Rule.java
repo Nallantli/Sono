@@ -91,7 +91,7 @@ public class Rule {
 			final List<Object> tempFin = new ArrayList<>();
 			final List<Object> tempTrans = new ArrayList<>();
 
-			int currentIndex = 0;
+			int currentIndex = 1;
 			if (search != null && search.getClass() == Matrix.class) {
 				tempSearch = new Matrix();
 				((Matrix) tempSearch).putAll((Matrix) search);
