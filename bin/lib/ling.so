@@ -1,8 +1,10 @@
 load "feature";
 load "vector";
+load "string";
+load "map";
 
 static Phonology class {
-	getNaturalSet(&phones, &set) => {
+	getNaturalSet(ref phones, ref set) => {
 		var m = [];
 		p in set do {
 			m += mat p;
@@ -10,13 +12,13 @@ static Phonology class {
 		return m from phones;
 	};
 
-	isNaturalSet(&phones, &set) => {
+	isNaturalSet(ref phones, ref set) => {
 		var ns = getNaturalSet(phones, set);
 		return len ns == len set;
 	};
 
-	naturalize(&phones, &set) => {
-		var natural = (&phones, &matrix) => {
+	naturalize(ref phones, ref set) => {
+		var natural = (ref phones, ref matrix) => {
 			var list = {};
 			i in {0 until len matrix} do {
 				var temp = mat (vec matrix).remove(i);
@@ -32,5 +34,93 @@ static Phonology class {
 			}
 		};
 		return natural(phones, com getNaturalSet(phones, set))[0];
+	};
+};
+
+struct Corpus class {
+	var corpus;
+	var TFcache;
+	var IDFcache;
+
+	init() => {
+		corpus = {};
+		TFcache = new Map();
+		IDFcache = new Map();
+	};
+
+	resetCache() => {
+		TFcache = new Map();
+		IDFcache = new Map();
+	};
+
+	add(value) => {
+		type value != "Vector" then {
+			value = value.split("\\s");
+		};
+		corpus += {value};
+		resetCache();
+	};
+
+	TF(ref value, ref doc) => {
+		TFcache.contains({value, doc}) then {
+			return TFcache[{value, doc}];
+		};
+		var c = 0;
+		doc == null then {
+			i in corpus do {
+				j in i do {
+					j == value then {
+						c += 1;
+					};
+				};
+			};
+		} else {
+			j in corpus[doc] do {
+				j == value then {
+					c += 1;
+				};
+			};
+		};
+		return c;
+	};
+
+	count(ref value) => {
+		var c = 0;
+		i in corpus do {
+			j in i do {
+				j == value then {
+					c += 1;
+					break;
+				};
+			};
+		};
+		return c;
+	};
+
+	IDF(ref value) => {
+		IDFcache.contains(value) then {
+			return IDFcache[value];
+		};
+		return 1 + (len corpus / (1 + count(value))).log();
+	};
+
+	TFIDF(ref value, ref doc) => {
+		var array = value;
+		type value != "Vector" then {
+			array = { value };
+		};
+		var freq = 0;
+		v in array do {
+			freq += TF(v, doc) * IDF(v);
+		};
+		return freq;
+	};
+
+	getList() => {
+		return corpus;
+	};
+
+	getLen() => {
+		return len corpus;
 	};
 };

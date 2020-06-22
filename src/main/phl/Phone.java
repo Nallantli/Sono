@@ -436,18 +436,26 @@ public class Phone implements Comparable<Phone>, Serializable {
 
 	@Override
 	public int compareTo(final Phone o) {
-		/*if (o.getFeatureQuality(Feature.SYLLABIC) != getFeatureQuality(Feature.SYLLABIC))
-			return (getFeatureQuality(Feature.SYLLABIC) == "+" ? -1 : 1);
-		if (o.getFeatureQuality(Feature.CONSONANTAL) != getFeatureQuality(Feature.CONSONANTAL))
-			return (getFeatureQuality(Feature.CONSONANTAL) == "-" ? -1 : 1);
-		if (o.getFeatureQuality(Feature.APPROXIMANT) != getFeatureQuality(Feature.APPROXIMANT))
-			return (getFeatureQuality(Feature.APPROXIMANT) == "+" ? -1 : 1);
-		if (o.getFeatureQuality(Feature.SONORANT) != getFeatureQuality(Feature.SONORANT))
-			return (getFeatureQuality(Feature.SONORANT) == "+" ? -1 : 1);
-		if (o.getFeatureQuality(Feature.CONTINUANT) != getFeatureQuality(Feature.CONTINUANT))
-			return (getFeatureQuality(Feature.CONTINUANT) == "+" ? -1 : 1);
-		if (o.getFeatureQuality(Feature.DELAYED_RELEASE) != getFeatureQuality(Feature.DELAYED_RELEASE))
-			return (getFeatureQuality(Feature.DELAYED_RELEASE) == "+" ? -1 : 1);*/
+		/*
+		 * if (o.getFeatureQuality(Feature.SYLLABIC) !=
+		 * getFeatureQuality(Feature.SYLLABIC)) return
+		 * (getFeatureQuality(Feature.SYLLABIC) == "+" ? -1 : 1); if
+		 * (o.getFeatureQuality(Feature.CONSONANTAL) !=
+		 * getFeatureQuality(Feature.CONSONANTAL)) return
+		 * (getFeatureQuality(Feature.CONSONANTAL) == "-" ? -1 : 1); if
+		 * (o.getFeatureQuality(Feature.APPROXIMANT) !=
+		 * getFeatureQuality(Feature.APPROXIMANT)) return
+		 * (getFeatureQuality(Feature.APPROXIMANT) == "+" ? -1 : 1); if
+		 * (o.getFeatureQuality(Feature.SONORANT) !=
+		 * getFeatureQuality(Feature.SONORANT)) return
+		 * (getFeatureQuality(Feature.SONORANT) == "+" ? -1 : 1); if
+		 * (o.getFeatureQuality(Feature.CONTINUANT) !=
+		 * getFeatureQuality(Feature.CONTINUANT)) return
+		 * (getFeatureQuality(Feature.CONTINUANT) == "+" ? -1 : 1); if
+		 * (o.getFeatureQuality(Feature.DELAYED_RELEASE) !=
+		 * getFeatureQuality(Feature.DELAYED_RELEASE)) return
+		 * (getFeatureQuality(Feature.DELAYED_RELEASE) == "+" ? -1 : 1);
+		 */
 		return segment.compareTo(o.segment);
 	}
 }

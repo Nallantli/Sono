@@ -39,3 +39,27 @@ Number::round(n) => {
 		return c;
 	};
 };
+
+static Math class {
+	min(ref vector) => {
+		var n = vector[0];
+		i in {1 until len vector} do {
+			vector[i] < n then {
+				n = vector[i];
+			};
+		};
+		return n;
+	};
+
+	minIndex(ref vector) => {
+		var n = vector[0];
+		var index = 0;
+		i in {1 until len vector} do {
+			vector[i] < n then {
+				n = vector[i];
+				index = i;
+			};
+		};
+		return index;
+	};
+};

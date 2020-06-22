@@ -1,42 +1,55 @@
 load "system";
 load "vector";
+load "math";
 
-String::pop(&this) => {
+String::pop(ref this) => {
 	this = (vec this).pop().join();
 	return this;
 };
 
-String::shift(&this) => {
+String::shift(ref this) => {
 	this = (vec this).shift().join();
 	return this;
 };
 
-String::front(&this) => {
+String::front(ref this) => {
 	return (vec this).front();
 };
 
-String::back(&this) => {
+String::back(ref this) => {
 	return (vec this).back();
 };
 
-String::isEmpty(&this) => {
+String::isEmpty(ref this) => {
 	return (len this == 0);
 };
 
-String::at(&this, &index) => {
+String::at(ref this, ref index) => {
 	return (vec this)[index];
 };
 
-String::push(&this, &value) => {
+String::push(ref this, ref value) => {
 	this += str value;
 	return this;
 };
 
-String::contains(&this, &pattern) => {
+String::contains(ref this, ref pattern) => {
 	return (len this.match(pattern) > 0);
 };
 
-String::split(&this, &pattern) => {
+String::dist(ref this, ref string, ref costDel, ref costIns, ref costRep) => {
+	return (vec this).dist(string, costDel, costIns, costRep);
+};
+
+String::nGram(ref this, ref n, delim) => {
+	delim == null then {
+		delim = "\\s";
+	};
+	var s = this.split(delim);
+	return s.nGram(n);
+};
+
+String::split(ref this, ref pattern) => {
 	var stringArray = vec this;
 	var coords = this.match(pattern);
 	var array = {};
@@ -67,7 +80,7 @@ String::split(&this, &pattern) => {
 	return array;
 };
 
-String::replace(&this, &pattern, &value) => {
+String::replace(ref this, ref pattern, ref value) => {
 	var stringArray = vec this;
 	var coords = this.match(pattern);
 	var array = {};

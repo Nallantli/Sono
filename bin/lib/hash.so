@@ -1,0 +1,14 @@
+String::hash(ref string, ref mod) => {
+	var p = 31;
+	var m = 10 ** 9 + 9;
+	var h = 0;
+	var pp = 1;
+	e in vec string do {
+		h = (h + char e * pp) % m;
+		pp = (pp * p) % m;
+	};
+	mod == null then {
+		return h;
+	};
+	return h % mod;
+};

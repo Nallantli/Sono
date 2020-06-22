@@ -55,5 +55,9 @@ public class LIB_Console extends Library {
 			System.exit(0);
 			return datum;
 		});
+		commands.put("LIB_Console.LOG", (final Datum datum, final List<String> trace) -> {
+			final BigDecimal i = BigDecimal.valueOf(Math.log(datum.getNumber(trace).doubleValue()));
+			return new Datum(i);
+		});
 	}
 }

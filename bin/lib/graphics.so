@@ -6,7 +6,7 @@ struct Window class {
 	var window;
 	var graphics;
 
-	init(&title, &width, &height, &closefunction) => {
+	init(ref title, ref width, ref height, ref closefunction) => {
 		this.width = width;
 		this.height = height;
 		this.window = ("LIB_Graphics.INIT" _OUTER_CALL_ {title, width, height, closefunction});
@@ -20,7 +20,7 @@ struct Window class {
 		"LIB_Graphics.HIDE" _OUTER_CALL_ (this.window);
 	};
 
-	resize(&width, &height) => {
+	resize(ref width, ref height) => {
 		"LIB_Graphics.SETSIZE" _OUTER_CALL_ {window, width, height};
 		this.width = width;
 		this.height = height;
@@ -45,18 +45,18 @@ struct Window class {
 	struct Graphics class {
 		var graphics;
 
-		init(&graphics) => {
+		init(ref graphics) => {
 			this.graphics = graphics;
 		};
 
-		add(&shape) => {
+		add(ref shape) => {
 			var success = ("LIB_Graphics.GRAPHICS.ADD" _OUTER_CALL_ {this.graphics, shape.data});
 			success == false then {
 				throw "Shape already exists in Graphics";
 			};
 		};
 
-		remove(&shape) => {
+		remove(ref shape) => {
 			"LIB_Graphics.GRAPHICS.REMOVE" _OUTER_CALL_ {this.graphics, shape.data};
 			success == false then {
 				throw "Shape does not exist in Graphics";
@@ -75,7 +75,7 @@ static Shape class {
 		var width;
 		var height;
 
-		init(&color, &x, &y, &width, &height) => {
+		init(ref color, ref x, ref y, ref width, ref height) => {
 			this.color = color;
 			this.x = x;
 			this.y = y;
@@ -84,24 +84,24 @@ static Shape class {
 			this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ {color.r, color.g, color.b, color.a, x, y, width, height});
 		};
 
-		setColor(&color) => {
+		setColor(ref color) => {
 			this.color = color;
 			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ {this.data, color.r, color.g, color.b, color.a};
 		};
 
-		setSize(&width, &height) => {
+		setSize(ref width, ref height) => {
 			this.width = width;
 			this.height = height;
 			"LIB_Graphics.SHAPE.RECTANGLE.SIZE" _OUTER_CALL_ {this.data, width, height};
 		};
 
-		setOrigin(&x, &y) => {
+		setOrigin(ref x, ref y) => {
 			this.x = x;
 			this.y = y;
 			"LIB_Graphics.SHAPE.RECTANGLE.MOVE" _OUTER_CALL_ {this.data, x, y};
 		};
 
-		move(&x, &y) => {
+		move(ref x, ref y) => {
 			this.x += x;
 			this.y += y;
 			"LIB_Graphics.SHAPE.RECTANGLE.MOVE" _OUTER_CALL_ {this.data, this.x, this.y};
@@ -117,7 +117,7 @@ static Shape class {
 		var width;
 		var height;
 
-		init(&color, &x, &y, &width, &height) => {
+		init(ref color, ref x, ref y, ref width, ref height) => {
 			this.color = color;
 			this.x = x;
 			this.y = y;
@@ -126,24 +126,24 @@ static Shape class {
 			this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ {color.r, color.g, color.b, color.a, x, y, width, height});
 		};
 
-		setColor(&color) => {
+		setColor(ref color) => {
 			this.color = color;
 			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ {this.data, color.r, color.g, color.b, color.a};
 		};
 
-		setSize(&width, &height) => {
+		setSize(ref width, ref height) => {
 			this.width = width;
 			this.height = height;
 			"LIB_Graphics.SHAPE.OVAL.SIZE" _OUTER_CALL_ {this.data, width, height};
 		};
 
-		setOrigin(&x, &y) => {
+		setOrigin(ref x, ref y) => {
 			this.x = x;
 			this.y = y;
 			"LIB_Graphics.SHAPE.OVAL.MOVE" _OUTER_CALL_ {this.data, x, y};
 		};
 
-		move(&x, &y) => {
+		move(ref x, ref y) => {
 			this.x += x;
 			this.y += y;
 			"LIB_Graphics.SHAPE.OVAL.MOVE" _OUTER_CALL_ {this.data, this.x, this.y};
@@ -159,7 +159,7 @@ static Shape class {
 		var x2;
 		var y2;
 
-		init(&color, &x1, &y1, &x2, &y2) => {
+		init(ref color, ref x1, ref y1, ref x2, ref y2) => {
 			this.color = color;
 			this.x1 = x1;
 			this.y1 = y1;
@@ -168,12 +168,12 @@ static Shape class {
 			this.data = ("LIB_Graphics.SHAPE.LINE.INIT" _OUTER_CALL_ {color.r, color.g, color.b, color.a, x1, y1, x2, y2});
 		};
 
-		setColor(&color) => {
+		setColor(ref color) => {
 			this.color = color;
 			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ {this.data, color.r, color.g, color.b, color.a};
 		};
 
-		setPoints(&x1, &y1, &x2, &y2) => {
+		setPoints(ref x1, ref y1, ref x2, ref y2) => {
 			this.x1 = x1;
 			this.y1 = y1;
 			this.x2 = x2;
@@ -181,7 +181,7 @@ static Shape class {
 			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ {this.data, x1, y1, x2, y2};
 		};
 
-		move(&x, &y) => {
+		move(ref x, ref y) => {
 			this.x1 += x;
 			this.x2 += x;
 			this.y1 += y;
@@ -198,7 +198,7 @@ static Color class {
 		var b;
 		var a;
 
-		init(&r, &g, &b, &a) => {
+		init(ref r, ref g, ref b, ref a) => {
 			this.r = r;
 			this.g = g;
 			this.b = b;
@@ -214,8 +214,8 @@ static Color class {
 		};
 	};
 
-	HSLtoRGB(&h, &s, &l, &a) => {
-		var hueToRgb = (&p, &q, t) => {
+	HSLtoRGB(ref h, ref s, ref l, ref a) => {
+		var hueToRgb = (ref p, ref q, t) => {
 			t < 0 then {
 				t += 1;
 			} else t > 1 then {

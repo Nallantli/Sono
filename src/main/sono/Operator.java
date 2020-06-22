@@ -17,7 +17,7 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NEQUAL, LESS, MORE, ELESS, EMORE, MATRIX_CONV, NUMBER_CONV,
 		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
 		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONV, TYPE_DEC, STRUCT_DEC, STATIC_DEC, CLASS_DEC, NEW_DEC, POW,
-		FEAT_DEC, THROW, TRY_CATCH,
+		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
@@ -328,7 +328,7 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return "&" + Interpreter.deHash(varName);
+			return "ref " + Interpreter.deHash(varName);
 		}
 	}
 
@@ -351,6 +351,29 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return "feat " + a.toString();
+		}
+	}
+
+	public static class Alloc extends Unary {
+		public Alloc(final Operator a) {
+			super(Type.ALLOC, a);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, final Interpreter interpreter, final List<String> trace) {
+			if (Main.DEBUG)
+				trace.add(this.toString());
+			final Datum datumA = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+			List<Datum> data = new ArrayList<>();
+			for (int i = 0; datumA.getNumber(trace).compareTo(BigDecimal.valueOf(i)) > 0; i++) {
+				data.add(new Datum());
+			}
+			return new Datum(data);
+		}
+
+		@Override
+		public String toString() {
+			return "alloc " + a.toString();
 		}
 	}
 
@@ -581,10 +604,14 @@ public abstract class Operator {
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			while (a.type != Type.SLASH)
 				a = ((Sequence) a).operators.get(0);
-			final Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
-			final Datum rawTrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
-			final Datum rawInit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
-			final Datum rawFin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+			final Datum dsearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, interpreter,
+					(Main.DEBUG ? new ArrayList<>(trace) : trace));
+			final Datum rawTrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, interpreter,
+					(Main.DEBUG ? new ArrayList<>(trace) : trace));
+			final Datum rawInit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, interpreter,
+					(Main.DEBUG ? new ArrayList<>(trace) : trace));
+			final Datum rawFin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope, interpreter,
+					(Main.DEBUG ? new ArrayList<>(trace) : trace));
 
 			Object search = null;
 			List<Datum> dtrans;
@@ -640,7 +667,7 @@ public abstract class Operator {
 						default:
 							break;
 					}
-				}else if (d.getType() != Datum.Type.NULL) {
+				} else if (d.getType() != Datum.Type.NULL) {
 					throw new SonoRuntimeException(
 							"Value <" + d.toStringTrace((Main.DEBUG ? new ArrayList<>(trace) : trace))
 									+ "> cannot be used in a Rule declaration.",
@@ -672,7 +699,7 @@ public abstract class Operator {
 						default:
 							break;
 					}
-				}else if (d.getType() != Datum.Type.NULL) {
+				} else if (d.getType() != Datum.Type.NULL) {
 					throw new SonoRuntimeException(
 							"Value <" + d.toStringTrace((Main.DEBUG ? new ArrayList<>(trace) : trace))
 									+ "> cannot be used in a Rule declaration.",
@@ -938,6 +965,28 @@ public abstract class Operator {
 		}
 	}
 
+	public static class Char extends Unary {
+		public Char(final Operator a) {
+			super(Type.CHAR, a);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, final Interpreter interpreter, final List<String> trace) {
+			if (Main.DEBUG)
+				trace.add(this.toString());
+			final String s = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
+					.getString(trace);
+			if (s.length() != 1)
+				throw new SonoRuntimeException("Value <" + s + "> is not a single char.", trace);
+			return new Datum(BigDecimal.valueOf((int) s.charAt(0)));
+		}
+
+		@Override
+		public String toString() {
+			return "char " + a.toString();
+		}
+	}
+
 	public static class Length extends Unary {
 		public Length(final Operator a) {
 			super(Type.LEN, a);
@@ -1185,7 +1234,10 @@ public abstract class Operator {
 				try {
 					return datumA.getVector(trace).get(datumB.getNumber(trace).intValue());
 				} catch (Exception e) {
-					throw new SonoRuntimeException("Cannot index List <" + datumA.toStringTrace(trace) + "> with value <" + datumB.toStringTrace(trace) + ">; Length: " + datumA.getVector(trace).size(), trace);
+					throw new SonoRuntimeException(
+							"Cannot index List <" + datumA.toStringTrace(trace) + "> with value <"
+									+ datumB.toStringTrace(trace) + ">; Length: " + datumA.getVector(trace).size(),
+							trace);
 				}
 			} else if (datumA.getType() == Datum.Type.STRUCTURE) {
 				return datumA.getStructure(trace).getScope().getVariable(Interpreter.GETINDEX, trace)
@@ -1424,7 +1476,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final List<Datum> pValues = b.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
 					.getVector(trace);
-			Function f;
+			Function f = null;
 			if (a.type == Type.INNER) {
 				final Datum datumA = ((Inner) a).getA().evaluate(scope, interpreter,
 						(Main.DEBUG ? new ArrayList<>(trace) : trace));
@@ -1437,8 +1489,13 @@ public abstract class Operator {
 							.getFunction(Datum.Type.ANY, trace);
 				}
 			} else {
-				f = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
-						.getFunction(Datum.Type.ANY, trace);
+				Datum fDatum = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+				if (!pValues.isEmpty()) {
+					f = fDatum.getFunction(pValues.get(0).getType(), trace);
+				}
+				if (f == null) {
+					f = fDatum.getFunction(Datum.Type.ANY, trace);
+				}
 			}
 			return f.execute(pValues, (Main.DEBUG ? new ArrayList<>(trace) : trace));
 		}

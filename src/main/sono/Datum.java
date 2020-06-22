@@ -463,7 +463,7 @@ public class Datum {
 			case STRING:
 				return "\"" + valueString + "\"";
 			case NUMBER:
-				return String.valueOf(valueNumber);
+				return valueNumber.toPlainString();
 			case FUNCTION:
 				return valueFunction.toString();
 			case WORD:
@@ -496,7 +496,7 @@ public class Datum {
 			case STRING:
 				return valueString;
 			case NUMBER:
-				return String.valueOf(valueNumber);
+				return valueNumber.toPlainString();
 			case FUNCTION:
 				return valueFunction.toString();
 			case WORD:

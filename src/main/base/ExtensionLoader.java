@@ -21,7 +21,6 @@ public class ExtensionLoader<C> {
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-		throw new SonoCompilationException(
-				"Class " + classpath + " wasn't found in " + file.getAbsolutePath());
+		throw new SonoCompilationException("Class " + classpath + " wasn't found in " + file.getAbsolutePath());
 	}
 }

@@ -4,15 +4,14 @@ load "system";
 var SIZE_X = 60;
 var SIZE_Y = 40;
 
-var valueArray = {};
-var shapeArray = {};
+var valueArray = alloc SIZE_X;
+var shapeArray = alloc SIZE_X;
 
 x in {0 until SIZE_X} do {
-	var temp = {};
+	valueArray[x] = alloc SIZE_Y;
 	y in {0 until SIZE_Y} do {
-		temp += { Random.float().round() };
+		valueArray[x][y] = Random.float().round();
 	};
-	valueArray += {temp};
 };
 
 var window = new Window("Conway's Game of Life", SIZE_X * 10, SIZE_Y * 10, () => {
@@ -22,16 +21,15 @@ var window = new Window("Conway's Game of Life", SIZE_X * 10, SIZE_Y * 10, () =>
 var graphics = window.getGraphics();
 
 x in {0 until SIZE_X} do {
-	var temp = {};
+	shapeArray[x] = alloc SIZE_Y;
 	y in {0 until SIZE_Y} do {
 		var shape = new Shape.Rectangle(Color.WHITE, x * 10, y * 10, 10, 10);
-		temp += { shape };
+		shapeArray[x][y] = shape;
 		graphics.add(shape);
 	};
-	shapeArray += { temp };
 };
 
-neighborCount(&x, &y) => {
+neighborCount(ref x, ref y) => {
 	var c = 0;
 	c += valueArray[(x + SIZE_X + 1) % SIZE_X][y] == 1;
 	c += valueArray[(x + SIZE_X - 1) % SIZE_X][y] == 1;
@@ -54,18 +52,17 @@ refresh() => {
 			};
 		};
 	};
-	var newValueArray = {};
+	var newValueArray = alloc SIZE_X;
 	x in {0 until SIZE_X} do {
-		var temp = {};
+		newValueArray[x] = alloc SIZE_Y;
 		y in {0 until SIZE_Y} do {
 			var c = neighborCount(x, y);
 			valueArray[x][y] then {
-				temp += { c == 2 || c == 3 };
+				newValueArray[x][y] = c == 2 || c == 3;
 			} else {
-				temp += { c == 3 };
+				newValueArray[x][y] = c == 3;
 			};
 		};
-		newValueArray += { temp };
 	};
 	valueArray = newValueArray;
 	window.repaint();

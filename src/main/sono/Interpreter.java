@@ -182,7 +182,7 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.StaticDec(((Operator.Variable) a).getKey()));
 				}
-				if (token.equals("&")) {
+				if (token.equals("ref")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Ref(((Operator.Variable) a).getKey()));
 				}
@@ -214,9 +214,17 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.StringDec(a));
 				}
+				if (token.equals("char")) {
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Char(a));
+				}
 				if (token.equals("feat")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.FeatDec(a));
+				}
+				if (token.equals("alloc")) {
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Alloc(a));
 				}
 				if (token.equals("throw")) {
 					final Operator a = o.pollLast();
@@ -465,7 +473,8 @@ public class Interpreter {
 			} else if (token.equals("]")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
-				while (!(curr.type == Operator.Type.VARIABLE && ((Operator.Variable) curr).getKey() == Interpreter.SQUAREBRACKET)) {
+				while (!(curr.type == Operator.Type.VARIABLE
+						&& ((Operator.Variable) curr).getKey() == Interpreter.SQUAREBRACKET)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
@@ -473,7 +482,8 @@ public class Interpreter {
 			} else if (token.equals(")")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
-				while (!(curr.type == Operator.Type.VARIABLE && ((Operator.Variable) curr).getKey() == Interpreter.PARANTHESIS)) {
+				while (!(curr.type == Operator.Type.VARIABLE
+						&& ((Operator.Variable) curr).getKey() == Interpreter.PARANTHESIS)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
@@ -481,7 +491,8 @@ public class Interpreter {
 			} else if (token.equals("}")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
-				while (!(curr.type == Operator.Type.VARIABLE && ((Operator.Variable) curr).getKey() == Interpreter.CURLYBRACKET)) {
+				while (!(curr.type == Operator.Type.VARIABLE
+						&& ((Operator.Variable) curr).getKey() == Interpreter.CURLYBRACKET)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}

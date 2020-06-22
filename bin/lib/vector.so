@@ -1,4 +1,4 @@
-Vector::pop(&this) => {
+Vector::pop(ref this) => {
 	var nl = {};
 	i in {0 until (len this - 1)} do {
 		nl += { this[i] };
@@ -7,7 +7,7 @@ Vector::pop(&this) => {
 	return this;
 };
 
-Vector::shift(&this) => {
+Vector::shift(ref this) => {
 	var nl = {};
 	i in {1 until len this} do {
 		nl += { this[i] };
@@ -16,19 +16,19 @@ Vector::shift(&this) => {
 	return this;
 };
 
-Vector::front(&this) => {
+Vector::front(ref this) => {
 	return this[0];
 };
 
-Vector::back(&this) => {
+Vector::back(ref this) => {
 	return this[len this - 1];
 };
 
-Vector::isEmpty(&this) => {
+Vector::isEmpty(ref this) => {
 	return (len this == 0);
 };
 
-Vector::contains(&this, &value) => {
+Vector::contains(ref this, ref value) => {
 	i in this do {
 		i == value then {
 			return true;
@@ -37,12 +37,12 @@ Vector::contains(&this, &value) => {
 	return false;
 };
 
-Vector::push(&this, &value) => {
+Vector::push(ref this, ref value) => {
 	this += { value };
 	return this;
 };
 
-Vector::join(&this, del) => {
+Vector::join(ref this, del) => {
 	del == null then {
 		del = "";
 	};
@@ -53,7 +53,7 @@ Vector::join(&this, del) => {
 	return string;
 };
 
-Vector::reverse(&this) => {
+Vector::reverse(ref this) => {
 	var nv = {};
 	i in {0 until len this} do {
 		nv += { this[len this - i - 1] };
@@ -62,7 +62,7 @@ Vector::reverse(&this) => {
 	return this;
 };
 
-Vector::remove(&this, index) => {
+Vector::remove(ref this, index) => {
 	var nv = {};
 	i in {0 until len this} do {
 		i != index then {
@@ -73,13 +73,69 @@ Vector::remove(&this, index) => {
 	return this;
 };
 
-Vector::sort(&this, comp) => {
+Vector::dist(ref this, ref raw, costDel, costIns, costRep) => {
+	var vector = raw;
+	type raw != "Vector" then {
+		vector = vec raw;
+	};
+	costDel == null then {
+		costDel = 1;
+	};
+	costIns == null then {
+		costIns = 1;
+	};
+	costRep == null then {
+		costRep = 1;
+	};
+
+	var m = len this;
+	var n = len vector;
+	var array = {0 until (m + 1)};
+	i in array do {
+		i = {0 until (n + 1)};
+		j in i do {
+			j = 0;
+		};
+	};
+	i in {1 until (m + 1)} do {
+		array[i][0] = i;
+	};
+	i in {1 until (n + 1)} do {
+		array[0][i] = i;
+	};
+
+	i in {1 until (m + 1)} do {
+		j in {1 until (n + 1)} do {
+			array[i][j] = Math.min({
+				array[i - 1][j] + costDel,	# DELETION
+				array[i][j - 1] + costIns,	# INSERTION
+				array[i - 1][j - 1] + (this[i - 1] != vector[j - 1]) * costRep	# REPLACEMENT
+			});
+		};
+	};
+
+	return array[m][n];
+};
+
+Vector::nGram(ref this, ref n) => {
+	var nv = {};
+	i in {0 until (len this - n + 1)} do {
+		var gram = {};
+		j in {0 until n} do {
+			gram += {this[i + j]};
+		};
+		nv += {gram};
+	};
+	return nv;
+};
+
+Vector::sort(ref this, comp) => {
 	comp == null then {
 		comp = (a, b) => { return a < b; };
 	} else type comp != "Function" then {
 		throw "Parameter <comp> of Vector::sort() must be of type Function";
 	};
-	Vector::merge_sort(&this) => {
+	Vector::merge_sort(ref this) => {
 		len this <= 1 then {
 			return this;
 		};

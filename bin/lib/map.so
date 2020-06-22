@@ -1,80 +1,125 @@
+load "hash";
+
 struct Map class {
-	struct Pair class {
+	struct Node class {
 		var key;
 		var value;
-		init(&key, &value) => {
+		var prev;
+		var next;
+		init(ref key, ref value, ref prev) => {
 			this.key = key;
 			this.value = value;
+			this.prev = prev;
 		};
 		getStr() => {
-			return str key + "=" + str value;
+			return str key + "=" + str value + str { next };
 		};
 	};
 
-	var inner;
+	var buckets;
+	var size;
+	var rawSize;
 
-	init() => {
-		this.inner = {};
+	init(ref rawSize) => {
+		this.size = 0;
+		rawSize == null then {
+			this.rawSize = 16;
+		} else {
+			this.rawSize = rawSize;
+		};
+		this.buckets = alloc this.rawSize;
 	};
 
 	isEmpty() => {
-		return (len this.inner == 0)
+		return (size == 0);
 	};
 
-	getIndex(&key) => {
-		e in inner do {
-			e.key == key then {
-				return e.value;
-			};
+	getIndex(ref key) => {
+		size >= rawSize then {
+			expand();
 		};
-		var p = put(key, null);
+		var h = hash(str key, rawSize);
+		var curr = buckets[h];
+		curr == null then {
+			buckets[h] = new Node(key, null, null);
+			size += 1;
+			return buckets[h].value;
+		};
+		true do {
+			curr.key == key then {
+				return curr.value;
+			};
+			curr.next == null then {
+				break;
+			};
+			curr = curr.next;
+		};
+		var p = new Node(key, null, curr);
+		curr.next = p;
+		size += 1;
 		return p.value;
 	};
 
-	remove(&key) => {
-		var nInner = {};
-		i in {0 until len inner} do {
-			var e = inner[i];
-			e.key != key then {
-				nInner = nInner + { e };
+	remove(ref key) => {
+		var h = hash(str key, rawSize);
+		var curr = buckets[h];
+		true do {
+			curr.key == key then {
+				break;
 			};
+			curr.next == null then {
+				return false;
+			};
+			curr = curr.next;
 		};
-		inner = nInner;
+		curr.prev == null then {
+			buckets[h] = curr.next;
+		} else {
+			curr.prev.next = curr.next;
+		};
+		size -= 1;
+		return true;
 	};
 
-	containsKey(&key) => {
-		e in inner do {
-			e.key == key then {
+	containsKey(ref key) => {
+		var h = hash(str key, rawSize);
+		var curr = buckets[h];
+		curr != null do {
+			curr.key == key then {
 				return true;
 			};
+			curr = curr.next;
 		};
 		return false;
 	};
 
-	containsValue(&value) => {
-		e in inner do {
-			e.value == value then {
-				return true;
-			};
+	expand() => {
+		size = 0;
+		var vector = getList();
+		rawSize = rawSize * 2;
+		buckets = alloc rawSize;
+		e in vector do {
+			getIndex(e[0]) = e[1];
 		};
-		return false;
-	};
-
-	put(&key, &value) => {
-		var p = new Pair(key, value);
-		inner = inner + { p };
-		return p;
 	};
 
 	getList() => {
-		return inner;
+		var list = {};
+		b in buckets do {
+			var curr = b;
+			curr != null do {
+				list += {{curr.key, curr.value}};
+				curr = curr.next;
+			};
+		};
+		return list;
 	};
 
 	getLen() => {
-		return len inner;
+		return size;
 	};
 
 	getStr() => {
-		return str inner;
+		return str getList();
 	};
 };

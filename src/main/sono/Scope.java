@@ -40,7 +40,8 @@ public class Scope {
 			curr = curr.parent;
 		}
 
-		throw new SonoRuntimeException("Variable <" + key + "> is not within scope or does not exist.", trace);
+		throw new SonoRuntimeException(
+				"Variable <" + Interpreter.deHash(key) + "> is not within scope or does not exist.", trace);
 	}
 
 	public Datum setVariable(final int key, final Datum value, final List<String> trace) {
