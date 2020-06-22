@@ -42,6 +42,55 @@ struct Window class {
 		"LIB_Graphics.REPAINT" _OUTER_CALL_ (this.window);
 	};
 
+	onMouseMove(ref function) => {
+		var mousef = (a, b, c, d, e, f, g) => {
+			return function(new MouseEvent(a, b, c, d, e, f, g));
+		};
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {0, mousef};
+	};
+
+	onMouseDrag(ref function) => {
+		var mousef = (a, b, c, d, e, f, g) => {
+			return function(new MouseEvent(a, b, c, d, e, f, g));
+		};
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {1, mousef};
+	};
+
+	onMouseRelease(ref function) => {
+		var mousef = (a, b, c, d, e, f, g) => {
+			return function(new MouseEvent(a, b, c, d, e, f, g));
+		};
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {2, mousef};
+	};
+
+	onMousePress(ref function) => {
+		var mousef = (a, b, c, d, e, f, g) => {
+			return function(new MouseEvent(a, b, c, d, e, f, g));
+		};
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {3, mousef};
+	};
+
+	onMouseExit(ref function) => {
+		var mousef = (a, b, c, d, e, f, g) => {
+			return function(new MouseEvent(a, b, c, d, e, f, g));
+		};
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {4, mousef};
+	};
+
+	onMouseEnter(ref function) => {
+		var mousef = (a, b, c, d, e, f, g) => {
+			return function(new MouseEvent(a, b, c, d, e, f, g));
+		};
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {5, mousef};
+	};
+
+	onMouseClick(ref function) => {
+		var mousef = (a, b, c, d, e, f, g) => {
+			return function(new MouseEvent(a, b, c, d, e, f, g));
+		};
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {6, mousef};
+	};
+
 	struct Graphics class {
 		var graphics;
 
@@ -61,6 +110,30 @@ struct Window class {
 			success == false then {
 				throw "Shape does not exist in Graphics";
 			};
+		};
+	};
+
+	struct MouseEvent class {
+		var button;
+		var clickCount;
+		var modifiers;
+		var x;
+		var y;
+		var screenX;
+		var screenY;
+
+		init(ref button, ref clickCount, ref modifiers, ref x, ref y, ref screenX, ref screenY) => {
+			this.button = button;
+			this.clickCount = clickCount;
+			this.modifiers = modifiers;
+			this.x = x;
+			this.y = y;
+			this.screenX = screenX;
+			this.screenY = screenY;
+		};
+
+		getStr() => {
+			return "(BUTTON=" + str button + ", COUNT=" + str clickCount + ", MODIFIERS=" + str modifiers + ", X=" + str x + ", Y=" + str y + ", SCREEN_X=" + str screenX + ", SCREEN_Y=" + str screenY + ")";
 		};
 	};
 };

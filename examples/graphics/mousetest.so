@@ -1,0 +1,11 @@
+load "graphics";
+load "system";
+
+var window = new Window("Mouse Test", 500, 500, () => {
+	exit();
+});
+
+window.onMouseClick((event) => {
+	println("Mouse Clicked!");
+	println(event);
+});

@@ -63,7 +63,7 @@ public class Structure {
 			if (this.mainScope.variableExists(Interpreter.GETSTR)) {
 				return this.mainScope.getVariable(Interpreter.GETSTR, trace).getFunction(Datum.Type.ANY, trace)
 						.execute(new ArrayList<>(), (Main.DEBUG ? new ArrayList<>(trace) : trace))
-						.toStringTrace((Main.DEBUG ? new ArrayList<>(trace) : trace));
+						.toRawStringTrace((Main.DEBUG ? new ArrayList<>(trace) : trace));
 			} else {
 				return "STRUCT-" + Interpreter.deHash(key);
 			}
