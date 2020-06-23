@@ -24,24 +24,24 @@ String::isEmpty(ref this) => {
 	return (len this == 0);
 };
 
-String::at(ref this, ref index) => {
+String::at(ref this, final index) => {
 	return (vec this)[index];
 };
 
-String::push(ref this, ref value) => {
+String::push(ref this, final value) => {
 	this += str value;
 	return this;
 };
 
-String::contains(ref this, ref pattern) => {
+String::contains(ref this, final pattern) => {
 	return (len this.match(pattern) > 0);
 };
 
-String::dist(ref this, ref string, ref costDel, ref costIns, ref costRep) => {
+String::dist(final this, final string, final costDel, final costIns, final costRep) => {
 	return (vec this).dist(string, costDel, costIns, costRep);
 };
 
-String::nGram(ref this, ref n, delim) => {
+String::nGram(final this, final n, delim) => {
 	delim == null then {
 		delim = "\\s";
 	};
@@ -49,7 +49,7 @@ String::nGram(ref this, ref n, delim) => {
 	return s.nGram(n);
 };
 
-String::split(ref this, ref pattern) => {
+String::split(final this, final pattern) => {
 	var stringArray = vec this;
 	var coords = this.match(pattern);
 	var array = {};
@@ -80,7 +80,7 @@ String::split(ref this, ref pattern) => {
 	return array;
 };
 
-String::replace(ref this, ref pattern, ref value) => {
+String::replace(ref this, final pattern, final value) => {
 	var stringArray = vec this;
 	var coords = this.match(pattern);
 	var array = {};

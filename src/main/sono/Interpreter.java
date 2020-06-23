@@ -186,6 +186,10 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Ref(((Operator.Variable) a).getKey()));
 				}
+				if (token.equals("final")) {
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Final(((Operator.Variable) a).getKey()));
+				}
 				if (token.equals("com")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Common(a));

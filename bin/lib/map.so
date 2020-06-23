@@ -6,7 +6,7 @@ struct Map class {
 		var value;
 		var prev;
 		var next;
-		init(ref key, ref value, ref prev) => {
+		init(final key, final value, final prev) => {
 			this.key = key;
 			this.value = value;
 			this.prev = prev;
@@ -20,7 +20,7 @@ struct Map class {
 	var size;
 	var rawSize;
 
-	init(ref rawSize) => {
+	init(final rawSize) => {
 		this.size = 0;
 		rawSize == null then {
 			this.rawSize = 16;
@@ -34,7 +34,7 @@ struct Map class {
 		return (size == 0);
 	};
 
-	getIndex(ref key) => {
+	getIndex(final key) => {
 		size >= rawSize then {
 			expand();
 		};
@@ -60,7 +60,7 @@ struct Map class {
 		return p.value;
 	};
 
-	remove(ref key) => {
+	remove(final key) => {
 		var h = hash(str key, rawSize);
 		var curr = buckets[h];
 		true do {
@@ -81,7 +81,7 @@ struct Map class {
 		return true;
 	};
 
-	containsKey(ref key) => {
+	containsKey(final key) => {
 		var h = hash(str key, rawSize);
 		var curr = buckets[h];
 		curr != null do {

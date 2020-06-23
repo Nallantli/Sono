@@ -12,6 +12,7 @@ import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.awt.Toolkit;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -105,6 +106,37 @@ abstract class Paintable {
 		public void paint(Graphics g) {
 			super.paint(g);
 			g.drawLine(x1, y1, x2, y2);
+		}
+	}
+
+	public static class Text extends Paintable {
+		private int x;
+		private int y;
+		private String text;
+		private Font font = null;
+
+		public Text(Color color, int x, int y, String text) {
+			super(color);
+			this.x = x;
+			this.y = y;
+			this.text = text;
+		}
+
+		public void setFont(Font font) {
+			this.font = font;
+		}
+
+		public void setOrigin(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public void paint(Graphics g) {
+			super.paint(g);
+			if (font != null)
+				g.setFont(font);
+			g.drawString(text, x, y);
 		}
 	}
 }
@@ -291,6 +323,29 @@ public class LIB_Graphics extends Library {
 			f.setVisible(false);
 			return new Datum();
 		});
+		commands.put("LIB_Graphics.FONT.INIT", (final Datum datum, final List<String> trace) -> {
+			List<Datum> list = datum.getVector(trace);
+			String fontName = list.get(0).getString(trace);
+			String styleRaw = list.get(1).getString(trace);
+			int size = list.get(2).getNumber(trace).intValue();
+			String[] split = styleRaw.split("\\s");
+			int style = Font.PLAIN;
+			for (String s : split) {
+				switch (s) {
+					case "Bold":
+						style |= Font.BOLD;
+						break;
+					case "Italic":
+						style |= Font.ITALIC;
+						break;
+					case "Plain":
+						style |= Font.PLAIN;
+						break;
+				}
+			}
+			Font font = new Font(fontName, style, size);
+			return new Datum((Object)font);
+		});
 		commands.put("LIB_Graphics.ADDMOUSELISTENER", (final Datum datum, final List<String> trace) -> {
 			List<Datum> list = datum.getVector(trace);
 			int id = list.get(0).getNumber(trace).intValue();
@@ -454,6 +509,33 @@ public class LIB_Graphics extends Library {
 			int width = list.get(1).getNumber(trace).intValue();
 			int height = list.get(2).getNumber(trace).intValue();
 			oval.setSize(width, height);
+			return new Datum();
+		});
+		commands.put("LIB_Graphics.SHAPE.TEXT.INIT", (final Datum datum, final List<String> trace) -> {
+			List<Datum> list = datum.getVector(trace);
+			int r = list.get(0).getNumber(trace).intValue();
+			int g = list.get(1).getNumber(trace).intValue();
+			int b = list.get(2).getNumber(trace).intValue();
+			int a = list.get(3).getNumber(trace).intValue();
+			int x = list.get(4).getNumber(trace).intValue();
+			int y = list.get(5).getNumber(trace).intValue();
+			String string = list.get(6).getString(trace);
+			Paintable.Text text = new Paintable.Text(new Color(r, g, b, a), x, y, string);
+			return new Datum((Object) text);
+		});
+		commands.put("LIB_Graphics.SHAPE.TEXT.SETFONT", (final Datum datum, final List<String> trace) -> {
+			List<Datum> list = datum.getVector(trace);
+			Paintable.Text text = (Paintable.Text) list.get(0).getPointer(trace);
+			Font font = (Font) list.get(1).getPointer(trace);
+			text.setFont(font);
+			return new Datum();
+		});
+		commands.put("LIB_Graphics.SHAPE.TEXT.MOVE", (final Datum datum, final List<String> trace) -> {
+			List<Datum> list = datum.getVector(trace);
+			Paintable.Text text = (Paintable.Text) list.get(0).getPointer(trace);
+			int x = list.get(1).getNumber(trace).intValue();
+			int y = list.get(2).getNumber(trace).intValue();
+			text.setOrigin(x, y);
 			return new Datum();
 		});
 	}

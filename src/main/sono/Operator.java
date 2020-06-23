@@ -17,7 +17,7 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NEQUAL, LESS, MORE, ELESS, EMORE, MATRIX_CONV, NUMBER_CONV,
 		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
 		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONV, TYPE_DEC, STRUCT_DEC, STATIC_DEC, CLASS_DEC, NEW_DEC, POW,
-		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC,
+		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
@@ -329,6 +329,25 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return "ref " + Interpreter.deHash(varName);
+		}
+	}
+
+	public static class Final extends Casting {
+		public Final(final int varName) {
+			super(Type.FINAL, varName);
+			this.varName = varName;
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, final Interpreter interpreter, final List<String> trace) {
+			if (Main.DEBUG)
+				trace.add(this.toString());
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			return "final " + Interpreter.deHash(varName);
 		}
 	}
 
@@ -1427,15 +1446,22 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final List<Integer> pNames = new ArrayList<>();
 			final List<Boolean> pRefs = new ArrayList<>();
+			final List<Boolean> pFins = new ArrayList<>();
 			Datum.Type fType = Datum.Type.ANY;
 			if (a.type == Type.HARD_LIST) {
 				for (final Operator d : ((Sequence) a).getVector()) {
 					if (d.type == Type.REF_DEC) {
 						pRefs.add(true);
+						pFins.add(false);
 						pNames.add(((Ref) d).getKey());
+					} else if (d.type == Type.FINAL) {
+						pFins.add(true);
+						pRefs.add(false);
+						pNames.add(((Final) d).getKey());
 					} else {
 						pNames.add(((Variable) d).getKey());
 						pRefs.add(false);
+						pFins.add(false);
 					}
 				}
 			} else if (a.type == Type.TYPE_DEC) {
@@ -1449,14 +1475,20 @@ public abstract class Operator {
 				for (final Operator d : ((Sequence) ((TypeDec) a).getB()).getVector()) {
 					if (d.type == Type.REF_DEC) {
 						pRefs.add(true);
+						pFins.add(false);
 						pNames.add(((Ref) d).getKey());
+					} else if (d.type == Type.FINAL) {
+						pFins.add(true);
+						pRefs.add(false);
+						pNames.add(((Final) d).getKey());
 					} else {
 						pNames.add(((Variable) d).getKey());
 						pRefs.add(false);
+						pFins.add(false);
 					}
 				}
 			}
-			return new Datum(fType, new Function(scope, pNames, pRefs, b, interpreter));
+			return new Datum(fType, new Function(scope, pNames, pRefs, pFins, b, interpreter));
 		}
 
 		@Override

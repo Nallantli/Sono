@@ -1,11 +1,11 @@
 import "LIB_Console";
 load "math";
 
-print(ref message) => {
+print(final message) => {
 	"LIB_Console.PRINT" _OUTER_CALL_ (str message);
 };
 
-println(ref message) => {
+println(final message) => {
 	print(str message + "\n");
 };
 
@@ -22,7 +22,7 @@ static Random class {
 		return ("LIB_Console.RAND" _OUTER_CALL_ null);
 	};
 
-	int(ref lower, ref upper) => {
+	int(final lower, final upper) => {
 		return (float() * (upper - lower) + lower).round();
 	};
 };
@@ -36,10 +36,10 @@ static Input class {
 	};
 };
 
-String::match(ref string, ref pattern) => {
+String::match(final string, final pattern) => {
 	return "LIB_Console.REGEX" _OUTER_CALL_ { pattern, string };
 };
 
-Number::log(ref n) => {
+Number::log(final n) => {
 	return "LIB_Console.LOG" _OUTER_CALL_ n;
 };

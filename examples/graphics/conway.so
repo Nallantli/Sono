@@ -29,7 +29,7 @@ x in {0 until SIZE_X} do {
 	};
 };
 
-neighborCount(ref x, ref y) => {
+neighborCount(final x, final y) => {
 	var c = 0;
 	c += valueArray[(x + SIZE_X + 1) % SIZE_X][y] == 1;
 	c += valueArray[(x + SIZE_X - 1) % SIZE_X][y] == 1;

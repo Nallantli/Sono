@@ -9,14 +9,16 @@ import java.util.ArrayList;
 public class Function {
 	private Scope parent;
 	private final List<Integer> paramKeys;
+	private final List<Boolean> paramFins;
 	private final List<Boolean> paramRefs;
 	private final Operator body;
 	private final Interpreter interpreter;
 
-	public Function(final Scope parent, final List<Integer> paramKeys, final List<Boolean> paramRefs,
+	public Function(final Scope parent, final List<Integer> paramKeys, final List<Boolean> paramRefs, final List<Boolean> paramFins,
 			final Operator body, final Interpreter interpreter) {
 		this.paramKeys = paramKeys;
 		this.paramRefs = paramRefs;
+		this.paramFins = paramFins;
 		this.parent = parent;
 		this.body = body;
 		this.interpreter = interpreter;
@@ -24,18 +26,27 @@ public class Function {
 
 	public Datum execute(final List<Datum> paramValues, final List<String> trace) {
 		final Scope scope = new Scope(parent);
+		List<Boolean> prevMutes = new ArrayList<Boolean>();
 		for (int i = 0; i < paramKeys.size(); i++) {
 			if (i < paramValues.size()) {
-				if (Boolean.FALSE.equals(paramRefs.get(i))) {
+				prevMutes.add(paramValues.get(i).isMutable());
+				if (Boolean.TRUE.equals(paramRefs.get(i))) {
+					scope.setVariable(paramKeys.get(i), paramValues.get(i), trace);
+				} else if (Boolean.TRUE.equals(paramFins.get(i))) {
+					paramValues.get(i).setMutable(false);
+					scope.setVariable(paramKeys.get(i), paramValues.get(i), trace);
+				} else {
 					final Datum d = new Datum();
 					d.set(paramValues.get(i), trace);
 					scope.setVariable(paramKeys.get(i), d, trace);
-				} else {
-					scope.setVariable(paramKeys.get(i), paramValues.get(i), trace);
 				}
 			} else {
 				scope.setVariable(paramKeys.get(i), new Datum(), trace);
 			}
+		}
+
+		for (int i = 0; i < paramValues.size(); i++) {
+			paramValues.get(i).setMutable(prevMutes.get(i));
 		}
 
 		final Datum r = body.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));

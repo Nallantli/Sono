@@ -4,7 +4,7 @@ load "string";
 load "map";
 
 static Phonology class {
-	getNaturalSet(ref phones, ref set) => {
+	getNaturalSet(final phones, final set) => {
 		var m = [];
 		p in set do {
 			m += mat p;
@@ -12,13 +12,13 @@ static Phonology class {
 		return m from phones;
 	};
 
-	isNaturalSet(ref phones, ref set) => {
+	isNaturalSet(final phones, final set) => {
 		var ns = getNaturalSet(phones, set);
 		return len ns == len set;
 	};
 
-	naturalize(ref phones, ref set) => {
-		var natural = (ref phones, ref matrix) => {
+	naturalize(final phones, final set) => {
+		var natural = (final phones, ref matrix) => {
 			var list = {};
 			i in {0 until len matrix} do {
 				var temp = mat (vec matrix).remove(i);
@@ -61,7 +61,7 @@ struct Corpus class {
 		resetCache();
 	};
 
-	TF(ref value, ref doc) => {
+	TF(final value, final doc) => {
 		TFcache.contains({value, doc}) then {
 			return TFcache[{value, doc}];
 		};
@@ -84,7 +84,7 @@ struct Corpus class {
 		return c;
 	};
 
-	count(ref value) => {
+	count(final value) => {
 		var c = 0;
 		i in corpus do {
 			j in i do {
@@ -97,14 +97,14 @@ struct Corpus class {
 		return c;
 	};
 
-	IDF(ref value) => {
+	IDF(final value) => {
 		IDFcache.contains(value) then {
 			return IDFcache[value];
 		};
 		return 1 + (len corpus / (1 + count(value))).log();
 	};
 
-	TFIDF(ref value, ref doc) => {
+	TFIDF(final value, final doc) => {
 		var array = value;
 		type value != "Vector" then {
 			array = { value };

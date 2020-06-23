@@ -1,17 +1,17 @@
-Number::abs(n) => {
+Number::abs(final n) => {
 	n < 0 then {
 		return n * -1;
 	} else {
-		return n;
+		return +n;
 	};
 };
 
-Number::floor(n) => {
+Number::floor(final n) => {
 	var d = ((n * 10) % 10) / 10;
 	return n - d;
 };
 
-Number::ceil(n) => {
+Number::ceil(final n) => {
 	var d = ((n * 10) % 10) / 10;
 	n > 0 then {
 		d > 0 then {
@@ -28,7 +28,7 @@ Number::ceil(n) => {
 	};
 };
 
-Number::round(n) => {
+Number::round(final n) => {
 	var f = n.floor();
 	var c = n.ceil();
 	var df = (n - f).abs();
@@ -41,7 +41,7 @@ Number::round(n) => {
 };
 
 static Math class {
-	min(ref vector) => {
+	min(final vector) => {
 		var n = vector[0];
 		i in {1 until len vector} do {
 			vector[i] < n then {
@@ -51,7 +51,7 @@ static Math class {
 		return n;
 	};
 
-	minIndex(ref vector) => {
+	minIndex(final vector) => {
 		var n = vector[0];
 		var index = 0;
 		i in {1 until len vector} do {

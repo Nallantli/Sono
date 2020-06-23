@@ -28,7 +28,7 @@ Vector::isEmpty(ref this) => {
 	return (len this == 0);
 };
 
-Vector::contains(ref this, ref value) => {
+Vector::contains(ref this, final value) => {
 	i in this do {
 		i == value then {
 			return true;
@@ -42,7 +42,7 @@ Vector::push(ref this, ref value) => {
 	return this;
 };
 
-Vector::join(ref this, del) => {
+Vector::join(final this, del) => {
 	del == null then {
 		del = "";
 	};
@@ -62,7 +62,7 @@ Vector::reverse(ref this) => {
 	return this;
 };
 
-Vector::remove(ref this, index) => {
+Vector::remove(ref this, final index) => {
 	var nv = {};
 	i in {0 until len this} do {
 		i != index then {
@@ -73,7 +73,7 @@ Vector::remove(ref this, index) => {
 	return this;
 };
 
-Vector::dist(ref this, ref raw, costDel, costIns, costRep) => {
+Vector::dist(final this, final raw, costDel, costIns, costRep) => {
 	var vector = raw;
 	type raw != "Vector" then {
 		vector = vec raw;
@@ -117,7 +117,7 @@ Vector::dist(ref this, ref raw, costDel, costIns, costRep) => {
 	return array[m][n];
 };
 
-Vector::nGram(ref this, ref n) => {
+Vector::nGram(final this, final n) => {
 	var nv = {};
 	i in {0 until (len this - n + 1)} do {
 		var gram = {};

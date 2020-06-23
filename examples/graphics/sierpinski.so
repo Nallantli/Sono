@@ -7,13 +7,13 @@ var window = new Window("Sierpinski's Triangle", 500, 500, () => {
 });
 var graphics = window.getGraphics();
 
-drawTriangle(ref x, ref y, ref s) => {
+drawTriangle(final x, final y, final s) => {
 	graphics.add(new Shape.Line(Color.BLACK, x, y + s, x + s, y + s));
 	graphics.add(new Shape.Line(Color.BLACK, x, y + s, x + s / 2, y));
 	graphics.add(new Shape.Line(Color.BLACK, x + s, y + s, x + s / 2, y));
 };
 
-drawLevel(ref x, ref y, s, c) => {
+drawLevel(final x, final y, s, c) => {
 	drawTriangle(s / 2 + x, s / 2 + y, s / 2);
 	drawTriangle(x, s / 2 + y, s / 2);
 	drawTriangle(s / 4 + x, y, s / 2);

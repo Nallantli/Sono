@@ -1,6 +1,6 @@
 load "string";
 
-Feature::getPair(ref this) => {
+Feature::getPair(final this) => {
 	var s = (str this).split("\\|");
 	return s;
 };

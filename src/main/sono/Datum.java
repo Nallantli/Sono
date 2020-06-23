@@ -539,6 +539,10 @@ public class Datum {
 		return templative;
 	}
 
+	public boolean isMutable() {
+		return mutable;
+	}
+
 	@Override
 	public boolean equals(final Object o) {
 		if (o == null)

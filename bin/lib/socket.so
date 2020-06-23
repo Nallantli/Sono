@@ -15,7 +15,7 @@ struct Socket class {
 	##	Constructor for `Socket`
 	##	@param	address	String,Pointer	Value of a given address, or (by means of a `Server` object) a predefined pointer to `Socket.class`
 	##	@param	port	Number	Value of a given port, unused in the case of `address` being a referrent to Socket.class
-	init(ref address, ref port) => {
+	init(final address, final port) => {
 		port == null then {
 			this.socket = address;
 		} else {
@@ -69,13 +69,13 @@ struct Socket class {
 
 		##	Constructor for `Socket.Output`
 		##	@param	socket	Pointer	Value referring to a `Socket.class` instance
-		init(ref socket) => {
+		init(final socket) => {
 			this.out = ("LIB_Socket.OUT.OPEN" _OUTER_CALL_ socket);
 		};
 
 		##	Sends data through the output stream
 		##	@param	string	String	Value to be sent
-		send(ref string) => {
+		send(final string) => {
 			"LIB_Socket.OUT.SEND" _OUTER_CALL_ {this.out, string};
 		};
 
@@ -94,7 +94,7 @@ struct Socket class {
 
 		##	Constructor for `Socket.Input`
 		##	@param	socket	Pointer	Value referring to a `Socket.class` instance
-		init(ref socket) => {
+		init(final socket) => {
 			this.input = ("LIB_Socket.IN.OPEN" _OUTER_CALL_ socket);
 		};
 
@@ -123,7 +123,7 @@ struct Server class {
 
 	##	Constructor for `Server`
 	##	@param	port	Number	Value of the port on which the Server opens
-	init(ref port) => {
+	init(final port) => {
 		this.server = ("LIB_Socket.SERVER.OPEN" _OUTER_CALL_ port);
 		this.port = port;
 	};

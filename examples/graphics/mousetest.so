@@ -4,8 +4,14 @@ load "system";
 var window = new Window("Mouse Test", 500, 500, () => {
 	exit();
 });
+var graphics = window.getGraphics();
+var font = new Font("Arial", "Bold Italic", 16);
 
-window.onMouseClick((event) => {
+window.onMouseClick((final event) => {
 	println("Mouse Clicked!");
 	println(event);
+	var text = new Shape.Text(Color.BLACK, event.x, event.y, "Clicked!");
+	text.setFont(font);
+	graphics.add(text);
+	window.repaint();
 });
