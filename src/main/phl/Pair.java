@@ -2,11 +2,9 @@ package main.phl;
 
 public class Pair {
 	private final int feature;
-	private final String quality;
-	private final PhoneManager pm;
+	private final int quality;
 
-	public Pair(final PhoneManager pm, final int feature, final String quality) {
-		this.pm = pm;
+	public Pair(final int feature, final int quality) {
 		this.feature = feature;
 		this.quality = quality;
 	}
@@ -15,18 +13,18 @@ public class Pair {
 		return this.feature;
 	}
 
-	public String getQuality() {
+	public int getQuality() {
 		return this.quality;
 	}
 
 	@Override
 	public String toString() {
-		return quality + "|" + pm.hasher.deHash(feature);
+		return Hasher.deHash(quality) + "|" + Hasher.deHash(feature);
 	}
 
 	@Override
 	public int hashCode() {
-		return (quality + feature).hashCode();
+		return quality * 100 + feature;
 	}
 
 	@Override
@@ -36,6 +34,6 @@ public class Pair {
 		if (o.getClass() != this.getClass())
 			return false;
 		final Pair p = (Pair) o;
-		return feature == p.getFeature() && quality.equals(p.getQuality());
+		return feature == p.getFeature() && quality == p.getQuality();
 	}
 }

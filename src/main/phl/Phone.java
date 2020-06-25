@@ -16,27 +16,27 @@ public class Phone implements Comparable<Phone> {
 
 	public boolean hasFeatures(final Matrix map) {
 		for (final Pair e : map) {
-			if (!getFeatureQuality(e.getFeature()).equals(e.getQuality()) && !e.getQuality().equals("~")) {
+			if (getFeatureQuality(e.getFeature()) != e.getQuality() && e.getQuality() != Hasher.ANY) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public String getFeatureQuality(final int feature) {
+	public int getFeatureQuality(final int feature) {
 		return features.getQuality(feature);
 	}
 
 	public Matrix getMatrix() {
 		final Matrix map = new Matrix();
 		for (final Pair p : features)
-			if (!p.getQuality().equals("0"))
+			if (p.getQuality() != Hasher.ZERO)
 				map.put(pm, p);
 		return map;
 	}
 
-	private String[] getQualityArray(final PhoneManager pm) {
-		final String[] values = new String[pm.featureNames.size()];
+	private int[] getQualityArray(final PhoneManager pm) {
+		final int[] values = new int[pm.featureNames.size()];
 
 		int i = 0;
 		for (final int v : pm.featureNames)
@@ -47,43 +47,38 @@ public class Phone implements Comparable<Phone> {
 
 	public String getDataString(final String split) {
 		final StringBuilder s = new StringBuilder(segment);
-		final String[] values = getQualityArray(pm);
+		final int[] values = getQualityArray(pm);
 		for (int i = 0; i < values.length; i++) {
 			s.append(split);
-			s.append(values[i]);
+			s.append(Hasher.deHash(values[i]));
 		}
 		return s.toString();
 	}
 
 	public Phone transform(final Matrix matrix, final boolean search) {
-		return transform("*", matrix, search);
-	}
-
-	private Phone transform(final String segment, final Matrix matrix, final boolean search) {
 		final Matrix new_features = getMatrix();
 
 		for (final Pair e : matrix) {
 			new_features.put(pm, e.getFeature(), e.getQuality());
 			final int im = pm.inMajorClass(e.getFeature());
-			if (im != -1 && !e.getQuality().equals("0")) {
-				new_features.put(pm, im, "+");
+			if (im != -1 && e.getQuality() != Hasher.ZERO) {
+				new_features.put(pm, im, Hasher.TRUE);
 				for (final int f : pm.majorClasses.get(im)) {
-					if (new_features.getQuality(f).equals("0"))
-						new_features.put(pm, f, "-");
+					if (new_features.getQuality(f) == Hasher.ZERO)
+						new_features.put(pm, f, Hasher.FALSE);
 				}
-			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("+")) {
+			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
 				for (final int f : pm.majorClasses.get(e.getFeature())) {
-					if (new_features.getQuality(f).equals("0"))
-						new_features.put(pm, f, "-");
+					if (new_features.getQuality(f) == Hasher.ZERO)
+						new_features.put(pm, f, Hasher.FALSE);
 				}
-			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("-")) {
+			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
 				for (final int f : pm.majorClasses.get(e.getFeature())) {
-					new_features.put(pm, f, "0");
+					new_features.put(pm, f, Hasher.ZERO);
 				}
 			}
 		}
 
-		// final Phone p = new Phone(pm, segment, new_features, true);
 		if (!pm.contains(new_features)) {
 			if (search) {
 				final Phone fuzzy = pm.validate(pm.fuzzySearch(new_features));

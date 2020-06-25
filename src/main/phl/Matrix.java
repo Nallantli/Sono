@@ -15,7 +15,7 @@ public class Matrix implements Iterable<Pair> {
 	public Matrix(final PhoneManager pm, final Matrix m) {
 		holder = new ArrayList<>();
 		for (final Pair p : m.holder) {
-			holder.add(new Pair(pm, p.getFeature(), p.getQuality()));
+			holder.add(new Pair(p.getFeature(), p.getQuality()));
 		}
 	}
 
@@ -30,34 +30,31 @@ public class Matrix implements Iterable<Pair> {
 		return -1;
 	}
 
-	public String getQuality(final int key) {
+	public int getQuality(final int key) {
 		final int i = getIndexOf(key);
 		if (i >= 0)
 			return holder.get(i).getQuality();
-		return "0";
+		return Hasher.ZERO;
 	}
 
-	/*
-	 * public Pair get(final int i) { return holder.get(i); }
-	 */
-
 	public void put(final PhoneManager pm, Pair p) {
-		if (pm.majorClasses.containsKey(p.getFeature()) && (p.getQuality().equals("-") || p.getQuality().equals("~"))) {
+		if (pm.majorClasses.containsKey(p.getFeature())
+				&& (p.getQuality() == Hasher.FALSE || p.getQuality() == Hasher.ANY)) {
 			for (final int f : pm.majorClasses.get(p.getFeature()))
-				put(pm, f, "0");
+				put(pm, f, Hasher.ZERO);
 		} else {
 			final int im = pm.inMajorClass(p.getFeature());
-			if (im != -1 && getQuality(im).equals("~")) {
-				p = new Pair(pm, p.getFeature(), "0");
+			if (im != -1 && getQuality(im) == Hasher.ANY) {
+				p = new Pair(p.getFeature(), Hasher.ZERO);
 			}
 		}
 
 		final int i = getIndexOf(p.getFeature());
 
-		if (p.getQuality().equals("0") && i >= 0) {
+		if (p.getQuality() == Hasher.ZERO && i >= 0) {
 			holder.remove(i);
 			return;
-		} else if (p.getQuality().equals("0")) {
+		} else if (p.getQuality() == Hasher.ZERO) {
 			return;
 		}
 
@@ -67,17 +64,17 @@ public class Matrix implements Iterable<Pair> {
 			holder.add(p);
 	}
 
-	public void put(final PhoneManager pm, final int f, final String q) {
-		put(pm, new Pair(pm, f, q));
+	public void put(final PhoneManager pm, final int f, final int q) {
+		put(pm, new Pair(f, q));
 	}
 
 	public void putAll(final PhoneManager pm, final Matrix m) {
 		for (final Pair p : m.holder) {
-			if ((getQuality(p.getFeature()).equals("+") && p.getQuality().equals("-"))
-					|| (getQuality(p.getFeature()).equals("-") && p.getQuality().equals("+")))
-				put(pm, new Pair(pm, p.getFeature(), "~"));
-			else if (getQuality(p.getFeature()).equals("~") || p.getQuality().equals("~"))
-				put(pm, new Pair(pm, p.getFeature(), "~"));
+			if ((getQuality(p.getFeature()) == Hasher.TRUE && p.getQuality() == Hasher.FALSE)
+					|| (getQuality(p.getFeature()) == Hasher.FALSE && p.getQuality() == Hasher.TRUE))
+				put(pm, new Pair(p.getFeature(), Hasher.ANY));
+			else if (getQuality(p.getFeature()) == Hasher.ANY || p.getQuality() == Hasher.ANY)
+				put(pm, new Pair(p.getFeature(), Hasher.ANY));
 			else
 				put(pm, p);
 		}
@@ -89,20 +86,20 @@ public class Matrix implements Iterable<Pair> {
 		for (final Pair e : matrix) {
 			new_features.put(pm, e.getFeature(), e.getQuality());
 			final int im = pm.inMajorClass(e.getFeature());
-			if (im != -1 && !e.getQuality().equals("0")) {
-				new_features.put(pm, im, "+");
+			if (im != -1 && e.getQuality() != Hasher.ZERO) {
+				new_features.put(pm, im, Hasher.TRUE);
 				for (final int f : pm.majorClasses.get(im)) {
-					if (new_features.getQuality(f).equals("0"))
-						new_features.put(pm, f, "-");
+					if (new_features.getQuality(f) == Hasher.ZERO)
+						new_features.put(pm, f, Hasher.FALSE);
 				}
-			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("+")) {
+			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
 				for (final int f : pm.majorClasses.get(e.getFeature())) {
-					if (new_features.getQuality(f).equals("0"))
-						new_features.put(pm, f, "-");
+					if (new_features.getQuality(f) == Hasher.ZERO)
+						new_features.put(pm, f, Hasher.FALSE);
 				}
-			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("-")) {
+			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
 				for (final int f : pm.majorClasses.get(e.getFeature())) {
-					new_features.put(pm, f, "0");
+					new_features.put(pm, f, Hasher.ZERO);
 				}
 			}
 		}
@@ -141,11 +138,11 @@ public class Matrix implements Iterable<Pair> {
 			return false;
 		final Matrix m = (Matrix) o;
 		for (final Pair p : holder) {
-			if (!m.getQuality(p.getFeature()).equals(p.getQuality()))
+			if (m.getQuality(p.getFeature()) != p.getQuality())
 				return false;
 		}
 		for (final Pair p : m.holder) {
-			if (!getQuality(p.getFeature()).equals(p.getQuality()))
+			if (getQuality(p.getFeature()) != p.getQuality())
 				return false;
 		}
 		return true;

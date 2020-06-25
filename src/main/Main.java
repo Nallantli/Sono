@@ -21,7 +21,7 @@ import main.sono.Scope;
 import main.sono.err.SonoException;
 
 public class Main {
-	private static final String VERSION = "Beta 1.3.1";
+	private static final String VERSION = "Beta 1.3.2";
 	public static boolean DEBUG;
 
 	private static Map<String, String> globalOptions = new HashMap<>();

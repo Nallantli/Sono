@@ -26,7 +26,7 @@ public class Function {
 
 	public Datum execute(final List<Datum> paramValues, final List<String> trace) {
 		final Scope scope = new Scope(parent);
-		List<Boolean> prevMutes = new ArrayList<Boolean>();
+		final List<Boolean> prevMutes = new ArrayList<Boolean>();
 		for (int i = 0; i < paramKeys.size(); i++) {
 			if (i < paramValues.size()) {
 				prevMutes.add(paramValues.get(i).isMutable());

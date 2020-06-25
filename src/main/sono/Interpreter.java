@@ -37,6 +37,8 @@ public class Interpreter {
 	public static final int SQUAREBRACKET = 11;
 	public static final int CURLYBRACKET = 12;
 	public static final int PARANTHESIS = 13;
+	public static final int ALL = 14;
+	public static final int BASE = 15;
 
 	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console) {
 		this.main = main;
@@ -70,9 +72,15 @@ public class Interpreter {
 		hashVariable("[");
 		hashVariable("{");
 		hashVariable("(");
+		hashVariable("_all");
+		hashVariable("_base");
 
-		main.setVariable(pl, hashVariable("_all"), d, new ArrayList<>());
-		main.setVariable(pl, hashVariable("_base"), db, new ArrayList<>());
+		main.setVariable(pl, ALL, d, new ArrayList<>());
+		main.setVariable(pl, BASE, db, new ArrayList<>());
+	}
+
+	public Scope getScope() {
+		return this.main;
 	}
 
 	private static int hashVariable(final String key) {
@@ -238,6 +246,11 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.TryCatch(a));
 				}
+				if (token.equals("register")) {
+					final Operator b = o.pollLast();
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Register(a, b));
+				}
 				if (token.equals("=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
@@ -269,6 +282,11 @@ public class Interpreter {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Transform(a, b));
+				}
+				if (token.equals(">>=")) {
+					final Operator b = o.pollLast();
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Set(a, new Operator.Transform(a, b)));
 				}
 				if (token.equals("+")) {
 					final Operator b = o.pollLast();

@@ -37,8 +37,16 @@ String::contains(ref this, final pattern) => {
 	return (len this.match(pattern) > 0);
 };
 
+String::distArray(final this, final string, final costDel, final costIns, final costRep) => {
+	return (vec this).distArray(vec string, costDel, costIns, costRep);
+};
+
 String::dist(final this, final string, final costDel, final costIns, final costRep) => {
-	return (vec this).dist(string, costDel, costIns, costRep);
+	return (vec this).dist(vec string, costDel, costIns, costRep);
+};
+
+String::steps(final this, final string, final costDel, final costIns, final costRep) => {
+	return (vec this).steps(vec string, costDel, costIns, costRep);
 };
 
 String::nGram(final this, final n, delim) => {

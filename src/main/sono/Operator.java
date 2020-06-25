@@ -17,7 +17,7 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NEQUAL, LESS, MORE, ELESS, EMORE, MATRIX_CONV, NUMBER_CONV,
 		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
 		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONV, TYPE_DEC, STRUCT_DEC, STATIC_DEC, CLASS_DEC, NEW_DEC, POW,
-		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL,
+		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
@@ -155,9 +155,12 @@ public abstract class Operator {
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			final Datum datumA = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
-			if (datumB.getType() == Datum.Type.MATRIX)
-				return new Datum(datumA.getPhone(trace).transform(datumB.getMatrix(trace), true));
-			if (datumB.getType() == Datum.Type.RULE) {
+			if (datumB.getType() == Datum.Type.MATRIX) {
+				final Phone ret = datumA.getPhone(trace).transform(datumB.getMatrix(trace), true);
+				if (ret == null)
+					return new Datum();
+				return new Datum(ret);
+			} else if (datumB.getType() == Datum.Type.RULE) {
 				final Word result = datumB.getRule(trace).transform(interpreter.getManager(), datumA.getWord(trace));
 				return new Datum(result);
 			} else {
@@ -384,7 +387,7 @@ public abstract class Operator {
 			if (Main.DEBUG)
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
-			List<Datum> data = new ArrayList<>();
+			final List<Datum> data = new ArrayList<>();
 			for (int i = 0; datumA.getNumber(trace).compareTo(BigDecimal.valueOf(i)) > 0; i++) {
 				data.add(new Datum());
 			}
@@ -743,6 +746,35 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return ruleType + " : " + a.toString();
+		}
+	}
+
+	public static class Register extends Binary {
+		public Register(final Operator a, final Operator b) {
+			super(Type.REGISTER, a, b);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, final Interpreter interpreter, final List<String> trace) {
+			if (Main.DEBUG)
+				trace.add(this.toString());
+			if (Main.getGlobalOption("LING").equals("FALSE"))
+				throw new SonoRuntimeException(
+						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
+			final String segment = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
+					.getString(trace);
+			final Matrix features = b.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
+					.getMatrix(trace);
+			final Phone ret = interpreter.getManager().registerNewPhone(segment, features);
+			if (ret == null)
+				throw new SonoRuntimeException("Cannot register Phone with features <" + features + ">", trace);
+			interpreter.getScope().getVariable(Interpreter.ALL, trace).getVector(trace).add(new Datum(ret));
+			return new Datum(ret);
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " register " + b.toString();
 		}
 	}
 
@@ -1254,7 +1286,7 @@ public abstract class Operator {
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				try {
 					return datumA.getVector(trace).get(datumB.getNumber(trace).intValue());
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					throw new SonoRuntimeException(
 							"Cannot index List <" + datumA.toStringTrace(trace) + "> with value <"
 									+ datumB.toStringTrace(trace) + ">; Length: " + datumA.getVector(trace).size(),
@@ -1523,7 +1555,7 @@ public abstract class Operator {
 							.getFunction(Datum.Type.ANY, trace);
 				}
 			} else {
-				Datum fDatum = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+				final Datum fDatum = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
 				if (!pValues.isEmpty()) {
 					f = fDatum.getFunction(pValues.get(0).getType(), trace);
 				}

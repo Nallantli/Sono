@@ -37,14 +37,13 @@ public class PhoneLoader {
 				final String segment = split[0];
 				if (segment.equals("SEGMENT")) {
 					for (int i = 1; i < split.length; i++) {
-						// System.out.println("\tAdding Feature <" + split[i] + ">");
 						if (Character.isUpperCase(split[i].charAt(0))) {
-							pm.majorClasses.put(pm.hasher.hash(split[i]), new ArrayList<>());
+							pm.majorClasses.put(Hasher.hash(split[i]), new ArrayList<>());
 							major = split[i];
 						}
-						pm.featureNames.add(pm.hasher.hash(split[i]));
+						pm.featureNames.add(Hasher.hash(split[i]));
 						if (major != null && !major.equals(split[i])) {
-							pm.majorClasses.get(pm.hasher.hash(major)).add(pm.hasher.hash(split[i]));
+							pm.majorClasses.get(Hasher.hash(major)).add(Hasher.hash(split[i]));
 						}
 					}
 					continue;
@@ -52,116 +51,117 @@ public class PhoneLoader {
 				final Matrix features = new Matrix();
 				int i = 1;
 				for (final int f : pm.featureNames) {
-					features.put(pm, f, split[i]);
+					features.put(pm, f, Hasher.hash(split[i]));
 					i++;
 				}
-				// System.out.println("\tBase Phone <" + segment + ">");
 
 				if (!loadedPhones.containsKey(features))
 					loadedPhones.put(features, new ArrayList<>());
 				loadedPhones.get(features).add(segment);
-				// new Phone(pm, segment, features);
 			}
 		}
 	}
 
 	private static void initalizeSecondary(final PhoneManager pm) {
 		secondaryLibrary = Map.ofEntries(
-				entry(Secondary.VOCALIC, new SecondaryArticulation(pm, "̩", pm.hasher.hash("syl"), "+",
-						new Secondary[] {},
-						List.of(new Matrix(new Pair(pm, pm.hasher.hash("cons"), "+"),
-								new Pair(pm, pm.hasher.hash("son"), "+"), new Pair(pm, pm.hasher.hash("syl"), "-"))))),
+				entry(Secondary.VOCALIC,
+						new SecondaryArticulation("̩", Hasher.hash("syl"), Hasher.TRUE, new Secondary[] {},
+								List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
+										new Pair(Hasher.hash("son"), Hasher.TRUE),
+										new Pair(Hasher.hash("syl"), Hasher.FALSE))))),
 				entry(Secondary.RETRACTED, new SecondaryArticulation("̠",
-						new Matrix(new Pair(pm, pm.hasher.hash("front"), "-"),
-								new Pair(pm, pm.hasher.hash("back"), "+")),
+						new Matrix(new Pair(Hasher.hash("front"), Hasher.FALSE),
+								new Pair(Hasher.hash("back"), Hasher.TRUE)),
 						new Secondary[] { Secondary.ADVANCED },
-						List.of(new Matrix(new Pair(pm, pm.hasher.hash("COR"), "+"))))),
+						List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE))))),
 				entry(Secondary.ADVANCED, new SecondaryArticulation("̟",
-						new Matrix(new Pair(pm, pm.hasher.hash("front"), "+"),
-								new Pair(pm, pm.hasher.hash("back"), "-")),
+						new Matrix(new Pair(Hasher.hash("front"), Hasher.TRUE),
+								new Pair(Hasher.hash("back"), Hasher.FALSE)),
 						new Secondary[] { Secondary.RETRACTED },
-						List.of(new Matrix(new Pair(pm, pm.hasher.hash("COR"), "+"))))),
+						List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE))))),
 				entry(Secondary.DENTAL,
 						new SecondaryArticulation("̪",
-								new Matrix(new Pair(pm, pm.hasher.hash("ant"), "+"),
-										new Pair(pm, pm.hasher.hash("dist"), "+")),
+								new Matrix(new Pair(Hasher.hash("ant"), Hasher.TRUE),
+										new Pair(Hasher.hash("dist"), Hasher.TRUE)),
 								new Secondary[] { Secondary.PALATOALVEOLAR },
-								List.of(new Matrix(new Pair(pm, pm.hasher.hash("COR"), "+"))))),
-				entry(Secondary.PALATOALVEOLAR,
-						new SecondaryArticulation("̺",
-								new Matrix(new Pair(pm, pm.hasher.hash("ant"), "-"),
-										new Pair(pm, pm.hasher.hash("dist"), "+")),
-								new Secondary[] { Secondary.DENTAL },
-								List.of(new Matrix(new Pair(pm, pm.hasher.hash("COR"), "+"))))),
-				entry(Secondary.DEVOICING, new SecondaryArticulation(pm, "̥", pm.hasher.hash("voice"), "-",
-						new Secondary[] {}, List.of(new Matrix(new Pair(pm, pm.hasher.hash("voice"), "+"))))),
+								List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE))))),
+				entry(Secondary.PALATOALVEOLAR, new SecondaryArticulation("̺",
+						new Matrix(new Pair(Hasher.hash("ant"), Hasher.FALSE),
+								new Pair(Hasher.hash("dist"), Hasher.TRUE)),
+						new Secondary[] { Secondary.DENTAL },
+						List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE))))),
+				entry(Secondary.DEVOICING,
+						new SecondaryArticulation("̥", Hasher.hash("voice"), Hasher.FALSE, new Secondary[] {},
+								List.of(new Matrix(new Pair(Hasher.hash("voice"), Hasher.TRUE))))),
 				entry(Secondary.NASALIZATION,
-						new SecondaryArticulation(
-								pm, "̃", pm.hasher.hash("nasal"), "+", new Secondary[] {},
-								List.of(new Matrix(new Pair(pm, pm.hasher.hash("son"), "+"),
-										new Pair(pm, pm.hasher.hash("nasal"), "-"))))),
+						new SecondaryArticulation("̃", Hasher.hash("nasal"), Hasher.TRUE, new Secondary[] {},
+								List.of(new Matrix(new Pair(Hasher.hash("son"), Hasher.TRUE),
+										new Pair(Hasher.hash("nasal"), Hasher.FALSE))))),
 				entry(Secondary.LABIALIZATION, new SecondaryArticulation("ʷ",
 						new Matrix(
-								new Pair(pm, pm.hasher.hash("LAB"), "+"), new Pair(pm, pm.hasher.hash("round"), "+")),
+								new Pair(Hasher.hash("LAB"), Hasher.TRUE), new Pair(Hasher.hash("round"), Hasher.TRUE)),
 						new Secondary[] {},
-						List.of(new Matrix(new Pair(pm, pm.hasher.hash("cons"), "+"),
-								new Pair(pm, pm.hasher.hash("syl"), "-"), new Pair(pm, pm.hasher.hash("LAB"), "-")),
-								new Matrix(new Pair(pm, pm.hasher.hash("cons"), "-"),
-										new Pair(pm, pm.hasher.hash("syl"), "-"),
-										new Pair(pm, pm.hasher.hash("LAB"), "-"))))),
+						List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
+								new Pair(Hasher.hash("syl"), Hasher.FALSE), new Pair(Hasher.hash("LAB"), Hasher.FALSE)),
+								new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
+										new Pair(Hasher.hash("syl"), Hasher.FALSE),
+										new Pair(Hasher.hash("LAB"), Hasher.FALSE))))),
 				entry(Secondary.PALATALIZATION,
-						new SecondaryArticulation("ʲ", new Matrix(new Pair(pm, pm.hasher.hash("DOR"), "+"),
-								new Pair(pm, pm.hasher.hash("high"), "+"), new Pair(pm, pm.hasher.hash("low"), "-"),
-								new Pair(pm, pm.hasher.hash("front"), "+"), new Pair(pm, pm.hasher.hash("back"), "-")),
+						new SecondaryArticulation("ʲ", new Matrix(new Pair(Hasher.hash("DOR"), Hasher.TRUE),
+								new Pair(Hasher.hash("high"), Hasher.TRUE), new Pair(Hasher.hash("low"), Hasher.FALSE),
+								new Pair(Hasher.hash("front"), Hasher.TRUE),
+								new Pair(Hasher.hash("back"), Hasher.FALSE)),
 								new Secondary[] { Secondary.VELARIZATION, Secondary.PHARYNGEALIZATION },
-								List.of(new Matrix(new Pair(pm, pm.hasher.hash("cons"), "+"),
-										new Pair(pm, pm.hasher.hash("syl"), "-"),
-										new Pair(pm, pm.hasher.hash("back"), "-")),
-										new Matrix(new Pair(pm, pm.hasher.hash("cons"), "-"),
-												new Pair(pm, pm.hasher.hash("syl"), "-"),
-												new Pair(pm, pm.hasher.hash("back"), "-")),
-										new Matrix(new Pair(pm, pm.hasher.hash("cons"), "+"),
-												new Pair(pm, pm.hasher.hash("syl"), "-"),
-												new Pair(pm, pm.hasher.hash("back"), "0")),
-										new Matrix(new Pair(pm, pm.hasher.hash("cons"), "-"),
-												new Pair(pm, pm.hasher.hash("syl"), "-"),
-												new Pair(pm, pm.hasher.hash("back"), "0"))))),
+								List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
+										new Pair(Hasher.hash("syl"), Hasher.FALSE),
+										new Pair(Hasher.hash("back"), Hasher.FALSE)),
+										new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
+												new Pair(Hasher.hash("syl"), Hasher.FALSE),
+												new Pair(Hasher.hash("back"), Hasher.FALSE)),
+										new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
+												new Pair(Hasher.hash("syl"), Hasher.FALSE),
+												new Pair(Hasher.hash("back"), Hasher.ZERO)),
+										new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
+												new Pair(Hasher.hash("syl"), Hasher.FALSE),
+												new Pair(Hasher.hash("back"), Hasher.ZERO))))),
 				entry(Secondary.VELARIZATION,
-						new SecondaryArticulation("ˠ", new Matrix(new Pair(pm, pm.hasher.hash("DOR"), "+"),
-								new Pair(pm, pm.hasher.hash("high"), "+"), new Pair(pm, pm.hasher.hash("low"), "-"),
-								new Pair(pm, pm.hasher.hash("front"), "-"), new Pair(pm, pm.hasher.hash("back"), "+")),
+						new SecondaryArticulation("ˠ", new Matrix(new Pair(Hasher.hash("DOR"), Hasher.TRUE),
+								new Pair(Hasher.hash("high"), Hasher.TRUE), new Pair(Hasher.hash("low"), Hasher.FALSE),
+								new Pair(Hasher.hash("front"), Hasher.FALSE),
+								new Pair(Hasher.hash("back"), Hasher.TRUE)),
 								new Secondary[] { Secondary.PALATALIZATION, Secondary.PHARYNGEALIZATION },
-								List.of(new Matrix(new Pair(pm, pm.hasher.hash("cons"), "+"),
-										new Pair(pm, pm.hasher.hash("syl"), "-"),
-										new Pair(pm, pm.hasher.hash("back"), "-")),
-										new Matrix(new Pair(pm, pm.hasher.hash("cons"), "-"),
-												new Pair(pm, pm.hasher.hash("syl"), "-"),
-												new Pair(pm, pm.hasher.hash("back"), "-")),
-										new Matrix(new Pair(pm, pm.hasher.hash("cons"), "+"),
-												new Pair(pm, pm.hasher.hash("syl"), "-"),
-												new Pair(pm, pm.hasher.hash("back"), "0")),
-										new Matrix(new Pair(pm, pm.hasher.hash("cons"), "-"),
-												new Pair(pm, pm.hasher.hash("syl"), "-"),
-												new Pair(pm, pm.hasher.hash("back"), "0"))))),
+								List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
+										new Pair(Hasher.hash("syl"), Hasher.FALSE),
+										new Pair(Hasher.hash("back"), Hasher.FALSE)),
+										new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
+												new Pair(Hasher.hash("syl"), Hasher.FALSE),
+												new Pair(Hasher.hash("back"), Hasher.FALSE)),
+										new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
+												new Pair(Hasher.hash("syl"), Hasher.FALSE),
+												new Pair(Hasher.hash("back"), Hasher.ZERO)),
+										new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
+												new Pair(Hasher.hash("syl"), Hasher.FALSE),
+												new Pair(Hasher.hash("back"), Hasher.ZERO))))),
 				entry(Secondary.PHARYNGEALIZATION,
-						new SecondaryArticulation("ˤ", new Matrix(new Pair(pm, pm.hasher.hash("DOR"), "+"),
-								new Pair(pm, pm.hasher.hash("high"), "-"), new Pair(pm, pm.hasher.hash("low"), "+"),
-								new Pair(pm, pm.hasher.hash("front"), "-"), new Pair(pm, pm.hasher.hash("back"), "+")),
+						new SecondaryArticulation("ˤ", new Matrix(new Pair(Hasher.hash("DOR"), Hasher.TRUE),
+								new Pair(Hasher.hash("high"), Hasher.FALSE), new Pair(Hasher.hash("low"), Hasher.TRUE),
+								new Pair(Hasher.hash("front"), Hasher.FALSE),
+								new Pair(Hasher.hash("back"), Hasher.TRUE)),
 								new Secondary[] { Secondary.VELARIZATION, Secondary.PALATALIZATION },
-								List.of(new Matrix(new Pair(pm, pm.hasher.hash("cons"), "+"),
-										new Pair(pm, pm.hasher.hash("syl"), "-")),
-										new Matrix(new Pair(pm, pm.hasher.hash("cons"), "-"),
-												new Pair(pm, pm.hasher.hash("syl"), "-"))))),
+								List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
+										new Pair(Hasher.hash("syl"), Hasher.FALSE)),
+										new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
+												new Pair(Hasher.hash("syl"), Hasher.FALSE))))),
 				entry(Secondary.ASPIRATION,
 						new SecondaryArticulation("ʰ", new Matrix(
-								new Pair(pm, pm.hasher.hash("sg"), "+"), new Pair(pm, pm.hasher.hash("cg"), "-")),
+								new Pair(Hasher.hash("sg"), Hasher.TRUE), new Pair(Hasher.hash("cg"), Hasher.FALSE)),
 								new Secondary[] {},
-								List.of(new Matrix(new Pair(pm, pm.hasher.hash("cons"), "+"),
-										new Pair(pm, pm.hasher.hash("syl"), "-")),
-										new Matrix(new Pair(pm, pm.hasher.hash("cons"), "-"),
-												new Pair(pm, pm.hasher.hash("syl"), "-"))))),
-				entry(Secondary.LENGTH, new SecondaryArticulation(pm, "ː", pm.hasher.hash("long"), "+",
-						new Secondary[] {}, List.of(new Matrix(new Pair(pm, pm.hasher.hash("long"), "-"))))));
+								List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
+										new Pair(Hasher.hash("syl"), Hasher.FALSE)),
+										new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
+												new Pair(Hasher.hash("syl"), Hasher.FALSE))))),
+				entry(Secondary.LENGTH, new SecondaryArticulation("ː", Hasher.hash("long"), Hasher.TRUE,
+						new Secondary[] {}, List.of(new Matrix(new Pair(Hasher.hash("long"), Hasher.FALSE))))));
 	}
 
 	private void initCache(final String baseFilename) throws IOException {
@@ -201,7 +201,7 @@ public class PhoneLoader {
 			final BufferedWriter bw = new BufferedWriter(new FileWriter(new File(directory, cacheFilename + ".data")));
 			bw.write("SEGMENT");
 			for (final int i : pm.featureNames) {
-				bw.write("\t" + pm.hasher.deHash(i));
+				bw.write("\t" + Hasher.deHash(i));
 			}
 			bw.write("\n");
 			for (final Phone p : phones) {
@@ -231,7 +231,8 @@ public class PhoneLoader {
 					new Phone(pm, e.getValue().get(0), e.getKey(), false);
 				}
 			} catch (final Exception e) {
-				System.out.println("Cache not found <" + directory.getAbsolutePath() + "\\" + cacheFilename + ".data> generating new cache");
+				System.out.println("Cache not found <" + directory.getAbsolutePath() + "\\" + cacheFilename
+						+ ".data> generating new cache");
 				initCache(baseFilename);
 			}
 		}

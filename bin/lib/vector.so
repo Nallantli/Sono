@@ -1,3 +1,5 @@
+load "math";
+
 Vector::pop(ref this) => {
 	var nl = {};
 	i in {0 until (len this - 1)} do {
@@ -73,11 +75,7 @@ Vector::remove(ref this, final index) => {
 	return this;
 };
 
-Vector::dist(final this, final raw, costDel, costIns, costRep) => {
-	var vector = raw;
-	type raw != "Vector" then {
-		vector = vec raw;
-	};
+Vector::distArray(final this, final vector, costDel, costIns, costRep) => {
 	costDel == null then {
 		costDel = 1;
 	};
@@ -114,7 +112,53 @@ Vector::dist(final this, final raw, costDel, costIns, costRep) => {
 		};
 	};
 
-	return array[m][n];
+	return array;
+};
+
+Vector::dist(final this, final vector, final costDel, final costIns, final costRep) => {
+	return this.distArray(vector, costDel, costIns, costRep)[len this][len vector];
+};
+
+Vector::steps(final this, final vector, final costDel, final costIns, final costRep) => {
+	var D = this.distArray(vector, costDel, costIns, costRep);
+	var i = len this;
+    var j = len vector;
+	var steps = {};
+    true do {
+        i > 0 then {
+            j > 0 then {
+                D[i - 1][j] <= D[i][j - 1] then {
+                    D[i - 1][j] < D[i - 1][j - 1] then {
+                        steps += {{"DEL", i - 1, this[i - 1]}};
+					} else {
+                        D[i][j] != D[i - 1][j - 1] then {
+                            steps += {{"SUB", i - 1, this[i - 1], vector[j - 1]}};
+						};
+                        j -= 1;
+					};
+                    i -= 1;
+				} else {
+                    D[i][j - 1] <= D[i - 1][j - 1] then {
+                        steps += {{"INS", i - 1, vector[j - 1]}};
+					} else {
+                        D[i][j] != D[i - 1][j - 1] then {
+							steps += {{"SUB", i - 1, this[i - 1], vector[j - 1]}};
+						};
+						i -= 1;
+					};
+                    j -= 1;
+				};
+            } else {
+                steps += {{"DEL", i - 1, this[i - 1]}};
+                i -= 1;
+			};
+		} else j > 0 then {
+            steps += {{"DEL", i - 1, this[i - 1]}};
+            j -= 1;
+		} else {
+            return steps.reverse();
+		};
+	};
 };
 
 Vector::nGram(final this, final n) => {

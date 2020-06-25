@@ -14,13 +14,10 @@ public class PhoneManager {
 
 	public Map<Integer, List<Integer>> majorClasses = new HashMap<>();
 
-	public Hasher hasher;
-
 	public PhoneManager() {
 		phoneLibrary = new HashMap<>();
 		baseLibrary = new ArrayList<>();
 		baseValues = new ArrayList<>();
-		hasher = new Hasher();
 	}
 
 	public Word interpretSequence(final String s) {
@@ -62,7 +59,7 @@ public class PhoneManager {
 		}
 		Matrix base = null;
 		if (phoneLibrary.containsValue(segment)) {
-			for (Map.Entry<Matrix, String> e : phoneLibrary.entrySet()) {
+			for (final Map.Entry<Matrix, String> e : phoneLibrary.entrySet()) {
 				if (e.getValue().equals(segment)) {
 					base = e.getKey();
 					break;
@@ -73,7 +70,6 @@ public class PhoneManager {
 			throw new IllegalArgumentException(
 					"Cannot interpret [" + segment + s + "], no base phone found from data.");
 
-		// String newSegment = base.getSegment();
 		Matrix newMatrix = base;
 		final List<PhoneLoader.Secondary> applied = new ArrayList<>();
 		for (int i = 0; i < s.length(); i++) {
@@ -83,7 +79,6 @@ public class PhoneManager {
 				if (s.charAt(i) == e.getValue().getSegment().charAt(0)) {
 					flag = true;
 					applied.add(e.getKey());
-					// newSegment += PhoneLoader.secondaryLibrary.get(e.getKey()).getSegment();
 					newMatrix = newMatrix.transform(this, PhoneLoader.secondaryLibrary.get(e.getKey()).getMatrix());
 					break;
 				}
@@ -98,8 +93,8 @@ public class PhoneManager {
 
 	public Pair interpretFeature(final String s) {
 		final String[] split = s.split("\\|");
-		final String quality = split[0];
-		final int value = hasher.hash(split[1]);
+		final int quality = Hasher.hash(split[0]);
+		final int value = Hasher.hash(split[1]);
 		int feature = -1;
 		for (final int f : featureNames) {
 			if (f == value) {
@@ -108,21 +103,21 @@ public class PhoneManager {
 			}
 		}
 
-		if (feature == -1 || quality == null)
+		if (feature == -1)
 			return null;
 
-		return new Pair(this, feature, quality);
+		return new Pair(feature, quality);
 	}
 
 	public Matrix fuzzySearch(final Matrix m) {
 		final Matrix features = m;
-		for (Map.Entry<Matrix, String> pl : phoneLibrary.entrySet()) {
+		for (final Map.Entry<Matrix, String> pl : phoneLibrary.entrySet()) {
 			final Matrix temp = pl.getKey();
 			boolean flag = true;
 			for (final Pair e : features) {
-				if (e.getQuality().equals("0"))
+				if (e.getQuality() == Hasher.ZERO)
 					continue;
-				if (!e.getQuality().equals(temp.getQuality(e.getFeature()))) {
+				if (e.getQuality() != temp.getQuality(e.getFeature())) {
 					flag = false;
 					break;
 				}
@@ -158,12 +153,10 @@ public class PhoneManager {
 
 	public void add(final Phone phone, final boolean validate) {
 		if (validate) {
-			if (!phone.getSegment().equals("*")) {
-				if (!phoneLibrary.containsKey(phone.getMatrix())) {
-					phoneLibrary.put(phone.getMatrix(), phone.getSegment());
-				} else if (phoneLibrary.get(phone.getMatrix()).length() > phone.getSegment().length()) {
-					phoneLibrary.put(phone.getMatrix(), phone.getSegment());
-				}
+			if (!phoneLibrary.containsKey(phone.getMatrix())) {
+				phoneLibrary.put(phone.getMatrix(), phone.getSegment());
+			} else if (phoneLibrary.get(phone.getMatrix()).length() > phone.getSegment().length()) {
+				phoneLibrary.put(phone.getMatrix(), phone.getSegment());
 			}
 		} else {
 			phoneLibrary.put(phone.getMatrix(), phone.getSegment());
@@ -179,14 +172,14 @@ public class PhoneManager {
 	public Matrix getCommon(final List<Phone> phones) {
 		final Matrix common = new Matrix();
 		for (int i = 0; i < featureNames.size(); i++) {
-			final String f = phones.get(0).getFeatureQuality(featureNames.get(i));
+			final int f = phones.get(0).getFeatureQuality(featureNames.get(i));
 			boolean flag = true;
 			for (int j = 1; j < phones.size(); j++)
-				if (!phones.get(j).getFeatureQuality(featureNames.get(i)).equals(f)) {
+				if (phones.get(j).getFeatureQuality(featureNames.get(i)) != f) {
 					flag = false;
 					break;
 				}
-			if (flag && !f.equals("0"))
+			if (flag && f != Hasher.ZERO)
 				common.put(this, featureNames.get(i), f);
 		}
 		return common;
@@ -195,8 +188,8 @@ public class PhoneManager {
 	public Matrix getContrast(final Phone a, final Phone b) {
 		final Matrix contrast = new Matrix();
 		for (int i = 0; i < featureNames.size(); i++) {
-			if (!a.getFeatureQuality(featureNames.get(i)).equals(b.getFeatureQuality(featureNames.get(i)))
-					&& !b.getFeatureQuality(featureNames.get(i)).equals("0")) {
+			if (a.getFeatureQuality(featureNames.get(i)) != b.getFeatureQuality(featureNames.get(i))
+					&& b.getFeatureQuality(featureNames.get(i)) != Hasher.ZERO) {
 				contrast.put(this, featureNames.get(i), b.getFeatureQuality(featureNames.get(i)));
 			}
 		}
@@ -204,8 +197,8 @@ public class PhoneManager {
 	}
 
 	public List<Phone> getAllPhones() {
-		List<Phone> phones = new ArrayList<>();
-		for (Map.Entry<Matrix, String> e : phoneLibrary.entrySet()) {
+		final List<Phone> phones = new ArrayList<>();
+		for (final Map.Entry<Matrix, String> e : phoneLibrary.entrySet()) {
 			phones.add(new Phone(this, e.getValue(), e.getKey(), false));
 		}
 		return phones;
@@ -215,7 +208,17 @@ public class PhoneManager {
 		return baseLibrary;
 	}
 
+	public Phone registerNewPhone(final String segment, final Matrix features) {
+		if (validate(features) != null)
+			return null;
+		phoneLibrary.put(features, segment);
+		return new Phone(this, segment, features, false);
+	}
+
 	public Phone validate(final Matrix m) {
-		return new Phone(this, phoneLibrary.get(m), m, true);
+		if (phoneLibrary.containsKey(m))
+			return new Phone(this, phoneLibrary.get(m), m, true);
+		else
+			return null;
 	}
 }

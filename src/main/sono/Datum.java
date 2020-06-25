@@ -310,7 +310,7 @@ public class Datum {
 				this.valuePointer = null;
 
 				final Pair temp = datum.getPair(trace);
-				this.valuePair = new Pair(pm, temp.getFeature(), temp.getQuality());
+				this.valuePair = new Pair(temp.getFeature(), temp.getQuality());
 				break;
 			case PHONE:
 				this.valueVector = null;
