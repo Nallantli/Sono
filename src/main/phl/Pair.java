@@ -1,10 +1,6 @@
 package main.phl;
 
-import java.io.Serializable;
-
-public class Pair implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class Pair {
 	private final int feature;
 	private final String quality;
 	private final PhoneManager pm;

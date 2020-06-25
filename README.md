@@ -1,4 +1,4 @@
-# Sono Beta 1.3.0
+# Sono Beta 1.3.1
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -14,15 +14,21 @@ While the included file [hayes.tsv](assets/hayes.tsv) is used for the example co
 
 Place features in all-caps have sub-features that are considered to be `0` in quality when the corresponding place feature is `-`. For instance (using [hayes.tsv](assets/hayes.tsv)), the segment `/p/` is `-DOR` and the sub-features `[0high, 0low, 0front, 0back, 0tense]`. Any transformation that affects one of those sub-features will automatically activate the rest and set the place feature to `+`. If a transformation rule gives `[+front]`, `/p/` will be transformed to `[+DOR, -high, -low, +front, -back, -tense]`. Likewise, if a `+DOR` segment is transformed by `[-DOR]`, all sub-features will be nullified to quality `0`. In a custom TSV feature file, major features are determined the same way, with all lowercase features following them to be considered sub-features.
 
+## Building
+
+There are two pairs of files necessary to build, depending on your OS. For Windows, [build-jar.bat](build-jar.bat) and [build-lib.bat](build-lib.bat) will build the JAR file and the libraries and place them in their respective folders. For Linux/OSX, the same files exist as `.sh` versions and can be invoked in the same manner in a bash terminal.
+
+## Running
+
+It is possible to run the JAR file directly, however it is recommended for the sake of brevity to use the files [bin/sono.bat](bin/sono.bat) for Windows or [bin/sono](bin/sono) for Linux/OSX, as these contain the necessary arguments to run the interpreter in UTF-8, necessary for IPA.
+
 ## Command Line Arguments
 
 The first argument (if the user wishes to run a file) must be the path to the file. Otherwise the CLI interpreter will be opened, from which commands may be run per user input.
 
 There are currently only three command line arguments: `-l` which disables all phonological features of the language (for use as a general scripting language), `-d` which takes in a file path for phonological base data, and `-g`, which activates debug mode which will create a stack trace for any caught error.
 
-During the initial run, `-d` will be required to develop a cache for the phonological data, and this process will take time depending on the extent of the data file given. Thereafter however the interpreter will automatically load the cached data at a significantly faster rate.
-
-Due to possible changes in code structure, caches from older versions of the interpreter may not be successfully loaded. This only affects updates which alter the contents of package [`main.phl`](src/main/phl). Otherwise, older caches can be successfully used. A cache can always be re-initalized with `-d`.
+During the initial run, `-d` will be required to develop a cache for the phonological data, and this process will take time depending on the extent of the data file given. Thereafter however the interpreter will automatically load the cached data at a significantly faster rate. A cache can always be re-initalized with `-d`.
 
 Example usages:
 

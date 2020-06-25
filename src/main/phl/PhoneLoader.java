@@ -1,13 +1,11 @@
 package main.phl;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +37,7 @@ public class PhoneLoader {
 				final String segment = split[0];
 				if (segment.equals("SEGMENT")) {
 					for (int i = 1; i < split.length; i++) {
-						System.out.println("\tAdding Feature <" + split[i] + ">");
+						//System.out.println("\tAdding Feature <" + split[i] + ">");
 						if (Character.isUpperCase(split[i].charAt(0))) {
 							pm.majorClasses.put(pm.hasher.hash(split[i]), new ArrayList<>());
 							major = split[i];
@@ -57,7 +55,7 @@ public class PhoneLoader {
 					features.put(pm, f, split[i]);
 					i++;
 				}
-				System.out.println("\tBase Phone <" + segment + ">");
+				//System.out.println("\tBase Phone <" + segment + ">");
 
 				if (!loadedPhones.containsKey(features))
 					loadedPhones.put(features, new ArrayList<>());
@@ -167,10 +165,7 @@ public class PhoneLoader {
 	}
 
 	private void initCache(final String baseFilename) throws IOException {
-		loadedPhones = new HashMap<>();
-		final String cacheFilename = baseFilename.replaceFirst(".*\\\\", "");
-		this.pm = new PhoneManager();
-		initalizeSecondary(pm);
+		String cacheFilename = baseFilename.replaceFirst(".*[\\\\\\/]", "");
 		System.out.println("Cache not initialized...");
 		try {
 			System.out.println("Reading file <" + baseFilename + ">...");
@@ -187,29 +182,32 @@ public class PhoneLoader {
 						new ArrayList<>(List.of(Secondary.values())));
 			}
 
-			System.out.println("Saving cache (" + loadedPhones.size() + ")...");
+			List<Phone> phones = new ArrayList<>();
 
 			for (final Map.Entry<Matrix, ArrayList<String>> e : loadedPhones.entrySet()) {
 				String shortest = e.getValue().get(0);
-				for (final String s : e.getValue()) {
-					if (s.length() <= shortest.length()) {
+				for (final String s : e.getValue())
+					if (s.length() <= shortest.length())
 						shortest = s;
-					}
-				}
-				new Phone(pm, shortest, e.getKey(), false);
+				phones.add(new Phone(pm, shortest, e.getKey(), false));
 			}
 
 			final File directory = new File(Main.getGlobalOption("PATH"), ".config/cache");
 			if (!directory.exists())
 				directory.mkdir();
 
-			try (FileOutputStream fos = new FileOutputStream(new File(directory, cacheFilename + ".data"));
-					ObjectOutputStream oos = new ObjectOutputStream(fos);) {
-				oos.writeObject(this.pm);
-				System.out.println("Done.");
-			} catch (final Exception e3) {
-				throw new IOException("Cannot save cache.");
+			System.out.println("Saving cache (" + loadedPhones.size() + ") to " + cacheFilename + ".data...");
+
+			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(directory, cacheFilename + ".data")));
+			bw.write("SEGMENT");
+			for (int i : pm.featureNames) {
+				bw.write("\t" + pm.hasher.deHash(i));
 			}
+			bw.write("\n");
+			for (Phone p : phones) {
+				bw.write(p.getDataString("\t") + "\n");
+			}
+			bw.close();
 		} catch (final Exception e2) {
 			e2.printStackTrace();
 			throw new IOException("File <" + baseFilename + "> not in directory, cannot load base phones");
@@ -217,16 +215,23 @@ public class PhoneLoader {
 	}
 
 	public PhoneLoader(final String baseFilename, final boolean force) throws IOException {
+		loadedPhones = new HashMap<>();
+		this.pm = new PhoneManager();
+		initalizeSecondary(pm);
 		if (force)
 			initCache(baseFilename);
 		else {
+			String cacheFilename = baseFilename.replaceFirst(".*[\\\\\\/]", "");
 			final File directory = new File(Main.getGlobalOption("PATH"), ".config/cache");
-			final String cacheFilename = baseFilename.replaceFirst(".*\\\\", "");
-			try (FileInputStream fis = new FileInputStream(new File(directory, cacheFilename + ".data"));
-					ObjectInputStream ois = new ObjectInputStream(fis);) {
-				this.pm = (PhoneManager) ois.readObject();
-				initalizeSecondary(pm);
-			} catch (final Exception e) {
+			System.out.println("Loading Cache for <" + baseFilename + ">...");
+			try {
+				readFile(pm, directory.getAbsolutePath(), cacheFilename + ".data", "\t");
+				System.out.println("Setting Phones...");
+				for (final Map.Entry<Matrix, ArrayList<String>> e : loadedPhones.entrySet()) {
+					new Phone(pm, e.getValue().get(0), e.getKey(), false);
+				}
+			} catch (Exception e) {
+				System.out.println("Cache not found <" + directory.getAbsolutePath() + "\\" + cacheFilename + ".data> generating new cache");
 				initCache(baseFilename);
 			}
 		}

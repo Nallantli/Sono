@@ -1,14 +1,11 @@
 package main.phl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PhoneManager implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class PhoneManager {
 	private final Map<Matrix, String> phoneLibrary;
 	private final List<Phone> baseLibrary;
 	private final List<String> baseValues;

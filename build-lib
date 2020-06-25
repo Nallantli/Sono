@@ -4,14 +4,11 @@ do
 	filename=`basename $f .java`
 	echo "Compiling $filename.java..."
 	javac -cp src src/ext/$filename.java -encoding utf8 -d bin/lib
-done
-cd bin/lib
-for f in ext/LIB_*.class
-do
-	filename=`basename $f .class`
+	cd bin/lib
 	echo "Creating $filename.jar..."
 	jar cvfe $filename.jar ext.$filename ./ext
+	cd ../..
 done
-rm -rf ext
-rm -rf main
+rm -rf bin/lib/ext
+rm -rf bin/lib/main
 echo "Done."

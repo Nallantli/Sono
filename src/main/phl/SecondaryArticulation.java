@@ -1,11 +1,8 @@
 package main.phl;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class SecondaryArticulation implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class SecondaryArticulation {
 	private final String segment;
 	private final Matrix matrix;
 	private final List<Matrix> requirements;

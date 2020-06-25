@@ -1,10 +1,6 @@
 package main.phl;
 
-import java.io.Serializable;
-
-public class Phone implements Comparable<Phone>, Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class Phone implements Comparable<Phone> {
 	private final PhoneManager pm;
 
 	private final String segment;

@@ -1,12 +1,9 @@
 package main.phl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hasher implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class Hasher {
 	private List<String> hashCode;
 
 	public Hasher() {
