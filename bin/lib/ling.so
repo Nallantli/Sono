@@ -2,6 +2,7 @@ load "feature";
 load "vector";
 load "string";
 load "map";
+load "rule";
 
 static Phonology class {
 	getNaturalSet(final phones, final set) => {
@@ -122,5 +123,55 @@ struct Corpus class {
 
 	getLen() => {
 		return len corpus;
+	};
+};
+
+struct Inventory class {
+	var name;
+	var phonemes;
+	var rules;
+
+	init(final name) => {
+		this.name = name;
+		this.phonemes = {};
+		this.rules = {};
+	};
+
+	addPhoneme(phoneme) => {
+		type phoneme != "Phone" then {
+			throw "Cannot insert non-Phone value.";
+		};
+		phonemes.contains(phoneme) == false then {
+			this.phonemes += { phoneme };
+		};
+	};
+
+	addRule(rule) => {
+		type phoneme != "Rule" then {
+			throw "Cannot insert non-Rule value.";
+		};
+		rules.contains(rule) == false then {
+			this.rules += { rule };
+		};
+	};
+
+	transform(final words) => {
+		return words.apply(rules);
+	};
+
+	getSet(matrix) => {
+		return matrix from phonemes;
+	};
+
+	getNaturalSet(phones) => {
+		return Phonology.getNaturalSet(this.phonemes, phones);
+	};
+
+	isNaturalSet(phones) => {
+		return Phonology.isNaturalSet(this.phonemes, phones);
+	};
+
+	getStr() => {
+		return this.name;
 	};
 };

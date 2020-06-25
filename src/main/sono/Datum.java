@@ -110,8 +110,8 @@ public class Datum {
 		this.type = Type.NULL;
 	}
 
-	public Datum(final Datum datum, final Scope parent, final List<String> trace) {
-		this.set(datum, trace);
+	public Datum(final PhoneManager pm, final Datum datum, final Scope parent, final List<String> trace) {
+		this.set(pm, datum, trace);
 		if (this.type == Type.FUNCTION) {
 			for (final Map.Entry<Type, Function> e : valueFunction.entrySet())
 				e.getValue().setParent(parent);
@@ -257,7 +257,7 @@ public class Datum {
 		this.mutable = mutable;
 	}
 
-	public void set(final Datum datum, final List<String> trace) {
+	public void set(final PhoneManager pm, final Datum datum, final List<String> trace) {
 		if (!mutable)
 			throw new SonoRuntimeException("You cannot set the value of a constant.", trace);
 		this.type = datum.getType();
@@ -277,7 +277,7 @@ public class Datum {
 				this.valueVector = new ArrayList<>();
 				for (final Datum d : datum.getVector(trace)) {
 					final Datum n = new Datum();
-					n.set(d, trace);
+					n.set(pm, d, trace);
 					this.valueVector.add(n);
 				}
 				break;
@@ -295,7 +295,7 @@ public class Datum {
 
 				this.valueMatrix = new Matrix();
 				for (final Pair p : datum.valueMatrix)
-					this.valueMatrix.put(p.getFeature(), p.getQuality());
+					this.valueMatrix.put(pm, p.getFeature(), p.getQuality());
 				break;
 			case PAIR:
 				this.valueVector = null;
@@ -310,7 +310,7 @@ public class Datum {
 				this.valuePointer = null;
 
 				final Pair temp = datum.getPair(trace);
-				this.valuePair = new Pair(temp.getFeature(), temp.getQuality());
+				this.valuePair = new Pair(pm, temp.getFeature(), temp.getQuality());
 				break;
 			case PHONE:
 				this.valueVector = null;

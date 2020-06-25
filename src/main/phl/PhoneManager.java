@@ -2,20 +2,28 @@ package main.phl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PhoneManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final List<Phone> phoneLibrary;
+	private final Map<Matrix, String> phoneLibrary;
 	private final List<Phone> baseLibrary;
 	private final List<String> baseValues;
 
+	public List<Integer> featureNames = new ArrayList<>();
+
+	public Map<Integer, List<Integer>> majorClasses = new HashMap<>();
+
+	public Hasher hasher;
+
 	public PhoneManager() {
-		phoneLibrary = new ArrayList<>();
+		phoneLibrary = new HashMap<>();
 		baseLibrary = new ArrayList<>();
 		baseValues = new ArrayList<>();
+		hasher = new Hasher();
 	}
 
 	public Word interpretSequence(final String s) {
@@ -36,7 +44,7 @@ public class PhoneManager implements Serializable {
 			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString()))) {
 				curr.append(s.charAt(i++));
 			}
-			while (i < s.length() && Phone.isSecondary(s.charAt(i))) {
+			while (i < s.length() && PhoneLoader.isSecondary(s.charAt(i))) {
 				curr.append(s.charAt(i++));
 			}
 			if (curr.length() > 0) {
@@ -55,31 +63,31 @@ public class PhoneManager implements Serializable {
 			segment = s.substring(0, 1);
 			s = s.substring(1);
 		}
-		Phone base = null;
-		for (final Phone p : phoneLibrary) {
-			if (p.getSegment().equals(segment)) {
-				base = p;
-				break;
+		Matrix base = null;
+		if (phoneLibrary.containsValue(segment)) {
+			for (Map.Entry<Matrix, String> e : phoneLibrary.entrySet()) {
+				if (e.getValue().equals(segment)) {
+					base = e.getKey();
+					break;
+				}
 			}
 		}
 		if (base == null)
 			throw new IllegalArgumentException(
 					"Cannot interpret [" + segment + s + "], no base phone found from data.");
 
-		final List<Phone.Secondary> applied = new ArrayList<>();
+		// String newSegment = base.getSegment();
+		Matrix newMatrix = base;
+		final List<PhoneLoader.Secondary> applied = new ArrayList<>();
 		for (int i = 0; i < s.length(); i++) {
 			boolean flag = false;
-			for (final Map.Entry<Phone.Secondary, SecondaryArticulation> e : Phone.secondaryLibrary.entrySet()) {
+			for (final Map.Entry<PhoneLoader.Secondary, SecondaryArticulation> e : PhoneLoader.secondaryLibrary
+					.entrySet()) {
 				if (s.charAt(i) == e.getValue().getSegment().charAt(0)) {
 					flag = true;
-					if (e.getValue().canApply(base, applied)) {
-						applied.add(e.getKey());
-						base = base.apply(e.getKey());
-					} else {
-						throw new IllegalArgumentException("Cannot interpret [" + segment + s
-								+ "], secondary articulation is restricted from application to competing phonological features: "
-								+ e.getKey());
-					}
+					applied.add(e.getKey());
+					// newSegment += PhoneLoader.secondaryLibrary.get(e.getKey()).getSegment();
+					newMatrix = newMatrix.transform(this, PhoneLoader.secondaryLibrary.get(e.getKey()).getMatrix());
 					break;
 				}
 			}
@@ -88,44 +96,52 @@ public class PhoneManager implements Serializable {
 						"Cannot interpret [" + segment + s + "], secondary articulation is unknown: " + s.charAt(i));
 			}
 		}
-		return base;
+		return this.validate(newMatrix);
 	}
 
 	public Pair interpretFeature(final String s) {
 		final String[] split = s.split("\\|");
 		final String quality = split[0];
-		final String value = split[1];
-		Phone.Feature feature = null;
-		for (final Phone.Feature f : Phone.Feature.values()) {
-			if (f.toString().equals(value)) {
+		final int value = hasher.hash(split[1]);
+		int feature = -1;
+		for (final int f : featureNames) {
+			if (f == value) {
 				feature = f;
 				break;
 			}
 		}
 
-		if (feature == null || quality == null)
+		if (feature == -1 || quality == null)
 			return null;
 
-		return new Pair(feature, quality);
+		return new Pair(this, feature, quality);
 	}
 
-	public Phone fuzzySearch(final Phone p) {
-		final Matrix features = p.getMatrix();
-		for (int i = 0; i < phoneLibrary.size(); i++) {
-			final Phone temp = phoneLibrary.get(i);
+	public Matrix fuzzySearch(final Matrix m) {
+		final Matrix features = m;
+		for (Map.Entry<Matrix, String> pl : phoneLibrary.entrySet()) {
+			final Matrix temp = pl.getKey();
 			boolean flag = true;
 			for (final Pair e : features) {
 				if (e.getQuality().equals("0"))
 					continue;
-				if (!e.getQuality().equals(temp.getFeatureQuality(e.getFeature()))) {
+				if (!e.getQuality().equals(temp.getQuality(e.getFeature()))) {
 					flag = false;
 					break;
 				}
 			}
 			if (flag)
-				return phoneLibrary.get(i);
+				return pl.getKey();
 		}
 		return null;
+	}
+
+	public int inMajorClass(final int feature) {
+		for (final Map.Entry<Integer, List<Integer>> e : majorClasses.entrySet()) {
+			if (e.getValue().contains(feature))
+				return e.getKey();
+		}
+		return -1;
 	}
 
 	public List<Phone> getPhones(final List<Phone> library, final Matrix map) {
@@ -139,20 +155,21 @@ public class PhoneManager implements Serializable {
 		return phones;
 	}
 
-	public boolean contains(final Phone phone) {
-		return phoneLibrary.contains(phone);
+	public boolean contains(final Matrix matrix) {
+		return phoneLibrary.containsKey(matrix);
 	}
 
-	public void add(final Phone phone) {
-		if (!phone.getSegment().equals("*")) {
-			if (!phoneLibrary.contains(phone)) {
-				phoneLibrary.add(phone);
-			} else if (phoneLibrary.get(phoneLibrary.indexOf(phone)).getSegment().length() > phone.getSegment()
-					.length()) {
-				phoneLibrary.remove(phone);
-				phoneLibrary.add(phone);
+	public void add(final Phone phone, final boolean validate) {
+		if (validate) {
+			if (!phone.getSegment().equals("*")) {
+				if (!phoneLibrary.containsKey(phone.getMatrix())) {
+					phoneLibrary.put(phone.getMatrix(), phone.getSegment());
+				} else if (phoneLibrary.get(phone.getMatrix()).length() > phone.getSegment().length()) {
+					phoneLibrary.put(phone.getMatrix(), phone.getSegment());
+				}
 			}
-
+		} else {
+			phoneLibrary.put(phone.getMatrix(), phone.getSegment());
 			if (!baseValues.contains(phone.getSegment())
 					&& ((phone.getSegment().length() == 3 && phone.getSegment().charAt(1) == '_')
 							|| phone.getSegment().length() == 1)) {
@@ -164,40 +181,44 @@ public class PhoneManager implements Serializable {
 
 	public Matrix getCommon(final List<Phone> phones) {
 		final Matrix common = new Matrix();
-		for (int i = 0; i < Phone.Feature.values().length; i++) {
-			final String f = phones.get(0).getFeatureQuality(Phone.Feature.values()[i]);
+		for (int i = 0; i < featureNames.size(); i++) {
+			final String f = phones.get(0).getFeatureQuality(featureNames.get(i));
 			boolean flag = true;
 			for (int j = 1; j < phones.size(); j++)
-				if (!phones.get(j).getFeatureQuality(Phone.Feature.values()[i]).equals(f)) {
+				if (!phones.get(j).getFeatureQuality(featureNames.get(i)).equals(f)) {
 					flag = false;
 					break;
 				}
 			if (flag && !f.equals("0"))
-				common.put(Phone.Feature.values()[i], f);
+				common.put(this, featureNames.get(i), f);
 		}
 		return common;
 	}
 
 	public Matrix getContrast(final Phone a, final Phone b) {
 		final Matrix contrast = new Matrix();
-		for (int i = 0; i < Phone.Feature.values().length; i++) {
-			if (!a.getFeatureQuality(Phone.Feature.values()[i]).equals(b.getFeatureQuality(Phone.Feature.values()[i]))
-					&& !b.getFeatureQuality(Phone.Feature.values()[i]).equals("0")) {
-				contrast.put(Phone.Feature.values()[i], b.getFeatureQuality(Phone.Feature.values()[i]));
+		for (int i = 0; i < featureNames.size(); i++) {
+			if (!a.getFeatureQuality(featureNames.get(i)).equals(b.getFeatureQuality(featureNames.get(i)))
+					&& !b.getFeatureQuality(featureNames.get(i)).equals("0")) {
+				contrast.put(this, featureNames.get(i), b.getFeatureQuality(featureNames.get(i)));
 			}
 		}
 		return contrast;
 	}
 
 	public List<Phone> getAllPhones() {
-		return phoneLibrary;
+		List<Phone> phones = new ArrayList<>();
+		for (Map.Entry<Matrix, String> e : phoneLibrary.entrySet()) {
+			phones.add(new Phone(this, e.getValue(), e.getKey(), false));
+		}
+		return phones;
 	}
 
 	public List<Phone> getBasePhones() {
 		return baseLibrary;
 	}
 
-	public Phone validate(final Phone p) {
-		return phoneLibrary.get(phoneLibrary.indexOf(p));
+	public Phone validate(final Matrix m) {
+		return new Phone(this, phoneLibrary.get(m), m, true);
 	}
 }

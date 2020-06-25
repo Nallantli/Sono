@@ -8,7 +8,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
-import main.phl.Phone;
 import main.sono.err.SonoCompilationException;
 
 public class Tokenizer {
@@ -22,13 +21,13 @@ public class Tokenizer {
 			entry("word", -11), entry("str", -11), entry("alloc", -11), entry("char", -11), entry("feat", -11),
 			entry("type", -11), entry("from", 10), entry("mat", -11), entry("num", -11), entry("vec", -11),
 			entry("com", -11), entry("::", 16), entry(".negative", -11), entry(".positive", -11), entry(".index", 15),
-			entry("ref", -15), entry("final", -15), entry(".exec", 15), entry(".", 15), entry("**", -10), entry("*", 9), entry("/", 9),
-			entry("%", 9), entry("+", 8), entry("-", 8), entry(">>", 8), entry("?>", 8), entry("==", 6), entry("!=", 6),
-			entry("<", 6), entry(">", 6), entry("<=", 6), entry(">=", 6), entry("&&", 5), entry("||", 5),
-			entry("=", -4), entry("+=", -4), entry("-=", -4), entry("*=", -4), entry("/=", -4), entry("%=", -4),
-			entry("->", 7), entry("//", 6), entry("~", 7), entry("in", 3), entry("switch", 3), entry("do", 3),
-			entry(":", 5), entry("until", 4), entry("then", 3), entry("else", -3), entry("try", -4), entry("catch", 3),
-			entry(",", 2), entry(";", -1), entry("|", 999));
+			entry("ref", -15), entry("final", -15), entry(".exec", 15), entry(".", 15), entry("**", -10), entry("*", 9),
+			entry("/", 9), entry("%", 9), entry("+", 8), entry("-", 8), entry(">>", 8), entry("?>", 8), entry("==", 6),
+			entry("!=", 6), entry("<", 6), entry(">", 6), entry("<=", 6), entry(">=", 6), entry("&&", 5),
+			entry("||", 5), entry("=", -4), entry("+=", -4), entry("-=", -4), entry("*=", -4), entry("/=", -4),
+			entry("%=", -4), entry("->", 7), entry("//", 6), entry("~", 7), entry("in", 3), entry("switch", 3),
+			entry("do", 3), entry(":", 5), entry("until", 4), entry("then", 3), entry("else", -3), entry("try", -4),
+			entry("catch", 3), entry(",", 2), entry(";", -1), entry("|", 999));
 
 	public static List<String> tokenize(final String str) {
 		char pChar = 0;
@@ -194,23 +193,21 @@ public class Tokenizer {
 			if (t.equals("|")) {
 				String t1 = postFeatures.pollLast();
 				final String t2 = newTokens.get(i + 1);
-				boolean flag = false;
-				for (int j = 0; j < Phone.Feature.values().length; j++) {
-					if (t2.equals(Phone.Feature.values()[j].toString())) {
-						flag = true;
-						break;
-					}
-				}
-				if (flag) {
-					if (t1.equals(".positive"))
-						t1 = "+";
-					else if (t1.equals(".negative"))
-						t1 = "-";
-					postFeatures.add("@" + t1 + "|" + t2);
-					i++;
-				} else {
-					throw new SonoCompilationException("Cannot parse feature <" + t1 + "|" + t2 + ">");
-				}
+				/*
+				 * boolean flag = false; for (int j = 0; j < Phone.Feature.values().length; j++)
+				 * { if (t2.equals(Phone.Feature.values()[j].toString())) { flag = true; break;
+				 * } } if (flag) {
+				 */
+				if (t1.equals(".positive"))
+					t1 = "+";
+				else if (t1.equals(".negative"))
+					t1 = "-";
+				postFeatures.add("@" + t1 + "|" + t2);
+				i++;
+				/*
+				 * } else { throw new SonoCompilationException("Cannot parse feature <" + t1 +
+				 * "|" + t2 + ">"); }
+				 */
 			} else {
 				postFeatures.add(t);
 			}

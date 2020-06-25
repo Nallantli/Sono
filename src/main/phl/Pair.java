@@ -5,15 +5,17 @@ import java.io.Serializable;
 public class Pair implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final Phone.Feature feature;
+	private final int feature;
 	private final String quality;
+	private final PhoneManager pm;
 
-	public Pair(final Phone.Feature feature, final String quality) {
+	public Pair(final PhoneManager pm, final int feature, final String quality) {
+		this.pm = pm;
 		this.feature = feature;
 		this.quality = quality;
 	}
 
-	public Phone.Feature getFeature() {
+	public int getFeature() {
 		return this.feature;
 	}
 
@@ -23,7 +25,12 @@ public class Pair implements Serializable {
 
 	@Override
 	public String toString() {
-		return quality + "|" + feature.toString();
+		return quality + "|" + pm.hasher.deHash(feature);
+	}
+
+	@Override
+	public int hashCode() {
+		return (quality + feature).hashCode();
 	}
 
 	@Override

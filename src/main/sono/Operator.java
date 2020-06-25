@@ -131,7 +131,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
-			datumA.set(datumB, trace);
+			datumA.set(interpreter.getManager(), datumB, trace);
 			return datumA;
 		}
 
@@ -158,7 +158,7 @@ public abstract class Operator {
 			if (datumB.getType() == Datum.Type.MATRIX)
 				return new Datum(datumA.getPhone(trace).transform(datumB.getMatrix(trace), true));
 			if (datumB.getType() == Datum.Type.RULE) {
-				final Word result = datumB.getRule(trace).transform(datumA.getWord(trace));
+				final Word result = datumB.getRule(trace).transform(interpreter.getManager(), datumA.getWord(trace));
 				return new Datum(result);
 			} else {
 				throw new SonoRuntimeException("Cannot transform value <" + datumA.toStringTrace(trace)
@@ -253,8 +253,9 @@ public abstract class Operator {
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			final Matrix matrix = new Matrix();
 			for (final Operator o : operators)
-				matrix.put(o.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
-						.getPair((Main.DEBUG ? new ArrayList<>(trace) : trace)));
+				matrix.put(interpreter.getManager(),
+						o.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
+								.getPair((Main.DEBUG ? new ArrayList<>(trace) : trace)));
 			return new Datum(matrix);
 		}
 
@@ -435,11 +436,12 @@ public abstract class Operator {
 			} catch (final SonoRuntimeException e) {
 				if (b != null) {
 					final Scope catchScope = new Scope(scope);
-					catchScope.setVariable(Interpreter.ERROR, new Datum(e.getMessage()), trace);
+					catchScope.setVariable(interpreter.getManager(), Interpreter.ERROR, new Datum(e.getMessage()),
+							trace);
 					final List<Datum> list = new ArrayList<>();
 					for (final String s : trace)
 						list.add(0, new Datum(s));
-					catchScope.setVariable(Interpreter.TRACE, new Datum(list), trace);
+					catchScope.setVariable(interpreter.getManager(), Interpreter.TRACE, new Datum(list), trace);
 					return b.evaluate(catchScope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
 				} else {
 					return new Datum();
@@ -577,7 +579,7 @@ public abstract class Operator {
 				final int variable = ((Variable) ((Iterator) a).getA()).getKey();
 				for (final Datum d : values) {
 					final Scope loopScope = new Scope(scope);
-					loopScope.setVariable(variable, d, trace);
+					loopScope.setVariable(interpreter.getManager(), variable, d, trace);
 					final Datum result = b.evaluate(loopScope, interpreter,
 							(Main.DEBUG ? new ArrayList<>(trace) : trace));
 					if (result.getType() == Datum.Type.I_BREAK)
@@ -905,7 +907,7 @@ public abstract class Operator {
 				final List<Datum> list = datumA.getVector(trace);
 				final Matrix m = new Matrix();
 				for (final Datum d : list)
-					m.put(d.getPair((Main.DEBUG ? new ArrayList<>(trace) : trace)));
+					m.put(interpreter.getManager(), d.getPair((Main.DEBUG ? new ArrayList<>(trace) : trace)));
 				return new Datum(m);
 			} else if (datumA.getType() == Datum.Type.PHONE) {
 				return new Datum(datumA.getPhone(trace).getMatrix());
@@ -1100,8 +1102,8 @@ public abstract class Operator {
 								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
 								trace);
 					final Matrix newMatrix = new Matrix();
-					newMatrix.putAll(datumA.getMatrix(trace));
-					newMatrix.putAll(datumB.getMatrix(trace));
+					newMatrix.putAll(interpreter.getManager(), datumA.getMatrix(trace));
+					newMatrix.putAll(interpreter.getManager(), datumB.getMatrix(trace));
 					return new Datum(newMatrix);
 				case WORD:
 					if (Main.getGlobalOption("LING").equals("FALSE"))
@@ -1376,7 +1378,7 @@ public abstract class Operator {
 		public Datum evaluate(final Scope scope, final Interpreter interpreter, final List<String> trace) {
 			if (Main.DEBUG)
 				trace.add(this.toString());
-			return scope.setVariable(varName, null, trace);
+			return scope.setVariable(interpreter.getManager(), varName, null, trace);
 		}
 
 		@Override
@@ -1732,7 +1734,7 @@ public abstract class Operator {
 			final Structure structure = new Structure(stat, scope, b, varName, interpreter);
 			if (stat)
 				b.evaluate(structure.getScope(), interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
-			return scope.setVariable(varName, new Datum(structure), trace);
+			return scope.setVariable(interpreter.getManager(), varName, new Datum(structure), trace);
 		}
 
 		@Override

@@ -14,8 +14,8 @@ public class Function {
 	private final Operator body;
 	private final Interpreter interpreter;
 
-	public Function(final Scope parent, final List<Integer> paramKeys, final List<Boolean> paramRefs, final List<Boolean> paramFins,
-			final Operator body, final Interpreter interpreter) {
+	public Function(final Scope parent, final List<Integer> paramKeys, final List<Boolean> paramRefs,
+			final List<Boolean> paramFins, final Operator body, final Interpreter interpreter) {
 		this.paramKeys = paramKeys;
 		this.paramRefs = paramRefs;
 		this.paramFins = paramFins;
@@ -31,17 +31,17 @@ public class Function {
 			if (i < paramValues.size()) {
 				prevMutes.add(paramValues.get(i).isMutable());
 				if (Boolean.TRUE.equals(paramRefs.get(i))) {
-					scope.setVariable(paramKeys.get(i), paramValues.get(i), trace);
+					scope.setVariable(interpreter.getManager(), paramKeys.get(i), paramValues.get(i), trace);
 				} else if (Boolean.TRUE.equals(paramFins.get(i))) {
 					paramValues.get(i).setMutable(false);
-					scope.setVariable(paramKeys.get(i), paramValues.get(i), trace);
+					scope.setVariable(interpreter.getManager(), paramKeys.get(i), paramValues.get(i), trace);
 				} else {
 					final Datum d = new Datum();
-					d.set(paramValues.get(i), trace);
-					scope.setVariable(paramKeys.get(i), d, trace);
+					d.set(interpreter.getManager(), paramValues.get(i), trace);
+					scope.setVariable(interpreter.getManager(), paramKeys.get(i), d, trace);
 				}
 			} else {
-				scope.setVariable(paramKeys.get(i), new Datum(), trace);
+				scope.setVariable(interpreter.getManager(), paramKeys.get(i), new Datum(), trace);
 			}
 		}
 

@@ -71,8 +71,8 @@ public class Interpreter {
 		hashVariable("{");
 		hashVariable("(");
 
-		main.setVariable(hashVariable("_all"), d, new ArrayList<>());
-		main.setVariable(hashVariable("_base"), db, new ArrayList<>());
+		main.setVariable(pl, hashVariable("_all"), d, new ArrayList<>());
+		main.setVariable(pl, hashVariable("_base"), db, new ArrayList<>());
 	}
 
 	private static int hashVariable(final String key) {

@@ -15,37 +15,43 @@ public class Matrix implements Iterable<Pair>, Serializable {
 		holder = new ArrayList<>();
 	}
 
+	public Matrix(final PhoneManager pm, final Matrix m) {
+		holder = new ArrayList<>();
+		for (final Pair p : m.holder) {
+			holder.add(new Pair(pm, p.getFeature(), p.getQuality()));
+		}
+	}
+
 	public Matrix(final Pair... entries) {
 		holder = new ArrayList<>(List.of(entries));
 	}
 
-	private int getIndexOf(final Phone.Feature key) {
+	private int getIndexOf(final int key) {
 		for (int i = 0; i < holder.size(); i++)
 			if (holder.get(i).getFeature() == key)
 				return i;
 		return -1;
 	}
 
-	public String get(final Phone.Feature key) {
+	public String getQuality(final int key) {
 		final int i = getIndexOf(key);
 		if (i >= 0)
 			return holder.get(i).getQuality();
 		return "0";
 	}
 
-	public Pair get(final int i) {
-		return holder.get(i);
-	}
+	/*
+	 * public Pair get(final int i) { return holder.get(i); }
+	 */
 
-	public void put(Pair p) {
-		if (Phone.majorClasses.containsKey(p.getFeature())
-				&& (p.getQuality().equals("-") || p.getQuality().equals("~"))) {
-			for (final Phone.Feature f : Phone.majorClasses.get(p.getFeature()))
-				put(f, "0");
+	public void put(final PhoneManager pm, Pair p) {
+		if (pm.majorClasses.containsKey(p.getFeature()) && (p.getQuality().equals("-") || p.getQuality().equals("~"))) {
+			for (final int f : pm.majorClasses.get(p.getFeature()))
+				put(pm, f, "0");
 		} else {
-			final Phone.Feature im = Phone.inMajorClass(p.getFeature());
-			if (im != null && get(im).equals("~")) {
-				p = new Pair(p.getFeature(), "0");
+			final int im = pm.inMajorClass(p.getFeature());
+			if (im != -1 && getQuality(im).equals("~")) {
+				p = new Pair(pm, p.getFeature(), "0");
 			}
 		}
 
@@ -64,20 +70,47 @@ public class Matrix implements Iterable<Pair>, Serializable {
 			holder.add(p);
 	}
 
-	public void put(final Phone.Feature f, final String q) {
-		put(new Pair(f, q));
+	public void put(final PhoneManager pm, final int f, final String q) {
+		put(pm, new Pair(pm, f, q));
 	}
 
-	public void putAll(final Matrix m) {
+	public void putAll(final PhoneManager pm, final Matrix m) {
 		for (final Pair p : m.holder) {
-			if ((get(p.getFeature()).equals("+") && p.getQuality().equals("-"))
-					|| (get(p.getFeature()).equals("-") && p.getQuality().equals("+")))
-				put(new Pair(p.getFeature(), "~"));
-			else if (get(p.getFeature()).equals("~") || p.getQuality().equals("~"))
-				put(new Pair(p.getFeature(), "~"));
+			if ((getQuality(p.getFeature()).equals("+") && p.getQuality().equals("-"))
+					|| (getQuality(p.getFeature()).equals("-") && p.getQuality().equals("+")))
+				put(pm, new Pair(pm, p.getFeature(), "~"));
+			else if (getQuality(p.getFeature()).equals("~") || p.getQuality().equals("~"))
+				put(pm, new Pair(pm, p.getFeature(), "~"));
 			else
-				put(p);
+				put(pm, p);
 		}
+	}
+
+	public Matrix transform(final PhoneManager pm, final Matrix matrix) {
+		final Matrix new_features = new Matrix(pm, this);
+
+		for (final Pair e : matrix) {
+			new_features.put(pm, e.getFeature(), e.getQuality());
+			final int im = pm.inMajorClass(e.getFeature());
+			if (im != -1 && !e.getQuality().equals("0")) {
+				new_features.put(pm, im, "+");
+				for (final int f : pm.majorClasses.get(im)) {
+					if (new_features.getQuality(f).equals("0"))
+						new_features.put(pm, f, "-");
+				}
+			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("+")) {
+				for (final int f : pm.majorClasses.get(e.getFeature())) {
+					if (new_features.getQuality(f).equals("0"))
+						new_features.put(pm, f, "-");
+				}
+			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality().equals("-")) {
+				for (final int f : pm.majorClasses.get(e.getFeature())) {
+					new_features.put(pm, f, "0");
+				}
+			}
+		}
+
+		return new_features;
 	}
 
 	public int size() {
@@ -99,16 +132,23 @@ public class Matrix implements Iterable<Pair>, Serializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return 1;
+	}
+
+	@Override
 	public boolean equals(final Object o) {
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())
 			return false;
 		final Matrix m = (Matrix) o;
-		if (size() != m.size())
-			return false;
 		for (final Pair p : holder) {
-			if (!m.get(p.getFeature()).equals(p.getQuality()))
+			if (!m.getQuality(p.getFeature()).equals(p.getQuality()))
+				return false;
+		}
+		for (final Pair p : m.holder) {
+			if (!getQuality(p.getFeature()).equals(p.getQuality()))
 				return false;
 		}
 		return true;

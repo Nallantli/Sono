@@ -1,4 +1,4 @@
-SEGMENT	STRESS	LONG	SYLLABIC	CONSONANTAL	APPROXIMANT	SONORANT	CONTINUANT	DELAYED_RELEASE	NASAL	STRIDENT	VOICE	SPREAD_GLOTTIS	CONSTRICTED_GLOTTIS	LABIAL	ROUND	LABIODENTAL	CORONAL	ANTERIOR	DISTRIBUTED	LATERAL	DORSAL	HIGH	LOW	FRONT	BACK	TENSE
+SEGMENT	stress	long	syl	cons	approx	son	cont	del	nasal	str	voice	sg	cg	LAB	round	ld	COR	ant	dist	LAT	DOR	high	low	front	back	tense
 i	-	-	+	-	+	+	+	-	-	-	+	-	-	+	-	-	-	0	0	-	+	+	-	+	-	+
 y	-	-	+	-	+	+	+	-	-	-	+	-	-	+	+	-	-	0	0	-	+	+	-	+	-	+
 ɪ	-	-	+	-	+	+	+	-	-	-	+	-	-	+	-	-	-	0	0	-	+	+	-	+	-	-

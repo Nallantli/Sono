@@ -1,4 +1,4 @@
-# Sono Beta 1.2.4
+# Sono Beta 1.3.0
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -10,36 +10,9 @@
 
 Sono is a high-level object-oriented and procedural scripting language developed with linguistic capabilities in mind. For that it supports multiple operators revolving around phonological analysis based upon distinctive features.
 
-While the included file [hayes.tsv](assets/hayes.tsv) is used for the example codes under [examples/](examples), the use may load any set of qualities for the distinctive features so long as the same set of distinctive features is used. Currently the features supported are:
+While the included file [hayes.tsv](assets/hayes.tsv) is used for the example codes under [examples/](examples), any set of TSV separated distinctive feature list may be used, with or without all the features expressed in [hayes.tsv](assets/hayes.tsv).
 
-* `stress` (Stress)
-* `long` (Length)
-* `syl` (Syllabic)
-* `cons` (Consonantal)
-* `approx` (Approximant)
-* `son` (Sonorant)
-* `cont` (Continuant)
-* `del` (Delayed Release)
-* `nasal` (Nasal)
-* `str` (Strident)
-* `voice` (Voice)
-* `sg` (Spread Glottis)
-* `cg` (Constricted Glottis)
-* `LAB` (Labial)
-  * `round` (Rounding)
-  * `ld` (Labiodental)
-* `COR` (Coronal)
-  * `ant` (Anterior)
-  * `dist` (Distributed)
-* `LAT` (Lateral)
-* `DOR` (Dorsal)
-  * `high` (High)
-  * `low` (Low)
-  * `front` (Front)
-  * `back` (Back)
-  * `tense` (Tense/ATR)
-
-Place features (`LAB`, `COR`, `LAT`, and `DOR`) have sub-features that are considered to be `0` in quality when the corresponding place feature is `-`. For instance, the segment `/p/` is `-DOR` and the sub-features `[0high, 0low, 0front, 0back, 0tense]`. Any transformation that affects one of those sub-features will automatically activate the rest and set the place feature to `+`. If a transformation rule gives `[+front]`, `/p/` will be transformed to `[+DOR, -high, -low, +front, -back, -tense]`. Likewise, if a `+DOR` segment is transformed by `[-DOR]`, all sub-features will be nullified to quality `0`.
+Place features in all-caps have sub-features that are considered to be `0` in quality when the corresponding place feature is `-`. For instance (using [hayes.tsv](assets/hayes.tsv)), the segment `/p/` is `-DOR` and the sub-features `[0high, 0low, 0front, 0back, 0tense]`. Any transformation that affects one of those sub-features will automatically activate the rest and set the place feature to `+`. If a transformation rule gives `[+front]`, `/p/` will be transformed to `[+DOR, -high, -low, +front, -back, -tense]`. Likewise, if a `+DOR` segment is transformed by `[-DOR]`, all sub-features will be nullified to quality `0`. In a custom TSV feature file, major features are determined the same way, with all lowercase features following them to be considered sub-features.
 
 ## Command Line Arguments
 

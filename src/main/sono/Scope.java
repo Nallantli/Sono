@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
+import main.phl.PhoneManager;
 import main.sono.err.SonoRuntimeException;
 
 public class Scope {
@@ -23,11 +24,11 @@ public class Scope {
 		this.data = data;
 	}
 
-	public Scope instantiate(final List<String> trace) {
+	public Scope instantiate(final PhoneManager pm, final List<String> trace) {
 		final Scope scope = new Scope(this.parent);
 		final Map<Integer, Datum> newMap = new HashMap<>();
 		for (final Map.Entry<Integer, Datum> e : data.entrySet())
-			newMap.put(e.getKey(), new Datum(e.getValue(), scope, trace));
+			newMap.put(e.getKey(), new Datum(pm, e.getValue(), scope, trace));
 		scope.setMap(newMap);
 		return scope;
 	}
@@ -44,10 +45,10 @@ public class Scope {
 				"Variable <" + Interpreter.deHash(key) + "> is not within scope or does not exist.", trace);
 	}
 
-	public Datum setVariable(final int key, final Datum value, final List<String> trace) {
+	public Datum setVariable(final PhoneManager pm, final int key, final Datum value, final List<String> trace) {
 		if (data.containsKey(key)) {
 			if (value != null)
-				this.data.get(key).set(value, trace);
+				this.data.get(key).set(pm, value, trace);
 		} else {
 			if (value != null)
 				this.data.put(key, value);
