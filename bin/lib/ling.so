@@ -9,14 +9,14 @@ static Phonology class {
 		var m = [];
 		p in set do {
 			m += mat p;
-		};
+		}
 		return m from phones;
-	};
+	}
 
 	isNaturalSet(final phones, final set) => {
 		var ns = getNaturalSet(phones, set);
 		return len ns == len set;
-	};
+	}
 
 	naturalize(final phones, final set) => {
 		var natural = (final phones, ref matrix) => {
@@ -26,17 +26,17 @@ static Phonology class {
 				(temp from phones) == (matrix from phones) then {
 					list += natural(phones, temp);
 					break;
-				};
-			};
+				}
+			}
 			len list == 0 then {
 				return { matrix };
 			} else {
 				return list;
 			}
-		};
+		}
 		return natural(phones, com getNaturalSet(phones, set))[0];
-	};
-};
+	}
+}
 
 struct Corpus class {
 	var corpus;
@@ -47,43 +47,43 @@ struct Corpus class {
 		corpus = {};
 		TFcache = new Map();
 		IDFcache = new Map();
-	};
+	}
 
 	resetCache() => {
 		TFcache = new Map();
 		IDFcache = new Map();
-	};
+	}
 
 	add(value) => {
 		type value != "Vector" then {
 			value = value.split("\\s");
-		};
+		}
 		corpus += {value};
 		resetCache();
-	};
+	}
 
 	TF(final value, final doc) => {
 		TFcache.contains({value, doc}) then {
 			return TFcache[{value, doc}];
-		};
+		}
 		var c = 0;
 		doc == null then {
 			i in corpus do {
 				j in i do {
 					j == value then {
 						c += 1;
-					};
-				};
-			};
+					}
+				}
+			}
 		} else {
 			j in corpus[doc] do {
 				j == value then {
 					c += 1;
-				};
-			};
-		};
+				}
+			}
+		}
 		return c;
-	};
+	}
 
 	count(final value) => {
 		var c = 0;
@@ -92,39 +92,39 @@ struct Corpus class {
 				j == value then {
 					c += 1;
 					break;
-				};
-			};
-		};
+				}
+			}
+		}
 		return c;
-	};
+	}
 
 	IDF(final value) => {
 		IDFcache.contains(value) then {
 			return IDFcache[value];
-		};
+		}
 		return 1 + (len corpus / (1 + count(value))).log();
-	};
+	}
 
 	TFIDF(final value, final doc) => {
 		var array = value;
 		type value != "Vector" then {
 			array = { value };
-		};
+		}
 		var freq = 0;
 		v in array do {
 			freq += TF(v, doc) * IDF(v);
-		};
+		}
 		return freq;
-	};
+	}
 
 	getList() => {
 		return corpus;
-	};
+	}
 
 	getLen() => {
 		return len corpus;
-	};
-};
+	}
+}
 
 struct Inventory class {
 	var name;
@@ -135,43 +135,43 @@ struct Inventory class {
 		this.name = name;
 		this.phonemes = {};
 		this.rules = {};
-	};
+	}
 
 	addPhoneme(phoneme) => {
 		type phoneme != "Phone" then {
 			throw "Cannot insert non-Phone value.";
-		};
+		}
 		phonemes.contains(phoneme) == false then {
 			this.phonemes += { phoneme };
-		};
-	};
+		}
+	}
 
 	addRule(rule) => {
 		type phoneme != "Rule" then {
 			throw "Cannot insert non-Rule value.";
-		};
+		}
 		rules.contains(rule) == false then {
 			this.rules += { rule };
-		};
-	};
+		}
+	}
 
 	transform(final words) => {
 		return words.apply(rules);
-	};
+	}
 
 	getSet(matrix) => {
 		return matrix from phonemes;
-	};
+	}
 
 	getNaturalSet(phones) => {
 		return Phonology.getNaturalSet(this.phonemes, phones);
-	};
+	}
 
 	isNaturalSet(phones) => {
 		return Phonology.isNaturalSet(this.phonemes, phones);
-	};
+	}
 
 	getStr() => {
 		return this.name;
-	};
-};
+	}
+}

@@ -3,75 +3,75 @@ load "math";
 
 print(final message) => {
 	"LIB_Console.PRINT" _OUTER_CALL_ (str message);
-};
+}
 
 println(final message) => {
 	print(str message + "\n");
-};
+}
 
 exit() => {
 	"LIB_Console.EXIT" _OUTER_CALL_ null;
-};
+}
 
 timeMS() => {
 	return ("LIB_Console.TIME" _OUTER_CALL_ null);
-};
+}
 
 static Random class {
 	float() => {
 		return ("LIB_Console.RAND" _OUTER_CALL_ null);
-	};
+	}
 
 	int(final lower, final upper) => {
 		return (float() * (upper - lower) + lower).round();
-	};
-};
+	}
+}
 
 static Input class {
 	line() => {
 		return ("LIB_Console.GET.LINE" _OUTER_CALL_ null);
-	};
+	}
 	number() => {
 		return ("LIB_Console.GET.NUMBER" _OUTER_CALL_ null);
-	};
-};
+	}
+}
 
 String::match(final string, final pattern) => {
-	return "LIB_Console.REGEX" _OUTER_CALL_ { pattern, string };
-};
+	return "LIB_Console.REGEX" _OUTER_CALL_ (pattern, string);
+}
 
 Number::log(final n) => {
 	return "LIB_Console.LOG" _OUTER_CALL_ n;
-};
+}
 
 getNum(final this) => {
 	return num this;
-};
+}
 
 getStr(final this) => {
 	return str this;
-};
+}
 
 getVec(final this) => {
 	return vec this;
-};
+}
 
 getLen(final this) => {
 	return len this;
-};
+}
 
 getWord(final this) => {
 	return word this;
-};
+}
 
 getChar(final this) => {
 	return char this;
-};
+}
 
 getMat(final this) => {
 	return mat this;
-};
+}
 
 getCom(final this) => {
 	return com this;
-};
+}

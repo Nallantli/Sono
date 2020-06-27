@@ -6,9 +6,9 @@ String::hash(final string, final mod) => {
 	e in vec string do {
 		h = (h + char e * pp) % m;
 		pp = (pp * p) % m;
-	};
+	}
 	mod == null then {
 		return h;
-	};
+	}
 	return h % mod;
-};
+}

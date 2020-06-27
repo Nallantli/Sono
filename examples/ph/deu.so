@@ -13,4 +13,4 @@ var applied = words.apply(rule);
 
 i in {0 until len words} do {
 	println("/" + str words[i] + "/ -> [" + str applied[i] + "]");
-};
+}

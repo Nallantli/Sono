@@ -16,18 +16,18 @@ refresh() => {
 	i += 0.001;
 	i >= 1 then {
 		i = 0;
-	};
+	}
 	var color = Color.HSLtoRGB(i, 1, 0.5);
 	rectangle.setColor(color);
 	rectangle.move(xm, ym);
 	rectangle.x > window.width - 50 || rectangle.x < 0 then {
 		xm *= -1;
-	};
+	}
 	rectangle.y > window.height - 50 || rectangle.y < 0 then {
 		ym *= -1;
-	};
+	}
 	window.repaint();
-};
+}
 
 var start = timeMS();
 true do {
@@ -35,5 +35,5 @@ true do {
 	lapse > 15 then {
 		start = timeMS();
 		refresh();
-	};
-};
+	}
+}

@@ -20,12 +20,12 @@ s != "exit" do {
 		println("Sending Back:\t" + res);
 		output.send(res);
 		s = input.read();
-	};
+	}
 	input.close();
 	output.close();
 	socket.close();
 	println("Client Disconnected.");
-};
+}
 println("Server Shutting Down...");
 
 server.close();

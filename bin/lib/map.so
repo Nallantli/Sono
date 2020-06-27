@@ -10,11 +10,11 @@ struct Map class {
 			this.key = key;
 			this.value = value;
 			this.prev = prev;
-		};
+		}
 		getStr() => {
 			return str key + "=" + str value + str { next };
-		};
-	};
+		}
+	}
 
 	var buckets;
 	var size;
@@ -26,39 +26,39 @@ struct Map class {
 			this.rawSize = 16;
 		} else {
 			this.rawSize = rawSize;
-		};
+		}
 		this.buckets = alloc this.rawSize;
-	};
+	}
 
 	isEmpty() => {
 		return (size == 0);
-	};
+	}
 
 	getIndex(final key) => {
 		size >= rawSize then {
 			expand();
-		};
+		}
 		var h = hash(str key, rawSize);
 		var curr = buckets[h];
 		curr == null then {
 			buckets[h] = new Node(key, null, null);
 			size += 1;
 			return buckets[h].value;
-		};
+		}
 		true do {
 			curr.key == key then {
 				return curr.value;
-			};
+			}
 			curr.next == null then {
 				break;
-			};
+			}
 			curr = curr.next;
-		};
+		}
 		var p = new Node(key, null, curr);
 		curr.next = p;
 		size += 1;
 		return p.value;
-	};
+	}
 
 	remove(final key) => {
 		var h = hash(str key, rawSize);
@@ -66,20 +66,20 @@ struct Map class {
 		true do {
 			curr.key == key then {
 				break;
-			};
+			}
 			curr.next == null then {
 				return false;
-			};
+			}
 			curr = curr.next;
-		};
+		}
 		curr.prev == null then {
 			buckets[h] = curr.next;
 		} else {
 			curr.prev.next = curr.next;
-		};
+		}
 		size -= 1;
 		return true;
-	};
+	}
 
 	containsKey(final key) => {
 		var h = hash(str key, rawSize);
@@ -87,11 +87,11 @@ struct Map class {
 		curr != null do {
 			curr.key == key then {
 				return true;
-			};
+			}
 			curr = curr.next;
-		};
+		}
 		return false;
-	};
+	}
 
 	expand() => {
 		size = 0;
@@ -100,8 +100,8 @@ struct Map class {
 		buckets = alloc rawSize;
 		e in vector do {
 			getIndex(e[0]) = e[1];
-		};
-	};
+		}
+	}
 
 	getVec() => {
 		var list = {};
@@ -110,16 +110,16 @@ struct Map class {
 			curr != null do {
 				list += {{curr.key, curr.value}};
 				curr = curr.next;
-			};
-		};
+			}
+		}
 		return list;
-	};
+	}
 
 	getLen() => {
 		return size;
-	};
+	}
 
 	getStr() => {
 		return str getList();
-	};
-};
+	}
+}

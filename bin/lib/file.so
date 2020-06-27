@@ -5,47 +5,47 @@ struct File class {
 
 	init(final filename) => {
 		this.pointer = ("FileIO.INIT" _OUTER_CALL_ filename);
-	};
+	}
 
 	exists() => {
 		return "FileIO.EXISTS" _OUTER_CALL_ (this.pointer);
-	};
+	}
 
 	create() => {
 		return "FileIO.CREATE" _OUTER_CALL_ (this.pointer);
-	};
+	}
 
 	getStr() => {
 		return str this.pointer;
-	};
+	}
 
 	getReader() => {
 		return new Reader(this.pointer);
-	};
+	}
 
 	getWriter() => {
 		return new Writer(this.pointer);
-	};
+	}
 
 	struct Reader class {
 		var pointer;
 
 		init(final pointer) => {
 			this.pointer = ("FileIO.READER.INIT" _OUTER_CALL_ pointer);
-		};
+		}
 
 		readLine() => {
 			var line = ("FileIO.READER.GETLINE" _OUTER_CALL_ pointer);
 			line == null then {
 				close();
-			};
+			}
 			return line;
-		};
+		}
 
 		read(i) => {
 			i == null then {
 				i = 1;
-			};
+			}
 			var s = "";
 			j in {0 until i} do {
 				var char = ("FileIO.READER.GET" _OUTER_CALL_ pointer);
@@ -54,39 +54,39 @@ struct File class {
 					break;
 				} else {
 					s += char;
-				};
+				}
 			}
 			return s;
-		};
+		}
 
 		close() => {
 			"FileIO.READER.CLOSE" _OUTER_CALL_ pointer;
 			pointer = null;
-		};
+		}
 
 		getStr() => {
 			return str this.pointer;
-		};
-	};
+		}
+	}
 
 	struct Writer class {
 		var pointer;
 
 		init(final pointer) => {
 			this.pointer = ("FileIO.WRITER.INIT" _OUTER_CALL_ pointer);
-		};
+		}
 
 		write(final string) => {
-			"FileIO.WRITER.WRITE" _OUTER_CALL_ {pointer, string};
-		};
+			"FileIO.WRITER.WRITE" _OUTER_CALL_ (pointer, string);
+		}
 
 		close() => {
 			"FileIO.WRITER.CLOSE" _OUTER_CALL_ pointer;
 			pointer = null;
-		};
+		}
 
 		getStr() => {
 			return str this.pointer;
-		};
-	};
-};
+		}
+	}
+}

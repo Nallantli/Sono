@@ -9,130 +9,130 @@ struct Window class {
 	init(final title, final width, final height, final closefunction) => {
 		this.width = width;
 		this.height = height;
-		this.window = ("LIB_Graphics.INIT" _OUTER_CALL_ {title, width, height, closefunction});
-	};
+		this.window = ("LIB_Graphics.INIT" _OUTER_CALL_ (title, width, height, closefunction));
+	}
 
 	show() => {
 		"LIB_Graphics.SHOW" _OUTER_CALL_ (this.window);
-	};
+	}
 
 	hide() => {
 		"LIB_Graphics.HIDE" _OUTER_CALL_ (this.window);
-	};
+	}
 
 	resize(final width, final height) => {
-		"LIB_Graphics.SETSIZE" _OUTER_CALL_ {window, width, height};
+		"LIB_Graphics.SETSIZE" _OUTER_CALL_ (window, width, height);
 		this.width = width;
 		this.height = height;
-	};
+	}
 
 	close() => {
 		"LIB_Graphics.CLOSE" _OUTER_CALL_ (this.window);
 		this.window = null;
-	};
+	}
 
 	getGraphics() => {
 		this.graphics == null then {
 			this.graphics = new Graphics("LIB_Graphics.GETGRAPHICS" _OUTER_CALL_ (this.window));
-		};
+		}
 		return this.graphics;
-	};
+	}
 
 	repaint() => {
 		"LIB_Graphics.REPAINT" _OUTER_CALL_ (this.window);
-	};
+	}
 
 	onMouseMove(final function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
-		};
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {0, mousef};
-	};
+		}
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (0, mousef);
+	}
 
 	onMouseDrag(final function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
-		};
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {1, mousef};
-	};
+		}
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (1, mousef);
+	}
 
 	onMouseRelease(final function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
-		};
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {2, mousef};
-	};
+		}
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (2, mousef);
+	}
 
 	onMousePress(final function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
-		};
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {3, mousef};
-	};
+		}
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (3, mousef);
+	}
 
 	onMouseExit(final function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
-		};
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {4, mousef};
-	};
+		}
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (4, mousef);
+	}
 
 	onMouseEnter(final function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
-		};
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {5, mousef};
-	};
+		}
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (5, mousef);
+	}
 
 	onMouseClick(final function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
-		};
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ {6, mousef};
-	};
+		}
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (6, mousef);
+	}
 
 	onKeyPress(final function) => {
 		var keyf = (a, b, c) => {
 			return function(new KeyEvent(a, b, c));
-		};
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ {0, keyf};
-	};
+		}
+		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (0, keyf);
+	}
 
 	onKeyRelease(final function) => {
 		var keyf = (a, b, c) => {
 			return function(new KeyEvent(a, b, c));
-		};
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ {1, keyf};
-	};
+		}
+		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (1, keyf);
+	}
 
 	onKeyType(final function) => {
 		var keyf = (a, b, c) => {
 			return function(new KeyEvent(a, b, c));
-		};
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ {2, keyf};
-	};
+		}
+		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (2, keyf);
+	}
 
 	struct Graphics class {
 		var graphics;
 
 		init(final graphics) => {
 			this.graphics = graphics;
-		};
+		}
 
 		add(final shape) => {
-			var success = ("LIB_Graphics.GRAPHICS.ADD" _OUTER_CALL_ {this.graphics, shape.data});
+			var success = ("LIB_Graphics.GRAPHICS.ADD" _OUTER_CALL_ (this.graphics, shape.data));
 			success == false then {
 				throw "Shape already exists in Graphics";
-			};
-		};
+			}
+		}
 
 		remove(final shape) => {
-			"LIB_Graphics.GRAPHICS.REMOVE" _OUTER_CALL_ {this.graphics, shape.data};
+			"LIB_Graphics.GRAPHICS.REMOVE" _OUTER_CALL_ (this.graphics, shape.data);
 			success == false then {
 				throw "Shape does not exist in Graphics";
-			};
-		};
-	};
+			}
+		}
+	}
 
 	struct MouseEvent class {
 		var button;
@@ -151,12 +151,12 @@ struct Window class {
 			this.y = y;
 			this.screenX = screenX;
 			this.screenY = screenY;
-		};
+		}
 
 		getStr() => {
 			return "(BUTTON=" + str button + ", COUNT=" + str clickCount + ", MODIFIERS=" + str modifiers + ", X=" + str x + ", Y=" + str y + ", SCREEN_X=" + str screenX + ", SCREEN_Y=" + str screenY + ")";
-		};
-	};
+		}
+	}
 
 	struct KeyEvent class {
 		var charCode;
@@ -167,13 +167,13 @@ struct Window class {
 			this.charCode = charCode;
 			this.charStr = charStr;
 			this.actionKey = actionKey;
-		};
+		}
 
 		getStr() => {
 			return "(CODE=" + str charCode + ", STR=" + charStr + ", ISACTION=" + str actionKey + ")";
-		};
-	};
-};
+		}
+	}
+}
 
 static Shape class {
 	struct Rectangle class {
@@ -191,32 +191,32 @@ static Shape class {
 			this.y = y;
 			this.width = width;
 			this.height = height;
-			this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ {color.r, color.g, color.b, color.a, x, y, width, height});
-		};
+			this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x, y, width, height));
+		}
 
 		setColor(final color) => {
 			this.color = color;
-			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ {this.data, color.r, color.g, color.b, color.a};
-		};
+			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ (this.data, color.r, color.g, color.b, color.a);
+		}
 
 		setSize(final width, final height) => {
 			this.width = width;
 			this.height = height;
-			"LIB_Graphics.SHAPE.RECTANGLE.SIZE" _OUTER_CALL_ {this.data, width, height};
-		};
+			"LIB_Graphics.SHAPE.RECTANGLE.SIZE" _OUTER_CALL_ (this.data, width, height);
+		}
 
 		setOrigin(final x, final y) => {
 			this.x = x;
 			this.y = y;
-			"LIB_Graphics.SHAPE.RECTANGLE.MOVE" _OUTER_CALL_ {this.data, x, y};
-		};
+			"LIB_Graphics.SHAPE.RECTANGLE.MOVE" _OUTER_CALL_ (this.data, x, y);
+		}
 
 		move(final x, final y) => {
 			this.x += x;
 			this.y += y;
-			"LIB_Graphics.SHAPE.RECTANGLE.MOVE" _OUTER_CALL_ {this.data, this.x, this.y};
-		};
-	};
+			"LIB_Graphics.SHAPE.RECTANGLE.MOVE" _OUTER_CALL_ (this.data, this.x, this.y);
+		}
+	}
 
 	struct Oval class {
 		var data;
@@ -233,32 +233,32 @@ static Shape class {
 			this.y = y;
 			this.width = width;
 			this.height = height;
-			this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ {color.r, color.g, color.b, color.a, x, y, width, height});
-		};
+			this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x, y, width, height));
+		}
 
 		setColor(final color) => {
 			this.color = color;
-			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ {this.data, color.r, color.g, color.b, color.a};
-		};
+			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ (this.data, color.r, color.g, color.b, color.a);
+		}
 
 		setSize(final width, final height) => {
 			this.width = width;
 			this.height = height;
-			"LIB_Graphics.SHAPE.OVAL.SIZE" _OUTER_CALL_ {this.data, width, height};
-		};
+			"LIB_Graphics.SHAPE.OVAL.SIZE" _OUTER_CALL_ (this.data, width, height);
+		}
 
 		setOrigin(final x, final y) => {
 			this.x = x;
 			this.y = y;
-			"LIB_Graphics.SHAPE.OVAL.MOVE" _OUTER_CALL_ {this.data, x, y};
-		};
+			"LIB_Graphics.SHAPE.OVAL.MOVE" _OUTER_CALL_ (this.data, x, y);
+		}
 
 		move(final x, final y) => {
 			this.x += x;
 			this.y += y;
-			"LIB_Graphics.SHAPE.OVAL.MOVE" _OUTER_CALL_ {this.data, this.x, this.y};
-		};
-	};
+			"LIB_Graphics.SHAPE.OVAL.MOVE" _OUTER_CALL_ (this.data, this.x, this.y);
+		}
+	}
 
 	struct Line class {
 		var data;
@@ -275,30 +275,30 @@ static Shape class {
 			this.y1 = y1;
 			this.x2 = x2;
 			this.y2 = y2;
-			this.data = ("LIB_Graphics.SHAPE.LINE.INIT" _OUTER_CALL_ {color.r, color.g, color.b, color.a, x1, y1, x2, y2});
-		};
+			this.data = ("LIB_Graphics.SHAPE.LINE.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x1, y1, x2, y2));
+		}
 
 		setColor(final color) => {
 			this.color = color;
-			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ {this.data, color.r, color.g, color.b, color.a};
-		};
+			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ (this.data, color.r, color.g, color.b, color.a);
+		}
 
 		setPoints(final x1, final y1, final x2, final y2) => {
 			this.x1 = x1;
 			this.y1 = y1;
 			this.x2 = x2;
 			this.y2 = y2;
-			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ {this.data, x1, y1, x2, y2};
-		};
+			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ (this.data, x1, y1, x2, y2);
+		}
 
 		move(final x, final y) => {
 			this.x1 += x;
 			this.x2 += x;
 			this.y1 += y;
 			this.y2 += y;
-			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ {this.data, this.x1, this.y1, this.x2, this.y2};
-		};
-	};
+			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ (this.data, this.x1, this.y1, this.x2, this.y2);
+		}
+	}
 
 	struct Text class {
 		var data;
@@ -314,32 +314,32 @@ static Shape class {
 			this.x = x;
 			this.y = y;
 			this.string = string;
-			this.data = ("LIB_Graphics.SHAPE.TEXT.INIT" _OUTER_CALL_ {color.r, color.g, color.b, color.a, x, y, string});
-		};
+			this.data = ("LIB_Graphics.SHAPE.TEXT.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x, y, string));
+		}
 
 		setColor(final color) => {
 			this.color = color;
-			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ {data, color.r, color.g, color.b, color.a};
-		};
+			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ (data, color.r, color.g, color.b, color.a);
+		}
 
 		setFont(final font) => {
 			this.font = font;
-			"LIB_Graphics.SHAPE.TEXT.SETFONT" _OUTER_CALL_ {data, font.font};
-		};
+			"LIB_Graphics.SHAPE.TEXT.SETFONT" _OUTER_CALL_ (data, font.font);
+		}
 
 		setOrigin(final x, final y) => {
 			this.x = x;
 			this.y = y;
-			"LIB_Graphics.SHAPE.TEXT.MOVE" _OUTER_CALL_ {data, x, y};
-		};
+			"LIB_Graphics.SHAPE.TEXT.MOVE" _OUTER_CALL_ (data, x, y);
+		}
 
 		move(final x, final y) => {
 			this.x += x;
 			this.y += y;
-			"LIB_Graphics.SHAPE.TEXT.MOVE" _OUTER_CALL_ {data, this.x, this.y};
-		};
-	};
-};
+			"LIB_Graphics.SHAPE.TEXT.MOVE" _OUTER_CALL_ (data, this.x, this.y);
+		}
+	}
+}
 
 struct Font class {
 	var font;
@@ -351,13 +351,13 @@ struct Font class {
 		this.fontName = fontName;
 		this.style = style;
 		this.size = size;
-		this.font = ("LIB_Graphics.FONT.INIT" _OUTER_CALL_ {fontName, style, size});
-	};
+		this.font = ("LIB_Graphics.FONT.INIT" _OUTER_CALL_ (fontName, style, size));
+	}
 
 	getStr() => {
 		return "(" + str fontName + ", " + str style + ", " + str size + ")";
-	};
-};
+	}
+}
 
 static Color class {
 	struct RGB class {
@@ -374,13 +374,13 @@ static Color class {
 				this.a = 255;
 			} else {
 				this.a = a;
-			};
-		};
+			}
+		}
 
 		getStr() => {
 			return "(" + str r + ", " + str g + ", " + str b + ", " + str a + ")";
-		};
-	};
+		}
+	}
 
 	HSLtoRGB(final h, final s, final l, final a) => {
 		var hueToRgb = (final p, final q, t) => {
@@ -388,18 +388,18 @@ static Color class {
 				t += 1;
 			} else t > 1 then {
 				t -= 1;
-			};
+			}
 			t < 1/6 then {
 				return p + (q - p) * 6 * t;
-			};
+			}
 			t < 1/2 then {
 				return q;
-			};
+			}
 			t < 2/3 then {
 				return p + (q - p) * (2/3 - t) * 6;
-			};
+			}
 			return p;
-		};
+		}
 		var r;
 		var g;
 		var b;
@@ -413,7 +413,7 @@ static Color class {
 			r = hueToRgb(p, q, h + 1/3);
 			g = hueToRgb(p, q, h);
 			b = hueToRgb(p, q, h - 1/3);
-		};
+		}
 		r *= 256;
 		g *= 256;
 		b *= 256;
@@ -421,7 +421,7 @@ static Color class {
 		g > 255 then { g = 255 };
 		b > 255 then { b = 255 };
 		return new RGB(r, g, b, a);
-	};
+	}
 
 	var RED = new RGB(255, 0, 0, 255);
 	var GREEN = new RGB(0, 255, 0, 255);
@@ -429,4 +429,4 @@ static Color class {
 	var BLACK = new RGB(0, 0, 0, 255);
 	var WHITE = new RGB(255, 255, 255, 255);
 	var ALPHA = new RGB(0, 0, 0, 0);
-};
+}

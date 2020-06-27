@@ -1,4 +1,4 @@
-# Sono Beta 1.3.4
+# Sono Beta 1.4.0
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -53,13 +53,13 @@ Type | Notes | Examples of Literals
 `Feature` | Distinctive feature and its quality | `+|long`, `-|LAB`
 `Matrix` | Grouping of Features for transformations | `[+|long, -|tense]`
 `Rule` | Phonological transformation rules using a combination of Phones, Strings, and Matrices<br>The initial character determines whether it is assimilatory: `S` indicates no assimilation (does not remove any segments), `Af` indicates forward assimilation (removes the following segment), `Ab` indicates backward assimilation (removes the previous segment) | `S |> 't' -> 't_ɬ' // "$" ~ [-|high, +|low, -|front, -|back, -|tense]`
-`Function` | Basic parameterized anonymous function | `(a, b) => {return a * b;};`
+`Function` | Basic parameterized anonymous function | `(a, b) => {return a * b;}`
 
 ## Syntax
 
 Please note that syntax may change during the course of updates due to the novelty of the language. After the beta is complete the final syntax will have been established.
 
-The syntax is mostly C-style with minor alterations regarding flow segments and usage of semi-colons. All lines (including the end of scopes `{}`) must use a semi-colon. The exception to this is single-lined scopes, where a semi-colon is not necessary. For example, the function `(a, b) => {return a * b;};` may also be written as `(a, b) => {return a * b};`.
+The syntax is mostly C-style with minor alterations regarding flow segments and usage of semi-colons. All statements must end in a semi-colon (in the vein of C/++ and Java). The exception to this is single-lined scopes, where a semi-colon is not necessary. For example, the function `(a, b) => {return a * b;}` may also be written as `(a, b) => {return a * b}`.
 
 ### Variables
 
@@ -137,11 +137,11 @@ struct Point class {
  init(x, y) => {
   this.x = x;
   this.y = y
- };
+ }
  getStr() => {
   return "(" + str x + ", " + str y + ")";
- };
-};
+ }
+}
 
 var p = new Point(1, 2);
 print(p); # Prints "(1, 2)"
@@ -214,11 +214,11 @@ The for-loop syntax and while-loop syntax use the same keyword `do`, with the fo
 ```sono
 i in {0 until 10} do {
  # ....
-};
+}
 
 true do {
  # ....
-};
+}
 ```
 
 The iteration variable is mutable and if the loop happens to be iterating over a Vector variable, the contents may be altered:
@@ -230,7 +230,7 @@ print(nums); # {0, 1, 2, 3, 4}
 
 i in nums do {
  i += 1;
-};
+}
 
 print(nums); # {1, 2, 3, 4, 5}
 ```
@@ -244,7 +244,7 @@ i == 1 then {
  # ....
 } else {
  # ....
-};
+}
 ```
 
 Else-if segments can be easily chained on using another `then`:
@@ -258,7 +258,7 @@ i == 1 then {
  # ....
 } else {
  # ....
-};
+}
 ```
 
 A final `else` statement is not required.
@@ -272,7 +272,7 @@ try {
  # ....
 } catch {
  # ....
-};
+}
 ```
 
 Within the `catch` statement, the variables `_e` and `_trace` are generated, the former indicating the message of the error and the latter indicating a trace of the operations preceding that error.

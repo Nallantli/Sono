@@ -11,7 +11,7 @@ drawTriangle(final x, final y, final s) => {
 	graphics.add(new Shape.Line(Color.BLACK, x, y + s, x + s, y + s));
 	graphics.add(new Shape.Line(Color.BLACK, x, y + s, x + s / 2, y));
 	graphics.add(new Shape.Line(Color.BLACK, x + s, y + s, x + s / 2, y));
-};
+}
 
 drawLevel(final x, final y, s, c) => {
 	drawTriangle(s / 2 + x, s / 2 + y, s / 2);
@@ -23,8 +23,8 @@ drawLevel(final x, final y, s, c) => {
 		drawLevel(x + s/2, y, s, c);
 		drawLevel(x, y + s, s, c);
 		drawLevel(x + s, y + s, s, c);
-	};
-};
+	}
+}
 
 drawLevel(10, 10, 480, 6);
 

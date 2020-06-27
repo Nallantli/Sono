@@ -575,7 +575,18 @@ public class Interpreter {
 			}
 		}
 
-		return new Operator.SoftList(Arrays.asList(o.toArray(new Operator[0])));
+		return condense(new Operator.SoftList(Arrays.asList(o.toArray(new Operator[0]))));
+	}
+
+	private static Operator condense(Operator parent) {
+		if (parent.getChildren().size() == 1 && parent.type == Operator.Type.SOFT_LIST) {
+			return parent.getChildren().get(0);
+		} else {
+			for (Operator e : parent.getChildren()) {
+				e = condense(e);
+			}
+			return parent;
+		}
 	}
 
 	public static <T> String stringFromList(final List<T> list, final String init, final String fin) {

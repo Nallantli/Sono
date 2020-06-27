@@ -40,4 +40,4 @@ var applied = words.apply(ruleSet);
 
 i in {0 until len words} do {
 	println("/" + str words[i] + "/ -> [" + str applied[i] + "]");
-};
+}

@@ -14,8 +14,8 @@ x in {0 until SIZE_X} do {
 	valueArray[x] = alloc SIZE_Y;
 	y in {0 until SIZE_Y} do {
 		valueArray[x][y] = Random.float().round();
-	};
-};
+	}
+}
 
 var window = new Window("Conway's Game of Life", SIZE_X * 10, SIZE_Y * 10, () => {
 	println("Kind regards to the late John Conway");
@@ -26,19 +26,19 @@ var graphics = window.getGraphics();
 window.onKeyRelease((event) => {
 	event.charStr == "Space" then {
 		paused = paused == false;
-	};
+	}
 });
 
 window.onMousePress((event) => {
 	paused then {
 		valueArray[(event.x / 10).floor()][(event.y / 10).floor()] = 1;
-	};
+	}
 });
 
 window.onMouseDrag((event) => {
 	paused then {
 		valueArray[(event.x / 10).floor()][(event.y / 10).floor()] = 1;
-	};
+	}
 });
 
 x in {0 until SIZE_X} do {
@@ -47,8 +47,8 @@ x in {0 until SIZE_X} do {
 		var shape = new Shape.Rectangle(Color.WHITE, x * 10, y * 10, 10, 10);
 		shapeArray[x][y] = shape;
 		graphics.add(shape);
-	};
-};
+	}
+}
 
 neighborCount(final x, final y) => {
 	var c = 0;
@@ -61,7 +61,7 @@ neighborCount(final x, final y) => {
 	c += valueArray[(x + SIZE_X - 1) % SIZE_X][(y + SIZE_Y + 1) % SIZE_Y] == 1;
 	c += valueArray[(x + SIZE_X - 1) % SIZE_X][(y + SIZE_Y - 1) % SIZE_Y] == 1;
 	return c;
-};
+}
 
 refresh() => {
 	x in {0 until SIZE_X} do {
@@ -70,9 +70,9 @@ refresh() => {
 				shapeArray[x][y].setColor(Color.BLACK);
 			} else {
 				shapeArray[x][y].setColor(Color.WHITE);
-			};
-		};
-	};
+			}
+		}
+	}
 	paused == false then {
 		var newValueArray = alloc SIZE_X;
 		x in {0 until SIZE_X} do {
@@ -83,13 +83,13 @@ refresh() => {
 					newValueArray[x][y] = c == 2 || c == 3;
 				} else {
 					newValueArray[x][y] = c == 3;
-				};
-			};
-		};
+				}
+			}
+		}
 		valueArray = newValueArray;
-	};
+	}
 	window.repaint();
-};
+}
 
 var start = timeMS();
 true do {
@@ -97,5 +97,5 @@ true do {
 	lapse > 60 then {
 		start = timeMS();
 		refresh();
-	};
-};
+	}
+}

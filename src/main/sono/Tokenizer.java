@@ -25,9 +25,10 @@ public class Tokenizer {
 			entry("**", -10), entry("*", 9), entry("/", 9), entry("%", 9), entry("+", 8), entry("-", 8), entry(">>", 8),
 			entry("?>", 8), entry("==", 6), entry("!=", 6), entry("<", 6), entry(">", 6), entry("<=", 6),
 			entry(">=", 6), entry("&&", 5), entry("||", 5), entry("=", -4), entry("+=", -4), entry("-=", -4),
-			entry("*=", -4), entry("/=", -4), entry("%=", -4), entry(">>=", -4), entry("->", 7), entry("//", 6), entry("~", 7),
-			entry("in", 3), entry("switch", 3), entry("do", 3), entry("|>", 5), entry("until", 4), entry("then", 3),
-			entry("else", -3), entry("try", -4), entry("catch", 3), entry(",", 2), entry(";", -1), entry("|", 999));
+			entry("*=", -4), entry("/=", -4), entry("%=", -4), entry(">>=", -4), entry("->", 7), entry("//", 6),
+			entry("~", 7), entry("in", 3), entry("switch", 3), entry("do", 3), entry("|>", 5), entry("until", 4),
+			entry("then", 3), entry("else", -3), entry("try", -4), entry("catch", 3), entry(",", 2), entry(";", -1),
+			entry("|", 999));
 
 	public static List<String> tokenize(final String str) {
 		char pChar = 0;
@@ -155,6 +156,9 @@ public class Tokenizer {
 			final String t = raw.toString();
 			if (t.equals("#[") || t.equals("#]"))
 				continue;
+			if (last.equals("}") && !t.equals("else") && !t.equals("[") && !t.equals("{") && !t.equals("(")
+					&& (!operators.containsKey(t) || (operators.containsKey(t) && operators.get(t) < 0)))
+				newTokens.add(";");
 			if (t.equals("[")
 					&& ((Character.isLetterOrDigit(last.charAt(0)) || last.charAt(0) == '_' || last.charAt(0) == '`')
 							|| last.equals(")") || last.equals("]") || last.equals("}"))
@@ -193,21 +197,12 @@ public class Tokenizer {
 			if (t.equals("|")) {
 				String t1 = postFeatures.pollLast();
 				final String t2 = newTokens.get(i + 1);
-				/*
-				 * boolean flag = false; for (int j = 0; j < Phone.Feature.values().length; j++)
-				 * { if (t2.equals(Phone.Feature.values()[j].toString())) { flag = true; break;
-				 * } } if (flag) {
-				 */
 				if (t1.equals(".positive"))
 					t1 = "+";
 				else if (t1.equals(".negative"))
 					t1 = "-";
 				postFeatures.add("@" + t1 + "|" + t2);
 				i++;
-				/*
-				 * } else { throw new SonoCompilationException("Cannot parse feature <" + t1 +
-				 * "|" + t2 + ">"); }
-				 */
 			} else {
 				postFeatures.add(t);
 			}

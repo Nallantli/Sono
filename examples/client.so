@@ -13,9 +13,9 @@ var line;
 	output.send(line);
 	line == "exit" then {
 		break;
-	};
+	}
 	println("Client Recieved:\t" + input.read());
-};
+}
 println("Exiting Client...");
 output.send("");
 

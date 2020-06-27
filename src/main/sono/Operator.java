@@ -36,6 +36,11 @@ public abstract class Operator {
 		public Operator getA() {
 			return a;
 		}
+
+		@Override
+		public List<Operator> getChildren() {
+			return Arrays.asList(a);
+		}
 	}
 
 	private abstract static class Binary extends Unary {
@@ -48,6 +53,11 @@ public abstract class Operator {
 
 		public Operator getB() {
 			return b;
+		}
+
+		@Override
+		public List<Operator> getChildren() {
+			return Arrays.asList(a, b);
 		}
 	}
 
@@ -62,6 +72,11 @@ public abstract class Operator {
 		public List<Operator> getVector() {
 			return operators;
 		}
+
+		@Override
+		public List<Operator> getChildren() {
+			return getVector();
+		}
 	}
 
 	public abstract static class Casting extends Operator {
@@ -74,6 +89,11 @@ public abstract class Operator {
 
 		public int getKey() {
 			return varName;
+		}
+
+		@Override
+		public List<Operator> getChildren() {
+			return new ArrayList<>();
 		}
 	}
 
@@ -117,6 +137,11 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return datum.toString();
+		}
+
+		@Override
+		public List<Operator> getChildren() {
+			return new ArrayList<>();
 		}
 	}
 
@@ -455,6 +480,15 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return "try " + a.toString() + (b != null ? " catch " + b.toString() : "");
+		}
+
+		@Override
+		public List<Operator> getChildren() {
+			if (b == null) {
+				return Arrays.asList(a);
+			} else {
+				return Arrays.asList(a, b);
+			}
 		}
 	}
 
@@ -1417,6 +1451,11 @@ public abstract class Operator {
 		public String toString() {
 			return "var " + Interpreter.deHash(varName);
 		}
+
+		@Override
+		public List<Operator> getChildren() {
+			return new ArrayList<>();
+		}
 	}
 
 	public static class Break extends Operator {
@@ -1436,6 +1475,10 @@ public abstract class Operator {
 			return "break";
 		}
 
+		@Override
+		public List<Operator> getChildren() {
+			return new ArrayList<>();
+		}
 	}
 
 	public static class IfElse extends Binary {
@@ -1466,6 +1509,15 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return a.toString() + " then " + b.toString() + (c != null ? " else " + c.toString() : "");
+		}
+
+		@Override
+		public List<Operator> getChildren() {
+			if (c == null) {
+				return Arrays.asList(a, b);
+			} else {
+				return Arrays.asList(a, b, c);
+			}
 		}
 	}
 
@@ -1803,6 +1855,8 @@ public abstract class Operator {
 	public Operator(final Type type) {
 		this.type = type;
 	}
+
+	public abstract List<Operator> getChildren();
 
 	public abstract Datum evaluate(Scope scope, Interpreter interpreter, List<String> trace);
 

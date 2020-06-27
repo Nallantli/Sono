@@ -22,7 +22,7 @@ import main.sono.err.SonoCompilationException;
 import main.sono.err.SonoException;
 
 public class Main {
-	private static final String VERSION = "Beta 1.3.4";
+	private static final String VERSION = "Beta 1.4.0";
 	public static boolean DEBUG;
 
 	private static Map<String, String> globalOptions = new HashMap<>();

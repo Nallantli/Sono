@@ -5,35 +5,35 @@ Vector::apply(final this, final ruleset) => {
 			var temp = e;
 			r in ruleset do {
 				temp = temp >> r;
-			};
+			}
 			applied += { temp };
 		} else {
 			applied += {e >> ruleset};
-		};
-	};
+		}
+	}
 	return applied;
-};
+}
 
 Word::apply(final this, final ruleset) => {
 	var applied = this;
 	type ruleset == "Vector" then {
 		r in ruleset do {
 			applied = applied >> r;
-		};
+		}
 	} else {
 		applied = applied >> ruleset;
-	};
+	}
 	return applied;
-};
+}
 
 Word::apply(final this, final ruleset) => {
 	var applied = this;
 	type ruleset == "Vector" then {
 		r in ruleset do {
 			applied = applied >> r;
-		};
+		}
 	} else {
 		applied = applied >> ruleset;
-	};
+	}
 	return applied;
-};
+}

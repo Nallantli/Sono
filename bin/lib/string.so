@@ -5,57 +5,57 @@ load "math";
 String::pop(ref this) => {
 	this = (vec this).pop().join();
 	return this;
-};
+}
 
 String::shift(ref this) => {
 	this = (vec this).shift().join();
 	return this;
-};
+}
 
 String::front(ref this) => {
 	return (vec this).front();
-};
+}
 
 String::back(ref this) => {
 	return (vec this).back();
-};
+}
 
 String::isEmpty(ref this) => {
 	return (len this == 0);
-};
+}
 
 String::at(ref this, final index) => {
 	return (vec this)[index];
-};
+}
 
 String::push(ref this, final value) => {
 	this += str value;
 	return this;
-};
+}
 
 String::contains(ref this, final pattern) => {
 	return (len this.match(pattern) > 0);
-};
+}
 
 String::distArray(final this, final string, final costDel, final costIns, final costRep) => {
 	return (vec this).distArray(vec string, costDel, costIns, costRep);
-};
+}
 
 String::dist(final this, final string, final costDel, final costIns, final costRep) => {
 	return (vec this).dist(vec string, costDel, costIns, costRep);
-};
+}
 
 String::steps(final this, final string, final costDel, final costIns, final costRep) => {
 	return (vec this).steps(vec string, costDel, costIns, costRep);
-};
+}
 
 String::nGram(final this, final n, delim) => {
 	delim == null then {
 		delim = "\\s";
-	};
+	}
 	var s = this.split(delim);
 	return s.nGram(n);
-};
+}
 
 String::split(final this, final pattern) => {
 	var stringArray = vec this;
@@ -69,24 +69,24 @@ String::split(final this, final pattern) => {
 			coords[c][1] == i then {
 				mode = true;
 				c = c + 1;
-			};
+			}
 			c < len coords then {
 				coords[c][0] == i then {
 					array = array + { curr.join() };
 					curr = {};
 					mode = false;
-				};
-			};
-		};
+				}
+			}
+		}
 		mode then {
 			curr = curr + { stringArray[i] };
-		};
-	};
+		}
+	}
 	curr != {} then {
 		array = array + { curr.join() };
-	};
+	}
 	return array;
-};
+}
 
 String::replace(ref this, final pattern, final value) => {
 	var stringArray = vec this;
@@ -100,22 +100,22 @@ String::replace(ref this, final pattern, final value) => {
 			coords[c][1] == i then {
 				mode = true;
 				c = c + 1;
-			};
+			}
 			c < len coords then {
 				coords[c][0] == i then {
 					array = array + { curr.join(), value };
 					curr = {};
 					mode = false;
-				};
-			};
-		};
+				}
+			}
+		}
 		mode then {
 			curr = curr + { stringArray[i] };
-		};
-	};
+		}
+	}
 	curr != {} then {
 		array = array + { curr.join() };
-	};
+	}
 	this = array.join();
 	return this;
-};
+}
