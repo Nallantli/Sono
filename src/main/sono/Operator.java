@@ -745,7 +745,7 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return ruleType + " : " + a.toString();
+			return ruleType + " |> " + a.toString();
 		}
 	}
 

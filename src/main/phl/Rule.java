@@ -279,13 +279,13 @@ public class Rule {
 		final StringBuilder s = new StringBuilder();
 		switch (type) {
 			case A_BACKWARD:
-				s.append("Ab : ");
+				s.append("Ab |> ");
 				break;
 			case A_FORWARD:
-				s.append("Af : ");
+				s.append("Af |> ");
 				break;
 			case SIMPLE:
-				s.append("S : ");
+				s.append("S |> ");
 				break;
 		}
 		if (search != null)

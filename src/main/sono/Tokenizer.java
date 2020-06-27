@@ -26,7 +26,7 @@ public class Tokenizer {
 			entry("?>", 8), entry("==", 6), entry("!=", 6), entry("<", 6), entry(">", 6), entry("<=", 6),
 			entry(">=", 6), entry("&&", 5), entry("||", 5), entry("=", -4), entry("+=", -4), entry("-=", -4),
 			entry("*=", -4), entry("/=", -4), entry("%=", -4), entry(">>=", -4), entry("->", 7), entry("//", 6), entry("~", 7),
-			entry("in", 3), entry("switch", 3), entry("do", 3), entry(":", 5), entry("until", 4), entry("then", 3),
+			entry("in", 3), entry("switch", 3), entry("do", 3), entry("|>", 5), entry("until", 4), entry("then", 3),
 			entry("else", -3), entry("try", -4), entry("catch", 3), entry(",", 2), entry(";", -1), entry("|", 999));
 
 	public static List<String> tokenize(final String str) {

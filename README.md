@@ -1,4 +1,4 @@
-# Sono Beta 1.3.2
+# Sono Beta 1.3.3
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -52,7 +52,7 @@ Type | Notes | Examples of Literals
 `Word` | Sequence of Phones, with the addition of syllable delimiters `.` and morpheme boundary markers `+` | `` `foʊnɒləd_ʒi` ``, `` `soʊ.noʊ` ``, `` `naː.wa+tɬ` ``
 `Feature` | Distinctive feature and its quality | `+|long`, `-|LAB`
 `Matrix` | Grouping of Features for transformations | `[+|long, -|tense]`
-`Rule` | Phonological transformation rules using a combination of Phones, Strings, and Matrices<br>The initial character determines whether it is assimilatory: `S` indicates no assimilation (does not remove any segments), `Af` indicates forward assimilation (removes the following segment), `Ab` indicates backward assimilation (removes the previous segment) | `S : 't' -> 't_ɬ' // "$" ~ [-|high, +|low, -|front, -|back, -|tense]`
+`Rule` | Phonological transformation rules using a combination of Phones, Strings, and Matrices<br>The initial character determines whether it is assimilatory: `S` indicates no assimilation (does not remove any segments), `Af` indicates forward assimilation (removes the following segment), `Ab` indicates backward assimilation (removes the previous segment) | `S |> 't' -> 't_ɬ' // "$" ~ [-|high, +|low, -|front, -|back, -|tense]`
 `Function` | Basic parameterized anonymous function | `(a, b) => {return a * b;};`
 
 ## Syntax
@@ -152,7 +152,7 @@ print(p); # Prints "(1, 2)"
 Rule declarations have five components: Type, Search parameter, Transformation parameter, and the two boundary parameters.
 
 ```sono
-<Type> : <Search> -> <Transformation> // <Lower Bound> ~ <Upper Bound>
+<Type> |> <Search> -> <Transformation> // <Lower Bound> ~ <Upper Bound>
 ```
 
 The Type is one of three values `S`, `Af`, and `Ab`. Their usage was explained above.
@@ -175,24 +175,24 @@ Some examples of rules include:
 
 ```sono
 # Vowel nasalized before a nasal consonant (English)
-S : [+|syl, -|cons] -> [+|nasal] // null ~ [-|syl, +|cons, +|nasal];
+S |> [+|syl, -|cons] -> [+|nasal] // null ~ [-|syl, +|cons, +|nasal];
 # `mæn` -> `mæ̃n`
 
 # Vowel nasalized before a nasal consonant, and the consonant is deleted (French)
-Af : [+|syl, -|cons] -> [+|nasal] // null ~ [-|syl, +|cons, +|nasal];
+Af |> [+|syl, -|cons] -> [+|nasal] // null ~ [-|syl, +|cons, +|nasal];
 # `bɔn` -> `bɔ̃`
 
 # Palatalized /h/ becomes [ç] before a vowel (Japanese)
-S : 'hʲ' -> 'ç' // null ~ [+|syl];
+S |> 'hʲ' -> 'ç' // null ~ [+|syl];
 # `hʲito` -> `çito`
 
 # Final non-nasal consonant is devoiced (German)
-S : [-|syl, +|cons, +|voice, -|nasal] -> [-|voice] // null ~ "#";
+S |> [-|syl, +|cons, +|voice, -|nasal] -> [-|voice] // null ~ "#";
 # `taːg` -> `taːk`
 # `taːgə` -> `taːgə` (Unchanged)
 
 # An epenthetic [ə] is inserted between sequential consonants (Not based on a real language)
-S : null -> 'ə' // [-|syl, +|cons] ~ [-|syl, +|cons];
+S |> null -> 'ə' // [-|syl, +|cons] ~ [-|syl, +|cons];
 # `asta` -> `asəta`
 ```
 
@@ -202,7 +202,7 @@ For instance, a rather complicated nasal assimilation rule in Japanese:
 
 ```sono
 # The moraic nasal assimilates to the place of the following consonant
-S : 'ɴ' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null ~ [-|syl, +|cons, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back];
+S |> 'ɴ' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null ~ [-|syl, +|cons, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back];
 ```
 
 Place assimilation may be revised in the future using macros for the sake of brevity.

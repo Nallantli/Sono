@@ -480,7 +480,7 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.OuterCall(a, b));
 				}
-				if (token.equals(":")) {
+				if (token.equals("|>")) {
 					Rule.Type rtype = null;
 					final Operator b = o.pollLast();
 					final int a = ((Operator.Variable) o.pollLast()).getKey();
