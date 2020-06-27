@@ -43,3 +43,35 @@ String::match(final string, final pattern) => {
 Number::log(final n) => {
 	return "LIB_Console.LOG" _OUTER_CALL_ n;
 };
+
+getNum(final this) => {
+	return num this;
+};
+
+getStr(final this) => {
+	return str this;
+};
+
+getVec(final this) => {
+	return vec this;
+};
+
+getLen(final this) => {
+	return len this;
+};
+
+getWord(final this) => {
+	return word this;
+};
+
+getChar(final this) => {
+	return char this;
+};
+
+getMat(final this) => {
+	return mat this;
+};
+
+getCom(final this) => {
+	return com this;
+};

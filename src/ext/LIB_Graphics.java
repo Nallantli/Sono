@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-import javax.swing.event.MouseInputListener;
 
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
@@ -15,7 +14,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 
 import main.Main;
@@ -180,6 +183,9 @@ public class LIB_Graphics extends Library {
 	private Function onMouseExited = null;
 	private Function onMouseEntered = null;
 	private Function onMouseClicked = null;
+	private Function onKeyPressed = null;
+	private Function onKeyReleased = null;
+	private Function onKeyTyped = null;
 
 	public LIB_Graphics() {
 		super();
@@ -200,37 +206,7 @@ public class LIB_Graphics extends Library {
 			} else {
 				f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			}
-			f.addMouseListener(new MouseInputListener() {
-				@Override
-				public void mouseMoved(final MouseEvent e) {
-					if (onMouseMoved != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMouseMoved.execute(params, trace);
-					}
-				}
-
-				@Override
-				public void mouseDragged(final MouseEvent e) {
-					if (onMouseDragged != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMouseDragged.execute(params, trace);
-					}
-				}
-
+			f.getContentPane().addMouseListener(new MouseListener() {
 				@Override
 				public void mouseReleased(final MouseEvent e) {
 					if (onMouseReleased != null) {
@@ -306,6 +282,71 @@ public class LIB_Graphics extends Library {
 					}
 				}
 			});
+			f.getContentPane().addMouseMotionListener(new MouseMotionListener() {
+				@Override
+				public void mouseMoved(final MouseEvent e) {
+					if (onMouseMoved != null) {
+						final List<Datum> params = new ArrayList<>();
+						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+						params.add(new Datum(BigDecimal.valueOf(e.getX())));
+						params.add(new Datum(BigDecimal.valueOf(e.getY())));
+						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+						onMouseMoved.execute(params, trace);
+					}
+				}
+
+				@Override
+				public void mouseDragged(final MouseEvent e) {
+					if (onMouseDragged != null) {
+						final List<Datum> params = new ArrayList<>();
+						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+						params.add(new Datum(BigDecimal.valueOf(e.getX())));
+						params.add(new Datum(BigDecimal.valueOf(e.getY())));
+						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+						onMouseDragged.execute(params, trace);
+					}
+				}
+			});
+			f.addKeyListener(new KeyListener() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if (onKeyTyped != null) {
+						final List<Datum> params = new ArrayList<>();
+						params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+						params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
+						params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+						onKeyTyped.execute(params, trace);
+					}
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (onKeyPressed != null) {
+						final List<Datum> params = new ArrayList<>();
+						params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+						params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
+						params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+						onKeyPressed.execute(params, trace);
+					}
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if (onKeyReleased != null) {
+						final List<Datum> params = new ArrayList<>();
+						params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+						params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
+						params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+						onKeyReleased.execute(params, trace);
+					}
+				}
+			});
 			f.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.getGlobalOption("PATH") + "/res/icon.png"));
 			f.setResizable(false);
 			f.getContentPane().setPreferredSize(new Dimension(width, height));
@@ -374,6 +415,25 @@ public class LIB_Graphics extends Library {
 					break;
 				default:
 					throw error("Unknown mouse event ID <" + id + ">", trace);
+			}
+			return new Datum();
+		});
+		commands.put("LIB_Graphics.ADDKEYLISTENER", (final Datum datum, final List<String> trace) -> {
+			final List<Datum> list = datum.getVector(trace);
+			final int id = list.get(0).getNumber(trace).intValue();
+			final Function function = list.get(1).getFunction(Datum.Type.ANY, trace);
+			switch (id) {
+				case 0:
+					onKeyPressed = function;
+					break;
+				case 1:
+					onKeyReleased = function;
+					break;
+				case 2:
+					onKeyTyped = function;
+					break;
+				default:
+					throw error("Unknown key event ID <" + id + ">", trace);
 			}
 			return new Datum();
 		});

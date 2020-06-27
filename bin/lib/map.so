@@ -103,7 +103,7 @@ struct Map class {
 		};
 	};
 
-	getList() => {
+	getVec() => {
 		var list = {};
 		b in buckets do {
 			var curr = b;

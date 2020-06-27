@@ -18,10 +18,11 @@ import main.phl.PhoneManager;
 import main.sono.Datum;
 import main.sono.Interpreter;
 import main.sono.Scope;
+import main.sono.err.SonoCompilationException;
 import main.sono.err.SonoException;
 
 public class Main {
-	private static final String VERSION = "Beta 1.3.3";
+	private static final String VERSION = "Beta 1.3.4";
 	public static boolean DEBUG;
 
 	private static Map<String, String> globalOptions = new HashMap<>();
@@ -124,6 +125,12 @@ public class Main {
 						System.out.println("Phonological Data Loaded From <" + globalOptions.get("DATA") + ">");
 					} else {
 						System.out.println("Phonological Operations Disabled");
+					}
+					try {
+						sono.runCode(".", "load \"system\"");
+						System.out.println("Loaded System Library");
+					} catch (SonoCompilationException e) {
+						System.out.println("Could not load System Library");
 					}
 					sc = new Scanner(System.in);
 					while (true) {

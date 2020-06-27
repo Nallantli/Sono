@@ -1,4 +1,4 @@
-# Sono Beta 1.3.3
+# Sono Beta 1.3.4
 
 <div align="center">
 <img src="docs/Sono.svg" alt="Sono Logo" width="150">
@@ -121,7 +121,7 @@ Method | Arguments | Use
 -|-|-
 `getStr`|None|Returns a `String` representation of the object when the object is called with `str`
 `getIndex`|Any single value|Overrides the `Vector` indexing operator `[]`
-`getList`|None|Returns a `Vector` representation of the object when the object is called with `vec`
+`getVec`|None|Returns a `Vector` representation of the object when the object is called with `vec`
 `getLen`|None|Returns the length of the object when called with `len`
 
 While it is possible to override these methods to return values of any type, that practice may lead to some confusion (for instance, `getList` returning a `Number`).

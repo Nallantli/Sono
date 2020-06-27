@@ -1548,8 +1548,11 @@ public abstract class Operator {
 						(Main.DEBUG ? new ArrayList<>(trace) : trace));
 				if (datumA.getType() != Datum.Type.STRUCTURE) {
 					pValues.add(0, datumA);
-					f = ((Inner) a).getB().evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
-							.getFunction(datumA.getType(), trace);
+					Datum functionB = ((Inner) a).getB().evaluate(scope, interpreter,
+							(Main.DEBUG ? new ArrayList<>(trace) : trace));
+					f = functionB.getFunction(datumA.getType(), trace);
+					if (f == null)
+						f = functionB.getFunction(Datum.Type.ANY, trace);
 				} else {
 					f = a.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace))
 							.getFunction(Datum.Type.ANY, trace);

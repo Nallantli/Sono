@@ -63,7 +63,7 @@ public class Interpreter {
 		hashVariable("getStr");
 		hashVariable("getLen");
 		hashVariable("getIndex");
-		hashVariable("getList");
+		hashVariable("getVec");
 		hashVariable("_e");
 		hashVariable("_trace");
 		hashVariable("S");
