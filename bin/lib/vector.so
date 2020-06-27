@@ -18,19 +18,19 @@ Vector::shift(ref this) => {
 	return this;
 };
 
-Vector::front(ref this) => {
+Vector::front(final this) => {
 	return this[0];
 };
 
-Vector::back(ref this) => {
+Vector::back(final this) => {
 	return this[len this - 1];
 };
 
-Vector::isEmpty(ref this) => {
+Vector::isEmpty(final this) => {
 	return (len this == 0);
 };
 
-Vector::contains(ref this, final value) => {
+Vector::contains(final this, final value) => {
 	i in this do {
 		i == value then {
 			return true;
@@ -39,7 +39,7 @@ Vector::contains(ref this, final value) => {
 	return false;
 };
 
-Vector::push(ref this, ref value) => {
+Vector::push(ref this, final value) => {
 	this += { value };
 	return this;
 };
@@ -53,15 +53,6 @@ Vector::join(final this, del) => {
 		string += str e;
 	};
 	return string;
-};
-
-Vector::reverse(ref this) => {
-	var nv = {};
-	i in {0 until len this} do {
-		nv += { this[len this - i - 1] };
-	};
-	this = nv;
-	return this;
 };
 
 Vector::remove(ref this, final index) => {
@@ -161,6 +152,14 @@ Vector::steps(final this, final vector, final costDel, final costIns, final cost
 	};
 };
 
+Vector::reverse(final this) => {
+	var nv = {};
+	i in {0 until len this} do {
+		nv += { this[len this - i - 1] };
+	};
+	return nv;
+};
+
 Vector::nGram(final this, final n) => {
 	var nv = {};
 	i in {0 until (len this - n + 1)} do {
@@ -173,13 +172,13 @@ Vector::nGram(final this, final n) => {
 	return nv;
 };
 
-Vector::sort(ref this, comp) => {
+Vector::sort(final this, comp) => {
 	comp == null then {
 		comp = (a, b) => { return a < b; };
 	} else type comp != "Function" then {
 		throw "Parameter <comp> of Vector::sort() must be of type Function";
 	};
-	Vector::merge_sort(ref this) => {
+	Vector::merge_sort(final this) => {
 		len this <= 1 then {
 			return this;
 		};
@@ -192,8 +191,41 @@ Vector::sort(ref this, comp) => {
 				b += { this[i] };
 			};
 		};
-		this = a.merge_sort() + { this[0] } + b.merge_sort();
-		return this;
+		return a.merge_sort() + { this[0] } + b.merge_sort();
 	};
 	return this.merge_sort();
+};
+
+Vector::map(final this, final function) => {
+	var nl = {};
+	e in this do {
+		nl += { function(e) };
+	};
+	return nl;
+};
+
+Vector::filter(final this, final function) => {
+	var nl = {};
+	e in this do {
+		function(e) then {
+			nl += { e };
+		};
+	};
+	return nl;
+};
+
+Vector::foldRight(final this, final function) => {
+	len this == 1 then {
+		return this[0];
+	};
+	var nl = this;
+	return function(this[0], nl.shift().foldRight(function));
+};
+
+Vector::foldLeft(final this, final function) => {
+	len this == 1 then {
+		return this[0];
+	};
+	var nl = this;
+	return function(nl.pop().foldLeft(function), this[len this - 1]);
 };

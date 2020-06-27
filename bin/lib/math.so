@@ -62,4 +62,24 @@ static Math class {
 		};
 		return index;
 	};
+
+	add(final a, final b) => {
+		return a + b;
+	};
+
+	sub(final a, final b) => {
+		return a - b;
+	};
+
+	mul(final a, final b) => {
+		return a * b;
+	};
+
+	div(final a, final b) => {
+		return a / b;
+	};
+
+	mod(final a, final b) => {
+		return a % b;
+	};
 };
