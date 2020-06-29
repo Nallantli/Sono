@@ -117,41 +117,41 @@ Vector::dist(ref this, ref vector, final costDel, final costIns, final costRep) 
 Vector::steps(ref this, ref vector, final costDel, final costIns, final costRep) => {
 	var D = this.distArray(vector, costDel, costIns, costRep);
 	var i = len this;
-    var j = len vector;
+	var j = len vector;
 	var steps = {};
-    true do {
-        i > 0 then {
-            j > 0 then {
-                D[i - 1][j] <= D[i][j - 1] then {
-                    D[i - 1][j] < D[i - 1][j - 1] then {
-                        steps += {{"DEL", i - 1, this[i - 1]}};
+	true do {
+		i > 0 then {
+			j > 0 then {
+				D[i - 1][j] <= D[i][j - 1] then {
+					D[i - 1][j] < D[i - 1][j - 1] then {
+						steps += {{"DEL", i - 1, this[i - 1]}};
 					} else {
-                        D[i][j] != D[i - 1][j - 1] then {
-                            steps += {{"SUB", i - 1, this[i - 1], vector[j - 1]}};
+						D[i][j] != D[i - 1][j - 1] then {
+							steps += {{"SUB", i - 1, this[i - 1], vector[j - 1]}};
 						}
-                        j -= 1;
+						j -= 1;
 					}
-                    i -= 1;
+					i -= 1;
 				} else {
-                    D[i][j - 1] <= D[i - 1][j - 1] then {
-                        steps += {{"INS", i - 1, vector[j - 1]}};
+					D[i][j - 1] <= D[i - 1][j - 1] then {
+						steps += {{"INS", i - 1, vector[j - 1]}};
 					} else {
-                        D[i][j] != D[i - 1][j - 1] then {
+						D[i][j] != D[i - 1][j - 1] then {
 							steps += {{"SUB", i - 1, this[i - 1], vector[j - 1]}};
 						}
 						i -= 1;
 					}
-                    j -= 1;
+					j -= 1;
 				}
-            } else {
-                steps += {{"DEL", i - 1, this[i - 1]}};
-                i -= 1;
+			} else {
+				steps += {{"DEL", i - 1, this[i - 1]}};
+				i -= 1;
 			}
 		} else j > 0 then {
-            steps += {{"DEL", i - 1, this[i - 1]}};
-            j -= 1;
+			steps += {{"DEL", i - 1, this[i - 1]}};
+			j -= 1;
 		} else {
-            return steps.reverse();
+			return steps.reverse();
 		}
 	}
 }
