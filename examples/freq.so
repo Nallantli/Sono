@@ -1,0 +1,36 @@
+load "data";
+load "file";
+load "map";
+load "system";
+load "vector";
+
+var file = new File("README.md");
+var reader = file.getReader();
+var c;
+
+var charMap = new Map();
+
+(c = reader.read(1)) != null do {
+	char c >= char "A" && char c <= char "z" then {
+		charMap.containsKey(c) == false then {
+			charMap[c] = 0;
+		}
+		charMap[c] += 1;
+	}
+}
+
+var dataRaw = (vec charMap).sort((a, b) => {
+	return a.value > b.value;
+});
+
+var dataX = {};
+var dataY = {};
+
+e in dataRaw do {
+	dataX += {e.key};
+	dataY += {e.value};
+}
+
+var data = new Data.Binary(dataX, dataY);
+var graph = new Graph.Bar(data, "Frequency of Letters in README.md", 800, 400, 0, null, exit);
+graph.render();

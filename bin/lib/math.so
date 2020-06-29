@@ -1,38 +1,45 @@
-Number::abs(final n) => {
-	n < 0 then {
-		return n * -1;
+# Benjamin Park
+# 29-06-2020
+
+Number::abs(ref this) => {
+	this < 0 then {
+		return -this ;
 	} else {
-		return +n;
+		return +this;
 	}
 }
 
-Number::floor(final n) => {
-	var d = ((n * 10) % 10) / 10;
-	return n - d;
+Number::floor(ref this) => {
+	var d = ((this * 10) % 10) / 10;
+	this >= 0 then {
+		return this - d;
+	} else {
+		return this - d - 1;
+	}
 }
 
-Number::ceil(final n) => {
-	var d = ((n * 10) % 10) / 10;
-	n > 0 then {
+Number::ceil(ref this) => {
+	var d = ((this * 10) % 10) / 10;
+	this > 0 then {
 		d > 0 then {
-			return n - d + 1;
+			return this - d + 1;
 		} else {
-			return n;
+			return +this;
 		}
 	} else {
 		d < 0 then {
-			return n - d - 1;
+			return this - d;
 		} else {
-			return n;
+			return +this;
 		}
 	}
 }
 
-Number::round(final n) => {
-	var f = n.floor();
-	var c = n.ceil();
-	var df = (n - f).abs();
-	var dc = (n - c).abs();
+Number::round(ref this) => {
+	var f = this.floor();
+	var c = this.ceil();
+	var df = (this - f).abs();
+	var dc = (this - c).abs();
 	df < dc then {
 		return f;
 	} else {
@@ -40,8 +47,38 @@ Number::round(final n) => {
 	}
 }
 
+Number::format(ref this, final d) => {
+	var s = vec str this;
+	var ns = "";
+	var i = 0;
+	var mode = true;
+	c in s do {
+		mode then {
+			ns += c;
+			c == "." then {
+				mode = false;
+			}
+		} else {
+			i < d then {
+				ns += c;
+			} else {
+				break;
+			}
+			i += 1;
+		}
+	}
+	i == 0 then {
+		ns += ".";
+	}
+	i < d do {
+		ns += "0";
+		i += 1;
+	}
+	return ns;
+}
+
 static Math class {
-	min(final vector) => {
+	min(ref vector) => {
 		var n = vector[0];
 		i in {1 until len vector} do {
 			vector[i] < n then {
@@ -51,7 +88,7 @@ static Math class {
 		return n;
 	}
 
-	minIndex(final vector) => {
+	minIndex(ref vector) => {
 		var n = vector[0];
 		var index = 0;
 		i in {1 until len vector} do {
@@ -63,23 +100,23 @@ static Math class {
 		return index;
 	}
 
-	add(final a, final b) => {
+	add(ref a, ref b) => {
 		return a + b;
 	}
 
-	sub(final a, final b) => {
+	sub(ref a, ref b) => {
 		return a - b;
 	}
 
-	mul(final a, final b) => {
+	mul(ref a, ref b) => {
 		return a * b;
 	}
 
-	div(final a, final b) => {
+	div(ref a, ref b) => {
 		return a / b;
 	}
 
-	mod(final a, final b) => {
+	mod(ref a, ref b) => {
 		return a % b;
 	}
 }

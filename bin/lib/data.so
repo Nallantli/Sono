@@ -1,0 +1,392 @@
+# Benjamin Park
+# 29-06-2020
+
+load "graphics";
+load "math";
+
+static Data class {
+	struct Tuple class {
+		var a;
+		var b;
+		init(ref a, ref b) => {
+			this.a = a;
+			this.b = b;
+		}
+
+		getStr() => {
+			return "(" + str x + ", " + str y + ")";
+		}
+	}
+
+	struct Binary class {
+		var data;
+
+		init(ref xData, ref yData) => {
+			this.data = {};
+			i in {0 until len xData} do {
+				this.data += { new Tuple(xData[i], yData[i]) };
+			}
+		}
+
+		getLabel(final index) => {
+			return data[index].a;
+		}
+
+		getValue(final index) => {
+			return data[index].b;
+		}
+
+		getIndex(final index) => {
+			return data[index];
+		}
+
+		getTuples() => {
+			return data;
+		}
+
+		getLen() => {
+			return len data;
+		}
+
+		getStr() => {
+			return str data;
+		}
+	}
+}
+
+static Graph class {
+	struct Plot class {
+		var window;
+		var graphics;
+		var data;
+		var minX;
+		var minY;
+		var maxX;
+		var maxY;
+		var width;
+		var height;
+
+		var cursorX = 0;
+		var cursorY = 0;
+		var cursorLineX;
+		var cursorLineY;
+		var cursorTextX;
+		var cursorTextY;
+
+		var labels = false;
+		var step = 1;
+
+		init(ref data, final title, final width, final height, ref function) => {
+			this.data = data;
+			this.width = width;
+			this.height = height;
+			this.window = new Window(title, width, height, function);
+			this.graphics = this.window.getGraphics();
+			e in data.getTuples() do {
+				type e.a != "Number" then {
+					labels = true;
+					this.maxX = len data;
+					this.minX = 0;
+				}
+				labels == false then {
+					this.maxX == null then {
+						this.maxX = e.a;
+					} else e.a > this.maxX then {
+						this.maxX = e.a;
+					}
+					this.minX == null then {
+						this.minX = e.a;
+					} else e.a < this.minX then {
+						this.minX = e.a;
+					}
+				}
+				this.maxY == null then {
+					this.maxY = e.b;
+				} else e.b > this.maxY then {
+					this.maxY = e.b;
+				}
+				this.minY == null then {
+					this.minY = e.b;
+				} else e.b < this.minY then {
+					this.minY = e.b;
+				}
+			}
+			this.maxX = this.maxX.ceil();
+			this.maxY = this.maxY.ceil();
+			this.minX = this.minX.floor();
+			this.minY = this.minY.floor();
+
+			(maxY - minY) / step > height / 15 do {
+				step *= 10;
+			}
+			build();
+		}
+
+		build() => {
+			var axisX = new Shape.Line(Color.GRAY, 50, height - 50, width - 25, height - 50);
+			var axisY = new Shape.Line(Color.GRAY, 50, 25, 50, height - 50);
+			graphics.add(axisX);
+			graphics.add(axisY);
+			labels == false then {
+				i in {0 until maxX - minX + 1} do {
+					var notch = new Shape.Line(
+						Color.GRAY,
+						50 + (i * ((width - 75) / (maxX - minX))),
+						height - 50,
+						50 + (i * ((width - 75) / (maxX - minX))),
+						height - 40);
+					var text = new Shape.Text(
+						Color.BLACK,
+						50 + (i * ((width - 75) / (maxX - minX))),
+						height - 25,
+						str (i + minX),
+						Shape.CENTER);
+					graphics.add(notch);
+					graphics.add(text);
+				}
+			} else {
+				var i = 0;
+				e in data.getTuples() do {
+					var notch = new Shape.Line(
+						Color.GRAY,
+						50 + (i * ((width - 75) / (this.maxX - 1))),
+						height - 50,
+						50 + (i * ((width - 75) / (this.maxX - 1))),
+						height - 40);
+					var text = new Shape.Text(
+						Color.BLACK,
+						50 + (i * ((width - 75) / (this.maxX - 1))),
+						height - 25,
+						str e.a,
+						Shape.CENTER);
+					graphics.add(notch);
+					graphics.add(text);
+					i += 1;
+				}
+			}
+			var i = 0;
+			i <= (maxY - minY) do {
+				var notch = new Shape.Line(
+					Color.GRAY,
+					40,
+					(height - 50) - (i * ((height - 75) / (maxY - minY))),
+					50,
+					(height - 50) - (i * ((height - 75) / (maxY - minY))));
+				var text = new Shape.Text(
+					Color.BLACK,
+					35,
+					(height - 50) - (i * ((height - 75) / (maxY - minY))),
+					str (i),
+					Shape.RIGHT);
+				graphics.add(notch);
+				graphics.add(text);
+				i += step;
+			}
+			var i = 0;
+			e in data.getTuples() do {
+				var tempX;
+				labels == false then {
+					tempX = ((e.a - minX) / (maxX - minX)) * (width - 75) + 50;
+				} else {
+					tempX = (i / (maxX - 1)) * (width - 75) + 50;
+					i += 1;
+				}
+				var tempY = (height - 50) - ((e.b - minY) * ((height - 75) / (maxY - minY))).ceil();
+				var oval = new Shape.Oval(Color.BLUE, tempX - 3, tempY - 3, 6, 6);
+				graphics.add(oval);
+			}
+			cursorLineX = new Shape.Line(Color.RED, 0, 0, 0, 0);
+			cursorLineY = new Shape.Line(Color.RED, 0, 0, 0, 0);
+			cursorTextX = new Shape.Text(Color.RED, 0, 0, "", Shape.LEFT);
+			cursorTextY = new Shape.Text(Color.RED, 0, 0, "", Shape.LEFT);
+			graphics.add(cursorLineX);
+			graphics.add(cursorLineY);
+			graphics.add(cursorTextX);
+			graphics.add(cursorTextY);
+
+			window.onMouseMove((event) => {
+				cursorX = event.x;
+				cursorY = event.y;
+				cursorX < 50 then {
+					cursorX = 50;
+				}
+				cursorY > height - 50 then {
+					cursorY = height - 50;
+				}
+				cursorX > width - 25 then {
+					cursorX = width - 25;
+				}
+				cursorY < 25 then {
+					cursorY = 25;
+				}
+				cursorLineX.setPoints(cursorX, height - 50, cursorX, cursorY);
+				cursorLineY.setPoints(50, cursorY, cursorX, cursorY);
+				labels == false then {
+					cursorTextX.setText((minX + (maxX - minX) * ((cursorX - 50) / (width - 75))).format(3));
+				} else {
+					cursorTextX.setText(data.getLabel(((maxX - 1) * ((cursorX - 50) / (width - 75))).round()));
+				}
+				cursorTextY.setText((minY + (maxY - minY) * (1 - (cursorY - 25) / (height - 75))).format(3));
+				cursorTextX.setOrigin(cursorX + 5, height - 55);
+				cursorTextY.setOrigin(55, cursorY - 5);
+				render();
+			});
+		}
+
+		render() => {
+			window.repaint();
+		}
+	}
+
+
+	struct Bar class {
+		var window;
+		var graphics;
+		var data;
+		var minY;
+		var maxX;
+		var maxY;
+		var width;
+		var height;
+
+		var cursorX = 0;
+		var cursorY = 0;
+		var cursorLineX;
+		var cursorLineY;
+		var cursorTextX;
+		var cursorTextY;
+
+		var step = 1;
+
+		init(ref data, final title, final width, final height, final minY, final maxY, ref function) => {
+			this.data = data;
+			this.width = width;
+			this.height = height;
+			this.window = new Window(title, width, height, function);
+			this.graphics = this.window.getGraphics();
+			this.maxX = len data;
+			this.minY = minY;
+			this.maxY = maxY;
+			e in data.getTuples() do {
+				maxY == null then {
+					this.maxY == null then {
+						this.maxY = e.b;
+					} else e.b > this.maxY then {
+						this.maxY = e.b;
+					}
+				}
+				minY == null then {
+					this.minY == null then {
+						this.minY = e.b;
+					} else e.b < this.minY then {
+						this.minY = e.b;
+					}
+				}
+			}
+			this.maxX = this.maxX.ceil() + 1;
+			maxY == null then {
+				this.maxY = this.maxY.ceil();
+			}
+			minY == null then {
+				this.minY = this.minY.floor();
+			}
+
+			(this.maxY - this.minY) / step > height / 15 do {
+				step *= 10;
+			}
+			build();
+		}
+
+		build() => {
+			var barWidth = ((width - 75) / (this.maxX - 1)).floor();
+			var axisX = new Shape.Line(Color.GRAY, 50, height - 50, width - 25, height - 50);
+			var axisY = new Shape.Line(Color.GRAY, 50, 25, 50, height - 50);
+			graphics.add(axisX);
+			graphics.add(axisY);
+			var i = 0;
+			e in data.getTuples() do {
+				var notch = new Shape.Line(
+					Color.GRAY,
+					50 + (i * ((width - 75) / (this.maxX - 1))),
+					height - 50,
+					50 + (i * ((width - 75) / (this.maxX - 1))),
+					height - 40);
+				var text = new Shape.Text(
+					Color.BLACK,
+					50 + (i * ((width - 75) / (this.maxX - 1))) + barWidth / 2,
+					height - 25,
+					e.a,
+					Shape.CENTER);
+				graphics.add(notch);
+				graphics.add(text);
+				i += 1;
+			}
+			var i = 0;
+			i <= (maxY - minY) do {
+				var notch = new Shape.Line(
+					Color.GRAY,
+					40,
+					(height - 50) - (i * ((height - 75) / (maxY - minY))),
+					50,
+					(height - 50) - (i * ((height - 75) / (maxY - minY))));
+				var text = new Shape.Text(
+					Color.BLACK,
+					35,
+					(height - 50) - (i * ((height - 75) / (maxY - minY))),
+					str (i),
+					Shape.RIGHT);
+				graphics.add(notch);
+				graphics.add(text);
+				i += step;
+			}
+			var i = 0;
+			e in data.getTuples() do {
+				var tempX = 50 + ((i / (maxX - 1)) * (width - 75));
+				var tempY = (height - 50) - ((e.b - minY) * ((height - 75) / (maxY - minY))).ceil();
+				var bar = new Shape.Rectangle(Color.BLUE, tempX + 1, tempY, barWidth - 2, height - tempY - 50);
+				graphics.add(bar);
+				i += 1;
+			}
+			cursorLineX = new Shape.Line(Color.RED, 0, 0, 0, 0);
+			cursorLineY = new Shape.Line(Color.RED, 0, 0, 0, 0);
+			cursorTextX = new Shape.Text(Color.RED, 0, 0, "", Shape.LEFT);
+			cursorTextY = new Shape.Text(Color.RED, 0, 0, "", Shape.LEFT);
+			graphics.add(cursorLineX);
+			graphics.add(cursorLineY);
+			graphics.add(cursorTextX);
+			graphics.add(cursorTextY);
+
+			window.onMouseMove((event) => {
+				cursorX = event.x;
+				cursorY = event.y;
+				cursorX < 50 then {
+					cursorX = 50;
+				}
+				cursorY > height - 50 then {
+					cursorY = height - 50;
+				}
+				cursorX > width - 25 then {
+					cursorX = width - 25;
+				}
+				cursorY < 25 then {
+					cursorY = 25;
+				}
+				cursorLineX.setPoints(cursorX, height - 50, cursorX, cursorY);
+				cursorLineY.setPoints(50, cursorY, cursorX, cursorY);
+				var pos = (maxX - 1) * ((cursorX - 50) / (width - 75));
+				pos == maxX - 1 then {
+					pos -= 0.5;
+				}
+				cursorTextX.setText(data.getLabel(pos.floor()));
+				cursorTextY.setText((minY + (maxY - minY) * (1 - (cursorY - 25) / (height - 75))).format(3));
+				cursorTextX.setOrigin(cursorX + 5, height - 55);
+				cursorTextY.setOrigin(55, cursorY - 5);
+				render();
+			});
+		}
+
+		render() => {
+			window.repaint();
+		}
+	}
+}

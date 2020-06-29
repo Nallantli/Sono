@@ -1,3 +1,6 @@
+# Benjamin Park
+# 29-06-2020
+
 import "LIB_Graphics";
 
 struct Window class {
@@ -6,7 +9,7 @@ struct Window class {
 	var window;
 	var graphics;
 
-	init(final title, final width, final height, final closefunction) => {
+	init(final title, final width, final height, ref closefunction) => {
 		this.width = width;
 		this.height = height;
 		this.window = ("LIB_Graphics.INIT" _OUTER_CALL_ (title, width, height, closefunction));
@@ -39,94 +42,94 @@ struct Window class {
 	}
 
 	repaint() => {
-		"LIB_Graphics.REPAINT" _OUTER_CALL_ (this.window);
+		"LIB_Graphics.REPAINT" _OUTER_CALL_ (window);
 	}
 
-	onMouseMove(final function) => {
+	onMouseMove(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (0, mousef);
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 0, mousef);
 	}
 
-	onMouseDrag(final function) => {
+	onMouseDrag(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (1, mousef);
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 1, mousef);
 	}
 
-	onMouseRelease(final function) => {
+	onMouseRelease(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (2, mousef);
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 2, mousef);
 	}
 
-	onMousePress(final function) => {
+	onMousePress(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (3, mousef);
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 3, mousef);
 	}
 
-	onMouseExit(final function) => {
+	onMouseExit(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (4, mousef);
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 4, mousef);
 	}
 
-	onMouseEnter(final function) => {
+	onMouseEnter(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (5, mousef);
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 5, mousef);
 	}
 
-	onMouseClick(final function) => {
+	onMouseClick(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			return function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (6, mousef);
+		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 6, mousef);
 	}
 
-	onKeyPress(final function) => {
+	onKeyPress(ref function) => {
 		var keyf = (a, b, c) => {
 			return function(new KeyEvent(a, b, c));
 		}
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (0, keyf);
+		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 0, keyf);
 	}
 
-	onKeyRelease(final function) => {
+	onKeyRelease(ref function) => {
 		var keyf = (a, b, c) => {
 			return function(new KeyEvent(a, b, c));
 		}
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (1, keyf);
+		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 1, keyf);
 	}
 
-	onKeyType(final function) => {
+	onKeyType(ref function) => {
 		var keyf = (a, b, c) => {
 			return function(new KeyEvent(a, b, c));
 		}
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (2, keyf);
+		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 2, keyf);
 	}
 
 	struct Graphics class {
 		var graphics;
 
-		init(final graphics) => {
+		init(ref graphics) => {
 			this.graphics = graphics;
 		}
 
-		add(final shape) => {
+		add(ref shape) => {
 			var success = ("LIB_Graphics.GRAPHICS.ADD" _OUTER_CALL_ (this.graphics, shape.data));
 			success == false then {
 				throw "Shape already exists in Graphics";
 			}
 		}
 
-		remove(final shape) => {
+		remove(ref shape) => {
 			"LIB_Graphics.GRAPHICS.REMOVE" _OUTER_CALL_ (this.graphics, shape.data);
 			success == false then {
 				throw "Shape does not exist in Graphics";
@@ -176,6 +179,10 @@ struct Window class {
 }
 
 static Shape class {
+	var LEFT = 0;
+	var CENTER = 1;
+	var RIGHT = 2;
+
 	struct Rectangle class {
 		var data;
 
@@ -288,7 +295,7 @@ static Shape class {
 			this.y1 = y1;
 			this.x2 = x2;
 			this.y2 = y2;
-			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ (this.data, x1, y1, x2, y2);
+			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ (this.data, this.x1, this.y1, this.x2, this.y2);
 		}
 
 		move(final x, final y) => {
@@ -308,13 +315,15 @@ static Shape class {
 		var y;
 		var string;
 		var font;
+		var align;
 
-		init(final color, final x, final y, final string) => {
+		init(final color, final x, final y, final string, final align) => {
 			this.color = color;
 			this.x = x;
 			this.y = y;
 			this.string = string;
-			this.data = ("LIB_Graphics.SHAPE.TEXT.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x, y, string));
+			this.align = align;
+			this.data = ("LIB_Graphics.SHAPE.TEXT.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x, y, string, align));
 		}
 
 		setColor(final color) => {
@@ -325,6 +334,11 @@ static Shape class {
 		setFont(final font) => {
 			this.font = font;
 			"LIB_Graphics.SHAPE.TEXT.SETFONT" _OUTER_CALL_ (data, font.font);
+		}
+
+		setText(final string) => {
+			this.string = string;
+			"LIB_Graphics.SHAPE.TEXT.SETSTRING" _OUTER_CALL_ (data, string);
 		}
 
 		setOrigin(final x, final y) => {
@@ -428,5 +442,6 @@ static Color class {
 	var BLUE = new RGB(0, 0, 255, 255);
 	var BLACK = new RGB(0, 0, 0, 255);
 	var WHITE = new RGB(255, 255, 255, 255);
+	var GRAY = new RGB(200, 200, 200, 255);
 	var ALPHA = new RGB(0, 0, 0, 0);
 }

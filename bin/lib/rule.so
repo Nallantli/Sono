@@ -1,10 +1,13 @@
-Vector::apply(final this, final ruleset) => {
+# Benjamin Park
+# 29-06-2020
+
+Vector::apply(ref this, ref ruleset) => {
 	var applied = {};
 	e in this do {
 		type ruleset == "Vector" then {
 			var temp = e;
 			r in ruleset do {
-				temp = temp >> r;
+				temp >>= r;
 			}
 			applied += { temp };
 		} else {
@@ -14,26 +17,26 @@ Vector::apply(final this, final ruleset) => {
 	return applied;
 }
 
-Word::apply(final this, final ruleset) => {
+Word::apply(ref this, ref ruleset) => {
 	var applied = this;
 	type ruleset == "Vector" then {
 		r in ruleset do {
-			applied = applied >> r;
+			applied >>= r;
 		}
 	} else {
-		applied = applied >> ruleset;
+		applied >>= ruleset;
 	}
 	return applied;
 }
 
-Word::apply(final this, final ruleset) => {
+Word::apply(ref this, ref ruleset) => {
 	var applied = this;
 	type ruleset == "Vector" then {
 		r in ruleset do {
-			applied = applied >> r;
+			applied >>= r;
 		}
 	} else {
-		applied = applied >> ruleset;
+		applied >>= ruleset;
 	}
 	return applied;
 }

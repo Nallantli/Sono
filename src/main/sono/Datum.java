@@ -259,7 +259,7 @@ public class Datum {
 
 	public void set(final PhoneManager pm, final Datum datum, final List<String> trace) {
 		if (!mutable)
-			throw new SonoRuntimeException("You cannot set the value of a constant.", trace);
+			throw new SonoRuntimeException("You cannot set the value of a constant <" + this.toStringTrace(trace) + "> (to value <" + datum.toStringTrace(trace) + ">)", trace);
 		this.type = datum.getType();
 		switch (type) {
 			case VECTOR:

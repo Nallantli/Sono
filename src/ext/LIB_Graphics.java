@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -72,9 +73,28 @@ abstract class Paintable {
 		}
 	}
 
-	public static class Oval extends Rectangle {
+	public static class Oval extends Paintable {
+		protected int x;
+		protected int y;
+		protected int width;
+		protected int height;
+
 		public Oval(final Color color, final int x, final int y, final int width, final int height) {
-			super(color, x, y, width, height);
+			super(color);
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+		}
+
+		public void setOrigin(final int x, final int y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		public void setSize(final int width, final int height) {
+			this.width = width;
+			this.height = height;
 		}
 
 		@Override
@@ -115,18 +135,24 @@ abstract class Paintable {
 	public static class Text extends Paintable {
 		private int x;
 		private int y;
-		private final String text;
+		private String text;
 		private Font font = null;
+		private final int align;
 
-		public Text(final Color color, final int x, final int y, final String text) {
+		public Text(final Color color, final int x, final int y, final String text, final int align) {
 			super(color);
 			this.x = x;
 			this.y = y;
 			this.text = text;
+			this.align = align;
 		}
 
 		public void setFont(final Font font) {
 			this.font = font;
+		}
+
+		public void setText(final String text) {
+			this.text = text;
 		}
 
 		public void setOrigin(final int x, final int y) {
@@ -139,7 +165,19 @@ abstract class Paintable {
 			super.paint(g);
 			if (font != null)
 				g.setFont(font);
-			g.drawString(text, x, y);
+			final FontMetrics metrics = g.getFontMetrics(g.getFont());
+			int temp_x = x;
+			switch (align) {
+				case 1:
+					temp_x = x - metrics.stringWidth(text) / 2;
+					break;
+				case 2:
+					temp_x = x - metrics.stringWidth(text);
+					break;
+				default:
+					break;
+			}
+			g.drawString(text, temp_x, y);
 		}
 	}
 }
@@ -175,7 +213,9 @@ class GraphicsPanel extends JPanel {
 	}
 }
 
-public class LIB_Graphics extends Library {
+class WindowFunctions extends JFrame {
+	private static final long serialVersionUID = 1L;
+
 	private Function onMouseMoved = null;
 	private Function onMouseDragged = null;
 	private Function onMouseReleased = null;
@@ -187,6 +227,193 @@ public class LIB_Graphics extends Library {
 	private Function onKeyReleased = null;
 	private Function onKeyTyped = null;
 
+	public WindowFunctions(final String title) {
+		super(title);
+		getContentPane().addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(final MouseEvent e) {
+				if (onMouseReleased != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+					params.add(new Datum(BigDecimal.valueOf(e.getX())));
+					params.add(new Datum(BigDecimal.valueOf(e.getY())));
+					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					onMouseReleased.execute(params, new ArrayList<>());
+				}
+			}
+
+			@Override
+			public void mousePressed(final MouseEvent e) {
+				if (onMousePressed != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+					params.add(new Datum(BigDecimal.valueOf(e.getX())));
+					params.add(new Datum(BigDecimal.valueOf(e.getY())));
+					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					onMousePressed.execute(params, new ArrayList<>());
+				}
+			}
+
+			@Override
+			public void mouseExited(final MouseEvent e) {
+				if (onMouseExited != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+					params.add(new Datum(BigDecimal.valueOf(e.getX())));
+					params.add(new Datum(BigDecimal.valueOf(e.getY())));
+					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					onMouseExited.execute(params, new ArrayList<>());
+				}
+			}
+
+			@Override
+			public void mouseEntered(final MouseEvent e) {
+				if (onMouseEntered != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+					params.add(new Datum(BigDecimal.valueOf(e.getX())));
+					params.add(new Datum(BigDecimal.valueOf(e.getY())));
+					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					onMouseEntered.execute(params, new ArrayList<>());
+				}
+			}
+
+			@Override
+			public void mouseClicked(final MouseEvent e) {
+				if (onMouseClicked != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+					params.add(new Datum(BigDecimal.valueOf(e.getX())));
+					params.add(new Datum(BigDecimal.valueOf(e.getY())));
+					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					onMouseClicked.execute(params, new ArrayList<>());
+				}
+			}
+		});
+		getContentPane().addMouseMotionListener(new MouseMotionListener() {
+			@Override
+			public void mouseMoved(final MouseEvent e) {
+				if (onMouseMoved != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+					params.add(new Datum(BigDecimal.valueOf(e.getX())));
+					params.add(new Datum(BigDecimal.valueOf(e.getY())));
+					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					onMouseMoved.execute(params, new ArrayList<>());
+				}
+			}
+
+			@Override
+			public void mouseDragged(final MouseEvent e) {
+				if (onMouseDragged != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
+					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
+					params.add(new Datum(BigDecimal.valueOf(e.getX())));
+					params.add(new Datum(BigDecimal.valueOf(e.getY())));
+					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
+					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					onMouseDragged.execute(params, new ArrayList<>());
+				}
+			}
+		});
+		addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(final KeyEvent e) {
+				if (onKeyTyped != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+					params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
+					params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+					onKeyTyped.execute(params, new ArrayList<>());
+				}
+			}
+
+			@Override
+			public void keyPressed(final KeyEvent e) {
+				if (onKeyPressed != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+					params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
+					params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+					onKeyPressed.execute(params, new ArrayList<>());
+				}
+			}
+
+			@Override
+			public void keyReleased(final KeyEvent e) {
+				if (onKeyReleased != null) {
+					final List<Datum> params = new ArrayList<>();
+					params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+					params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
+					params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+					onKeyReleased.execute(params, new ArrayList<>());
+				}
+			}
+		});
+	}
+
+	public void setOnMouseMoved(final Function onMouseMoved) {
+		this.onMouseMoved = onMouseMoved;
+	}
+
+	public void setOnMouseDragged(final Function onMouseDragged) {
+		this.onMouseDragged = onMouseDragged;
+	}
+
+	public void setOnMouseReleased(final Function onMouseReleased) {
+		this.onMouseReleased = onMouseReleased;
+	}
+
+	public void setOnMousePressed(final Function onMousePressed) {
+		this.onMousePressed = onMousePressed;
+	}
+
+	public void setOnMouseExited(final Function onMouseExited) {
+		this.onMouseExited = onMouseExited;
+	}
+
+	public void setOnMouseEntered(final Function onMouseEntered) {
+		this.onMouseEntered = onMouseEntered;
+	}
+
+	public void setOnMouseClicked(final Function onMouseClicked) {
+		this.onMouseClicked = onMouseClicked;
+	}
+
+	public void setOnKeyPressed(final Function onKeyPressed) {
+		this.onKeyPressed = onKeyPressed;
+	}
+
+	public void setOnKeyReleased(final Function onKeyReleased) {
+		this.onKeyReleased = onKeyReleased;
+	}
+
+	public void setOnKeyTyped(final Function onKeyTyped) {
+		this.onKeyTyped = onKeyTyped;
+	}
+}
+
+public class LIB_Graphics extends Library {
 	public LIB_Graphics() {
 		super();
 		commands.put("LIB_Graphics.INIT", (final Datum datum, final List<String> trace) -> {
@@ -194,7 +421,7 @@ public class LIB_Graphics extends Library {
 			final String title = list.get(0).getString(trace);
 			final int width = list.get(1).getNumber(trace).intValue();
 			final int height = list.get(2).getNumber(trace).intValue();
-			final JFrame f = new JFrame(title);
+			final WindowFunctions f = new WindowFunctions(title);
 			if (list.get(3).getType() == Datum.Type.FUNCTION) {
 				final Function close = list.get(3).getFunction(Datum.Type.ANY, trace);
 				f.addWindowListener(new WindowAdapter() {
@@ -206,147 +433,6 @@ public class LIB_Graphics extends Library {
 			} else {
 				f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			}
-			f.getContentPane().addMouseListener(new MouseListener() {
-				@Override
-				public void mouseReleased(final MouseEvent e) {
-					if (onMouseReleased != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMouseReleased.execute(params, trace);
-					}
-				}
-
-				@Override
-				public void mousePressed(final MouseEvent e) {
-					if (onMousePressed != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMousePressed.execute(params, trace);
-					}
-				}
-
-				@Override
-				public void mouseExited(final MouseEvent e) {
-					if (onMouseExited != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMouseExited.execute(params, trace);
-					}
-				}
-
-				@Override
-				public void mouseEntered(final MouseEvent e) {
-					if (onMouseEntered != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMouseEntered.execute(params, trace);
-					}
-				}
-
-				@Override
-				public void mouseClicked(final MouseEvent e) {
-					if (onMouseClicked != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMouseClicked.execute(params, trace);
-					}
-				}
-			});
-			f.getContentPane().addMouseMotionListener(new MouseMotionListener() {
-				@Override
-				public void mouseMoved(final MouseEvent e) {
-					if (onMouseMoved != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMouseMoved.execute(params, trace);
-					}
-				}
-
-				@Override
-				public void mouseDragged(final MouseEvent e) {
-					if (onMouseDragged != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-						params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
-						params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-						params.add(new Datum(BigDecimal.valueOf(e.getX())));
-						params.add(new Datum(BigDecimal.valueOf(e.getY())));
-						params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-						params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
-						onMouseDragged.execute(params, trace);
-					}
-				}
-			});
-			f.addKeyListener(new KeyListener() {
-				@Override
-				public void keyTyped(KeyEvent e) {
-					if (onKeyTyped != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
-						params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
-						params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
-						onKeyTyped.execute(params, trace);
-					}
-				}
-
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if (onKeyPressed != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
-						params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
-						params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
-						onKeyPressed.execute(params, trace);
-					}
-				}
-
-				@Override
-				public void keyReleased(KeyEvent e) {
-					if (onKeyReleased != null) {
-						final List<Datum> params = new ArrayList<>();
-						params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
-						params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
-						params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
-						onKeyReleased.execute(params, trace);
-					}
-				}
-			});
 			f.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.getGlobalOption("PATH") + "/res/icon.png"));
 			f.setResizable(false);
 			f.getContentPane().setPreferredSize(new Dimension(width, height));
@@ -355,12 +441,12 @@ public class LIB_Graphics extends Library {
 			return new Datum((Object) f);
 		});
 		commands.put("LIB_Graphics.SHOW", (final Datum datum, final List<String> trace) -> {
-			final JFrame f = (JFrame) datum.getPointer(trace);
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
 			f.setVisible(true);
 			return new Datum();
 		});
 		commands.put("LIB_Graphics.HIDE", (final Datum datum, final List<String> trace) -> {
-			final JFrame f = (JFrame) datum.getPointer(trace);
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
 			f.setVisible(false);
 			return new Datum();
 		});
@@ -389,29 +475,30 @@ public class LIB_Graphics extends Library {
 		});
 		commands.put("LIB_Graphics.ADDMOUSELISTENER", (final Datum datum, final List<String> trace) -> {
 			final List<Datum> list = datum.getVector(trace);
-			final int id = list.get(0).getNumber(trace).intValue();
-			final Function function = list.get(1).getFunction(Datum.Type.ANY, trace);
+			final WindowFunctions f = (WindowFunctions) list.get(0).getPointer(trace);
+			final int id = list.get(1).getNumber(trace).intValue();
+			final Function function = list.get(2).getFunction(Datum.Type.ANY, trace);
 			switch (id) {
 				case 0:
-					onMouseMoved = function;
+					f.setOnMouseMoved(function);
 					break;
 				case 1:
-					onMouseDragged = function;
+					f.setOnMouseDragged(function);
 					break;
 				case 2:
-					onMouseReleased = function;
+					f.setOnMouseReleased(function);
 					break;
 				case 3:
-					onMousePressed = function;
+					f.setOnMousePressed(function);
 					break;
 				case 4:
-					onMouseExited = function;
+					f.setOnMouseExited(function);
 					break;
 				case 5:
-					onMouseEntered = function;
+					f.setOnMouseEntered(function);
 					break;
 				case 6:
-					onMouseClicked = function;
+					f.setOnMouseClicked(function);
 					break;
 				default:
 					throw error("Unknown mouse event ID <" + id + ">", trace);
@@ -420,17 +507,18 @@ public class LIB_Graphics extends Library {
 		});
 		commands.put("LIB_Graphics.ADDKEYLISTENER", (final Datum datum, final List<String> trace) -> {
 			final List<Datum> list = datum.getVector(trace);
-			final int id = list.get(0).getNumber(trace).intValue();
-			final Function function = list.get(1).getFunction(Datum.Type.ANY, trace);
+			final WindowFunctions f = (WindowFunctions) list.get(0).getPointer(trace);
+			final int id = list.get(1).getNumber(trace).intValue();
+			final Function function = list.get(2).getFunction(Datum.Type.ANY, trace);
 			switch (id) {
 				case 0:
-					onKeyPressed = function;
+					f.setOnKeyPressed(function);
 					break;
 				case 1:
-					onKeyReleased = function;
+					f.setOnKeyReleased(function);
 					break;
 				case 2:
-					onKeyTyped = function;
+					f.setOnKeyTyped(function);
 					break;
 				default:
 					throw error("Unknown key event ID <" + id + ">", trace);
@@ -439,7 +527,7 @@ public class LIB_Graphics extends Library {
 		});
 		commands.put("LIB_Graphics.SETSIZE", (final Datum datum, final List<String> trace) -> {
 			final List<Datum> list = datum.getVector(trace);
-			final JFrame f = (JFrame) list.get(0).getPointer(trace);
+			final WindowFunctions f = (WindowFunctions) list.get(0).getPointer(trace);
 			final int width = list.get(1).getNumber(trace).intValue();
 			final int height = list.get(2).getNumber(trace).intValue();
 			f.getContentPane().setPreferredSize(new Dimension(width, height));
@@ -447,12 +535,12 @@ public class LIB_Graphics extends Library {
 			return new Datum();
 		});
 		commands.put("LIB_Graphics.CLOSE", (final Datum datum, final List<String> trace) -> {
-			final JFrame f = (JFrame) datum.getPointer(trace);
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
 			f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
 			return new Datum();
 		});
 		commands.put("LIB_Graphics.GETGRAPHICS", (final Datum datum, final List<String> trace) -> {
-			final JFrame f = (JFrame) datum.getPointer(trace);
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
 			final GraphicsPanel gp = new GraphicsPanel();
 			final Dimension d = f.getSize();
 			f.getContentPane().add("Center", gp);
@@ -461,7 +549,7 @@ public class LIB_Graphics extends Library {
 			return new Datum((Object) gp);
 		});
 		commands.put("LIB_Graphics.REPAINT", (final Datum datum, final List<String> trace) -> {
-			final JFrame f = (JFrame) datum.getPointer(trace);
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
 			f.revalidate();
 			f.repaint();
 			return new Datum();
@@ -537,8 +625,8 @@ public class LIB_Graphics extends Library {
 			final Paintable.Line line = (Paintable.Line) list.get(0).getPointer(trace);
 			final int x1 = list.get(1).getNumber(trace).intValue();
 			final int y1 = list.get(2).getNumber(trace).intValue();
-			final int x2 = list.get(1).getNumber(trace).intValue();
-			final int y2 = list.get(2).getNumber(trace).intValue();
+			final int x2 = list.get(3).getNumber(trace).intValue();
+			final int y2 = list.get(4).getNumber(trace).intValue();
 			line.setPoints(x1, y1, x2, y2);
 			return new Datum();
 		});
@@ -580,7 +668,8 @@ public class LIB_Graphics extends Library {
 			final int x = list.get(4).getNumber(trace).intValue();
 			final int y = list.get(5).getNumber(trace).intValue();
 			final String string = list.get(6).getString(trace);
-			final Paintable.Text text = new Paintable.Text(new Color(r, g, b, a), x, y, string);
+			final int align = list.get(7).getNumber(trace).intValue();
+			final Paintable.Text text = new Paintable.Text(new Color(r, g, b, a), x, y, string, align);
 			return new Datum((Object) text);
 		});
 		commands.put("LIB_Graphics.SHAPE.TEXT.SETFONT", (final Datum datum, final List<String> trace) -> {
@@ -588,6 +677,13 @@ public class LIB_Graphics extends Library {
 			final Paintable.Text text = (Paintable.Text) list.get(0).getPointer(trace);
 			final Font font = (Font) list.get(1).getPointer(trace);
 			text.setFont(font);
+			return new Datum();
+		});
+		commands.put("LIB_Graphics.SHAPE.TEXT.SETSTRING", (final Datum datum, final List<String> trace) -> {
+			final List<Datum> list = datum.getVector(trace);
+			final Paintable.Text text = (Paintable.Text) list.get(0).getPointer(trace);
+			final String string = list.get(1).getString(trace);
+			text.setText(string);
 			return new Datum();
 		});
 		commands.put("LIB_Graphics.SHAPE.TEXT.MOVE", (final Datum datum, final List<String> trace) -> {

@@ -1,3 +1,6 @@
+# Benjamin Park
+# 29-06-2020
+
 load "feature";
 load "vector";
 load "string";
@@ -5,7 +8,7 @@ load "map";
 load "rule";
 
 static Phonology class {
-	getNaturalSet(final phones, final set) => {
+	getNaturalSet(ref phones, ref set) => {
 		var m = [];
 		p in set do {
 			m += mat p;
@@ -13,13 +16,13 @@ static Phonology class {
 		return m from phones;
 	}
 
-	isNaturalSet(final phones, final set) => {
+	isNaturalSet(ref phones, ref set) => {
 		var ns = getNaturalSet(phones, set);
 		return len ns == len set;
 	}
 
-	naturalize(final phones, final set) => {
-		var natural = (final phones, ref matrix) => {
+	naturalize(ref phones, ref set) => {
+		var natural = (ref phones, ref matrix) => {
 			var list = {};
 			i in {0 until len matrix} do {
 				var temp = mat (vec matrix).remove(i);
@@ -85,7 +88,7 @@ struct Corpus class {
 		return c;
 	}
 
-	count(final value) => {
+	count(ref value) => {
 		var c = 0;
 		i in corpus do {
 			j in i do {
@@ -98,7 +101,7 @@ struct Corpus class {
 		return c;
 	}
 
-	IDF(final value) => {
+	IDF(ref value) => {
 		IDFcache.contains(value) then {
 			return IDFcache[value];
 		}
@@ -159,15 +162,15 @@ struct Inventory class {
 		return words.apply(rules);
 	}
 
-	getSet(matrix) => {
+	getSet(ref matrix) => {
 		return matrix from phonemes;
 	}
 
-	getNaturalSet(phones) => {
+	getNaturalSet(ref phones) => {
 		return Phonology.getNaturalSet(this.phonemes, phones);
 	}
 
-	isNaturalSet(phones) => {
+	isNaturalSet(ref phones) => {
 		return Phonology.isNaturalSet(this.phonemes, phones);
 	}
 

@@ -26,15 +26,15 @@ public class Function {
 
 	public Datum execute(final List<Datum> paramValues, final List<String> trace) {
 		final Scope scope = new Scope(parent);
-		final List<Boolean> prevMutes = new ArrayList<Boolean>();
 		for (int i = 0; i < paramKeys.size(); i++) {
 			if (i < paramValues.size()) {
-				prevMutes.add(paramValues.get(i).isMutable());
 				if (Boolean.TRUE.equals(paramRefs.get(i))) {
 					scope.setVariable(interpreter.getManager(), paramKeys.get(i), paramValues.get(i), trace);
 				} else if (Boolean.TRUE.equals(paramFins.get(i))) {
-					paramValues.get(i).setMutable(false);
-					scope.setVariable(interpreter.getManager(), paramKeys.get(i), paramValues.get(i), trace);
+					final Datum d = new Datum();
+					d.set(interpreter.getManager(), paramValues.get(i), trace);
+					d.setMutable(false);
+					scope.setVariable(interpreter.getManager(), paramKeys.get(i), d, trace);
 				} else {
 					final Datum d = new Datum();
 					d.set(interpreter.getManager(), paramValues.get(i), trace);
@@ -43,10 +43,6 @@ public class Function {
 			} else {
 				scope.setVariable(interpreter.getManager(), paramKeys.get(i), new Datum(), trace);
 			}
-		}
-
-		for (int i = 0; i < paramValues.size(); i++) {
-			paramValues.get(i).setMutable(prevMutes.get(i));
 		}
 
 		final Datum r = body.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));

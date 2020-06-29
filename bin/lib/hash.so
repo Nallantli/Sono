@@ -1,4 +1,7 @@
-String::hash(final string, final mod) => {
+# Benjamin Park
+# 29-06-2020
+
+String::hash(ref string, ref mod) => {
 	var p = 31;
 	var m = 10 ** 9 + 9;
 	var h = 0;

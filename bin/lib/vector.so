@@ -1,3 +1,7 @@
+# Benjamin Park
+# Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
+# 29-06-2020
+
 load "math";
 
 Vector::pop(ref this) => {
@@ -18,19 +22,19 @@ Vector::shift(ref this) => {
 	return this;
 }
 
-Vector::front(final this) => {
+Vector::front(ref this) => {
 	return this[0];
 }
 
-Vector::back(final this) => {
+Vector::back(ref this) => {
 	return this[len this - 1];
 }
 
-Vector::isEmpty(final this) => {
+Vector::isEmpty(ref this) => {
 	return (len this == 0);
 }
 
-Vector::contains(final this, final value) => {
+Vector::contains(ref this, ref value) => {
 	i in this do {
 		i == value then {
 			return true;
@@ -39,12 +43,12 @@ Vector::contains(final this, final value) => {
 	return false;
 }
 
-Vector::push(ref this, final value) => {
+Vector::push(ref this, ref value) => {
 	this += { value };
 	return this;
 }
 
-Vector::join(final this, del) => {
+Vector::join(ref this, del) => {
 	del == null then {
 		del = "";
 	}
@@ -66,7 +70,7 @@ Vector::remove(ref this, final index) => {
 	return this;
 }
 
-Vector::distArray(final this, final vector, costDel, costIns, costRep) => {
+Vector::distArray(ref this, final vector, costDel, costIns, costRep) => {
 	costDel == null then {
 		costDel = 1;
 	}
@@ -106,11 +110,11 @@ Vector::distArray(final this, final vector, costDel, costIns, costRep) => {
 	return array;
 }
 
-Vector::dist(final this, final vector, final costDel, final costIns, final costRep) => {
+Vector::dist(ref this, ref vector, final costDel, final costIns, final costRep) => {
 	return this.distArray(vector, costDel, costIns, costRep)[len this][len vector];
 }
 
-Vector::steps(final this, final vector, final costDel, final costIns, final costRep) => {
+Vector::steps(ref this, ref vector, final costDel, final costIns, final costRep) => {
 	var D = this.distArray(vector, costDel, costIns, costRep);
 	var i = len this;
     var j = len vector;

@@ -1,3 +1,6 @@
+# Benjamin Park
+# 29-06-2020
+
 load "system";
 load "vector";
 load "math";
@@ -28,7 +31,7 @@ String::at(ref this, final index) => {
 	return (vec this)[index];
 }
 
-String::push(ref this, final value) => {
+String::push(ref this, ref value) => {
 	this += str value;
 	return this;
 }
@@ -37,19 +40,19 @@ String::contains(ref this, final pattern) => {
 	return (len this.match(pattern) > 0);
 }
 
-String::distArray(final this, final string, final costDel, final costIns, final costRep) => {
+String::distArray(ref this, ref string, final costDel, final costIns, final costRep) => {
 	return (vec this).distArray(vec string, costDel, costIns, costRep);
 }
 
-String::dist(final this, final string, final costDel, final costIns, final costRep) => {
+String::dist(ref this, ref string, final costDel, final costIns, final costRep) => {
 	return (vec this).dist(vec string, costDel, costIns, costRep);
 }
 
-String::steps(final this, final string, final costDel, final costIns, final costRep) => {
+String::steps(ref this, ref string, final costDel, final costIns, final costRep) => {
 	return (vec this).steps(vec string, costDel, costIns, costRep);
 }
 
-String::nGram(final this, final n, delim) => {
+String::nGram(ref this, final n, delim) => {
 	delim == null then {
 		delim = "\\s";
 	}
@@ -57,7 +60,7 @@ String::nGram(final this, final n, delim) => {
 	return s.nGram(n);
 }
 
-String::split(final this, final pattern) => {
+String::split(ref this, final pattern) => {
 	var stringArray = vec this;
 	var coords = this.match(pattern);
 	var array = {};

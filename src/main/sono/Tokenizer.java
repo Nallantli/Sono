@@ -156,7 +156,7 @@ public class Tokenizer {
 			final String t = raw.toString();
 			if (t.equals("#[") || t.equals("#]"))
 				continue;
-			if (last.equals("}") && !t.equals("else") && !t.equals("[") && !t.equals("{") && !t.equals("(")
+			if (last.equals("}") && !t.equals("else") && !t.equals("[")
 					&& (!operators.containsKey(t) || (operators.containsKey(t) && operators.get(t) < 0)))
 				newTokens.add(";");
 			if (t.equals("[")
@@ -165,7 +165,7 @@ public class Tokenizer {
 					&& !operators.containsKey(last))
 				newTokens.add(".index");
 			if (t.equals("(") && ((Character.isLetterOrDigit(last.charAt(0)) || last.charAt(0) == '_')
-					|| last.equals(")") || last.equals("]") || last.equals("}")) && !operators.containsKey(last))
+					|| last.equals(")") || last.equals("]")) && !operators.containsKey(last))
 				newTokens.add(".exec");
 			if (t.equals("-")
 					&& (operators.containsKey(last) || last.equals("(") || last.equals("[") || last.equals("{"))) {

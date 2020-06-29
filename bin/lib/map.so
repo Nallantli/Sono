@@ -1,3 +1,6 @@
+# Benjamin Park
+# 29-06-2020
+
 load "hash";
 
 struct Map class {
@@ -6,13 +9,22 @@ struct Map class {
 		var value;
 		var prev;
 		var next;
-		init(final key, final value, final prev) => {
+		init(ref key, ref value, ref prev) => {
 			this.key = key;
 			this.value = value;
 			this.prev = prev;
 		}
+	}
+
+	struct Element class {
+		var key;
+		var value;
+		init(ref key, ref value) => {
+			this.key = key;
+			this.value = value;
+		}
 		getStr() => {
-			return str key + "=" + str value + str { next };
+			return str key + "=" + str value;
 		}
 	}
 
@@ -34,7 +46,7 @@ struct Map class {
 		return (size == 0);
 	}
 
-	getIndex(final key) => {
+	getIndex(ref key) => {
 		size >= rawSize then {
 			expand();
 		}
@@ -60,7 +72,7 @@ struct Map class {
 		return p.value;
 	}
 
-	remove(final key) => {
+	remove(ref key) => {
 		var h = hash(str key, rawSize);
 		var curr = buckets[h];
 		true do {
@@ -81,7 +93,7 @@ struct Map class {
 		return true;
 	}
 
-	containsKey(final key) => {
+	containsKey(ref key) => {
 		var h = hash(str key, rawSize);
 		var curr = buckets[h];
 		curr != null do {
@@ -95,8 +107,15 @@ struct Map class {
 
 	expand() => {
 		size = 0;
-		var vector = getList();
-		rawSize = rawSize * 2;
+		var vector = {};
+		b in buckets do {
+			var curr = b;
+			curr != null do {
+				vector += {{curr.key, curr.value}};
+				curr = curr.next;
+			}
+		}
+		rawSize *= 2;
 		buckets = alloc rawSize;
 		e in vector do {
 			getIndex(e[0]) = e[1];
@@ -108,7 +127,7 @@ struct Map class {
 		b in buckets do {
 			var curr = b;
 			curr != null do {
-				list += {{curr.key, curr.value}};
+				list += {new Element(curr.key, curr.value)};
 				curr = curr.next;
 			}
 		}
@@ -120,6 +139,6 @@ struct Map class {
 	}
 
 	getStr() => {
-		return str getList();
+		return str getVec();
 	}
 }

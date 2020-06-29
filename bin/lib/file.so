@@ -1,18 +1,21 @@
-import "FileIO";
+# Benjamin Park
+# 29-06-2020
+
+import "LIB_FileIO";
 
 struct File class {
 	var pointer;
 
 	init(final filename) => {
-		this.pointer = ("FileIO.INIT" _OUTER_CALL_ filename);
+		this.pointer = ("LIB_FileIO.INIT" _OUTER_CALL_ filename);
 	}
 
 	exists() => {
-		return "FileIO.EXISTS" _OUTER_CALL_ (this.pointer);
+		return "LIB_FileIO.EXISTS" _OUTER_CALL_ (this.pointer);
 	}
 
 	create() => {
-		return "FileIO.CREATE" _OUTER_CALL_ (this.pointer);
+		return "LIB_FileIO.CREATE" _OUTER_CALL_ (this.pointer);
 	}
 
 	getStr() => {
@@ -30,12 +33,12 @@ struct File class {
 	struct Reader class {
 		var pointer;
 
-		init(final pointer) => {
-			this.pointer = ("FileIO.READER.INIT" _OUTER_CALL_ pointer);
+		init(ref pointer) => {
+			this.pointer = ("LIB_FileIO.READER.INIT" _OUTER_CALL_ pointer);
 		}
 
 		readLine() => {
-			var line = ("FileIO.READER.GETLINE" _OUTER_CALL_ pointer);
+			var line = ("LIB_FileIO.READER.GETLINE" _OUTER_CALL_ pointer);
 			line == null then {
 				close();
 			}
@@ -43,24 +46,30 @@ struct File class {
 		}
 
 		read(i) => {
+			pointer == null then {
+				return null;
+			}
 			i == null then {
 				i = 1;
 			}
 			var s = "";
 			j in {0 until i} do {
-				var char = ("FileIO.READER.GET" _OUTER_CALL_ pointer);
-				char == null then {
+				var c = ("LIB_FileIO.READER.GET" _OUTER_CALL_ pointer);
+				c == null then {
+					s == "" then {
+						s = null;
+					}
 					close();
 					break;
 				} else {
-					s += char;
+					s += c;
 				}
 			}
 			return s;
 		}
 
 		close() => {
-			"FileIO.READER.CLOSE" _OUTER_CALL_ pointer;
+			"LIB_FileIO.READER.CLOSE" _OUTER_CALL_ pointer;
 			pointer = null;
 		}
 
@@ -72,16 +81,16 @@ struct File class {
 	struct Writer class {
 		var pointer;
 
-		init(final pointer) => {
-			this.pointer = ("FileIO.WRITER.INIT" _OUTER_CALL_ pointer);
+		init(ref pointer) => {
+			this.pointer = ("LIB_FileIO.WRITER.INIT" _OUTER_CALL_ pointer);
 		}
 
-		write(final string) => {
-			"FileIO.WRITER.WRITE" _OUTER_CALL_ (pointer, string);
+		write(ref string) => {
+			"LIB_FileIO.WRITER.WRITE" _OUTER_CALL_ (pointer, string);
 		}
 
 		close() => {
-			"FileIO.WRITER.CLOSE" _OUTER_CALL_ pointer;
+			"LIB_FileIO.WRITER.CLOSE" _OUTER_CALL_ pointer;
 			pointer = null;
 		}
 
