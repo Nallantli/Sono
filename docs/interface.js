@@ -25,7 +25,7 @@ function runCode() {
 }
 
 function writeOutput(string) {
-    var elem = document.querySelector('#output');
+    var elem = document.querySelector('#input');
     var newString = "";
     for (let i = 0; i < string.length; i++) {
         if (string.charAt(i) == "\n")
@@ -35,5 +35,5 @@ function writeOutput(string) {
         else
             newString += string.charAt(i);
     }
-    elem.innerHTML += newString;
+    elem.insertAdjacentHTML("beforebegin", newString);
 }

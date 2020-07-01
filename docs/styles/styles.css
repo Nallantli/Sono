@@ -15,7 +15,7 @@ body {
     padding: 0;
 }
 
-#outputcont {
+#output {
     position: absolute;
     color: white;
     background: black;
@@ -30,6 +30,7 @@ body {
 }
 
 #input {
+    float: right;
     width: auto;
 }
 

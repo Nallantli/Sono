@@ -105,6 +105,7 @@ public class SonoServer extends WebSocketServer {
 		out.println(validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">"));
 		conns.get(conn).run("load \"system\";");
 		out.println(validate("Loaded System Library"));
+		out.print(validate(">"));
 	}
 
 	@Override
@@ -133,6 +134,8 @@ public class SonoServer extends WebSocketServer {
 		}
 		sb.append("</span>");
 		stdout.get(conn).println(sb.toString());
+
+		stdout.get(conn).print(validate(">"));
 	}
 
 	@Override
