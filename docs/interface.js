@@ -1,4 +1,4 @@
-let socket = new WebSocket("wss://3.128.186.184:80/ws");
+let socket = new WebSocket("ws://3.128.186.184:80");
 
 socket.onopen = function(e) {
     console.log("[open] Connection established");
