@@ -2,25 +2,17 @@ package server;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
-import java.nio.file.Paths;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 import org.java_websocket.server.WebSocketServer;
 
 import main.SonoWrapper;
@@ -31,7 +23,7 @@ import server.io.StandardOutput;
 
 public class SonoServer extends WebSocketServer {
 
-	private static int TCP_PORT = 443;
+	private static int TCP_PORT = 80;
 	private static String path;
 	private static PhoneLoader pl;
 
@@ -84,27 +76,6 @@ public class SonoServer extends WebSocketServer {
 		}
 
 		final SonoServer server = new SonoServer();
-
-		String STORETYPE = "JKS";
-		String KEYSTORE = Paths.get("misc", "keystore.jks").toString();
-		String STOREPASSWORD = "storepassword";
-		String KEYPASSWORD = "keypassword";
-
-		KeyStore ks = KeyStore.getInstance(STORETYPE);
-		File kf = new File(KEYSTORE);
-		ks.load(new FileInputStream(kf), STOREPASSWORD.toCharArray());
-
-		KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-		kmf.init(ks, KEYPASSWORD.toCharArray());
-		TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-		tmf.init(ks);
-
-		SSLContext sslContext = null;
-		sslContext = SSLContext.getInstance("TLS");
-		sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-		server.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(sslContext));
-
 		server.start();
 	}
 
