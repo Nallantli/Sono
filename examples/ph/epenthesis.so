@@ -6,9 +6,9 @@ load "rule";
 var rule = S |> null -> 'ə' // [-|syl, +|nasal] ~ [-|syl, +|nasal];
 
 var words = {
-	`amma`,
-	`anma`,
-	`anŋomno`
+	`am.ma`,
+	`an.ma`,
+	`an.ŋom.no`
 };
 
 var applied = words.apply(rule);

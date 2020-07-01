@@ -28,12 +28,12 @@ var ruleSet = {
 };
 
 var words = {
-	`tikatetɯ`,
-	`joɾosikɯ`,
-	`geɴki`,
-	`sitteiɾɯ`,
-	`ɾjɯɯgakɯsei`,
-	`siɴbɯɴ`
+	`ti.ka.te.tɯ`,
+	`jo.ɾo.si.kɯ`,
+	`geɴ.ki`,
+	`sit.te.i.ɾɯ`,
+	`ɾjɯ.ɯ.ga.kɯ.se.i`,
+	`siɴ.bɯɴ`
 };
 
 var applied = words.apply(ruleSet);

@@ -5,8 +5,8 @@ load "rule";
 var rule = S |> [-|syl, +|cons, +|voice, -|nasal] -> [-|voice] // null ~ "#";
 
 var words = {
-	`bʊndəstaːg`,
-	`bʊndəstaːgə`
+	`bʊn.dəs.taːg`,
+	`bʊn.dəs.taː.gə`
 };
 
 var applied = words.apply(rule);

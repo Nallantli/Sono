@@ -23,10 +23,16 @@ public class Rule {
 				return "#";
 			}
 		},
-		SYLLABLE {
+		SYLLABLE_INIT {
 			@Override
 			public String toString() {
 				return "$";
+			}
+		},
+		SYLLABLE_END {
+			@Override
+			public String toString() {
+				return "&";
 			}
 		},
 		MORPHEME {
@@ -77,14 +83,19 @@ public class Rule {
 		final List<Phone> phones = new ArrayList<>();
 		final List<Word.SyllableDelim> delims = new ArrayList<>();
 		boolean assimilateFlag = false;
+		int dOffset = 0;
 		for (int i = 0; i < sequence.size(); i++) {
+			final Phone phone = sequence.get(i);
+			final Word.SyllableDelim delim = sequence.getDelim(i + dOffset);
 			if (assimilateFlag) {
 				assimilateFlag = false;
+				if (delim != Word.SyllableDelim.NULL) {
+					delims.add(delim);
+					dOffset++;
+				}
 				continue;
 			}
 			final Map<Integer, Matrix> assimilationMaps = new HashMap<>();
-			final Phone phone = sequence.get(i);
-			final Word.SyllableDelim delim = sequence.getDelim(i);
 
 			Object tempSearch = search;
 			final List<Object> tempInit = new ArrayList<>();
@@ -219,6 +230,10 @@ public class Rule {
 					phones.remove(phones.size() - 1);
 					delims.remove(delims.size() - 1);
 				}
+				if (tempTrans.isEmpty() && !delims.isEmpty() && sequence.getDelim(i + 1) != Word.SyllableDelim.NULL) {
+					delims.remove(delims.size() - 1);
+					delims.add(delim);
+				}
 				for (final Object e : tempTrans) {
 					Phone addition = null;
 					if (e.getClass() == Matrix.class) {
@@ -227,13 +242,24 @@ public class Rule {
 						addition = (Phone) e;
 					}
 					phones.add(addition);
-					if (c == 0)
-						delims.add(delim);
-					else if (c >= 1)
-						delims.add(Word.SyllableDelim.NULL);
-					if (search == null) {
-						phones.add(phone);
-						delims.add(Word.SyllableDelim.NULL);
+					if (phones.size() > delims.size()) {
+						if (c == 0) {
+							delims.add(delim);
+						} else if (c >= 1) {
+							delims.add(Word.SyllableDelim.NULL);
+						}
+						if (search == null) {
+							phones.add(phone);
+							if (delims.size() > 2) {
+								delims.remove(delims.size() - 1);
+								delims.remove(delims.size() - 1);
+								delims.add(Word.SyllableDelim.DELIM);
+								delims.add(Word.SyllableDelim.NULL);
+								delims.add(Word.SyllableDelim.DELIM);
+							} else {
+								delims.add(Word.SyllableDelim.DELIM);
+							}
+						}
 					}
 					c++;
 				}
@@ -260,10 +286,14 @@ public class Rule {
 					return index == sequence.size() - 1;
 				case WORD_INITIAL:
 					return index == 0;
-				case SYLLABLE:
+				case SYLLABLE_INIT:
 					return index == sequence.size() - 1 || index == 0
 							|| sequence.getDelim(index) == Word.SyllableDelim.DELIM
 							|| sequence.getDelim(index) == Word.SyllableDelim.MORPHEME;
+				case SYLLABLE_END:
+					return index == sequence.size() - 1 || index == 0
+							|| sequence.getDelim(index + 1) == Word.SyllableDelim.DELIM
+							|| sequence.getDelim(index + 1) == Word.SyllableDelim.MORPHEME;
 				case MORPHEME:
 					return index == sequence.size() - 1 || index == 0
 							|| sequence.getDelim(index) == Word.SyllableDelim.MORPHEME;

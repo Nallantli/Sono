@@ -1,5 +1,5 @@
 # Benjamin Park
-# 29-06-2020
+# 30-06-2020
 
 load "graphics";
 load "math";
@@ -192,7 +192,7 @@ static Graph class {
 					i += 1;
 				}
 				var tempY = (height - 50) - ((e.b - minY) * ((height - 75) / (maxY - minY))).ceil();
-				var oval = new Shape.Oval(Color.BLUE, tempX - 3, tempY - 3, 6, 6);
+				var oval = new Shape.Oval(null, Color.BLUE, tempX - 3, tempY - 3, 6, 6);
 				graphics.add(oval);
 			}
 			cursorLineX = new Shape.Line(Color.RED, 0, 0, 0, 0);
@@ -343,7 +343,7 @@ static Graph class {
 			e in data.getTuples() do {
 				var tempX = 50 + ((i / (maxX - 1)) * (width - 75));
 				var tempY = (height - 50) - ((e.b - minY) * ((height - 75) / (maxY - minY))).ceil();
-				var bar = new Shape.Rectangle(Color.BLUE, tempX + 1, tempY, barWidth - 2, height - tempY - 50);
+				var bar = new Shape.Rectangle(Color.BLUE, null, tempX + 1, tempY, barWidth - 2, height - tempY - 50);
 				graphics.add(bar);
 				i += 1;
 			}

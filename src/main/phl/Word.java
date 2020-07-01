@@ -56,13 +56,13 @@ public class Word {
 	}
 
 	public Phone get(final int i) {
-		if (i < this.size() && i >= 0)
+		if (i < this.phones.size() && i >= 0)
 			return this.phones.get(i);
 		return null;
 	}
 
 	public SyllableDelim getDelim(final int i) {
-		if (i < this.size() && i >= 0)
+		if (i < this.delims.size() && i >= 0)
 			return this.delims.get(i);
 		return SyllableDelim.NULL;
 	}

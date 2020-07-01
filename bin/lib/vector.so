@@ -1,8 +1,9 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 29-06-2020
+# 30-06-2020
 
 load "math";
+load "system";
 
 Vector::pop(ref this) => {
 	var nl = {};
@@ -232,4 +233,16 @@ Vector::foldLeft(final this, final function) => {
 	}
 	var nl = this;
 	return function(nl.pop().foldLeft(function), this[len this - 1]);
+}
+
+Vector::randomize(ref this) => {
+	var temp = this;
+	var nv = {};
+	i in {0 until len this} do {
+		var index = Random.int(0, len temp);
+		var e = temp[index];
+		nv += { e };
+		temp.remove(index);
+	}
+	return nv;
 }

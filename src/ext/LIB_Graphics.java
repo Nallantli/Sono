@@ -28,19 +28,23 @@ import main.sono.Datum;
 import main.sono.Function;
 
 abstract class Paintable {
-	protected Color color;
+	protected Color fill;
+	protected Color outline;
 
-	public Paintable(final Color color) {
-		setColor(color);
+	public Paintable(final Color fill, final Color outline) {
+		setFill(fill);
+		setOutline(outline);
 	}
 
-	public void setColor(final Color color) {
-		this.color = color;
+	public void setFill(final Color fill) {
+		this.fill = fill;
 	}
 
-	public void paint(final Graphics g) {
-		g.setColor(color);
+	public void setOutline(final Color outline) {
+		this.outline = outline;
 	}
+
+	public abstract void paint(final Graphics g);
 
 	public static class Rectangle extends Paintable {
 		protected int x;
@@ -48,8 +52,9 @@ abstract class Paintable {
 		protected int width;
 		protected int height;
 
-		public Rectangle(final Color color, final int x, final int y, final int width, final int height) {
-			super(color);
+		public Rectangle(final Color fill, final Color outline, final int x, final int y, final int width,
+				final int height) {
+			super(fill, outline);
 			this.x = x;
 			this.y = y;
 			this.width = width;
@@ -68,8 +73,14 @@ abstract class Paintable {
 
 		@Override
 		public void paint(final Graphics g) {
-			super.paint(g);
-			g.fillRect(x, y, width, height);
+			if (fill != null) {
+				g.setColor(fill);
+				g.fillRect(x, y, width, height);
+			}
+			if (outline != null) {
+				g.setColor(outline);
+				g.drawRect(x, y, width, height);
+			}
 		}
 	}
 
@@ -79,8 +90,9 @@ abstract class Paintable {
 		protected int width;
 		protected int height;
 
-		public Oval(final Color color, final int x, final int y, final int width, final int height) {
-			super(color);
+		public Oval(final Color fill, final Color outline, final int x, final int y, final int width,
+				final int height) {
+			super(fill, outline);
 			this.x = x;
 			this.y = y;
 			this.width = width;
@@ -99,8 +111,14 @@ abstract class Paintable {
 
 		@Override
 		public void paint(final Graphics g) {
-			super.paint(g);
-			g.fillOval(x, y, width, height);
+			if (fill != null) {
+				g.setColor(fill);
+				g.fillOval(x, y, width, height);
+			}
+			if (outline != null) {
+				g.setColor(outline);
+				g.drawOval(x, y, width, height);
+			}
 		}
 	}
 
@@ -110,8 +128,8 @@ abstract class Paintable {
 		private int x2;
 		private int y2;
 
-		public Line(final Color color, final int x1, final int y1, final int x2, final int y2) {
-			super(color);
+		public Line(final Color fill, final int x1, final int y1, final int x2, final int y2) {
+			super(fill, null);
 			this.x1 = x1;
 			this.y1 = y1;
 			this.x2 = x2;
@@ -127,7 +145,7 @@ abstract class Paintable {
 
 		@Override
 		public void paint(final Graphics g) {
-			super.paint(g);
+			g.setColor(fill);
 			g.drawLine(x1, y1, x2, y2);
 		}
 	}
@@ -139,8 +157,8 @@ abstract class Paintable {
 		private Font font = null;
 		private final int align;
 
-		public Text(final Color color, final int x, final int y, final String text, final int align) {
-			super(color);
+		public Text(final Color fill, final int x, final int y, final String text, final int align) {
+			super(fill, null);
 			this.x = x;
 			this.y = y;
 			this.text = text;
@@ -162,7 +180,7 @@ abstract class Paintable {
 
 		@Override
 		public void paint(final Graphics g) {
-			super.paint(g);
+			g.setColor(fill);
 			if (font != null)
 				g.setFont(font);
 			final FontMetrics metrics = g.getFontMetrics(g.getFont());
@@ -568,27 +586,44 @@ public class LIB_Graphics extends Library {
 			final boolean success = gp.removeBuffer(paintable);
 			return new Datum(BigDecimal.valueOf(success ? 1 : 0));
 		});
-		commands.put("LIB_Graphics.SHAPE.SETCOLOR", (final Datum datum, final List<String> trace) -> {
-			final List<Datum> list = datum.getVector(trace);
-			final Paintable paintable = (Paintable) list.get(0).getPointer(trace);
-			final int r = list.get(1).getNumber(trace).intValue();
-			final int g = list.get(2).getNumber(trace).intValue();
-			final int b = list.get(3).getNumber(trace).intValue();
-			final int a = list.get(4).getNumber(trace).intValue();
-			paintable.setColor(new Color(r, g, b, a));
-			return new Datum();
-		});
-		commands.put("LIB_Graphics.SHAPE.RECTANGLE.INIT", (final Datum datum, final List<String> trace) -> {
+		commands.put("LIB_Graphics.COLOR.INIT", (final Datum datum, final List<String> trace) -> {
 			final List<Datum> list = datum.getVector(trace);
 			final int r = list.get(0).getNumber(trace).intValue();
 			final int g = list.get(1).getNumber(trace).intValue();
 			final int b = list.get(2).getNumber(trace).intValue();
 			final int a = list.get(3).getNumber(trace).intValue();
-			final int x = list.get(4).getNumber(trace).intValue();
-			final int y = list.get(5).getNumber(trace).intValue();
-			final int width = list.get(6).getNumber(trace).intValue();
-			final int height = list.get(7).getNumber(trace).intValue();
-			final Paintable.Rectangle rectangle = new Paintable.Rectangle(new Color(r, g, b, a), x, y, width, height);
+			final Color c = new Color(r, g, b, a);
+			return new Datum((Object) c);
+		});
+		commands.put("LIB_Graphics.SHAPE.SETFILL", (final Datum datum, final List<String> trace) -> {
+			final List<Datum> list = datum.getVector(trace);
+			final Paintable paintable = (Paintable) list.get(0).getPointer(trace);
+			final Color color = (Color) list.get(1).getPointer(trace);
+			paintable.setFill(color);
+			return new Datum();
+		});
+		commands.put("LIB_Graphics.SHAPE.SETOUTLINE", (final Datum datum, final List<String> trace) -> {
+			final List<Datum> list = datum.getVector(trace);
+			final Paintable paintable = (Paintable) list.get(0).getPointer(trace);
+			final Color color = (Color) list.get(1).getPointer(trace);
+			paintable.setOutline(color);
+			return new Datum();
+		});
+		commands.put("LIB_Graphics.SHAPE.RECTANGLE.INIT", (final Datum datum, final List<String> trace) -> {
+			final List<Datum> list = datum.getVector(trace);
+			Color fill = null;
+			Color outline = null;
+			if (list.get(0).getType() != Datum.Type.NULL) {
+				fill = (Color) list.get(0).getPointer(trace);
+			}
+			if (list.get(1).getType() != Datum.Type.NULL) {
+				outline = (Color) list.get(1).getPointer(trace);
+			}
+			final int x = list.get(2).getNumber(trace).intValue();
+			final int y = list.get(3).getNumber(trace).intValue();
+			final int width = list.get(4).getNumber(trace).intValue();
+			final int height = list.get(5).getNumber(trace).intValue();
+			final Paintable.Rectangle rectangle = new Paintable.Rectangle(fill, outline, x, y, width, height);
 			return new Datum((Object) rectangle);
 		});
 		commands.put("LIB_Graphics.SHAPE.RECTANGLE.MOVE", (final Datum datum, final List<String> trace) -> {
@@ -609,15 +644,12 @@ public class LIB_Graphics extends Library {
 		});
 		commands.put("LIB_Graphics.SHAPE.LINE.INIT", (final Datum datum, final List<String> trace) -> {
 			final List<Datum> list = datum.getVector(trace);
-			final int r = list.get(0).getNumber(trace).intValue();
-			final int g = list.get(1).getNumber(trace).intValue();
-			final int b = list.get(2).getNumber(trace).intValue();
-			final int a = list.get(3).getNumber(trace).intValue();
-			final int x1 = list.get(4).getNumber(trace).intValue();
-			final int y1 = list.get(5).getNumber(trace).intValue();
-			final int x2 = list.get(6).getNumber(trace).intValue();
-			final int y2 = list.get(7).getNumber(trace).intValue();
-			final Paintable.Line line = new Paintable.Line(new Color(r, g, b, a), x1, y1, x2, y2);
+			final Color fill = (Color) list.get(0).getPointer(trace);
+			final int x1 = list.get(1).getNumber(trace).intValue();
+			final int y1 = list.get(2).getNumber(trace).intValue();
+			final int x2 = list.get(3).getNumber(trace).intValue();
+			final int y2 = list.get(4).getNumber(trace).intValue();
+			final Paintable.Line line = new Paintable.Line(fill, x1, y1, x2, y2);
 			return new Datum((Object) line);
 		});
 		commands.put("LIB_Graphics.SHAPE.LINE.MOVE", (final Datum datum, final List<String> trace) -> {
@@ -632,15 +664,19 @@ public class LIB_Graphics extends Library {
 		});
 		commands.put("LIB_Graphics.SHAPE.OVAL.INIT", (final Datum datum, final List<String> trace) -> {
 			final List<Datum> list = datum.getVector(trace);
-			final int r = list.get(0).getNumber(trace).intValue();
-			final int g = list.get(1).getNumber(trace).intValue();
-			final int b = list.get(2).getNumber(trace).intValue();
-			final int a = list.get(3).getNumber(trace).intValue();
-			final int x = list.get(4).getNumber(trace).intValue();
-			final int y = list.get(5).getNumber(trace).intValue();
-			final int width = list.get(6).getNumber(trace).intValue();
-			final int height = list.get(7).getNumber(trace).intValue();
-			final Paintable.Oval oval = new Paintable.Oval(new Color(r, g, b, a), x, y, width, height);
+			Color fill = null;
+			Color outline = null;
+			if (list.get(0).getType() != Datum.Type.NULL) {
+				fill = (Color) list.get(0).getPointer(trace);
+			}
+			if (list.get(1).getType() != Datum.Type.NULL) {
+				outline = (Color) list.get(1).getPointer(trace);
+			}
+			final int x = list.get(2).getNumber(trace).intValue();
+			final int y = list.get(3).getNumber(trace).intValue();
+			final int width = list.get(4).getNumber(trace).intValue();
+			final int height = list.get(5).getNumber(trace).intValue();
+			final Paintable.Oval oval = new Paintable.Oval(fill, outline, x, y, width, height);
 			return new Datum((Object) oval);
 		});
 		commands.put("LIB_Graphics.SHAPE.OVAL.MOVE", (final Datum datum, final List<String> trace) -> {
@@ -661,15 +697,12 @@ public class LIB_Graphics extends Library {
 		});
 		commands.put("LIB_Graphics.SHAPE.TEXT.INIT", (final Datum datum, final List<String> trace) -> {
 			final List<Datum> list = datum.getVector(trace);
-			final int r = list.get(0).getNumber(trace).intValue();
-			final int g = list.get(1).getNumber(trace).intValue();
-			final int b = list.get(2).getNumber(trace).intValue();
-			final int a = list.get(3).getNumber(trace).intValue();
-			final int x = list.get(4).getNumber(trace).intValue();
-			final int y = list.get(5).getNumber(trace).intValue();
-			final String string = list.get(6).getString(trace);
-			final int align = list.get(7).getNumber(trace).intValue();
-			final Paintable.Text text = new Paintable.Text(new Color(r, g, b, a), x, y, string, align);
+			final Color fill = (Color) list.get(0).getPointer(trace);
+			final int x = list.get(1).getNumber(trace).intValue();
+			final int y = list.get(2).getNumber(trace).intValue();
+			final String string = list.get(3).getString(trace);
+			final int align = list.get(4).getNumber(trace).intValue();
+			final Paintable.Text text = new Paintable.Text(fill, x, y, string, align);
 			return new Datum((Object) text);
 		});
 		commands.put("LIB_Graphics.SHAPE.TEXT.SETFONT", (final Datum datum, final List<String> trace) -> {

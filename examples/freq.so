@@ -19,6 +19,8 @@ var charMap = new Map();
 	}
 }
 
+reader.close();
+
 var dataRaw = (vec charMap).sort((a, b) => {
 	return a.value > b.value;
 });

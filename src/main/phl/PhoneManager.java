@@ -216,9 +216,12 @@ public class PhoneManager {
 	}
 
 	public Phone validate(final Matrix m) {
-		if (phoneLibrary.containsKey(m))
-			return new Phone(this, phoneLibrary.get(m), m, true);
-		else
+		if (m == null)
 			return null;
+		if (phoneLibrary.containsKey(m)) {
+			return new Phone(this, phoneLibrary.get(m), m, true);
+		} else {
+			return new Phone(this, "*", m, false);
+		}
 	}
 }

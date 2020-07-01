@@ -44,7 +44,7 @@ window.onMouseDrag((event) => {
 x in {0 until SIZE_X} do {
 	shapeArray[x] = alloc SIZE_Y;
 	y in {0 until SIZE_Y} do {
-		var shape = new Shape.Rectangle(Color.WHITE, x * 10, y * 10, 10, 10);
+		var shape = new Shape.Rectangle(Color.WHITE, null, x * 10, y * 10, 10, 10);
 		shapeArray[x][y] = shape;
 		graphics.add(shape);
 	}
@@ -67,9 +67,9 @@ refresh() => {
 	x in {0 until SIZE_X} do {
 		y in {0 until SIZE_Y} do {
 			valueArray[x][y] == 1 then {
-				shapeArray[x][y].setColor(Color.BLACK);
+				shapeArray[x][y].setFill(Color.BLACK);
 			} else {
-				shapeArray[x][y].setColor(Color.WHITE);
+				shapeArray[x][y].setFill(Color.WHITE);
 			}
 		}
 	}

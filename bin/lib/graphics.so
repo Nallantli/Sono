@@ -1,5 +1,5 @@
 # Benjamin Park
-# 29-06-2020
+# 30-06-2020
 
 import "LIB_Graphics";
 
@@ -186,24 +186,37 @@ static Shape class {
 	struct Rectangle class {
 		var data;
 
-		var color;
+		var fill;
+		var outline;
 		var x;
 		var y;
 		var width;
 		var height;
 
-		init(final color, final x, final y, final width, final height) => {
-			this.color = color;
+		init(ref fill, ref outline, final x, final y, final width, final height) => {
+			this.fill = fill;
+			this.outline = outline;
 			this.x = x;
 			this.y = y;
 			this.width = width;
 			this.height = height;
-			this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x, y, width, height));
+			fill == null then {
+				this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ (null, outline.data, x, y, width, height));
+			} else outline == null then {
+				this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ (fill.data, null, x, y, width, height));
+			} else {
+				this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ (fill.data, outline.data, x, y, width, height));
+			}
 		}
 
-		setColor(final color) => {
-			this.color = color;
-			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ (this.data, color.r, color.g, color.b, color.a);
+		setFill(ref fill) => {
+			this.fill = fill;
+			"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+		}
+
+		setOutline(ref outline) => {
+			this.outline = outline;
+			"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline);
 		}
 
 		setSize(final width, final height) => {
@@ -228,24 +241,37 @@ static Shape class {
 	struct Oval class {
 		var data;
 
-		var color;
+		var fill;
+		var outline;
 		var x;
 		var y;
 		var width;
 		var height;
 
-		init(final color, final x, final y, final width, final height) => {
-			this.color = color;
+		init(ref fill, ref outline, final x, final y, final width, final height) => {
+			this.fill = fill;
+			this.outline = outline;
 			this.x = x;
 			this.y = y;
 			this.width = width;
 			this.height = height;
-			this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x, y, width, height));
+			fill == null then {
+				this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ (null, outline.data, x, y, width, height));
+			} else outline == null then {
+				this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ (fill.data, null, x, y, width, height));
+			} else {
+				this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ (fill.data, outline.data, x, y, width, height));
+			}
 		}
 
-		setColor(final color) => {
-			this.color = color;
-			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ (this.data, color.r, color.g, color.b, color.a);
+		setFill(ref fill) => {
+			this.fill = fill;
+			"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+		}
+
+		setOutline(ref outline) => {
+			this.outline = outline;
+			"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline.data);
 		}
 
 		setSize(final width, final height) => {
@@ -270,24 +296,24 @@ static Shape class {
 	struct Line class {
 		var data;
 
-		var color;
+		var fill;
 		var x1;
 		var y1;
 		var x2;
 		var y2;
 
-		init(final color, final x1, final y1, final x2, final y2) => {
-			this.color = color;
+		init(ref fill, final x1, final y1, final x2, final y2) => {
+			this.fill = fill;
 			this.x1 = x1;
 			this.y1 = y1;
 			this.x2 = x2;
 			this.y2 = y2;
-			this.data = ("LIB_Graphics.SHAPE.LINE.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x1, y1, x2, y2));
+			this.data = ("LIB_Graphics.SHAPE.LINE.INIT" _OUTER_CALL_ (fill.data, x1, y1, x2, y2));
 		}
 
-		setColor(final color) => {
-			this.color = color;
-			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ (this.data, color.r, color.g, color.b, color.a);
+		setFill(ref fill) => {
+			this.fill = fill;
+			"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
 		}
 
 		setPoints(final x1, final y1, final x2, final y2) => {
@@ -310,28 +336,28 @@ static Shape class {
 	struct Text class {
 		var data;
 
-		var color;
+		var fill;
 		var x;
 		var y;
 		var string;
 		var font;
 		var align;
 
-		init(final color, final x, final y, final string, final align) => {
-			this.color = color;
+		init(ref fill, final x, final y, final string, final align) => {
+			this.fill = fill;
 			this.x = x;
 			this.y = y;
 			this.string = string;
 			this.align = align;
-			this.data = ("LIB_Graphics.SHAPE.TEXT.INIT" _OUTER_CALL_ (color.r, color.g, color.b, color.a, x, y, string, align));
+			this.data = ("LIB_Graphics.SHAPE.TEXT.INIT" _OUTER_CALL_ (fill.data, x, y, string, align));
 		}
 
-		setColor(final color) => {
-			this.color = color;
-			"LIB_Graphics.SHAPE.SETCOLOR" _OUTER_CALL_ (data, color.r, color.g, color.b, color.a);
+		setFill(ref fill) => {
+			this.fill = fill;
+			"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
 		}
 
-		setFont(final font) => {
+		setFont(ref font) => {
 			this.font = font;
 			"LIB_Graphics.SHAPE.TEXT.SETFONT" _OUTER_CALL_ (data, font.font);
 		}
@@ -379,6 +405,7 @@ static Color class {
 		var g;
 		var b;
 		var a;
+		var data;
 
 		init(final r, final g, final b, final a) => {
 			this.r = r;
@@ -389,6 +416,7 @@ static Color class {
 			} else {
 				this.a = a;
 			}
+			this.data = ("LIB_Graphics.COLOR.INIT" _OUTER_CALL_ (r, g, b, this.a));
 		}
 
 		getStr() => {

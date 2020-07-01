@@ -1,5 +1,5 @@
 # Benjamin Park
-# 29-06-2020
+# 30-06-2020
 
 import "LIB_FileIO";
 
@@ -39,9 +39,6 @@ struct File class {
 
 		readLine() => {
 			var line = ("LIB_FileIO.READER.GETLINE" _OUTER_CALL_ pointer);
-			line == null then {
-				close();
-			}
 			return line;
 		}
 
@@ -59,7 +56,6 @@ struct File class {
 					s == "" then {
 						s = null;
 					}
-					close();
 					break;
 				} else {
 					s += c;

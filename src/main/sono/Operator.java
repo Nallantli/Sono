@@ -717,7 +717,7 @@ public abstract class Operator {
 							init.add(Rule.Variants.WORD_INITIAL);
 							break;
 						case "$":
-							init.add(Rule.Variants.SYLLABLE);
+							init.add(Rule.Variants.SYLLABLE_INIT);
 							break;
 						case "+":
 							init.add(Rule.Variants.MORPHEME);
@@ -749,7 +749,7 @@ public abstract class Operator {
 							fin.add(Rule.Variants.WORD_FINAL);
 							break;
 						case "$":
-							fin.add(Rule.Variants.SYLLABLE);
+							fin.add(Rule.Variants.SYLLABLE_END);
 							break;
 						case "+":
 							fin.add(Rule.Variants.MORPHEME);
@@ -828,11 +828,16 @@ public abstract class Operator {
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				final List<Phone> phones = new ArrayList<>();
 				final List<Word.SyllableDelim> delims = new ArrayList<>();
+				boolean flag = true;
 				for (final Datum d : datumA.getVector(trace)) {
 					if (d.getType() == Datum.Type.PHONE) {
 						phones.add(d.getPhone(trace));
-						delims.add(Word.SyllableDelim.NULL);
+						if (flag)
+							delims.add(Word.SyllableDelim.NULL);
+						else
+							flag = true;
 					} else if (d.getType() == Datum.Type.STRING) {
+						flag = false;
 						switch (d.getString(trace)) {
 							case ".":
 								delims.add(Word.SyllableDelim.DELIM);
@@ -1600,7 +1605,7 @@ public abstract class Operator {
 						(Main.DEBUG ? new ArrayList<>(trace) : trace));
 				if (datumA.getType() != Datum.Type.STRUCTURE) {
 					pValues.add(0, datumA);
-					Datum functionB = ((Inner) a).getB().evaluate(scope, interpreter,
+					final Datum functionB = ((Inner) a).getB().evaluate(scope, interpreter,
 							(Main.DEBUG ? new ArrayList<>(trace) : trace));
 					f = functionB.getFunction(datumA.getType(), trace);
 					if (f == null)

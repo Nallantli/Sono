@@ -1,0 +1,74 @@
+# Benjamin Park
+# 30-06-2020
+
+load "file";
+load "map";
+load "string";
+load "vector";
+load "system";
+load "rule";
+
+struct DataSet class {
+	var categories;
+	var rules;
+	var syllables;
+	var min;
+	var max;
+
+	init(final filename) => {
+		var file = new File(filename);
+		var reader = file.getReader();
+		var line;
+		categories = new Map();
+		(line = reader.readLine()) != null do {
+			line == "CATEGORIES" then {
+				(line = reader.readLine()).front() == "\t" do {
+					line.shift();
+					var label = line.front();
+					line = line.split("\t").back();
+					categories[label] = line.split(",");
+				}
+			}
+			line == "SYLLABLES" then {
+				(line = reader.readLine()) != null do {
+					line.shift();
+					var key = line.split("\t").front();
+					line = line.split("\t").back();
+					key == "TYPES" then {
+						syllables = line.split(",");
+					} else key == "MIN" then {
+						min = num line;
+					} else key == "MAX" then {
+						max = num line;
+					}
+				}
+			}
+		}
+	}
+
+	setRules(ref rules) => {
+		this.rules = rules;
+	}
+
+	genSyllable() => {
+		var syl = Random.set(syllables);
+		var w = "";
+		c in vec syl do {
+			w += Random.set(categories[c]);
+		}
+		return word w;
+	}
+
+	genWord() => {
+		var w = {};
+		i in {0 until Random.int(min, max)} do {
+			w += vec genSyllable() + { "." };
+		}
+		w.pop();
+		return word w;
+	}
+
+	toPhonetic(final w) => {
+		return w.apply(rules);
+	}
+}

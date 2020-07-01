@@ -1,0 +1,21 @@
+load "dataset";
+load "rule";
+load "vector";
+load "system";
+load "string";
+
+var dataset = new DataSet("docs/Test.txt");
+dataset.setRules(RuleSets.Common.randomize());
+
+var plural = dataset.genSyllable();
+var genitive = dataset.genSyllable();
+
+println("Singular\tPlural\tSg Gen\tPl Gen");
+i in {0 until 20} do {
+	var w = dataset.genWord();
+	var wSingular = (str dataset.toPhonetic(w)).replace("[\\.\\+]", "");
+	var wPlural = (str dataset.toPhonetic(word (vec w + { "+" } + vec plural))).replace("[\\.\\+]", "");
+	var wSingularGen = (str dataset.toPhonetic(word (vec w + { "+" } + vec genitive))).replace("[\\.\\+]", "");
+	var wPluralGen = (str dataset.toPhonetic(word (vec w + { "+" } + vec plural + { "+" } + vec genitive))).replace("[\\.\\+]", "");
+	println(wSingular + "\t" + wPlural + "\t" + wSingularGen + "\t" + wPluralGen);
+}

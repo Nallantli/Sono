@@ -7,7 +7,7 @@ var window = new Window("Rainbow", 600, 400, () => {
 });
 var graphics = window.getGraphics();
 var i = 0;
-var rectangle = new Shape.Rectangle(Color.HSLtoRGB(i, 1, 0.5), Random.int(25, window.width - 75), Random.int(25, window.height - 75), 50, 50);
+var rectangle = new Shape.Rectangle(Color.HSLtoRGB(i, 1, 0.5), Color.BLACK, Random.int(25, window.width - 75), Random.int(25, window.height - 75), 50, 50);
 var xm = 1;
 var ym = 1;
 graphics.add(rectangle);
@@ -18,7 +18,7 @@ refresh() => {
 		i = 0;
 	}
 	var color = Color.HSLtoRGB(i, 1, 0.5);
-	rectangle.setColor(color);
+	rectangle.setFill(color);
 	rectangle.move(xm, ym);
 	rectangle.x > window.width - 50 || rectangle.x < 0 then {
 		xm *= -1;

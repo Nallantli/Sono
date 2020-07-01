@@ -1,5 +1,5 @@
 # Benjamin Park
-# 27-06-2020
+# 30-06-2020
 
 import "LIB_Console";
 load "math";
@@ -26,7 +26,11 @@ static Random class {
 	}
 
 	int(final lower, final upper) => {
-		return (float() * (upper - lower) + lower).round();
+		return (float() * (upper - lower) + lower).floor();
+	}
+
+	set(ref vector) => {
+		return vector[int(0, len vector)]
 	}
 }
 
@@ -65,6 +69,10 @@ getLen(final this) => {
 
 getWord(final this) => {
 	return word this;
+}
+
+getPhone(final this) => {
+	return (vec word this)[0];
 }
 
 getChar(final this) => {
