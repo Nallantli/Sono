@@ -5,7 +5,7 @@ load "system";
 load "string";
 load "html";
 
-var dataset = new DataSet("docs/Test.txt");
+var dataset = new DataSet("misc/Test.txt");
 dataset.setRules(RuleSets.Common.randomize());
 
 var plural = dataset.genSyllable();
