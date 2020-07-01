@@ -11,15 +11,19 @@ import java.util.Deque;
 import java.util.List;
 
 import main.base.CommandManager;
-import main.Main;
+import main.SonoWrapper;
 import main.phl.*;
 import main.sono.err.SonoCompilationException;
+import main.sono.err.SonoRuntimeException;
+import main.sono.io.Output;
 
 public class Interpreter {
 	private final Scope main;
 	private final PhoneManager pl;
 	private final CommandManager console;
 	private static List<String> variableHash = new ArrayList<>();
+	private final Output stdout;
+	private final Output stderr;
 
 	private final List<String> loadedFiles;
 
@@ -40,7 +44,10 @@ public class Interpreter {
 	public static final int ALL = 14;
 	public static final int BASE = 15;
 
-	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console) {
+	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console,
+			final Output stdout, final Output stderr) {
+		this.stdout = stdout;
+		this.stderr = stderr;
 		this.main = main;
 		this.pl = pl;
 		this.loadedFiles = new ArrayList<>();
@@ -98,7 +105,12 @@ public class Interpreter {
 	}
 
 	public Datum evaluate(final Operator o) {
+		try {
 		return o.evaluate(main, this, new ArrayList<>());
+		} catch (SonoRuntimeException e) {
+			stderr.println(e.getMessage());
+			return new Datum();
+		}
 	}
 
 	private List<String> tokenize(final String code) {
@@ -113,7 +125,7 @@ public class Interpreter {
 		File file = new File(directory, filename);
 		try {
 			if (!file.exists())
-				file = new File(Main.getGlobalOption("PATH"), "lib/" + filename);
+				file = new File(SonoWrapper.getGlobalOption("PATH"), "lib/" + filename);
 
 			try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 				String line;
@@ -520,19 +532,19 @@ public class Interpreter {
 				}
 				o.addLast(new Operator.HardList(list));
 			} else if (token.charAt(0) == '\'') {
-				if (Main.getGlobalOption("LING").equals("FALSE"))
+				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 					throw new SonoCompilationException(
 							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Phone p = pl.interpretSegment(token.substring(1));
 				o.addLast(new Operator.Container(new Datum(p)));
 			} else if (token.charAt(0) == '@') {
-				if (Main.getGlobalOption("LING").equals("FALSE"))
+				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 					throw new SonoCompilationException(
 							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Pair p = pl.interpretFeature(token.substring(1));
 				o.addLast(new Operator.Container(new Datum(p)));
 			} else if (token.charAt(0) == '`') {
-				if (Main.getGlobalOption("LING").equals("FALSE"))
+				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 					throw new SonoCompilationException(
 							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Word p = pl.interpretSequence(token.substring(1));
@@ -578,7 +590,7 @@ public class Interpreter {
 		return condense(new Operator.SoftList(Arrays.asList(o.toArray(new Operator[0]))));
 	}
 
-	private static Operator condense(Operator parent) {
+	private static Operator condense(final Operator parent) {
 		if (parent.getChildren().size() == 1 && parent.type == Operator.Type.SOFT_LIST) {
 			return parent.getChildren().get(0);
 		} else {
@@ -606,5 +618,9 @@ public class Interpreter {
 
 	public CommandManager getCommandManager() {
 		return this.console;
+	}
+
+	public void print(final String str) {
+		stdout.print(str);
 	}
 }

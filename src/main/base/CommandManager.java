@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import main.Main;
+import main.SonoWrapper;
 import main.sono.Datum;
+import main.sono.Interpreter;
 import main.sono.err.SonoCompilationException;
 
 public class CommandManager {
 	public interface Command {
-		public Datum execute(Datum datum, List<String> trace);
+		public Datum execute(Datum datum, List<String> trace, Interpreter interpreter);
 	}
 
 	private final Map<String, Command> commands;
@@ -23,7 +24,7 @@ public class CommandManager {
 	public void importLibrary(final String directory, final String filename, final String classname) {
 		File file = new File(directory, filename);
 		if (!file.exists())
-			file = new File(Main.getGlobalOption("PATH"), "lib/" + filename);
+			file = new File(SonoWrapper.getGlobalOption("PATH"), "lib/" + filename);
 		try {
 			final ExtensionLoader<Library> loader = new ExtensionLoader<>();
 			final Library library = loader.loadClass(file, classname, Library.class);
@@ -33,7 +34,7 @@ public class CommandManager {
 		}
 	}
 
-	public Datum execute(final String key, final Datum datum, final List<String> trace) {
-		return commands.get(key).execute(datum, trace);
+	public Datum execute(final String key, final Datum datum, final List<String> trace, final Interpreter interpreter) {
+		return commands.get(key).execute(datum, trace, interpreter);
 	}
 }

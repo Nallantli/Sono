@@ -2,7 +2,7 @@ package main.sono;
 
 import java.util.List;
 
-import main.Main;
+import main.SonoWrapper;
 
 import java.util.ArrayList;
 
@@ -45,7 +45,7 @@ public class Function {
 			}
 		}
 
-		final Datum r = body.evaluate(scope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+		final Datum r = body.evaluate(scope, interpreter, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 		if (r.getRet()) {
 			r.setRet(false);
 			return r;

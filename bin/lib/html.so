@@ -1,0 +1,20 @@
+static Format class {
+	table(ref header, ref vector) => {
+		var s = "<table>";
+		header != null then {
+			s += "<tr>";
+			e in header do {
+				s += "<th>" + str e + "</th>";
+			}
+			s += "</tr>";
+		}
+		row in vector do {
+			s += "<tr>";
+			e in row do {
+				s += "<td>" + str e + "</td>";
+			}
+			s += "</tr>";
+		}
+		return s;
+	}
+}

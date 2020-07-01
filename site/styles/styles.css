@@ -1,0 +1,78 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Iosevka SS05", monospace;
+}
+
+#codecont {
+    position: absolute;
+    width: 50vw;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#output {
+    position: absolute;
+    color: white;
+    background: black;
+    width: calc(50vw - 30px);
+    top: 0;
+    bottom: 0;
+    right: 0;
+    padding: 0;
+    padding: 15px;
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+
+.blue {
+    color: #66aaff;
+}
+
+.red {
+    color: #ff6666;
+}
+
+#run {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+#editor {
+    height: 100%;
+    width: 100%;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 15px;
+    width: calc(100% - 30px);
+    background-color: #121212;
+}
+
+table td,
+table th {
+    border: 2px solid #333333;
+    padding: 8px;
+}
+
+table tr:nth-child(even) {
+    background-color: #222222;
+}
+
+table tr:hover {
+    background-color: #333333;
+}
+
+table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #66aaff;
+    color: black;
+}

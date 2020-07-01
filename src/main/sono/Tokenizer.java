@@ -1,12 +1,11 @@
 package main.sono;
 
-import static java.util.Map.entry;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 import main.sono.err.SonoCompilationException;
 
@@ -15,20 +14,55 @@ public class Tokenizer {
 		throw new IllegalStateException("Utility class");
 	}
 
-	protected static final Map<String, Integer> operators = Map.ofEntries(entry("_OUTER_CALL_", 20), entry("load", -13),
-			entry("import", -13), entry("new", -14), entry("var", -13), entry("struct", -14), entry("static", -14),
-			entry("class", 13), entry("return", 2), entry("throw", 2), entry("=>", 12), entry("len", -11),
-			entry("word", -11), entry("str", -11), entry("alloc", -11), entry("char", -11), entry("feat", -11),
-			entry("type", -11), entry("from", 10), entry("register", 10), entry("mat", -11), entry("num", -11),
-			entry("vec", -11), entry("com", -11), entry("::", 16), entry(".negative", -11), entry(".positive", -11),
-			entry(".index", 15), entry("ref", -15), entry("final", -15), entry(".exec", 15), entry(".", 15),
-			entry("**", -10), entry("*", 9), entry("/", 9), entry("%", 9), entry("+", 8), entry("-", 8), entry(">>", 8),
-			entry("?>", 8), entry("==", 6), entry("!=", 6), entry("<", 6), entry(">", 6), entry("<=", 6),
-			entry(">=", 6), entry("&&", 5), entry("||", 5), entry("=", -4), entry("+=", -4), entry("-=", -4),
-			entry("*=", -4), entry("/=", -4), entry("%=", -4), entry(">>=", -4), entry("->", 7), entry("//", 6),
-			entry("~", 7), entry("in", 3), entry("switch", 3), entry("do", 3), entry("|>", 5), entry("until", 4),
-			entry("then", 3), entry("else", -3), entry("try", -4), entry("catch", 3), entry(",", 2), entry(";", -1),
-			entry("|", 999));
+	protected static final Map<String, Integer> operators = Map.ofEntries(
+			new SimpleImmutableEntry<String, Integer>("_OUTER_CALL_", 20),
+			new SimpleImmutableEntry<String, Integer>("load", -13),
+			new SimpleImmutableEntry<String, Integer>("import", -13),
+			new SimpleImmutableEntry<String, Integer>("new", -14),
+			new SimpleImmutableEntry<String, Integer>("var", -13),
+			new SimpleImmutableEntry<String, Integer>("struct", -14),
+			new SimpleImmutableEntry<String, Integer>("static", -14),
+			new SimpleImmutableEntry<String, Integer>("class", 13),
+			new SimpleImmutableEntry<String, Integer>("return", 2),
+			new SimpleImmutableEntry<String, Integer>("throw", 2), new SimpleImmutableEntry<String, Integer>("=>", 12),
+			new SimpleImmutableEntry<String, Integer>("len", -11),
+			new SimpleImmutableEntry<String, Integer>("word", -11),
+			new SimpleImmutableEntry<String, Integer>("str", -11),
+			new SimpleImmutableEntry<String, Integer>("alloc", -11),
+			new SimpleImmutableEntry<String, Integer>("char", -11),
+			new SimpleImmutableEntry<String, Integer>("feat", -11),
+			new SimpleImmutableEntry<String, Integer>("type", -11),
+			new SimpleImmutableEntry<String, Integer>("from", 10),
+			new SimpleImmutableEntry<String, Integer>("register", 10),
+			new SimpleImmutableEntry<String, Integer>("mat", -11),
+			new SimpleImmutableEntry<String, Integer>("num", -11),
+			new SimpleImmutableEntry<String, Integer>("vec", -11),
+			new SimpleImmutableEntry<String, Integer>("com", -11), new SimpleImmutableEntry<String, Integer>("::", 16),
+			new SimpleImmutableEntry<String, Integer>(".negative", -11),
+			new SimpleImmutableEntry<String, Integer>(".positive", -11),
+			new SimpleImmutableEntry<String, Integer>(".index", 15),
+			new SimpleImmutableEntry<String, Integer>("ref", -15),
+			new SimpleImmutableEntry<String, Integer>("final", -15),
+			new SimpleImmutableEntry<String, Integer>(".exec", 15), new SimpleImmutableEntry<String, Integer>(".", 15),
+			new SimpleImmutableEntry<String, Integer>("**", -10), new SimpleImmutableEntry<String, Integer>("*", 9),
+			new SimpleImmutableEntry<String, Integer>("/", 9), new SimpleImmutableEntry<String, Integer>("%", 9),
+			new SimpleImmutableEntry<String, Integer>("+", 8), new SimpleImmutableEntry<String, Integer>("-", 8),
+			new SimpleImmutableEntry<String, Integer>(">>", 8), new SimpleImmutableEntry<String, Integer>("?>", 8),
+			new SimpleImmutableEntry<String, Integer>("==", 6), new SimpleImmutableEntry<String, Integer>("!=", 6),
+			new SimpleImmutableEntry<String, Integer>("<", 6), new SimpleImmutableEntry<String, Integer>(">", 6),
+			new SimpleImmutableEntry<String, Integer>("<=", 6), new SimpleImmutableEntry<String, Integer>(">=", 6),
+			new SimpleImmutableEntry<String, Integer>("&&", 5), new SimpleImmutableEntry<String, Integer>("||", 5),
+			new SimpleImmutableEntry<String, Integer>("=", -4), new SimpleImmutableEntry<String, Integer>("+=", -4),
+			new SimpleImmutableEntry<String, Integer>("-=", -4), new SimpleImmutableEntry<String, Integer>("*=", -4),
+			new SimpleImmutableEntry<String, Integer>("/=", -4), new SimpleImmutableEntry<String, Integer>("%=", -4),
+			new SimpleImmutableEntry<String, Integer>(">>=", -4), new SimpleImmutableEntry<String, Integer>("->", 7),
+			new SimpleImmutableEntry<String, Integer>("//", 6), new SimpleImmutableEntry<String, Integer>("~", 7),
+			new SimpleImmutableEntry<String, Integer>("in", 3), new SimpleImmutableEntry<String, Integer>("switch", 3),
+			new SimpleImmutableEntry<String, Integer>("do", 3), new SimpleImmutableEntry<String, Integer>("|>", 5),
+			new SimpleImmutableEntry<String, Integer>("until", 4), new SimpleImmutableEntry<String, Integer>("then", 3),
+			new SimpleImmutableEntry<String, Integer>("else", -3), new SimpleImmutableEntry<String, Integer>("try", -4),
+			new SimpleImmutableEntry<String, Integer>("catch", 3), new SimpleImmutableEntry<String, Integer>(",", 2),
+			new SimpleImmutableEntry<String, Integer>(";", -1), new SimpleImmutableEntry<String, Integer>("|", 999));
 
 	public static List<String> tokenize(final String str) {
 		char pChar = 0;

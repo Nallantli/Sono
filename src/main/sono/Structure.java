@@ -3,7 +3,7 @@ package main.sono;
 import java.util.List;
 import java.util.ArrayList;
 
-import main.Main;
+import main.SonoWrapper;
 import main.sono.err.SonoRuntimeException;
 
 public class Structure {
@@ -49,10 +49,10 @@ public class Structure {
 		if (stat)
 			throw new SonoRuntimeException("Cannot instantiate a static class.", trace);
 		final Structure structure = new Structure(this, trace);
-		structure.main.evaluate(structure.mainScope, interpreter, (Main.DEBUG ? new ArrayList<>(trace) : trace));
+		structure.main.evaluate(structure.mainScope, interpreter, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 		structure.mainScope.setVariable(interpreter.getManager(), Interpreter.THIS, new Datum(structure), trace);
 		structure.mainScope.getVariable(Interpreter.INIT, trace).getFunction(Datum.Type.ANY, trace).execute(params,
-				(Main.DEBUG ? new ArrayList<>(trace) : trace));
+				(SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 		return structure.mainScope.getVariable(Interpreter.THIS, trace);
 	}
 
@@ -62,8 +62,8 @@ public class Structure {
 		else {
 			if (this.mainScope.variableExists(Interpreter.GETSTR)) {
 				return this.mainScope.getVariable(Interpreter.GETSTR, trace).getFunction(Datum.Type.ANY, trace)
-						.execute(new ArrayList<>(), (Main.DEBUG ? new ArrayList<>(trace) : trace))
-						.toRawStringTrace((Main.DEBUG ? new ArrayList<>(trace) : trace));
+						.execute(new ArrayList<>(), (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace))
+						.toRawStringTrace((SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			} else {
 				return "STRUCT-" + Interpreter.deHash(key);
 			}

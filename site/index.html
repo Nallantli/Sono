@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+    <title> Test </title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="codecont">
+        <div id="editor"></div>
+    </div>
+    <div id="output">
+    </div>
+    <button id="run" onclick="runCode()">Run</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/twilight");
+        editor.setShowPrintMargin(false);
+        editor.setOption("fontFamily", "Iosevka SS05, monospace");
+        editor.setOption("fontSize", "16px");
+    </script>
+    <script type="text/javascript" src="interface.js">
+    </script>
+</body>
+
+</html>
