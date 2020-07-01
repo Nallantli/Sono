@@ -61,6 +61,7 @@ public class PhoneLoader {
 	}
 
 	private static void initalizeSecondary(final PhoneManager pm) {
+		secondaryLibrary = new HashMap<>();
 		secondaryLibrary.put(Secondary.VOCALIC,
 				new SecondaryArticulation("̩", Hasher.hash("syl"), Hasher.TRUE, new Secondary[] {},
 						List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
