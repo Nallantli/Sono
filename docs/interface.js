@@ -20,6 +20,12 @@ socket.onerror = function(error) {
     console.log(`[error] ${error.message}`);
 }
 
+function sendInput(elem) {
+    if (event.key == 'Enter') {
+        socket.send(elem.value);
+    }
+}
+
 function runCode() {
     socket.send(editor.getValue());
 }

@@ -123,7 +123,7 @@ public class SonoServer extends WebSocketServer {
 		final StringBuilder sb = new StringBuilder();
 		System.out.println("Recieved: " + message);
 		final Datum output = conns.get(conn).run(message);
-		sb.append("&gt;&gt;&gt;\n<span class=\"blue\">");
+		sb.append(" " + message + "\n<span class=\"blue\">");
 		if (output.getType() == Datum.Type.VECTOR) {
 			int i = 0;
 			for (final Datum e : output.getVector(new ArrayList<>())) {
