@@ -15,7 +15,7 @@ body {
     padding: 0;
 }
 
-#output {
+#outputcont {
     position: absolute;
     color: white;
     background: black;
@@ -27,6 +27,10 @@ body {
     padding: 15px;
     overflow-y: scroll;
     overflow-x: auto;
+}
+
+#input {
+    width: auto;
 }
 
 .blue {

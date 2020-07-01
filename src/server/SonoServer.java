@@ -110,7 +110,11 @@ public class SonoServer extends WebSocketServer {
 	@Override
 	public void onClose(final WebSocket conn, final int code, final String reason, final boolean remote) {
 		conns.remove(conn);
-		System.out.println("Closed connection to " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+		try {
+			System.out.println("Closed connection to " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 	}
 
 	@Override
