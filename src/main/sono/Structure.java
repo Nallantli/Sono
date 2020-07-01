@@ -49,23 +49,24 @@ public class Structure {
 		if (stat)
 			throw new SonoRuntimeException("Cannot instantiate a static class.", trace);
 		final Structure structure = new Structure(this, trace);
-		structure.main.evaluate(structure.mainScope, interpreter, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-		structure.mainScope.setVariable(interpreter.getManager(), Interpreter.THIS, new Datum(structure), trace);
-		structure.mainScope.getVariable(Interpreter.INIT, trace).getFunction(Datum.Type.ANY, trace).execute(params,
-				(SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-		return structure.mainScope.getVariable(Interpreter.THIS, trace);
+		structure.main.evaluate(structure.mainScope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+		structure.mainScope.setVariable(interpreter, interpreter.THIS, new Datum(structure), trace);
+		structure.mainScope.getVariable(interpreter.INIT, interpreter, trace).getFunction(Datum.Type.ANY, trace)
+				.execute(params, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+		return structure.mainScope.getVariable(interpreter.THIS, interpreter, trace);
 	}
 
 	public String toStringTrace(final List<String> trace) {
 		if (!instantiated)
-			return (stat ? "STATIC-" : "STRUCT-") + Interpreter.deHash(key);
+			return (stat ? "STATIC-" : "STRUCT-") + interpreter.deHash(key);
 		else {
-			if (this.mainScope.variableExists(Interpreter.GETSTR)) {
-				return this.mainScope.getVariable(Interpreter.GETSTR, trace).getFunction(Datum.Type.ANY, trace)
+			if (this.mainScope.variableExists(interpreter.GETSTR)) {
+				return this.mainScope.getVariable(interpreter.GETSTR, interpreter, trace)
+						.getFunction(Datum.Type.ANY, trace)
 						.execute(new ArrayList<>(), (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace))
 						.toRawStringTrace((SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			} else {
-				return "STRUCT-" + Interpreter.deHash(key);
+				return "STRUCT-" + interpreter.deHash(key);
 			}
 		}
 	}

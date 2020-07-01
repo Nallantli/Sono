@@ -33,7 +33,7 @@ public class Scope {
 		return scope;
 	}
 
-	public Datum getVariable(final int key, final List<String> trace) {
+	public Datum getVariable(final int key, final Interpreter interpreter, final List<String> trace) {
 		Scope curr = this;
 		while (curr != null) {
 			if (curr.data.containsKey(key))
@@ -42,20 +42,21 @@ public class Scope {
 		}
 
 		throw new SonoRuntimeException(
-				"Variable <" + Interpreter.deHash(key) + "> is not within scope or does not exist.", trace);
+				"Variable <" + interpreter.deHash(key) + "> is not within scope or does not exist.", trace);
 	}
 
-	public Datum setVariable(final PhoneManager pm, final int key, final Datum value, final List<String> trace) {
+	public Datum setVariable(final Interpreter interpreter, final int key, final Datum value,
+			final List<String> trace) {
 		if (data.containsKey(key)) {
 			if (value != null)
-				this.data.get(key).set(pm, value, trace);
+				this.data.get(key).set(interpreter.getManager(), value, trace);
 		} else {
 			if (value != null)
 				this.data.put(key, value);
 			else
 				this.data.put(key, new Datum());
 		}
-		return getVariable(key, trace);
+		return getVariable(key, interpreter, trace);
 	}
 
 	public boolean variableExists(final int key) {

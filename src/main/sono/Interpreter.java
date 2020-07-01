@@ -21,31 +21,31 @@ public class Interpreter {
 	private final Scope main;
 	private final PhoneManager pl;
 	private final CommandManager console;
-	private static List<String> variableHash = new ArrayList<>();
+	private final List<String> variableHash;
 	private final Output stdout;
 	private final Output stderr;
 
 	private final List<String> loadedFiles;
 
-	public static final int INIT = 0;
-	public static final int THIS = 1;
-	public static final int GETSTR = 2;
-	public static final int GETLEN = 3;
-	public static final int GETINDEX = 4;
-	public static final int GETLIST = 5;
-	public static final int ERROR = 6;
-	public static final int TRACE = 7;
-	public static final int SRULE = 8;
-	public static final int AFRULE = 9;
-	public static final int ABRULE = 10;
-	public static final int SQUAREBRACKET = 11;
-	public static final int CURLYBRACKET = 12;
-	public static final int PARANTHESIS = 13;
-	public static final int ALL = 14;
-	public static final int BASE = 15;
+	public final int INIT;
+	public final int THIS;
+	public final int GETSTR;
+	public final int GETLEN;
+	public final int GETINDEX;
+	public final int GETLIST;
+	public final int ERROR;
+	public final int TRACE;
+	public final int SRULE;
+	public final int AFRULE;
+	public final int ABRULE;
+	public final int SQUAREBRACKET;
+	public final int CURLYBRACKET;
+	public final int PARANTHESIS;
+	public final int ALL;
+	public final int BASE;
 
-	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console,
-			final Output stdout, final Output stderr) {
+	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console, final Output stdout,
+			final Output stderr) {
 		this.stdout = stdout;
 		this.stderr = stderr;
 		this.main = main;
@@ -64,39 +64,40 @@ public class Interpreter {
 		d.setMutable(false);
 		final Datum db = new Datum(dataBase);
 		db.setMutable(false);
+		variableHash = new ArrayList<>();
 
-		hashVariable("init");
-		hashVariable("this");
-		hashVariable("getStr");
-		hashVariable("getLen");
-		hashVariable("getIndex");
-		hashVariable("getVec");
-		hashVariable("_e");
-		hashVariable("_trace");
-		hashVariable("S");
-		hashVariable("Af");
-		hashVariable("Ab");
-		hashVariable("[");
-		hashVariable("{");
-		hashVariable("(");
-		hashVariable("_all");
-		hashVariable("_base");
+		INIT = hashVariable("init");
+		THIS = hashVariable("this");
+		GETSTR = hashVariable("getStr");
+		GETLEN = hashVariable("getLen");
+		GETINDEX = hashVariable("getIndex");
+		GETLIST = hashVariable("getVec");
+		ERROR = hashVariable("_e");
+		TRACE = hashVariable("_trace");
+		SRULE = hashVariable("S");
+		AFRULE = hashVariable("Af");
+		ABRULE = hashVariable("Ab");
+		SQUAREBRACKET = hashVariable("[");
+		CURLYBRACKET = hashVariable("{");
+		PARANTHESIS = hashVariable("(");
+		ALL = hashVariable("_all");
+		BASE = hashVariable("_base");
 
-		main.setVariable(pl, ALL, d, new ArrayList<>());
-		main.setVariable(pl, BASE, db, new ArrayList<>());
+		main.setVariable(this, ALL, d, new ArrayList<>());
+		main.setVariable(this, BASE, db, new ArrayList<>());
 	}
 
 	public Scope getScope() {
 		return this.main;
 	}
 
-	private static int hashVariable(final String key) {
+	private int hashVariable(final String key) {
 		if (!variableHash.contains(key))
 			variableHash.add(key);
 		return variableHash.indexOf(key);
 	}
 
-	public static String deHash(final int key) {
+	public String deHash(final int key) {
 		return variableHash.get(key);
 	}
 
@@ -106,8 +107,8 @@ public class Interpreter {
 
 	public Datum evaluate(final Operator o) {
 		try {
-		return o.evaluate(main, this, new ArrayList<>());
-		} catch (SonoRuntimeException e) {
+			return o.evaluate(main, new ArrayList<>());
+		} catch (final SonoRuntimeException e) {
 			stderr.println(e.getMessage());
 			return new Datum();
 		}
@@ -172,274 +173,274 @@ public class Interpreter {
 				}
 				if (token.equals(".negative")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Sub(new Operator.Container(new Datum(new BigDecimal(0))), a));
+					o.addLast(new Operator.Sub(this, new Operator.Container(this, new Datum(new BigDecimal(0))), a));
 				}
 				if (token.equals(".positive")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Add(new Operator.Container(new Datum(new BigDecimal(0))), a));
+					o.addLast(new Operator.Add(this, new Operator.Container(this, new Datum(new BigDecimal(0))), a));
 				}
 				if (token.equals("new")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.NewDec(a));
+					o.addLast(new Operator.NewDec(this, a));
 				}
 				if (token.equals("len")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Length(a));
+					o.addLast(new Operator.Length(this, a));
 				}
 				if (token.equals("return")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Return(a));
+					o.addLast(new Operator.Return(this, a));
 				}
 				if (token.equals("var")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.VarDec(((Operator.Variable) a).getKey()));
+					o.addLast(new Operator.VarDec(this, ((Operator.Variable) a).getKey()));
 				}
 				if (token.equals("struct")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.StructDec(((Operator.Variable) a).getKey()));
+					o.addLast(new Operator.StructDec(this, ((Operator.Variable) a).getKey()));
 				}
 				if (token.equals("static")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.StaticDec(((Operator.Variable) a).getKey()));
+					o.addLast(new Operator.StaticDec(this, ((Operator.Variable) a).getKey()));
 				}
 				if (token.equals("ref")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Ref(((Operator.Variable) a).getKey()));
+					o.addLast(new Operator.Ref(this, ((Operator.Variable) a).getKey()));
 				}
 				if (token.equals("final")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Final(((Operator.Variable) a).getKey()));
+					o.addLast(new Operator.Final(this, ((Operator.Variable) a).getKey()));
 				}
 				if (token.equals("com")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Common(a));
+					o.addLast(new Operator.Common(this, a));
 				}
 				if (token.equals("word")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.SeqDec(a));
+					o.addLast(new Operator.SeqDec(this, a));
 				}
 				if (token.equals("type")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.TypeConv(a));
+					o.addLast(new Operator.TypeConv(this, a));
 				}
 				if (token.equals("vec")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.ListDec(a));
+					o.addLast(new Operator.ListDec(this, a));
 				}
 				if (token.equals("mat")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.MatConv(a));
+					o.addLast(new Operator.MatConv(this, a));
 				}
 				if (token.equals("num")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.NumConv(a));
+					o.addLast(new Operator.NumConv(this, a));
 				}
 				if (token.equals("str")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.StringDec(a));
+					o.addLast(new Operator.StringDec(this, a));
 				}
 				if (token.equals("char")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Char(a));
+					o.addLast(new Operator.Char(this, a));
 				}
 				if (token.equals("feat")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.FeatDec(a));
+					o.addLast(new Operator.FeatDec(this, a));
 				}
 				if (token.equals("alloc")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Alloc(a));
+					o.addLast(new Operator.Alloc(this, a));
 				}
 				if (token.equals("throw")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Throw(a));
+					o.addLast(new Operator.Throw(this, a));
 				}
 				if (token.equals("try")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.TryCatch(a));
+					o.addLast(new Operator.TryCatch(this, a));
 				}
 				if (token.equals("register")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Register(a, b));
+					o.addLast(new Operator.Register(this, a, b));
 				}
 				if (token.equals("=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(a, b));
+					o.addLast(new Operator.Set(this, a, b));
 				}
 				if (token.equals("::")) {
 					Operator b = o.pollLast();
 					final Operator a = o.pollLast();
 					if (b.type == Operator.Type.SOFT_LIST)
-						b = new Operator.HardList(((Operator.Sequence) b).getVector());
-					o.addLast(new Operator.TypeDec(a, b));
+						b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
+					o.addLast(new Operator.TypeDec(this, a, b));
 				}
 				if (token.equals("->")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Arrow(a, b));
+					o.addLast(new Operator.Arrow(this, a, b));
 				}
 				if (token.equals("~")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Underscore(a, b));
+					o.addLast(new Operator.Underscore(this, a, b));
 				}
 				if (token.equals("//")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Slash(a, b));
+					o.addLast(new Operator.Slash(this, a, b));
 				}
 				if (token.equals(">>")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Transform(a, b));
+					o.addLast(new Operator.Transform(this, a, b));
 				}
 				if (token.equals(">>=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(a, new Operator.Transform(a, b)));
+					o.addLast(new Operator.Set(this, a, new Operator.Transform(this, a, b)));
 				}
 				if (token.equals("+")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Add(a, b));
+					o.addLast(new Operator.Add(this, a, b));
 				}
 				if (token.equals("+=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(a, new Operator.Add(a, b)));
+					o.addLast(new Operator.Set(this, a, new Operator.Add(this, a, b)));
 				}
 				if (token.equals("-")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Sub(a, b));
+					o.addLast(new Operator.Sub(this, a, b));
 				}
 				if (token.equals("-=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(a, new Operator.Sub(a, b)));
+					o.addLast(new Operator.Set(this, a, new Operator.Sub(this, a, b)));
 				}
 				if (token.equals("*")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Mul(a, b));
+					o.addLast(new Operator.Mul(this, a, b));
 				}
 				if (token.equals("*=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(a, new Operator.Mul(a, b)));
+					o.addLast(new Operator.Set(this, a, new Operator.Mul(this, a, b)));
 				}
 				if (token.equals("/")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Div(a, b));
+					o.addLast(new Operator.Div(this, a, b));
 				}
 				if (token.equals("/=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(a, new Operator.Div(a, b)));
+					o.addLast(new Operator.Set(this, a, new Operator.Div(this, a, b)));
 				}
 				if (token.equals("%")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Mod(a, b));
+					o.addLast(new Operator.Mod(this, a, b));
 				}
 				if (token.equals("%=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(a, new Operator.Mod(a, b)));
+					o.addLast(new Operator.Set(this, a, new Operator.Mod(this, a, b)));
 				}
 				if (token.equals("**")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Pow(a, b));
+					o.addLast(new Operator.Pow(this, a, b));
 				}
 				if (token.equals("**=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(a, new Operator.Pow(a, b)));
+					o.addLast(new Operator.Set(this, a, new Operator.Pow(this, a, b)));
 				}
 				if (token.equals("class")) {
 					Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					b = new Operator.SoftList(((Operator.Sequence) b).getVector());
-					o.addLast(new Operator.ClassDec(a, b));
+					b = new Operator.SoftList(this, ((Operator.Sequence) b).getVector());
+					o.addLast(new Operator.ClassDec(this, a, b));
 				}
 				if (token.equals(".index")) {
-					final Operator b = new Operator.SoftList(((Operator.MatrixDec) o.pollLast()).operators);
+					final Operator b = new Operator.SoftList(this, ((Operator.MatrixDec) o.pollLast()).operators);
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Index(a, b));
+					o.addLast(new Operator.Index(this, a, b));
 				}
 				if (token.equals("?>")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Contrast(a, b));
+					o.addLast(new Operator.Contrast(this, a, b));
 				}
 				if (token.equals("==")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Equal(a, b));
+					o.addLast(new Operator.Equal(this, a, b));
 				}
 				if (token.equals("!=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.NEqual(a, b));
+					o.addLast(new Operator.NEqual(this, a, b));
 				}
 				if (token.equals("<")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Less(a, b));
+					o.addLast(new Operator.Less(this, a, b));
 				}
 				if (token.equals(">")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.More(a, b));
+					o.addLast(new Operator.More(this, a, b));
 				}
 				if (token.equals("<=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.ELess(a, b));
+					o.addLast(new Operator.ELess(this, a, b));
 				}
 				if (token.equals(">=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.EMore(a, b));
+					o.addLast(new Operator.EMore(this, a, b));
 				}
 				if (token.equals("&&")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.And(a, b));
+					o.addLast(new Operator.And(this, a, b));
 				}
 				if (token.equals("||")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Or(a, b));
+					o.addLast(new Operator.Or(this, a, b));
 				}
 				if (token.equals(".")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Inner(a, b));
+					o.addLast(new Operator.Inner(this, a, b));
 				}
 				if (token.equals("from")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Find(a, b));
+					o.addLast(new Operator.Find(this, a, b));
 				}
 				if (token.equals("in")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Iterator(a, b));
+					o.addLast(new Operator.Iterator(this, a, b));
 				}
 				if (token.equals("until")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.RangeUntil(a, b));
+					o.addLast(new Operator.RangeUntil(this, a, b));
 				}
 				if (token.equals("do")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Loop(a, b));
+					o.addLast(new Operator.Loop(this, a, b));
 				}
 				if (token.equals("=>")) {
 					// (((VAR) :: (pop)) .exec (params)) => {}
@@ -450,30 +451,34 @@ public class Interpreter {
 						if (name.type == Operator.Type.TYPE_DEC) {
 							final Operator typeDec = ((Operator.TypeDec) name).getA();
 							final Operator fName = ((Operator.TypeDec) name).getB();
-							a = new Operator.HardList(((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
-							o.addLast(new Operator.Set(new Operator.VarDec(((Operator.Variable) fName).getKey()),
-									new Operator.Lambda(new Operator.TypeDec(typeDec, a), b)));
+							a = new Operator.HardList(this,
+									((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
+							o.addLast(new Operator.Set(this,
+									new Operator.VarDec(this, ((Operator.Variable) fName).getKey()),
+									new Operator.Lambda(this, new Operator.TypeDec(this, typeDec, a), b)));
 						} else {
-							a = new Operator.HardList(((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
-							o.addLast(new Operator.Set(new Operator.VarDec(((Operator.Variable) name).getKey()),
-									new Operator.Lambda(a, b)));
+							a = new Operator.HardList(this,
+									((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
+							o.addLast(new Operator.Set(this,
+									new Operator.VarDec(this, ((Operator.Variable) name).getKey()),
+									new Operator.Lambda(this, a, b)));
 						}
 					} else {
 						if (a.type != Operator.Type.TYPE_DEC)
-							a = new Operator.HardList(((Operator.Sequence) a).getVector());
-						o.addLast(new Operator.Lambda(a, b));
+							a = new Operator.HardList(this, ((Operator.Sequence) a).getVector());
+						o.addLast(new Operator.Lambda(this, a, b));
 					}
 				}
 				if (token.equals(".exec")) {
 					Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					b = new Operator.HardList(((Operator.Sequence) b).getVector());
-					o.addLast(new Operator.Execute(a, b));
+					b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
+					o.addLast(new Operator.Execute(this, a, b));
 				}
 				if (token.equals("then")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.IfElse(a, b));
+					o.addLast(new Operator.IfElse(this, a, b));
 				}
 				if (token.equals("else")) {
 					final Operator b = o.pollLast();
@@ -490,7 +495,7 @@ public class Interpreter {
 				if (token.equals("_OUTER_CALL_")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.OuterCall(a, b));
+					o.addLast(new Operator.OuterCall(this, a, b));
 				}
 				if (token.equals("|>")) {
 					Rule.Type rtype = null;
@@ -502,92 +507,92 @@ public class Interpreter {
 						rtype = Rule.Type.A_FORWARD;
 					if (a == ABRULE)
 						rtype = Rule.Type.A_BACKWARD;
-					o.addLast(new Operator.RuleDec(rtype, b));
+					o.addLast(new Operator.RuleDec(this, rtype, b));
 				}
 			} else if (token.equals("]")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
 				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == Interpreter.SQUAREBRACKET)) {
+						&& ((Operator.Variable) curr).getKey() == this.SQUAREBRACKET)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.MatrixDec(list));
+				o.addLast(new Operator.MatrixDec(this, list));
 			} else if (token.equals(")")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
 				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == Interpreter.PARANTHESIS)) {
+						&& ((Operator.Variable) curr).getKey() == this.PARANTHESIS)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.SoftList(list));
+				o.addLast(new Operator.SoftList(this, list));
 			} else if (token.equals("}")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
 				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == Interpreter.CURLYBRACKET)) {
+						&& ((Operator.Variable) curr).getKey() == this.CURLYBRACKET)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.HardList(list));
+				o.addLast(new Operator.HardList(this, list));
 			} else if (token.charAt(0) == '\'') {
 				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 					throw new SonoCompilationException(
 							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Phone p = pl.interpretSegment(token.substring(1));
-				o.addLast(new Operator.Container(new Datum(p)));
+				o.addLast(new Operator.Container(this, new Datum(p)));
 			} else if (token.charAt(0) == '@') {
 				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 					throw new SonoCompilationException(
 							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Pair p = pl.interpretFeature(token.substring(1));
-				o.addLast(new Operator.Container(new Datum(p)));
+				o.addLast(new Operator.Container(this, new Datum(p)));
 			} else if (token.charAt(0) == '`') {
 				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 					throw new SonoCompilationException(
 							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Word p = pl.interpretSequence(token.substring(1));
-				o.addLast(new Operator.Container(new Datum(p)));
+				o.addLast(new Operator.Container(this, new Datum(p)));
 			} else if (token.charAt(0) == '\"') {
 				final String s = token.substring(1);
-				o.addLast(new Operator.Container(new Datum(s)));
+				o.addLast(new Operator.Container(this, new Datum(s)));
 			} else if (Character.isDigit(token.charAt(0))) {
 				if (token.charAt(token.length() - 1) == 'D')
 					token = token.substring(0, token.length() - 1);
-				o.addLast(new Operator.Container(new Datum(new BigDecimal(token))));
+				o.addLast(new Operator.Container(this, new Datum(new BigDecimal(token))));
 			} else if (token.equals("null")) {
-				o.addLast(new Operator.Container(new Datum()));
+				o.addLast(new Operator.Container(this, new Datum()));
 			} else if (token.equals("Vector")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.VECTOR)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.VECTOR)));
 			} else if (token.equals("Number")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.NUMBER)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.NUMBER)));
 			} else if (token.equals("Function")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.FUNCTION)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.FUNCTION)));
 			} else if (token.equals("String")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.STRING)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.STRING)));
 			} else if (token.equals("Phone")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.PHONE)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.PHONE)));
 			} else if (token.equals("Feature")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.PAIR)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.PAIR)));
 			} else if (token.equals("Matrix")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.MATRIX)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.MATRIX)));
 			} else if (token.equals("Rule")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.RULE)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.RULE)));
 			} else if (token.equals("Word")) {
-				o.addLast(new Operator.Container(new Datum(Datum.Type.WORD)));
+				o.addLast(new Operator.Container(this, new Datum(Datum.Type.WORD)));
 			} else if (token.equals("true")) {
-				o.addLast(new Operator.Container(new Datum(BigDecimal.valueOf(1))));
+				o.addLast(new Operator.Container(this, new Datum(BigDecimal.valueOf(1))));
 			} else if (token.equals("false")) {
-				o.addLast(new Operator.Container(new Datum(BigDecimal.valueOf(0))));
+				o.addLast(new Operator.Container(this, new Datum(BigDecimal.valueOf(0))));
 			} else if (token.equals("break")) {
-				o.addLast(new Operator.Break());
+				o.addLast(new Operator.Break(this));
 			} else {
-				o.addLast(new Operator.Variable(hashVariable(token)));
+				o.addLast(new Operator.Variable(this, hashVariable(token)));
 			}
 		}
 
-		return condense(new Operator.SoftList(Arrays.asList(o.toArray(new Operator[0]))));
+		return condense(new Operator.SoftList(this, Arrays.asList(o.toArray(new Operator[0]))));
 	}
 
 	private static Operator condense(final Operator parent) {

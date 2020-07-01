@@ -190,9 +190,9 @@ public class Datum {
 		return this.type;
 	}
 
-	public String getTypeString() {
+	public String getTypeString(final Interpreter i) {
 		if (this.type == Type.STRUCTURE)
-			return Interpreter.deHash(this.valueStructure.getKey());
+			return i.deHash(this.valueStructure.getKey());
 		return this.type.toString();
 	}
 
@@ -259,7 +259,8 @@ public class Datum {
 
 	public void set(final PhoneManager pm, final Datum datum, final List<String> trace) {
 		if (!mutable)
-			throw new SonoRuntimeException("You cannot set the value of a constant <" + this.toStringTrace(trace) + "> (to value <" + datum.toStringTrace(trace) + ">)", trace);
+			throw new SonoRuntimeException("You cannot set the value of a constant <" + this.toStringTrace(trace)
+					+ "> (to value <" + datum.toStringTrace(trace) + ">)", trace);
 		this.type = datum.getType();
 		switch (type) {
 			case VECTOR:

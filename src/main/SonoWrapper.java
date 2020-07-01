@@ -13,7 +13,7 @@ import main.sono.err.SonoException;
 import main.sono.io.Output;
 
 public class SonoWrapper {
-	public static final String VERSION = "Beta 1.4.3";
+	public static final String VERSION = "Beta 1.4.4";
 	public static boolean DEBUG;
 
 	private Interpreter sono = null;
