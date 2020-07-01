@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
+
+import main.SonoWrapper;
 import main.base.Library;
 import main.sono.Datum;
 import main.sono.Interpreter;
@@ -17,11 +19,11 @@ import java.util.List;
 public class LIB_FileIO extends Library {
 	public LIB_FileIO() {
 		super();
-		commands.put("LIB_FileIO.INIT", (final Datum datum, final List<String> trace,
-				final Interpreter interpreter) -> {
-			final File file = new File(datum.getString(trace));
-			return new Datum((Object) file);
-		});
+		commands.put("LIB_FileIO.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final File file = new File(datum.getString(trace));
+					return new Datum((Object) file);
+				});
 		commands.put("LIB_FileIO.EXISTS",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final File file = (File) datum.getPointer(trace);
@@ -32,6 +34,8 @@ public class LIB_FileIO extends Library {
 				});
 		commands.put("LIB_FileIO.CREATE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					if (SonoWrapper.getGlobalOption("WRITE").equals("FALSE"))
+						throw error("Write permissions are disabled for this interpreter.", trace);
 					final File file = (File) datum.getPointer(trace);
 					try {
 						if (file.createNewFile())
@@ -91,6 +95,8 @@ public class LIB_FileIO extends Library {
 				});
 		commands.put("LIB_FileIO.WRITER.INIT",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					if (SonoWrapper.getGlobalOption("WRITE").equals("FALSE"))
+						throw error("Write permissions are disabled for this interpreter.", trace);
 					final File file = (File) datum.getPointer(trace);
 					BufferedWriter bw;
 					try {
@@ -112,13 +118,13 @@ public class LIB_FileIO extends Library {
 				});
 		commands.put("LIB_FileIO.WRITER.CLOSE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-			final BufferedWriter bw = (BufferedWriter) datum.getPointer(trace);
-			try {
-				bw.close();
-				return new Datum();
-			} catch (final IOException e) {
-				throw error("Cannot close reader <" + bw.toString() + ">", trace);
-			}
-		});
+					final BufferedWriter bw = (BufferedWriter) datum.getPointer(trace);
+					try {
+						bw.close();
+						return new Datum();
+					} catch (final IOException e) {
+						throw error("Cannot close reader <" + bw.toString() + ">", trace);
+					}
+				});
 	}
 }

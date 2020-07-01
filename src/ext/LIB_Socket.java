@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 
+import main.SonoWrapper;
 import main.base.Library;
 import main.sono.Datum;
 import main.sono.Interpreter;
@@ -14,17 +15,19 @@ import main.sono.Interpreter;
 public class LIB_Socket extends Library {
 	public LIB_Socket() {
 		super();
-		commands.put("LIB_Socket.OPEN", (final Datum datum, final List<String> trace,
-				final Interpreter interpreter) -> {
-			final String address = datum.getVector(trace).get(0).getString(trace);
-			final int port = datum.getVector(trace).get(1).getNumber(trace).intValue();
-			try {
-				final Socket socket = new Socket(address, port);
-				return new Datum((Object) socket);
-			} catch (final Exception e) {
-				throw error("Could not open socket <" + address + ":" + port + ">", trace);
-			}
-		});
+		commands.put("LIB_Socket.OPEN",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					if (SonoWrapper.getGlobalOption("SOCKET").equals("FALSE"))
+						throw error("Socket permissions are disabled for this interpreter.", trace);
+					final String address = datum.getVector(trace).get(0).getString(trace);
+					final int port = datum.getVector(trace).get(1).getNumber(trace).intValue();
+					try {
+						final Socket socket = new Socket(address, port);
+						return new Datum((Object) socket);
+					} catch (final Exception e) {
+						throw error("Could not open socket <" + address + ":" + port + ">", trace);
+					}
+				});
 		commands.put("LIB_Socket.OUT.OPEN",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final Socket socket = (Socket) datum.getPointer(trace);
@@ -99,6 +102,8 @@ public class LIB_Socket extends Library {
 				});
 		commands.put("LIB_Socket.SERVER.OPEN",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					if (SonoWrapper.getGlobalOption("SOCKET").equals("FALSE"))
+						throw error("Socket permissions are disabled for this interpreter.", trace);
 					final int port = datum.getNumber(trace).intValue();
 					try {
 						final ServerSocket server = new ServerSocket(port);
@@ -119,13 +124,13 @@ public class LIB_Socket extends Library {
 				});
 		commands.put("LIB_Socket.SERVER.CLOSE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-			final ServerSocket server = (ServerSocket) datum.getPointer(trace);
-			try {
-				server.close();
-				return new Datum();
-			} catch (final Exception e) {
-				throw error("Could not close server <" + server.toString() + ">", trace);
-			}
-		});
+					final ServerSocket server = (ServerSocket) datum.getPointer(trace);
+					try {
+						server.close();
+						return new Datum();
+					} catch (final Exception e) {
+						throw error("Could not close server <" + server.toString() + ">", trace);
+					}
+				});
 	}
 }

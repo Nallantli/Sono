@@ -13,10 +13,11 @@ import main.sono.err.SonoException;
 import main.sono.io.Output;
 
 public class SonoWrapper {
-	public static final String VERSION = "Beta 1.4.2";
+	public static final String VERSION = "Beta 1.4.3";
 	public static boolean DEBUG;
 
 	private Interpreter sono = null;
+	private final Output stderr;
 
 	private static Map<String, String> globalOptions = new HashMap<>();
 
@@ -35,13 +36,14 @@ public class SonoWrapper {
 			if (sono != null)
 				return sono.runCode(".", code);
 		} catch (final Exception e) {
-			return new Datum();
+			stderr.println(e.getMessage());
 		}
 		return new Datum();
 	}
 
 	public SonoWrapper(final PhoneLoader pl, final String path, final String filename, final Output stdout,
 			final Output stderr) {
+		this.stderr = stderr;
 		final CommandManager command = new CommandManager();
 		if (pl == null) {
 			sono = new Interpreter(new Scope(null), new PhoneManager(), command, stdout, stderr);

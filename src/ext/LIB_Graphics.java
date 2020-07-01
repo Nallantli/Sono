@@ -435,31 +435,34 @@ class WindowFunctions extends JFrame {
 public class LIB_Graphics extends Library {
 	public LIB_Graphics() {
 		super();
-		commands.put("LIB_Graphics.INIT", (final Datum datum, final List<String> trace,
-				final Interpreter interpreter) -> {
-			final List<Datum> list = datum.getVector(trace);
-			final String title = list.get(0).getString(trace);
-			final int width = list.get(1).getNumber(trace).intValue();
-			final int height = list.get(2).getNumber(trace).intValue();
-			final WindowFunctions f = new WindowFunctions(title);
-			if (list.get(3).getType() == Datum.Type.FUNCTION) {
-				final Function close = list.get(3).getFunction(Datum.Type.ANY, trace);
-				f.addWindowListener(new WindowAdapter() {
-					@Override
-					public void windowClosing(final WindowEvent e) {
-						close.execute(new ArrayList<>(), trace);
+		commands.put("LIB_Graphics.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					if (SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE"))
+						throw error("Graphics permissions are disabled for this interpreter.", trace);
+					final List<Datum> list = datum.getVector(trace);
+					final String title = list.get(0).getString(trace);
+					final int width = list.get(1).getNumber(trace).intValue();
+					final int height = list.get(2).getNumber(trace).intValue();
+					final WindowFunctions f = new WindowFunctions(title);
+					if (list.get(3).getType() == Datum.Type.FUNCTION) {
+						final Function close = list.get(3).getFunction(Datum.Type.ANY, trace);
+						f.addWindowListener(new WindowAdapter() {
+							@Override
+							public void windowClosing(final WindowEvent e) {
+								close.execute(new ArrayList<>(), trace);
+							}
+						});
+					} else {
+						f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 					}
+					f.setIconImage(Toolkit.getDefaultToolkit()
+							.getImage(SonoWrapper.getGlobalOption("PATH") + "/res/icon.png"));
+					f.setResizable(false);
+					f.getContentPane().setPreferredSize(new Dimension(width, height));
+					f.pack();
+					f.setVisible(true);
+					return new Datum((Object) f);
 				});
-			} else {
-				f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			}
-			f.setIconImage(Toolkit.getDefaultToolkit().getImage(SonoWrapper.getGlobalOption("PATH") + "/res/icon.png"));
-			f.setResizable(false);
-			f.getContentPane().setPreferredSize(new Dimension(width, height));
-			f.pack();
-			f.setVisible(true);
-			return new Datum((Object) f);
-		});
 		commands.put("LIB_Graphics.SHOW",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
@@ -748,12 +751,12 @@ public class LIB_Graphics extends Library {
 				});
 		commands.put("LIB_Graphics.SHAPE.TEXT.MOVE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-			final List<Datum> list = datum.getVector(trace);
-			final Paintable.Text text = (Paintable.Text) list.get(0).getPointer(trace);
-			final int x = list.get(1).getNumber(trace).intValue();
-			final int y = list.get(2).getNumber(trace).intValue();
-			text.setOrigin(x, y);
-			return new Datum();
-		});
+					final List<Datum> list = datum.getVector(trace);
+					final Paintable.Text text = (Paintable.Text) list.get(0).getPointer(trace);
+					final int x = list.get(1).getNumber(trace).intValue();
+					final int y = list.get(2).getNumber(trace).intValue();
+					text.setOrigin(x, y);
+					return new Datum();
+				});
 	}
 }

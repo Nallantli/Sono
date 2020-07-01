@@ -43,6 +43,10 @@ public class SonoClient {
 
 		SonoWrapper.setGlobalOption("PATH", path);
 
+		SonoWrapper.setGlobalOption("WRITE", "TRUE");
+		SonoWrapper.setGlobalOption("SOCKET", "TRUE");
+		SonoWrapper.setGlobalOption("GRAPHICS", "TRUE");
+
 		if (getOption("-d", args) != null) {
 			final File directory = new File(path, ".config");
 			if (!directory.exists())

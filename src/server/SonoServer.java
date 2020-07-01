@@ -33,6 +33,9 @@ public class SonoServer extends WebSocketServer {
 
 	public static void main(final String[] args) {
 		SonoWrapper.setGlobalOption("LING", "TRUE");
+		SonoWrapper.setGlobalOption("WRITE", "FALSE");
+		SonoWrapper.setGlobalOption("SOCKET", "FALSE");
+		SonoWrapper.setGlobalOption("GRAPHICS", "FALSE");
 		path = SonoServer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
