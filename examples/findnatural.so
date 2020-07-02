@@ -10,4 +10,3 @@ println(phones);
 println("");
 println("Natural Sets:");
 naturalsets.map(println);
-println("");
