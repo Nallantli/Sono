@@ -37,9 +37,9 @@ function sendInput(elem) {
         past_commands.push(s);
         index = 0;
         s = s.replace(/\<br\>$/, "");
-        s = s.replace(/\&lt\;/, "<");
-        s = s.replace(/\&gt\;/, ">");
-        s = s.replace(/\&amp\;/, "&");
+        s = s.replaceAll(/\&lt\;/g, "<");
+        s = s.replaceAll(/\&gt\;/g, ">");
+        s = s.replaceAll(/\&amp\;/g, "&");
         socket.send("CODE\n" + s);
         elem.innerHTML = "";
     } else if (event.key == 'ArrowUp') {
