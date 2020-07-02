@@ -131,7 +131,10 @@ input::-moz-focus-inner {
     color: #66ff66;
 }
 
-.fold {}
+.fold {
+    color: #66aaff;
+    margin-left: 25px;
+}
 
 #run:hover {
     background-color: #a3a3ff;
