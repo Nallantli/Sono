@@ -13,6 +13,6 @@ public class ErrorOutput extends Output {
 
 	@Override
 	public void print(final String s) {
-		conn.send("<span class=\"red\">" + s + "</span>");
+		conn.send("OUT\n<span class=\"red\">" + s + "</span>");
 	}
 }

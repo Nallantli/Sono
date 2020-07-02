@@ -11,8 +11,12 @@ public class StandardOutput extends Output {
 		this.conn = conn;
 	}
 
+	public void printHeader(final String header, final String s) {
+		conn.send(header + "\n" + s);
+	}
+
 	@Override
 	public void print(final String s) {
-		conn.send(s);
+		conn.send("OUT\n" + s);
 	}
 }

@@ -101,11 +101,11 @@ public class SonoServer extends WebSocketServer {
 		stdout.put(conn, out);
 		stderr.put(conn, err);
 		conns.put(conn, new SonoWrapper(pl, path, null, out, err));
-		out.println("OUT\n" + validate("Sono " + SonoWrapper.VERSION + " - Online Interface"));
-		out.println("OUT\n" + validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">"));
+		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
+		out.printHeader("OUT", validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">\n"));
 		conns.get(conn).run("load \"system\";");
-		out.println("OUT\n" + validate("Loaded System Library"));
-		out.print("OUT\n" + validate("> "));
+		out.printHeader("OUT", validate("Loaded System Library\n"));
+		out.printHeader("OUT", validate("> "));
 	}
 
 	@Override
@@ -137,13 +137,13 @@ public class SonoServer extends WebSocketServer {
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
-			stdout.get(conn).print("FILE\n" + sb.toString());
+			stdout.get(conn).printHeader("FILE", sb.toString());
 		}
 	}
 
 	public void runCode(final WebSocket conn, final String message) {
 		final StringBuilder sb = new StringBuilder();
-		stdout.get(conn).println("OUT\n" + validate(message));
+		stdout.get(conn).printHeader("OUT", validate(message + "\n"));
 		final Datum output = conns.get(conn).run(message);
 		sb.append("<span class=\"blue\">");
 		if (output.getType() == Datum.Type.VECTOR) {
@@ -155,9 +155,9 @@ public class SonoServer extends WebSocketServer {
 			sb.append("\t" + validate(output.toStringTrace(new ArrayList<>())) + "\n");
 		}
 		sb.append("</span>");
-		stdout.get(conn).println("OUT\n" + sb.toString());
+		stdout.get(conn).printHeader("OUT", sb.toString() + "\n");
 
-		stdout.get(conn).print("OUT\n" + validate("> "));
+		stdout.get(conn).printHeader("OUT", validate("> "));
 	}
 
 	@Override
