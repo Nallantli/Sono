@@ -158,7 +158,7 @@ public class PhoneManager {
 			} else if (phoneLibrary.get(phone.getMatrix()).length() > phone.getSegment().length()) {
 				phoneLibrary.put(phone.getMatrix(), phone.getSegment());
 			}
-		} else {
+		} else if (!phone.getSegment().equals("*")) {
 			phoneLibrary.put(phone.getMatrix(), phone.getSegment());
 			if (!baseValues.contains(phone.getSegment())
 					&& ((phone.getSegment().length() == 3 && phone.getSegment().charAt(1) == '_')
