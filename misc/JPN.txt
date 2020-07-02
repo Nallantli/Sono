@@ -1,5 +1,5 @@
 CATEGORIES
-	I	p,b,m,n,ɕ,t,h,d,j,k,g,w,ɸ,ɾ,ʑ,t_s,t_ɕ,d_ʑ,ʑ,z
+	I	p,b,h,m,n,t,d,j,k,g,w,r,s,z
 	F	n
 	V	a,e,i,o,u
 	L	j

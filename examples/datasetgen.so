@@ -7,7 +7,7 @@ load "html";
 
 var dataset = new DataSet();
 
-# Alternatively: JPN.txt, LAT.txt
+# Alternatively: JPN.txt, LAT.txt, NAH.txt
 # Not guaranteed to be reflective of actual words, the datasets just contain possible combinations
 dataset.parseFile("misc/Test.txt");
 dataset.setRules(RuleSets.Common.randomize());
