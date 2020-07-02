@@ -6,7 +6,8 @@ let files = [
     "epenthesis.so",
     "jpn.so",
     "nah.so",
-    "naturalsets.so"
+    "naturalsets.so",
+    "findnatural.so"
 ];
 
 let elem = document.getElementById("examples");

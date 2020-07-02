@@ -1,0 +1,5 @@
+load "ling";
+
+var phones = {'m', 'p', 'b', 'g', 'ŋ', 'n', 'ɴ', 'f'};
+
+Phonology.findNaturalSets(_base, phones);

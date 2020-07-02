@@ -21,6 +21,30 @@ static Phonology class {
 		return len ns == len set;
 	}
 
+	findNaturalSets(ref phones, ref set, ref explored) => {
+		explored == null then {
+			explored = {};
+		}
+		explored += { set };
+		var ns = {};
+		isNaturalSet(phones, set) then {
+			ns += { set };
+		}
+		len set > 2 then {
+			i in {0 until len set} do {
+				var nv = set;
+				nv.remove(i);
+				explored.contains(nv) == false then {
+					var s = findNaturalSets(phones, nv, explored);
+					len s > 0 then {
+						ns += s;
+					}
+				}
+			}
+		}
+		return ns;
+	}
+
 	naturalize(ref phones, ref set) => {
 		var natural = (ref phones, ref matrix) => {
 			var list = {};
