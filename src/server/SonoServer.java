@@ -152,7 +152,7 @@ public class SonoServer extends WebSocketServer {
 			stdout.get(conn).printHeader("OUT", validate(message + "\n"));
 		}
 		final Datum output = conns.get(conn).run(message);
-		sb.append("<span class=\"blue\">\n");
+		sb.append("\n<div class=\"blue\">");
 		if (output.getType() == Datum.Type.VECTOR) {
 			int i = 0;
 			for (final Datum e : output.getVector(new ArrayList<>())) {
@@ -161,7 +161,7 @@ public class SonoServer extends WebSocketServer {
 		} else {
 			sb.append("\t" + validate(output.toStringTrace(new ArrayList<>())) + "\n");
 		}
-		sb.append("</span>");
+		sb.append("</div>");
 		stdout.get(conn).printHeader("OUT", sb.toString() + "\n");
 
 		stdout.get(conn).printHeader("OUT", validate("> "));
