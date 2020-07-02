@@ -15,7 +15,7 @@ struct DataSet class {
 	var min;
 	var max;
 
-	init(ref categories, ref syllables, ref min, ref max, ref rules) {
+	init(ref categories, ref syllables, ref min, ref max, ref rules) => {
 		this.categories = categories;
 		this.syllables = syllables;
 		this.min = min;
