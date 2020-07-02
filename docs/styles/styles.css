@@ -34,7 +34,7 @@ body {
     border: none;
     min-width: 20px;
     margin: 0;
-    outline: 0;
+    outline: none;
 }
 
 input::-moz-focus-inner {
