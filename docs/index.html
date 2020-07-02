@@ -1,30 +1,13 @@
 <!DOCTYPE html>
+<html>
 
 <head>
-    <meta charset="utf-8" />
-    <title> Sono Interface </title>
-    <link rel="stylesheet" href="styles/styles.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <title>Sono Interface</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div id="codecont">
-        <div id="editor"></div>
-    </div>
-    <div id="output" onclick="focusMethod()">
-        <pre contenteditable="true" id="input" onkeydown="sendInput(this)"><br></pre>
-    </div>
-    <button id="run" onclick="runCode()">RUN</button>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script>
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/twilight");
-        editor.setShowPrintMargin(false);
-        editor.setOption("fontFamily", "Iosevka SS05, monospace");
-        editor.setOption("fontSize", "16px");
-    </script>
-    <script type="text/javascript" src="interface.js">
-    </script>
+    <iframe src="http://18.221.215.99/" title="Sono Interface"></iframe>
 </body>
 
 </html>

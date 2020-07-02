@@ -1,7 +1,7 @@
 # Sono Beta 1.4.4
 
 <div align="center">
-<img src="docs/Sono.svg" alt="Sono Logo" width="150">
+<img src="misc/Sono.svg" alt="Sono Logo" width="150">
 </div>
 
 ---
