@@ -73,7 +73,11 @@ function writeOutput(string) {
 }
 
 focusMethod = function getFocus() {
-    document.getElementById("input").focus();
+    var elem = document.getElementById("input");
+    var x = document.getElementById("output").scrollX,
+        y = document.getElementById("output").scrollY;
+    elem.focus();
+    document.getElementById("output").scrollTo(x, y);
 }
 
 function toggleElement(id) {
