@@ -8,7 +8,15 @@ socket.onopen = function(e) {
 }
 
 socket.onmessage = function(event) {
-    writeOutput(event.data);
+    let s = event.data.split("\n");
+    let header = s[0];
+    s = s.shift();
+    let message = s.join("\n");
+    if (header == "OUT") {
+        writeOutput(message);
+    } else if (header == "FILE") {
+        editor.setValue(message);
+    }
 }
 
 socket.onclose = function(event) {
@@ -32,7 +40,7 @@ function sendInput(elem) {
         s = s.replace(/\&lt\;/, "<");
         s = s.replace(/\&gt\;/, ">");
         s = s.replace(/\&amp\;/, "&");
-        socket.send(s);
+        socket.send("CODE\n" + s);
         elem.innerHTML = "";
     } else if (event.key == 'ArrowUp') {
         if (past_commands.length > index) {
@@ -46,7 +54,7 @@ function sendInput(elem) {
 }
 
 function runCode() {
-    socket.send(editor.getValue());
+    socket.send("CODE\n" + editor.getValue());
 }
 
 function writeOutput(string) {
@@ -66,4 +74,13 @@ function writeOutput(string) {
 
 focusMethod = function getFocus() {
     document.getElementById("input").focus();
+}
+
+function toggleElement(id) {
+    var x = document.getElementById(id);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
 }

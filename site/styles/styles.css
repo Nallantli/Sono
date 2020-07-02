@@ -8,18 +8,54 @@ body {
 
 #codecont {
     position: absolute;
-    width: 50vw;
+    width: calc(50vw - 25px);
     top: 0;
+    left: 50px;
     bottom: 0;
     margin: 0;
     padding: 0;
+}
+
+#nav {
+    position: absolute;
+    background: #121212;
+    height: calc(100vh - 10px);
+    width: 40px;
+    padding: 5px;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.file {
+    color: white;
+    padding: 5px;
+}
+
+#examples {
+    display: none;
+    position: absolute;
+    background: #212121;
+    z-index: 5;
+    top: 0;
+    left: 50px;
+    width: 200px;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.navbuttons {
+    width: 40px;
+    height: 40px;
+    border: none;
 }
 
 #output {
     position: absolute;
     color: white;
     background: black;
-    width: calc(50vw - 30px);
+    width: calc(50vw - 55px);
     height: calc(100vh - 30px);
     top: 0;
     right: 0;

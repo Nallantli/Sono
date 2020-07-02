@@ -101,11 +101,11 @@ public class SonoServer extends WebSocketServer {
 		stdout.put(conn, out);
 		stderr.put(conn, err);
 		conns.put(conn, new SonoWrapper(pl, path, null, out, err));
-		out.println(validate("Sono " + SonoWrapper.VERSION + " - Online Interface"));
-		out.println(validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">"));
+		out.println("OUT\n" + validate("Sono " + SonoWrapper.VERSION + " - Online Interface"));
+		out.println("OUT\n" + validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">"));
 		conns.get(conn).run("load \"system\";");
-		out.println(validate("Loaded System Library"));
-		out.print(validate("> "));
+		out.println("OUT\n" + validate("Loaded System Library"));
+		out.print("OUT\n" + validate("> "));
 	}
 
 	@Override
@@ -119,9 +119,31 @@ public class SonoServer extends WebSocketServer {
 	}
 
 	@Override
-	public void onMessage(final WebSocket conn, final String message) {
+	public void onMessage(final WebSocket conn, final String raw) {
+		final String sections[] = raw.split("\n", 2);
+		final String header = sections[0];
+		final String message = sections[1];
+
+		if (header.equals("CODE")) {
+			runCode(conn, message);
+		} else if (header.equals("FILE")) {
+			final StringBuilder sb = new StringBuilder();
+			String line;
+			try {
+				final BufferedReader br = new BufferedReader(new FileReader(new File("examples", message)));
+				while ((line = br.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+			stdout.get(conn).print("FILE\n" + validate(sb.toString()));
+		}
+	}
+
+	public void runCode(final WebSocket conn, final String message) {
 		final StringBuilder sb = new StringBuilder();
-		stdout.get(conn).println(validate(message));
+		stdout.get(conn).println("OUT\n" + validate(message));
 		final Datum output = conns.get(conn).run(message);
 		sb.append("<span class=\"blue\">");
 		if (output.getType() == Datum.Type.VECTOR) {
@@ -133,9 +155,9 @@ public class SonoServer extends WebSocketServer {
 			sb.append("\t" + validate(output.toStringTrace(new ArrayList<>())) + "\n");
 		}
 		sb.append("</span>");
-		stdout.get(conn).println(sb.toString());
+		stdout.get(conn).println("OUT\n" + sb.toString());
 
-		stdout.get(conn).print(validate("> "));
+		stdout.get(conn).print("OUT\n" + validate("> "));
 	}
 
 	@Override
