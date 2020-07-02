@@ -23,7 +23,7 @@ import server.io.StandardOutput;
 
 public class SonoServer extends WebSocketServer {
 
-	private static int TCP_PORT = 443;
+	private static int TCP_PORT = 7777;
 	private static String path;
 	private static PhoneLoader pl;
 
