@@ -137,7 +137,7 @@ public class SonoServer extends WebSocketServer {
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
-			stdout.get(conn).print("FILE\n" + validate(sb.toString()));
+			stdout.get(conn).print("FILE\n" + sb.toString());
 		}
 	}
 

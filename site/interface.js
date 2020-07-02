@@ -10,7 +10,7 @@ socket.onopen = function(e) {
 socket.onmessage = function(event) {
     let s = event.data.split("\n");
     let header = s[0];
-    s = s.shift();
+    s.shift();
     let message = s.join("\n");
     if (header == "OUT") {
         writeOutput(message);
