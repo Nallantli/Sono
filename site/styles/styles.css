@@ -30,11 +30,12 @@ h1 {
 }
 
 #nav {
+    border-collapse: collapse;
+    display: table;
     position: absolute;
     background: #121212;
-    height: calc(100vh - 10px);
-    width: 40px;
-    padding: 5px;
+    height: 100vh;
+    width: 50px;
     top: 0;
     left: 0;
     z-index: 10;
@@ -76,16 +77,16 @@ h1 {
 }
 
 .navbuttons {
+    display: block;
     width: 40px;
     height: 40px;
     border: none;
-    margin-bottom: 5px;
+    margin: 5px;
     background: none;
     color: #444444;
     font-size: 25px;
     padding: 0;
     align-content: center;
-    display: block;
     text-align: center;
     transition: all 0.25s ease-in-out;
 }
@@ -101,6 +102,11 @@ summary {
 
 summary:hover {
     text-decoration: underline;
+}
+
+#github {
+    position: absolute;
+    bottom: 0;
 }
 
 #output {
