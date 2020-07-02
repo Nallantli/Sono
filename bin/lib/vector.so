@@ -1,6 +1,6 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 30-06-2020
+# 1-07-2020
 
 load "math";
 load "system";
@@ -49,10 +49,7 @@ Vector::push(ref this, ref value) => {
 	return this;
 }
 
-Vector::join(ref this, del) => {
-	del == null then {
-		del = "";
-	}
+Vector::join(ref this) => {
 	var string = "";
 	e in this do {
 		string += str e;
