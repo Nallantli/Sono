@@ -6,6 +6,18 @@ body {
     font-family: "Iosevka SS05", monospace;
 }
 
+h1 {
+    width: calc(100% - 10px);
+    margin: 5px;
+    margin-top: 10px;
+    padding: 0;
+    text-align: center;
+    color: #66aaff;
+    font-size: 16px;
+    font-weight: normal;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 #codecont {
     position: absolute;
     width: calc(50vw - 25px);
@@ -30,10 +42,26 @@ body {
 .file {
     color: white;
     padding: 5px;
+    width: calc(100% - 10px);
+    background: none;
+    display: block;
+    text-align: left;
+    border: none;
+    transition: all 0.5s ease-in-out;
+    font-family: "Iosevka SS05", monospace;
+}
+
+.file:hover {
+    color: #66aaff;
+    font-weight: bold;
+}
+
+.file i {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #examples {
-    display: none;
     position: absolute;
     background: #212121;
     z-index: 5;
@@ -43,12 +71,26 @@ body {
     height: 100vh;
     margin: 0;
     padding: 0;
+    box-shadow: #0f0f0f 0 0 20px;
 }
 
 .navbuttons {
     width: 40px;
     height: 40px;
     border: none;
+    margin-bottom: 5px;
+    background: none;
+    color: #444444;
+    font-size: 25px;
+    padding: 0;
+    align-content: center;
+    display: block;
+    text-align: center;
+    transition: all 0.25s ease-in-out;
+}
+
+.navbuttons:hover {
+    color: #66aaff;
 }
 
 #output {
@@ -83,20 +125,6 @@ input::-moz-focus-inner {
 
 .red {
     color: #ff6666;
-}
-
-#run {
-    position: absolute;
-    border: none;
-    top: 15px;
-    width: 50px;
-    height: 25px;
-    left: calc(50vw - 65px);
-    background-color: #ddddff;
-    box-shadow: black 4px 4px 8px;
-    border-radius: 4px;
-    font-family: "Iosevka SS05", monospace;
-    font-size: 18px;
 }
 
 #run:hover {

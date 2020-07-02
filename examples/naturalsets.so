@@ -1,0 +1,16 @@
+load "ling";
+
+var phones = {'m', 'n', 'g'};
+
+var naturalset = Phonology.getNaturalSet(_base, phones);
+
+var matrix = Phonology.naturalize(_base, naturalset);
+
+println("Input Phones:");
+println(phones);
+println("");
+println("Closest Natural Set of Phones:");
+println(naturalset);
+println("");
+println("Simplest Description:");
+println(matrix);

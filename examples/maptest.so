@@ -4,5 +4,5 @@ load "system";
 var m = new Map();
 
 i in {0 until 1000} do {
-	m[str i] = Random.float();
+	m[Random.int(0, 1000)] = Random.float();
 }
