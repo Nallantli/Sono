@@ -74,8 +74,8 @@ function writeOutput(string) {
 
 focusMethod = function getFocus() {
     var elem = document.getElementById("input");
-    var x = document.getElementById("output").scrollX,
-        y = document.getElementById("output").scrollY;
+    var x = document.getElementById("output").scrollLeft,
+        y = document.getElementById("output").scrollTop;
     elem.focus();
     document.getElementById("output").scrollTo(x, y);
 }
