@@ -1,4 +1,4 @@
-let socket = new WebSocket("ws://localhost:443");
+let socket = new WebSocket("ws://3.23.79.240:443");
 
 let past_commands = [];
 let index = 0;
