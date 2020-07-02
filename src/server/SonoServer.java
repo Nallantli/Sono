@@ -153,12 +153,13 @@ public class SonoServer extends WebSocketServer {
 		}
 		final Datum output = conns.get(conn).run(message);
 		if (output.getType() == Datum.Type.VECTOR) {
-			sb.append("\n<div class=\"fold\">");
+			sb.append("\n<details class=\"fold\">");
+			sb.append("<summary>Vector (" + output.getVector(new ArrayList<>()).size() + " Elements)</summary>");
 			int i = 0;
 			for (final Datum e : output.getVector(new ArrayList<>())) {
 				sb.append("\t" + i++ + ":\t" + validate(e.toStringTrace(new ArrayList<>())) + "\n");
 			}
-			sb.append("</div>");
+			sb.append("</details>");
 		} else {
 			sb.append("\n<span class=\"blue\">");
 			sb.append("\t" + validate(output.toStringTrace(new ArrayList<>())) + "\n");
