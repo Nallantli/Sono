@@ -93,6 +93,15 @@ h1 {
     color: #66aaff;
 }
 
+summary {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+summary:hover {
+    text-decoration: underline;
+}
+
 #output {
     position: absolute;
     color: white;
@@ -113,6 +122,7 @@ h1 {
     min-width: 20px;
     margin: 0;
     outline: none;
+    margin-bottom: 15px;
 }
 
 input::-moz-focus-inner {
