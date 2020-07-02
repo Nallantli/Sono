@@ -30,8 +30,11 @@ body {
 }
 
 #input {
-    float: right;
-    width: auto;
+    font-family: "Iosevka SS05", monospace;
+    display: inline-block;
+    border: none;
+    min-width: 20px;
+    margin: 0;
 }
 
 .blue {

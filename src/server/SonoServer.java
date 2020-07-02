@@ -105,7 +105,7 @@ public class SonoServer extends WebSocketServer {
 		out.println(validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">"));
 		conns.get(conn).run("load \"system\";");
 		out.println(validate("Loaded System Library"));
-		out.print(validate(">"));
+		out.print(validate(">&nbsp;"));
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class SonoServer extends WebSocketServer {
 		conns.remove(conn);
 		try {
 			System.out.println("Closed connection to " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace(System.err);
 		}
 	}
@@ -122,8 +122,8 @@ public class SonoServer extends WebSocketServer {
 	public void onMessage(final WebSocket conn, final String message) {
 		final StringBuilder sb = new StringBuilder();
 		System.out.println("Recieved: " + message);
-		final Datum output = conns.get(conn).run(message);
 		sb.append(" " + message + "\n<span class=\"blue\">");
+		final Datum output = conns.get(conn).run(message);
 		if (output.getType() == Datum.Type.VECTOR) {
 			int i = 0;
 			for (final Datum e : output.getVector(new ArrayList<>())) {
@@ -135,7 +135,7 @@ public class SonoServer extends WebSocketServer {
 		sb.append("</span>");
 		stdout.get(conn).println(sb.toString());
 
-		stdout.get(conn).print(validate(">"));
+		stdout.get(conn).print(validate(">&nbsp;"));
 	}
 
 	@Override
@@ -143,7 +143,6 @@ public class SonoServer extends WebSocketServer {
 		ex.printStackTrace();
 		if (conn != null) {
 			conns.remove(conn);
-			// do some thing if required
 		}
 		System.out.println("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
 	}

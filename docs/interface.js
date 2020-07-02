@@ -22,7 +22,13 @@ socket.onerror = function(error) {
 
 function sendInput(elem) {
     if (event.key == 'Enter') {
-        socket.send(elem.value);
+        var s = elem.innerHTML;
+        s = s.replace(/\<br\>$/, "");
+        s = s.replace(/\&lt\;/, "<");
+        s = s.replace(/\&gt\;/, ">");
+        s = s.replace(/\&amp\;/, "&");
+        socket.send(s);
+        elem.innerHTML = "";
     }
 }
 
@@ -42,4 +48,8 @@ function writeOutput(string) {
             newString += string.charAt(i);
     }
     elem.insertAdjacentHTML("beforebegin", newString);
+}
+
+focusMethod = function getFocus() {
+    document.getElementById("input").focus();
 }
