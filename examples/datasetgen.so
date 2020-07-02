@@ -5,7 +5,11 @@ load "system";
 load "string";
 load "html";
 
-var dataset = new DataSet("misc/Test.txt");
+var dataset = new DataSet();
+
+# Alternatively: JPN.txt, LAT.txt
+# Not guaranteed to be reflective of actual words, the datasets just contain possible combinations
+dataset.parseFile("misc/Test.txt");
 dataset.setRules(RuleSets.Common.randomize());
 
 var plural = dataset.genSyllable();

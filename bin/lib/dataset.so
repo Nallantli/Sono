@@ -15,7 +15,15 @@ struct DataSet class {
 	var min;
 	var max;
 
-	init(final filename) => {
+	init(ref categories, ref syllables, ref min, ref max, ref rules) {
+		this.categories = categories;
+		this.syllables = syllables;
+		this.min = min;
+		this.max = max;
+		this.rules = rules;
+	}
+
+	parseFile(final filename) => {
 		var file = new File(filename);
 		var reader = file.getReader();
 		var line;

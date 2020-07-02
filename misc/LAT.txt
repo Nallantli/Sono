@@ -1,0 +1,9 @@
+CATEGORIES
+	I	b,d,f,g,h,j,k,l,m,n,p,kʷ,r,s,t,w
+	F	b,d,j,k,l,m,n,ŋ,p,r,s,t,ks
+	V	a,e,i,o,u,ɑ,ɛ,ɪ,ɔ,ʊ
+	L	l,r
+SYLLABLES
+	TYPES	V,IV,VF,IVF,ILV,ILVF,IVLF,VLF,ILVLF
+	MIN	2
+	MAX	3
