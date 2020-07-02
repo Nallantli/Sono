@@ -147,7 +147,7 @@ public class SonoServer extends WebSocketServer {
 			String shortened = message.split("\n")[0];
 			int surplus = message.length() - shortened.length();
 			shortened += "... (+" + surplus + ")";
-			stdout.get(conn).printHeader("OUT", validate("<span class=\"green\">" + shortened + "</span>\n"));
+			stdout.get(conn).printHeader("OUT", "<span class=\"green\">" + validate(shortened) + "</span>\n");
 		} else {
 			stdout.get(conn).printHeader("OUT", validate(message + "\n"));
 		}
