@@ -143,7 +143,14 @@ public class SonoServer extends WebSocketServer {
 
 	public void runCode(final WebSocket conn, final String message) {
 		final StringBuilder sb = new StringBuilder();
-		stdout.get(conn).printHeader("OUT", validate(message + "\n"));
+		if (message.contains("\n")) {
+			String shortened = message.split("\n")[0];
+			int surplus = message.length() - shortened.length();
+			shortened += "... (+" + surplus + ")";
+			stdout.get(conn).printHeader("OUT", validate("<span class=\"green\">" + shortened + "</span>\n"));
+		} else {
+			stdout.get(conn).printHeader("OUT", validate(message + "\n"));
+		}
 		final Datum output = conns.get(conn).run(message);
 		sb.append("<span class=\"blue\">");
 		if (output.getType() == Datum.Type.VECTOR) {

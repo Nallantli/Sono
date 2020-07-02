@@ -127,6 +127,10 @@ input::-moz-focus-inner {
     color: #ff6666;
 }
 
+.green {
+    color: #66ff66;
+}
+
 #run:hover {
     background-color: #a3a3ff;
 }
