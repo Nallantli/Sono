@@ -160,6 +160,7 @@ public class SonoServer extends WebSocketServer {
 			stdout.get(conn).printHeader("OUT", validate(message + "\n"));
 		}
 
+		System.out.println("CURRENT\t" + Thread.currentThread());
 		ThreadWrapper thread = new ThreadWrapper(conns.get(conn), message);
 		thread.start();
 		try {
