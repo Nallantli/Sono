@@ -165,6 +165,7 @@ public class SonoServer extends WebSocketServer {
 		thread.start();
 		try {
 			thread.join();
+			Thread.currentThread().join();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
