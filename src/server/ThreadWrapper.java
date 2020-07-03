@@ -7,12 +7,13 @@ import main.sono.Datum;
 import server.io.StandardOutput;
 
 public class ThreadWrapper extends Thread {
-	private SonoWrapper wrapper;
-	private String code;
-	private StandardOutput stdout;
-	private SonoServer server;
+	private final SonoWrapper wrapper;
+	private final String code;
+	private final StandardOutput stdout;
+	private final SonoServer server;
 
-	public ThreadWrapper(SonoServer server, SonoWrapper wrapper, String code, StandardOutput stdout) {
+	public ThreadWrapper(final SonoServer server, final SonoWrapper wrapper, final String code,
+			final StandardOutput stdout) {
 		this.server = server;
 		this.wrapper = wrapper;
 		this.code = code;
@@ -23,7 +24,7 @@ public class ThreadWrapper extends Thread {
 	public void run() {
 		server.pause();
 		System.out.println("RUNNING SERVER CODE THREAD\t" + Thread.currentThread());
-		Datum output = wrapper.run(code);
+		final Datum output = wrapper.run(code);
 
 		final StringBuilder sb = new StringBuilder();
 

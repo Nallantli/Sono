@@ -101,7 +101,7 @@ public class SonoServer extends WebSocketServer {
 		System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
 		final StandardOutput out = new StandardOutput(conn);
 		final ErrorOutput err = new ErrorOutput(conn);
-		final StandardInput in = new StandardInput(conn);
+		final StandardInput in = new StandardInput();
 		stdout.put(conn, out);
 		stderr.put(conn, err);
 		stdin.put(conn, in);
@@ -127,7 +127,6 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onMessage(final WebSocket conn, final String raw) {
-		System.out.println("RECIEVED\t" + raw);
 		final String sections[] = raw.split("\n", 2);
 		final String header = sections[0];
 		final String message = sections[1];
@@ -160,11 +159,10 @@ public class SonoServer extends WebSocketServer {
 				stdout.get(conn).printHeader("OUT", validate(message + "\n"));
 			}
 
-			System.out.println("CURRENT\t" + Thread.currentThread());
 			final ThreadWrapper thread = new ThreadWrapper(this, conns.get(conn), message, stdout.get(conn));
 			thread.start();
 		} else {
-			System.out.println("INPUT\t" + message);
+			stdout.get(conn).printHeader("OUT", message);
 			stdin.get(conn).setInput(message);
 		}
 	}

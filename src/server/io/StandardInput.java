@@ -2,16 +2,13 @@ package server.io;
 
 import java.math.BigDecimal;
 
-import org.java_websocket.WebSocket;
-
 import main.sono.io.Input;
 
 public class StandardInput extends Input {
-	private final WebSocket conn;
 	private String input;
 
-	public StandardInput(final WebSocket conn) {
-		this.conn = conn;
+	public StandardInput() {
+		this.input = null;
 	}
 
 	@Override
@@ -19,7 +16,7 @@ public class StandardInput extends Input {
 		try {
 			System.out.println("PAUSING THREAD\t" + Thread.currentThread());
 			wait();
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 		return input;
@@ -30,13 +27,13 @@ public class StandardInput extends Input {
 		try {
 			System.out.println("PAUSING THREAD\t" + Thread.currentThread());
 			wait();
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 		return new BigDecimal(input);
 	}
 
-	public synchronized void setInput(String input) {
+	public synchronized void setInput(final String input) {
 		this.input = input;
 		notify();
 	}
