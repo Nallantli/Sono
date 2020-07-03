@@ -162,7 +162,7 @@ public class SonoServer extends WebSocketServer {
 			final ThreadWrapper thread = new ThreadWrapper(this, conns.get(conn), message, stdout.get(conn));
 			thread.start();
 		} else {
-			stdout.get(conn).printHeader("OUT", message);
+			stdout.get(conn).printHeader("OUT", validate(message) + "\n");
 			stdin.get(conn).setInput(message);
 		}
 	}
