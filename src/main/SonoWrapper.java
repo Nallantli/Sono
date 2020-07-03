@@ -61,9 +61,4 @@ public class SonoWrapper {
 			}
 		}
 	}
-
-	public void pauseExecution() throws InterruptedException {
-		System.out.println("THREAD PAUSED\t" + Thread.currentThread());
-		wait();
-	}
 }

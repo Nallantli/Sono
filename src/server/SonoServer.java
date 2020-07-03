@@ -105,10 +105,11 @@ public class SonoServer extends WebSocketServer {
 		stdout.put(conn, out);
 		stderr.put(conn, err);
 		stdin.put(conn, in);
-		conns.put(conn, new SonoWrapper(pl, path, null, out, err, in));
-		in.setWrapper(conns.get(conn));
+		SonoWrapper wrapper = new SonoWrapper(pl, path, null, out, err, in);
+		conns.put(conn, wrapper);
 		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
-		out.printHeader("OUT", validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">\n"));
+		out.printHeader("OUT",
+				validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">\n"));
 		conns.get(conn).run("load \"system\";");
 		out.printHeader("OUT", validate("Loaded System Library\n"));
 		out.printHeader("OUT", validate("> "));
@@ -158,7 +159,16 @@ public class SonoServer extends WebSocketServer {
 		} else {
 			stdout.get(conn).printHeader("OUT", validate(message + "\n"));
 		}
-		final Datum output = conns.get(conn).run(message);
+
+		ThreadWrapper thread = new ThreadWrapper(conns.get(conn), message);
+		thread.start();
+		try {
+			thread.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+
+		final Datum output = thread.getReturn();
 		if (output.getType() == Datum.Type.VECTOR) {
 			sb.append("\n<details class=\"fold\">");
 			sb.append("<summary>Raw Output Vector (" + output.getVector(new ArrayList<>()).size() + " <i class=\"fab fa-buffer\"></i>)</summary>");
