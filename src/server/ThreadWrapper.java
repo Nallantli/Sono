@@ -23,14 +23,14 @@ public class ThreadWrapper extends Thread {
 	@Override
 	public void run() {
 		server.pause();
-		System.out.println("RUNNING SERVER CODE THREAD\t" + Thread.currentThread());
 		final Datum output = wrapper.run(code);
 
 		final StringBuilder sb = new StringBuilder();
 
 		if (output.getType() == Datum.Type.VECTOR) {
 			sb.append("\n<details class=\"fold\">");
-			sb.append("<summary>Raw Output Vector (" + output.getVector(new ArrayList<>()).size() + " <i class=\"fab fa-buffer\"></i>)</summary>");
+			sb.append("<summary>Raw Output Vector (" + output.getVector(new ArrayList<>()).size()
+					+ " <i class=\"fab fa-buffer\"></i>)</summary>");
 			int i = 0;
 			for (final Datum e : output.getVector(new ArrayList<>())) {
 				sb.append("\t" + i++ + ":\t" + SonoServer.validate(e.toStringTrace(new ArrayList<>())) + "\n");

@@ -14,7 +14,6 @@ public class StandardInput extends Input {
 	@Override
 	public synchronized String getLine() {
 		try {
-			System.out.println("PAUSING THREAD\t" + Thread.currentThread());
 			wait();
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
@@ -25,7 +24,6 @@ public class StandardInput extends Input {
 	@Override
 	public synchronized BigDecimal getNumber() {
 		try {
-			System.out.println("PAUSING THREAD\t" + Thread.currentThread());
 			wait();
 		} catch (final InterruptedException e) {
 			e.printStackTrace();

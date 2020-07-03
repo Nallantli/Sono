@@ -14,11 +14,11 @@ import java.util.List;
 public class LIB_Console extends Library {
 	public LIB_Console() {
 		super();
-		commands.put("LIB_Console.PRINT", (final Datum datum, final List<String> trace,
-				final Interpreter interpreter) -> {
-			interpreter.print(datum.getString(trace));
-			return new Datum();
-		});
+		commands.put("LIB_Console.PRINT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					interpreter.print(datum.getString(trace));
+					return new Datum();
+				});
 		commands.put("LIB_Console.REGEX",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final Pattern pattern = Pattern.compile(datum.getVector(trace).get(0).getString(trace));
@@ -60,8 +60,8 @@ public class LIB_Console extends Library {
 				});
 		commands.put("LIB_Console.LOG",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-			final BigDecimal i = BigDecimal.valueOf(Math.log(datum.getNumber(trace).doubleValue()));
-			return new Datum(i);
-		});
+					final BigDecimal i = BigDecimal.valueOf(Math.log(datum.getNumber(trace).doubleValue()));
+					return new Datum(i);
+				});
 	}
 }
