@@ -1,25 +1,46 @@
 package server;
 
+import java.util.ArrayList;
+
+import org.java_websocket.WebSocket;
+
 import main.SonoWrapper;
 import main.sono.Datum;
+import server.io.StandardOutput;
 
 public class ThreadWrapper extends Thread {
 	private SonoWrapper wrapper;
 	private String code;
-	private Datum ret;
+	private StandardOutput stdout;
 
-	public ThreadWrapper(SonoWrapper wrapper, String code) {
+	public ThreadWrapper(SonoWrapper wrapper, String code, StandardOutput stdout) {
 		this.wrapper = wrapper;
 		this.code = code;
+		this.stdout = stdout;
 	}
 
 	@Override
 	public void run() {
 		System.out.println("RUNNING SERVER CODE THREAD\t" + Thread.currentThread());
-		ret = wrapper.run(code);
-	}
+		Datum output = wrapper.run(code);
 
-	public Datum getReturn() {
-		return ret;
+		final StringBuilder sb = new StringBuilder();
+
+		if (output.getType() == Datum.Type.VECTOR) {
+			sb.append("\n<details class=\"fold\">");
+			sb.append("<summary>Raw Output Vector (" + output.getVector(new ArrayList<>()).size() + " <i class=\"fab fa-buffer\"></i>)</summary>");
+			int i = 0;
+			for (final Datum e : output.getVector(new ArrayList<>())) {
+				sb.append("\t" + i++ + ":\t" + SonoServer.validate(e.toStringTrace(new ArrayList<>())) + "\n");
+			}
+			sb.append("</details>");
+		} else {
+			sb.append("\n<span class=\"blue\">");
+			sb.append("\t" + SonoServer.validate(output.toStringTrace(new ArrayList<>())) + "\n");
+			sb.append("</span>");
+		}
+		stdout.printHeader("OUT", sb.toString() + "\n");
+
+		stdout.printHeader("OUT", SonoServer.validate("> "));
 	}
 }

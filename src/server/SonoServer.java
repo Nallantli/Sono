@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +16,6 @@ import org.java_websocket.server.WebSocketServer;
 
 import main.SonoWrapper;
 import main.phl.PhoneLoader;
-import main.sono.Datum;
 import server.io.ErrorOutput;
 import server.io.StandardOutput;
 import server.io.StandardInput;
@@ -150,7 +148,6 @@ public class SonoServer extends WebSocketServer {
 	}
 
 	public void runCode(final WebSocket conn, final String message) {
-		final StringBuilder sb = new StringBuilder();
 		if (message.contains("\n")) {
 			String shortened = message.split("\n")[0];
 			int surplus = message.length() - shortened.length();
@@ -161,32 +158,8 @@ public class SonoServer extends WebSocketServer {
 		}
 
 		System.out.println("CURRENT\t" + Thread.currentThread());
-		ThreadWrapper thread = new ThreadWrapper(conns.get(conn), message);
+		ThreadWrapper thread = new ThreadWrapper(conns.get(conn), message, stdout.get(conn));
 		thread.start();
-		try {
-			thread.join();
-			Thread.currentThread().join();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-
-		final Datum output = thread.getReturn();
-		if (output.getType() == Datum.Type.VECTOR) {
-			sb.append("\n<details class=\"fold\">");
-			sb.append("<summary>Raw Output Vector (" + output.getVector(new ArrayList<>()).size() + " <i class=\"fab fa-buffer\"></i>)</summary>");
-			int i = 0;
-			for (final Datum e : output.getVector(new ArrayList<>())) {
-				sb.append("\t" + i++ + ":\t" + validate(e.toStringTrace(new ArrayList<>())) + "\n");
-			}
-			sb.append("</details>");
-		} else {
-			sb.append("\n<span class=\"blue\">");
-			sb.append("\t" + validate(output.toStringTrace(new ArrayList<>())) + "\n");
-			sb.append("</span>");
-		}
-		stdout.get(conn).printHeader("OUT", sb.toString() + "\n");
-
-		stdout.get(conn).printHeader("OUT", validate("> "));
 	}
 
 	@Override
