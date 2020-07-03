@@ -8,6 +8,7 @@ import main.sono.io.Input;
 
 public class StandardInput extends Input {
 	private final WebSocket conn;
+	private String input;
 
 	public StandardInput(final WebSocket conn) {
 		this.conn = conn;
@@ -21,7 +22,7 @@ public class StandardInput extends Input {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return input;
 	}
 
 	@Override
@@ -32,7 +33,12 @@ public class StandardInput extends Input {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return new BigDecimal(input);
+	}
+
+	public synchronized void setInput(String input) {
+		this.input = input;
+		notify();
 	}
 
 }

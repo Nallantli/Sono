@@ -165,6 +165,7 @@ public class SonoServer extends WebSocketServer {
 			thread.start();
 		} else {
 			System.out.println("INPUT\t" + message);
+			stdin.get(conn).setInput(message);
 		}
 	}
 
