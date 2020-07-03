@@ -15,6 +15,7 @@ import main.SonoWrapper;
 import main.phl.*;
 import main.sono.err.SonoCompilationException;
 import main.sono.err.SonoRuntimeException;
+import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class Interpreter {
@@ -24,6 +25,7 @@ public class Interpreter {
 	private final List<String> variableHash;
 	private final Output stdout;
 	private final Output stderr;
+	private final Input stdin;
 
 	private final List<String> loadedFiles;
 
@@ -45,9 +47,10 @@ public class Interpreter {
 	public final int BASE;
 
 	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console, final Output stdout,
-			final Output stderr) {
+			final Output stderr, final Input stdin) {
 		this.stdout = stdout;
 		this.stderr = stderr;
+		this.stdin = stdin;
 		this.main = main;
 		this.pl = pl;
 		this.loadedFiles = new ArrayList<>();
@@ -627,5 +630,13 @@ public class Interpreter {
 
 	public void print(final String str) {
 		stdout.print(str);
+	}
+
+	public String getLine() {
+		return stdin.getLine();
+	}
+
+	public BigDecimal getNumber() {
+		return stdin.getNumber();
 	}
 }

@@ -10,11 +10,8 @@ import main.sono.Datum;
 import main.sono.Interpreter;
 
 import java.util.List;
-import java.util.Scanner;
 
 public class LIB_Console extends Library {
-	private Scanner sc = null;
-
 	public LIB_Console() {
 		super();
 		commands.put("LIB_Console.PRINT", (final Datum datum, final List<String> trace,
@@ -38,16 +35,12 @@ public class LIB_Console extends Library {
 				});
 		commands.put("LIB_Console.GET.LINE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					if (sc == null)
-						sc = new Scanner(System.in);
-					final String s = sc.nextLine();
+					final String s = interpreter.getLine();
 					return new Datum(s);
 				});
 		commands.put("LIB_Console.GET.NUMBER",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					if (sc == null)
-						sc = new Scanner(System.in);
-					final BigDecimal i = sc.nextBigDecimal();
+					final BigDecimal i = interpreter.getNumber();
 					return new Datum(i);
 				});
 		commands.put("LIB_Console.TIME",

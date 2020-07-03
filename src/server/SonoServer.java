@@ -20,6 +20,7 @@ import main.phl.PhoneLoader;
 import main.sono.Datum;
 import server.io.ErrorOutput;
 import server.io.StandardOutput;
+import server.io.StandardInput;
 
 public class SonoServer extends WebSocketServer {
 
@@ -30,6 +31,7 @@ public class SonoServer extends WebSocketServer {
 	private final Map<WebSocket, SonoWrapper> conns;
 	private final Map<WebSocket, StandardOutput> stdout;
 	private final Map<WebSocket, ErrorOutput> stderr;
+	private final Map<WebSocket, StandardInput> stdin;
 
 	public static void main(final String[] args) throws Exception {
 		SonoWrapper.setGlobalOption("LING", "TRUE");
@@ -84,6 +86,7 @@ public class SonoServer extends WebSocketServer {
 		conns = new HashMap<>();
 		stdout = new HashMap<>();
 		stderr = new HashMap<>();
+		stdin = new HashMap<>();
 	}
 
 	@Override
@@ -98,9 +101,12 @@ public class SonoServer extends WebSocketServer {
 		System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
 		final StandardOutput out = new StandardOutput(conn);
 		final ErrorOutput err = new ErrorOutput(conn);
+		final StandardInput in = new StandardInput(conn);
 		stdout.put(conn, out);
 		stderr.put(conn, err);
-		conns.put(conn, new SonoWrapper(pl, path, null, out, err));
+		stdin.put(conn, in);
+		conns.put(conn, new SonoWrapper(pl, path, null, out, err, in));
+		in.setWrapper(conns.get(conn));
 		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
 		out.printHeader("OUT", validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">\n"));
 		conns.get(conn).run("load \"system\";");
@@ -120,6 +126,7 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onMessage(final WebSocket conn, final String raw) {
+		System.out.println("RECIEVED\t" + raw);
 		final String sections[] = raw.split("\n", 2);
 		final String header = sections[0];
 		final String message = sections[1];

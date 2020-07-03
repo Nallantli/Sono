@@ -10,6 +10,7 @@ import main.sono.Datum;
 import main.sono.Interpreter;
 import main.sono.Scope;
 import main.sono.err.SonoException;
+import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class SonoWrapper {
@@ -42,13 +43,13 @@ public class SonoWrapper {
 	}
 
 	public SonoWrapper(final PhoneLoader pl, final String path, final String filename, final Output stdout,
-			final Output stderr) {
+			final Output stderr, final Input stdin) {
 		this.stderr = stderr;
 		final CommandManager command = new CommandManager();
 		if (pl == null) {
-			sono = new Interpreter(new Scope(null), new PhoneManager(), command, stdout, stderr);
+			sono = new Interpreter(new Scope(null), new PhoneManager(), command, stdout, stderr, stdin);
 		} else {
-			sono = new Interpreter(new Scope(null), pl.getManager(), command, stdout, stderr);
+			sono = new Interpreter(new Scope(null), pl.getManager(), command, stdout, stderr, stdin);
 		}
 
 		if (filename != null) {
@@ -59,5 +60,10 @@ public class SonoWrapper {
 				stderr.println(e.getMessage());
 			}
 		}
+	}
+
+	public void pauseExecution() throws InterruptedException {
+		System.out.println("THREAD PAUSED");
+		wait();
 	}
 }

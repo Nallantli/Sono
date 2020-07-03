@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import client.io.ErrorOutput;
+import client.io.StandardInput;
 import client.io.StandardOutput;
 import main.SonoWrapper;
 import main.phl.PhoneLoader;
@@ -107,8 +108,9 @@ public class SonoClient {
 		if (args.length > 0 && args[0].charAt(0) != '-') {
 			filename = args[0];
 		}
-
-		final SonoWrapper center = new SonoWrapper(pl, path, filename, new StandardOutput(), new ErrorOutput());
+		Scanner sc = new Scanner(System.in);
+		final SonoWrapper center = new SonoWrapper(pl, path, filename, new StandardOutput(), new ErrorOutput(),
+				new StandardInput(sc));
 
 		System.out.println("Sono " + SonoWrapper.VERSION);
 		if (SonoWrapper.getGlobalOption("LING").equals("TRUE")) {
@@ -123,23 +125,21 @@ public class SonoClient {
 			System.out.println("Could not load System Library");
 		}
 
-		try (Scanner sc = new Scanner(System.in);) {
-			while (true) {
-				System.out.print("> ");
-				final String line = sc.nextLine();
-				try {
-					final Datum result = center.run(line);
-					if (result.getType() == Datum.Type.VECTOR) {
-						int i = 0;
-						for (final Datum d : result.getVector(new ArrayList<>()))
-							System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(new ArrayList<>()));
-					} else {
-						System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
-					}
-				} catch (final SonoException e) {
-					System.err.println(e.getMessage());
-					e.printStackTrace();
+		while (true) {
+			System.out.print("> ");
+			final String line = sc.nextLine();
+			try {
+				final Datum result = center.run(line);
+				if (result.getType() == Datum.Type.VECTOR) {
+					int i = 0;
+					for (final Datum d : result.getVector(new ArrayList<>()))
+						System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(new ArrayList<>()));
+				} else {
+					System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
 				}
+			} catch (final SonoException e) {
+				System.err.println(e.getMessage());
+				e.printStackTrace();
 			}
 		}
 	}
