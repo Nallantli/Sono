@@ -31,6 +31,8 @@ public class SonoServer extends WebSocketServer {
 	private final Map<WebSocket, ErrorOutput> stderr;
 	private final Map<WebSocket, StandardInput> stdin;
 
+	private boolean WAIT = false;
+
 	public static void main(final String[] args) throws Exception {
 		SonoWrapper.setGlobalOption("LING", "TRUE");
 		SonoWrapper.setGlobalOption("WRITE", "FALSE");
@@ -103,7 +105,7 @@ public class SonoServer extends WebSocketServer {
 		stdout.put(conn, out);
 		stderr.put(conn, err);
 		stdin.put(conn, in);
-		SonoWrapper wrapper = new SonoWrapper(pl, path, null, out, err, in);
+		final SonoWrapper wrapper = new SonoWrapper(pl, path, null, out, err, in);
 		conns.put(conn, wrapper);
 		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
 		out.printHeader("OUT",
@@ -148,18 +150,22 @@ public class SonoServer extends WebSocketServer {
 	}
 
 	public void runCode(final WebSocket conn, final String message) {
-		if (message.contains("\n")) {
-			String shortened = message.split("\n")[0];
-			int surplus = message.length() - shortened.length();
-			shortened += "... (+" + surplus + ")";
-			stdout.get(conn).printHeader("OUT", "<span class=\"green\">" + validate(shortened) + "</span>\n");
-		} else {
-			stdout.get(conn).printHeader("OUT", validate(message + "\n"));
-		}
+		if (!WAIT) {
+			if (message.contains("\n")) {
+				String shortened = message.split("\n")[0];
+				final int surplus = message.length() - shortened.length();
+				shortened += "... (+" + surplus + ")";
+				stdout.get(conn).printHeader("OUT", "<span class=\"green\">" + validate(shortened) + "</span>\n");
+			} else {
+				stdout.get(conn).printHeader("OUT", validate(message + "\n"));
+			}
 
-		System.out.println("CURRENT\t" + Thread.currentThread());
-		ThreadWrapper thread = new ThreadWrapper(conns.get(conn), message, stdout.get(conn));
-		thread.start();
+			System.out.println("CURRENT\t" + Thread.currentThread());
+			final ThreadWrapper thread = new ThreadWrapper(this, conns.get(conn), message, stdout.get(conn));
+			thread.start();
+		} else {
+			System.out.println("INPUT\t" + message);
+		}
 	}
 
 	@Override
@@ -169,6 +175,14 @@ public class SonoServer extends WebSocketServer {
 			conns.remove(conn);
 		}
 		System.out.println("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+	}
+
+	public void pause() {
+		this.WAIT = true;
+	}
+
+	public void unpause() {
+		this.WAIT = false;
 	}
 
 	public static String validate(String s) {
