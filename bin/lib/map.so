@@ -1,5 +1,5 @@
 # Benjamin Park
-# 29-06-2020
+# 3-07-2020
 
 load "hash";
 
@@ -32,14 +32,15 @@ struct Map class {
 	var size;
 	var rawSize;
 
-	init(final rawSize) => {
+	init(ref initVector) => {
 		this.size = 0;
-		rawSize == null then {
-			this.rawSize = 16;
-		} else {
-			this.rawSize = rawSize;
-		}
+		this.rawSize = 16;
 		this.buckets = alloc this.rawSize;
+		initVector != null then {
+			e in initVector do {
+				getIndex(e[0]) = e[1];
+			}
+		}
 	}
 
 	isEmpty() => {
