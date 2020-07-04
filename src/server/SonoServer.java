@@ -2,16 +2,26 @@ package server;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
+import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.TrustManagerFactory;
+
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.SSLParametersWebSocketServerFactory;
 import org.java_websocket.server.WebSocketServer;
 
 import main.SonoWrapper;
@@ -22,7 +32,7 @@ import server.io.StandardInput;
 
 public class SonoServer extends WebSocketServer {
 
-	private static int TCP_PORT = 7777;
+	private static int TCP_PORT = 443;
 	private static String path;
 	private static PhoneLoader pl;
 
@@ -31,9 +41,9 @@ public class SonoServer extends WebSocketServer {
 	private final Map<WebSocket, ErrorOutput> stderr;
 	private final Map<WebSocket, StandardInput> stdin;
 
-	private boolean WAIT = false;
+	private final Map<WebSocket, Boolean> WAIT;
 
-	public static void main(final String[] args) throws Exception {
+	public static void main(final String[] args) {
 		SonoWrapper.setGlobalOption("LING", "TRUE");
 		SonoWrapper.setGlobalOption("WRITE", "FALSE");
 		SonoWrapper.setGlobalOption("SOCKET", "FALSE");
@@ -78,7 +88,33 @@ public class SonoServer extends WebSocketServer {
 		}
 
 		final SonoServer server = new SonoServer();
-		server.start();
+
+		String STORETYPE = "JKS";
+		String KEYSTORE = Paths.get("misc", "keystore.jks").toString();
+		String STOREPASSWORD = "password";
+		String KEYPASSWORD = "password";
+
+		try {
+			KeyStore ks = KeyStore.getInstance(STORETYPE);
+			File kf = new File(KEYSTORE);
+			ks.load(new FileInputStream(kf), STOREPASSWORD.toCharArray());
+
+			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+			kmf.init(ks, KEYPASSWORD.toCharArray());
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+			tmf.init(ks);
+
+			SSLContext sslContext = SSLContext.getInstance("TLS");
+			sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+			SSLParameters sslParameters = new SSLParameters();
+			sslParameters.setNeedClientAuth(true);
+			server.setWebSocketFactory(new SSLParametersWebSocketServerFactory(sslContext, sslParameters));
+
+			server.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public SonoServer() {
@@ -87,11 +123,12 @@ public class SonoServer extends WebSocketServer {
 		stdout = new HashMap<>();
 		stderr = new HashMap<>();
 		stdin = new HashMap<>();
+		WAIT = new HashMap<>();
 	}
 
 	@Override
 	public void onStart() {
-		System.out.println("Server started!");
+		System.out.println("Server started on " + this.getAddress().getHostString());
 		setConnectionLostTimeout(0);
 		setConnectionLostTimeout(100);
 	}
@@ -105,6 +142,7 @@ public class SonoServer extends WebSocketServer {
 		stdout.put(conn, out);
 		stderr.put(conn, err);
 		stdin.put(conn, in);
+		WAIT.put(conn, false);
 		final SonoWrapper wrapper = new SonoWrapper(pl, path, null, out, err, in);
 		conns.put(conn, wrapper);
 		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
@@ -149,7 +187,7 @@ public class SonoServer extends WebSocketServer {
 	}
 
 	public void runCode(final WebSocket conn, final String message) {
-		if (!WAIT) {
+		if (WAIT.get(conn).equals(Boolean.FALSE)) {
 			if (message.contains("\n")) {
 				String shortened = message.split("\n")[0];
 				final int surplus = message.length() - shortened.length();
@@ -159,7 +197,7 @@ public class SonoServer extends WebSocketServer {
 				stdout.get(conn).printHeader("OUT", validate(message + "\n"));
 			}
 
-			final ThreadWrapper thread = new ThreadWrapper(this, conns.get(conn), message, stdout.get(conn));
+			final ThreadWrapper thread = new ThreadWrapper(this, conns.get(conn), conn, message, stdout.get(conn));
 			thread.start();
 		} else {
 			stdout.get(conn).printHeader("OUT", validate(message) + "\n");
@@ -176,12 +214,12 @@ public class SonoServer extends WebSocketServer {
 		System.out.println("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
 	}
 
-	public void pause() {
-		this.WAIT = true;
+	public void pause(WebSocket conn) {
+		this.WAIT.put(conn, true);
 	}
 
-	public void unpause() {
-		this.WAIT = false;
+	public void unpause(WebSocket conn) {
+		this.WAIT.put(conn, false);
 	}
 
 	public static String validate(String s) {

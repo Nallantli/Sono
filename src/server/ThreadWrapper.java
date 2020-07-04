@@ -2,6 +2,8 @@ package server;
 
 import java.util.ArrayList;
 
+import org.java_websocket.WebSocket;
+
 import main.SonoWrapper;
 import main.sono.Datum;
 import server.io.StandardOutput;
@@ -11,18 +13,20 @@ public class ThreadWrapper extends Thread {
 	private final String code;
 	private final StandardOutput stdout;
 	private final SonoServer server;
+	private final WebSocket conn;
 
-	public ThreadWrapper(final SonoServer server, final SonoWrapper wrapper, final String code,
+	public ThreadWrapper(final SonoServer server, final SonoWrapper wrapper, final WebSocket conn, final String code,
 			final StandardOutput stdout) {
 		this.server = server;
 		this.wrapper = wrapper;
 		this.code = code;
 		this.stdout = stdout;
+		this.conn = conn;
 	}
 
 	@Override
 	public void run() {
-		server.pause();
+		server.pause(conn);
 		final Datum output = wrapper.run(code);
 
 		final StringBuilder sb = new StringBuilder();
@@ -45,6 +49,6 @@ public class ThreadWrapper extends Thread {
 
 		stdout.printHeader("OUT", SonoServer.validate("> "));
 
-		server.unpause();
+		server.unpause(conn);
 	}
 }
