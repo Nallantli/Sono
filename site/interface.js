@@ -50,9 +50,9 @@ function sendInput(elem) {
         past_commands.push(s);
         index = 0;
         s = s.replace(/\<br\>$/, "");
-        s = s.replaceAll(/\&lt\;/g, "<");
-        s = s.replaceAll(/\&gt\;/g, ">");
-        s = s.replaceAll(/\&amp\;/g, "&");
+        s = s.split(/\&lt\;/g).join("<");
+        s = s.split(/\&gt\;/g).join(">");
+        s = s.split(/\&amp\;/g).join("&");
         socket.send("CODE\n" + s);
         elem.innerHTML = "";
     } else if (event.key == 'ArrowUp') {
