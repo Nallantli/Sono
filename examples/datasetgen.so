@@ -26,4 +26,4 @@ i in {0 until 20} do {
 	vector += {{wSingular, wPlural, wSingularGen, wPluralGen}};
 }
 
-println(Format.table(header, vector));
+print(Format.table(header, vector));

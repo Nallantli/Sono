@@ -10,7 +10,7 @@ println("Input Phones:");
 println(phones);
 println("");
 println("Natural Sets:");
-println(Format.table(
+print(Format.table(
 	null,
 	naturalsets.map((set) => {
     	return {set, Phonology.naturalize(_base, set)};
