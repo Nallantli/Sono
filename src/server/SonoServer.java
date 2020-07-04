@@ -2,32 +2,23 @@ package server;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
-import java.nio.file.Paths;
-import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
-import javax.net.ssl.TrustManagerFactory;
-
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.SSLParametersWebSocketServerFactory;
 import org.java_websocket.server.WebSocketServer;
 
 import main.SonoWrapper;
 import main.phl.PhoneLoader;
 import server.io.ErrorOutput;
-import server.io.StandardOutput;
 import server.io.StandardInput;
+import server.io.StandardOutput;
 
 public class SonoServer extends WebSocketServer {
 
@@ -87,33 +78,7 @@ public class SonoServer extends WebSocketServer {
 		}
 
 		final SonoServer server = new SonoServer();
-
-		String STORETYPE = "JKS";
-		String KEYSTORE = Paths.get("misc", "keystore.jks").toString();
-		String STOREPASSWORD = "password";
-		String KEYPASSWORD = "password";
-
-		try {
-			KeyStore ks = KeyStore.getInstance(STORETYPE);
-			File kf = new File(KEYSTORE);
-			ks.load(new FileInputStream(kf), STOREPASSWORD.toCharArray());
-
-			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-			kmf.init(ks, KEYPASSWORD.toCharArray());
-			TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-			tmf.init(ks);
-
-			SSLContext sslContext = SSLContext.getInstance("TLS");
-			sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-			SSLParameters sslParameters = new SSLParameters();
-			sslParameters.setNeedClientAuth(true);
-			server.setWebSocketFactory(new SSLParametersWebSocketServerFactory(sslContext, sslParameters));
-
-			server.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		server.start();
 	}
 
 	public SonoServer() {
@@ -156,7 +121,7 @@ public class SonoServer extends WebSocketServer {
 	public void onClose(final WebSocket conn, final int code, final String reason, final boolean remote) {
 		conns.remove(conn);
 		try {
-			System.out.println("Closed connection to " + code);
+			System.out.println("Closed connection to " + conn.toString());
 		} catch (final Exception e) {
 			e.printStackTrace(System.err);
 		}
@@ -213,11 +178,11 @@ public class SonoServer extends WebSocketServer {
 		System.out.println("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
 	}
 
-	public void pause(WebSocket conn) {
+	public void pause(final WebSocket conn) {
 		this.WAIT.put(conn, true);
 	}
 
-	public void unpause(WebSocket conn) {
+	public void unpause(final WebSocket conn) {
 		this.WAIT.put(conn, false);
 	}
 
