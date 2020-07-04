@@ -1,7 +1,8 @@
 load "ling";
 load "vector";
+load "html";
 
-var phones = {'m', 'p', 'b', 'g', 'ŋ', 'n', 'ɴ', 'f'};
+var phones = {'m', 'p', 'b', 'g', 'ŋ', 'ɲ', 'ɴ', 'ɱ'};
 
 var naturalsets = Phonology.findNaturalSets(_base, phones);
 
@@ -9,4 +10,9 @@ println("Input Phones:");
 println(phones);
 println("");
 println("Natural Sets:");
-naturalsets.map(println);
+println(Format.table(
+	null,
+	naturalsets.map((set) => {
+    	return {set, Phonology.naturalize(_base, set)};
+	})
+));
