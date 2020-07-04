@@ -10,7 +10,6 @@ import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.file.Paths;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -128,7 +127,7 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onStart() {
-		System.out.println("Server started on " + this.getAddress().getHostString());
+		System.out.println("Server started on " + this.getAddress().toString());
 		setConnectionLostTimeout(0);
 		setConnectionLostTimeout(100);
 	}
