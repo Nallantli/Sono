@@ -15,7 +15,7 @@ socket.onmessage = function(event) {
     if (header == "OUT") {
         writeOutput(message);
     } else if (header == "FILE") {
-        editor.setValue(message);
+        createTab(message);
     }
 }
 

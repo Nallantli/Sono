@@ -29,11 +29,116 @@ h1 {
     padding: 0;
 }
 
+#upperbar {
+    margin: 0;
+    padding: 0;
+    height: 30px;
+    background-color: black;
+    border-bottom: 1px solid #232323;
+}
+
+#addcont {
+    margin: 0;
+    padding: 0;
+    display: block;
+    float: right;
+}
+
+#newtab {
+    display: inline-block;
+    margin: 0;
+    padding: 4px;
+    height: 30px;
+    width: 30px;
+    background: none;
+    border: none;
+    color: #444444;
+    outline: none;
+    transition: all 0.1s ease-in-out;
+}
+
+#newtab:hover {
+    color: white;
+}
+
+#tabs {
+    margin: 0;
+    padding: 0;
+    height: 30px;
+    display: block;
+    float: left;
+    width: calc(100% - 30px);
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+#tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.closetab {
+    display: inline-block;
+    opacity: 0;
+    margin: 0;
+    padding: 4px;
+    padding-right: 10px;
+    padding-left: 0;
+    height: 30px;
+    width: 30px;
+    background: none;
+    border: none;
+    color: #ff6666;
+    outline: none;
+    transition: all 0.1s ease-in-out;
+}
+
+.opentab {
+    margin: 0;
+    padding: 4px;
+    padding-left: 10px;
+    padding-right: 5px;
+    display: inline-block;
+    height: 30px;
+    background: none;
+    border: none;
+    color: inherit;
+    outline: none;
+}
+
+.opentab i {
+    padding-right: 10px;
+}
+
+.tablinks:hover>.closetab {
+    opacity: 1;
+}
+
+.tablinks {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    height: 30px;
+    background: #141414;
+    border: none;
+    min-width: 100px;
+    color: white;
+    text-align: center;
+}
+
+.selectedtab {
+    background: #232323;
+}
+
 #nav {
     border-collapse: collapse;
     display: table;
     position: absolute;
-    background: #121212;
+    background: #141414;
     height: 100vh;
     width: 50px;
     top: 0;
@@ -49,7 +154,7 @@ h1 {
     display: block;
     text-align: left;
     border: none;
-    transition: all 0.5s ease-in-out;
+    transition: all 0.25s ease-in-out;
     font-family: "Iosevka SS05", monospace;
 }
 
@@ -65,7 +170,7 @@ h1 {
 
 #examples {
     position: absolute;
-    background: #212121;
+    background: #232323;
     z-index: 5;
     top: 0;
     left: 50px;
@@ -113,8 +218,9 @@ summary:hover {
     position: absolute;
     color: white;
     background: black;
-    width: calc(50vw - 55px);
+    width: calc(50vw - 56px);
     height: calc(100vh - 30px);
+    border-left: #232323 solid 1px;
     top: 0;
     right: 0;
     padding: 15px;
@@ -158,7 +264,7 @@ input::-moz-focus-inner {
 }
 
 #editor {
-    height: 100%;
+    height: calc(100% - 31px);
     width: 100%;
 }
 
@@ -166,17 +272,17 @@ table {
     border-collapse: collapse;
     margin: 15px;
     width: calc(100% - 30px);
-    background-color: #121212;
+    background-color: #141414;
 }
 
 table td,
 table th {
-    border: 2px solid #333333;
+    border: 1px solid #333333;
     padding: 8px;
 }
 
 table tr:nth-child(even) {
-    background-color: #222222;
+    background-color: #232323;
 }
 
 table tr:hover {
