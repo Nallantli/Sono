@@ -12,18 +12,18 @@ var dataset = new DataSet();
 dataset.parseFile("misc/Test.txt");
 dataset.setRules(RuleSets.Common.randomize());
 
-var plural = dataset.genSyllable();
-var genitive = dataset.genSyllable();
+var morphemeB = dataset.genSyllable();
+var morphemeC = dataset.genSyllable();
 
-var header = {"Singular", "Plural", "Sg Gen", "Pl Gen"};
+var header = {"Form A", "Form A+B", "Form A+C", "Form A+B+C"};
 var vector = {};
 i in {0 until 20} do {
 	var w = dataset.genWord();
-	var wSingular = (str dataset.toPhonetic(w)).replace("[\\.\\+]", "");
-	var wPlural = (str dataset.toPhonetic(word (vec w + { "+" } + vec plural))).replace("[\\.\\+]", "");
-	var wSingularGen = (str dataset.toPhonetic(word (vec w + { "+" } + vec genitive))).replace("[\\.\\+]", "");
-	var wPluralGen = (str dataset.toPhonetic(word (vec w + { "+" } + vec plural + { "+" } + vec genitive))).replace("[\\.\\+]", "");
-	vector += {{wSingular, wPlural, wSingularGen, wPluralGen}};
+	var wA = (str dataset.toPhonetic(w)).replace("[\\.\\+]", "");
+	var wAB = (str dataset.toPhonetic(word (vec w + { "+" } + vec morphemeB))).replace("[\\.\\+]", "");
+	var wAC = (str dataset.toPhonetic(word (vec w + { "+" } + vec morphemeC))).replace("[\\.\\+]", "");
+	var wABC = (str dataset.toPhonetic(word (vec w + { "+" } + vec morphemeB + { "+" } + vec morphemeC))).replace("[\\.\\+]", "");
+	vector += {{wA, wAB, wAC, wABC}};
 }
 
 print(Format.table(header, vector));
