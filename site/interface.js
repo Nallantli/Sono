@@ -2,12 +2,25 @@ let socket = new WebSocket("ws://3.128.215.170:7777");
 
 let past_commands = [];
 let index = 0;
+let init = false;
+
+function initialize() {
+    init = true;
+    document.getElementById("banner").style.opacity = 1;
+    setTimeout(() => {
+        document.getElementById("banner").style.opacity = 0;
+        document.getElementById("banner").style.pointerEvents = "none";
+    }, this.animationDelay + 20);
+}
 
 socket.onopen = function(e) {
     console.log("[open] Connection established");
 }
 
 socket.onmessage = function(event) {
+    if (!init) {
+        initialize();
+    }
     let s = event.data.split("\n");
     let header = s[0];
     s.shift();
