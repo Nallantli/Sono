@@ -121,7 +121,7 @@ public class SonoServer extends WebSocketServer {
 	public void onClose(final WebSocket conn, final int code, final String reason, final boolean remote) {
 		conns.remove(conn);
 		try {
-			System.out.println("Closed connection to " + conn.toString());
+			System.out.println("Closed connection to " + conn.getRemoteSocketAddress().getAddress().toString());
 		} catch (final Exception e) {
 			e.printStackTrace(System.err);
 		}
