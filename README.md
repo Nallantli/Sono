@@ -8,6 +8,8 @@
 
 ## Overview
 
+Online interface available at [sonolang.com](http://sonolang.com).
+
 Sono is a high-level object-oriented and procedural scripting language developed with linguistic capabilities in mind. For that it supports multiple operators revolving around phonological analysis based upon distinctive features.
 
 While the included file [hayes.tsv](assets/hayes.tsv) is used for the example codes under [examples/](examples), any set of TSV separated distinctive feature list may be used, with or without all the features expressed in [hayes.tsv](assets/hayes.tsv).
@@ -48,7 +50,7 @@ Type | Notes | Examples of Literals
 `Number` | Numerical values encompassing floating point numerals and integers | `1`, `1.1`, `1.0`, `0.1`
 `String` | Sequence of text, immutable | `"Hello World"`
 `Vector` | List of any values, including mixed types | `{1,2,3,4}`, `{"Hello", 1}`, `{{1,2}, 3}`
-`Phone` | Phonological segment or phoneme, support for all segments in the user selected feature file and various secondary articulations (`◌̩`, `◌̠`, `◌̟`, `◌̪`, `◌̺`, `◌̥`, `◌̥`, `◌̃`, `◌ʷ`, `◌ʲ`, `◌ˠ`, `◌ˤ`, `◌ʰ`, `◌ː`, a segment may use multiple secondary articulations, but those that contrast with each other will give error *c.f. `*[o̟̠]`*)<br>Currently there is no support for X-SAMPA<br>Affricates must have an underscore to bind them | `'s'`, `'t_ɕ'`, `rʷː`
+`Phone` | Phonological segment or phoneme, support for all segments in the user selected feature file and various secondary articulations (`◌̩`, `◌̠`, `◌̟`, `◌̪`, `◌̺`, `◌̥`, `◌̥`, `◌̃`, `◌ʷ`, `◌ʲ`, `◌ˠ`, `◌ˤ`, `◌ʰ`, `◌ː`, a segment may use multiple secondary articulations, but those that contrast with each other will give error *c.f. `*[o̟̠]`*)<br>Currently there is no support for X-SAMPA<br>Affricates must have an underscore to bind them | `'s'`, `'t_ɕ'`, `'rʷː'`
 `Word` | Sequence of Phones, with the addition of syllable delimiters `.` and morpheme boundary markers `+` | `` `foʊnɒləd_ʒi` ``, `` `soʊ.noʊ` ``, `` `naː.wa+tɬ` ``
 `Feature` | Distinctive feature and its quality | `+|long`, `-|LAB`
 `Matrix` | Grouping of Features for transformations | `[+|long, -|tense]`
