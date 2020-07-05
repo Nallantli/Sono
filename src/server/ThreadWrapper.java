@@ -27,7 +27,7 @@ public class ThreadWrapper extends Thread {
 	@Override
 	public void run() {
 		server.pause(conn);
-		final Datum output = wrapper.run(code);
+		final Datum output = wrapper.run("examples", code);
 
 		final StringBuilder sb = new StringBuilder();
 

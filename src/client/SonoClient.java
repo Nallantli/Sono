@@ -108,7 +108,7 @@ public class SonoClient {
 		if (args.length > 0 && args[0].charAt(0) != '-') {
 			filename = args[0];
 		}
-		Scanner sc = new Scanner(System.in);
+		final Scanner sc = new Scanner(System.in);
 		final SonoWrapper center = new SonoWrapper(pl, path, filename, new StandardOutput(), new ErrorOutput(),
 				new StandardInput(sc));
 
@@ -119,7 +119,7 @@ public class SonoClient {
 			System.out.println("Phonological Operations Disabled");
 		}
 		try {
-			center.run("load \"system\"");
+			center.run(".", "load \"system\"");
 			System.out.println("Loaded System Library");
 		} catch (final SonoCompilationException e) {
 			System.out.println("Could not load System Library");
@@ -129,7 +129,7 @@ public class SonoClient {
 			System.out.print("> ");
 			final String line = sc.nextLine();
 			try {
-				final Datum result = center.run(line);
+				final Datum result = center.run(".", line);
 				if (result.getType() == Datum.Type.VECTOR) {
 					int i = 0;
 					for (final Datum d : result.getVector(new ArrayList<>()))

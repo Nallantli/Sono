@@ -32,10 +32,10 @@ public class SonoWrapper {
 		globalOptions.put(key, value);
 	}
 
-	public Datum run(final String code) {
+	public Datum run(final String directory, final String code) {
 		try {
 			if (sono != null)
-				return sono.runCode(".", code);
+				return sono.runCode(directory, code);
 		} catch (final Exception e) {
 			stderr.println(e.getMessage());
 		}

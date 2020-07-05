@@ -112,7 +112,7 @@ public class SonoServer extends WebSocketServer {
 		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
 		out.printHeader("OUT",
 				validate("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">\n"));
-		conns.get(conn).run("load \"system\";");
+		conns.get(conn).run(".", "load \"system\";");
 		out.printHeader("OUT", validate("Loaded System Library\n"));
 		out.printHeader("OUT", validate("> "));
 	}
