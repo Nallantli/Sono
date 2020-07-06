@@ -3,6 +3,11 @@ load "system";
 
 var m = new Map();
 
+var start = timeMS();
+
 i in {0 until 1000} do {
 	m[Random.int(0, 1000)] = Random.float();
 }
+
+println("Time: " + str (timeMS() - start) + "ms");
+println("Size: " + str len m);
