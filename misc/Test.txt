@@ -1,6 +1,6 @@
 CATEGORIES
-	I	p,b,m,n,s,t,h,d,j,k,g,w,l,r,ɲ,ʃ,f
-	F	p,b,m,n,s,t,d,k,g,x,r,ʃ,ŋ
+	I	p,b,m,n,s,t,h,d,j,k,g,w,l,r,ɲ,ʃ,f,t_s,t_ʃ,ð
+	F	p,b,m,n,s,t,d,k,g,x,r,ʃ,ŋ,ʙ,θ,d_z
 	V	a,e,o,i,u,ʊ,ɔ
 	L	l,r,j,w
 SYLLABLES
