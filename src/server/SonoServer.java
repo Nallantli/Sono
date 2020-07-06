@@ -102,7 +102,7 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onOpen(final WebSocket conn, final ClientHandshake handshake) {
-		System.out.println(LocalDateTime.now(ZoneId.of("EST")) + "\tNew connection from "
+		System.out.println(LocalDateTime.now(ZoneId.of("America/New_York")) + "\tNew connection from "
 				+ conn.getRemoteSocketAddress().getAddress().getHostAddress());
 		final StandardOutput out = new StandardOutput(conn);
 		final ErrorOutput err = new ErrorOutput(conn);
@@ -125,7 +125,7 @@ public class SonoServer extends WebSocketServer {
 	public void onClose(final WebSocket conn, final int code, final String reason, final boolean remote) {
 		conns.remove(conn);
 		try {
-			System.out.println(LocalDateTime.now(ZoneId.of("EST")) + "\tClosed connection to "
+			System.out.println(LocalDateTime.now(ZoneId.of("America/New_York")) + "\tClosed connection to "
 					+ conn.getRemoteSocketAddress().getAddress().toString());
 		} catch (final Exception e) {
 			e.printStackTrace(System.err);
@@ -135,7 +135,7 @@ public class SonoServer extends WebSocketServer {
 	@Override
 	public void onMessage(final WebSocket conn, final String raw) {
 		System.out.println("RECIEVED from " + conn.getLocalSocketAddress().toString() + " at "
-				+ LocalDateTime.now(ZoneId.of("EST")) + "\n" + raw); // do not plan to keep, just for temporary
+				+ LocalDateTime.now(ZoneId.of("America/New_York")) + "\n" + raw); // do not plan to keep, just for temporary
 																		// debugging purposes
 
 		final String sections[] = raw.split("\n", 2);
@@ -184,7 +184,7 @@ public class SonoServer extends WebSocketServer {
 		if (conn != null) {
 			conns.remove(conn);
 		}
-		System.out.println(LocalDateTime.now(ZoneId.of("EST")) + "\tERROR from "
+		System.out.println(LocalDateTime.now(ZoneId.of("America/New_York")) + "\tERROR from "
 				+ conn.getRemoteSocketAddress().getAddress().getHostAddress());
 	}
 
