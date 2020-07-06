@@ -1,19 +1,38 @@
 package server;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
+import java.nio.file.Path;
+import java.security.KeyFactory;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 import org.java_websocket.server.WebSocketServer;
 
 import main.SonoWrapper;
@@ -80,7 +99,81 @@ public class SonoServer extends WebSocketServer {
 		}
 
 		final SonoServer server = new SonoServer();
+		SSLContext context = getContext();
+		if (context != null) {
+			server.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(getContext()));
+		}
+		server.setConnectionLostTimeout(30);
 		server.start();
+	}
+
+	private static SSLContext getContext() {
+		SSLContext context;
+		String password = "";
+		try {
+			context = SSLContext.getInstance("TLS");
+
+			byte[] certBytes = parseDERFromPEM(
+					getBytes(Path.of("/", "etc", "letsencrypt", "live", "sonolang.com", "fullchain.pem").toFile()),
+					"-----BEGIN CERTIFICATE-----", "-----END CERTIFICATE-----");
+			byte[] keyBytes = parseDERFromPEM(
+					getBytes(Path.of("/", "etc", "letsencrypt", "live", "sonolang.com", "privkey.pem").toFile()),
+					"-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
+
+			X509Certificate cert = generateCertificateFromDER(certBytes);
+			RSAPrivateKey key = generatePrivateKeyFromDER(keyBytes);
+
+			KeyStore keystore = KeyStore.getInstance("JKS");
+			keystore.load(null);
+			keystore.setCertificateEntry("cert-alias", cert);
+			keystore.setKeyEntry("key-alias", key, password.toCharArray(), new Certificate[] { cert });
+
+			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+			kmf.init(keystore, password.toCharArray());
+
+			KeyManager[] km = kmf.getKeyManagers();
+
+			context.init(km, null, null);
+		} catch (Exception e) {
+			context = null;
+		}
+		return context;
+	}
+
+	private static byte[] parseDERFromPEM(byte[] pem, String beginDelimiter, String endDelimiter) {
+		String data = new String(pem);
+		String[] tokens = data.split(beginDelimiter);
+		tokens = tokens[1].split(endDelimiter);
+		return Base64.getDecoder().decode(tokens[0]);
+	}
+
+	private static RSAPrivateKey generatePrivateKeyFromDER(byte[] keyBytes)
+			throws InvalidKeySpecException, NoSuchAlgorithmException {
+		PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+
+		KeyFactory factory = KeyFactory.getInstance("RSA");
+
+		return (RSAPrivateKey) factory.generatePrivate(spec);
+	}
+
+	private static X509Certificate generateCertificateFromDER(byte[] certBytes) throws CertificateException {
+		CertificateFactory factory = CertificateFactory.getInstance("X.509");
+
+		return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
+	}
+
+	private static byte[] getBytes(File file) {
+		byte[] bytesArray = new byte[(int) file.length()];
+
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(file);
+			fis.read(bytesArray); // read file into bytes[]
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return bytesArray;
 	}
 
 	public SonoServer() {
