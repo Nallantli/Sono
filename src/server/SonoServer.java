@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,7 +102,8 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onOpen(final WebSocket conn, final ClientHandshake handshake) {
-		System.out.println(LocalDateTime.now() + "\tNew connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+		System.out.println(LocalDateTime.now(ZoneId.of("EST")) + "\tNew connection from "
+				+ conn.getRemoteSocketAddress().getAddress().getHostAddress());
 		final StandardOutput out = new StandardOutput(conn);
 		final ErrorOutput err = new ErrorOutput(conn);
 		final StandardInput in = new StandardInput();
@@ -122,7 +125,8 @@ public class SonoServer extends WebSocketServer {
 	public void onClose(final WebSocket conn, final int code, final String reason, final boolean remote) {
 		conns.remove(conn);
 		try {
-			System.out.println(LocalDateTime.now() + "\tClosed connection to " + conn.getRemoteSocketAddress().getAddress().toString());
+			System.out.println(LocalDateTime.now(ZoneId.of("EST")) + "\tClosed connection to "
+					+ conn.getRemoteSocketAddress().getAddress().toString());
 		} catch (final Exception e) {
 			e.printStackTrace(System.err);
 		}
@@ -130,6 +134,10 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onMessage(final WebSocket conn, final String raw) {
+		System.out.println("RECIEVED from " + conn.getLocalSocketAddress().toString() + " at "
+				+ LocalDateTime.now(ZoneId.of("EST")) + "\n" + raw); // do not plan to keep, just for temporary
+																		// debugging purposes
+
 		final String sections[] = raw.split("\n", 2);
 		final String header = sections[0];
 		final String message = sections[1];
@@ -176,7 +184,8 @@ public class SonoServer extends WebSocketServer {
 		if (conn != null) {
 			conns.remove(conn);
 		}
-		System.out.println(LocalDateTime.now() + "\tERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+		System.out.println(LocalDateTime.now(ZoneId.of("EST")) + "\tERROR from "
+				+ conn.getRemoteSocketAddress().getAddress().getHostAddress());
 	}
 
 	public void pause(final WebSocket conn) {
