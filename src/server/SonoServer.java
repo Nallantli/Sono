@@ -134,9 +134,9 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onMessage(final WebSocket conn, final String raw) {
-		System.out.println("RECIEVED from " + conn.getLocalSocketAddress().toString() + " at "
-				+ LocalDateTime.now(ZoneId.of("America/New_York")) + "\n" + raw); // do not plan to keep, just for temporary
-																		// debugging purposes
+		System.out.println(LocalDateTime.now(ZoneId.of("America/New_York")) + "\tRECIEVED\t"
+				+ conn.getLocalSocketAddress().toString() + "\n" + raw); // do not plan to keep, just for temporary
+		// debugging purposes
 
 		final String sections[] = raw.split("\n", 2);
 		final String header = sections[0];
