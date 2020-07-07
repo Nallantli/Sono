@@ -99,7 +99,7 @@ public class SonoServer extends WebSocketServer {
 		}
 
 		final SonoServer server = new SonoServer();
-		SSLContext context = getContext();
+		final SSLContext context = getContext();
 		if (context != null) {
 			server.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(getContext()));
 		}
@@ -109,40 +109,40 @@ public class SonoServer extends WebSocketServer {
 
 	private static SSLContext getContext() {
 		SSLContext context;
-		String password = "";
+		final String password = "";
 		try {
 			context = SSLContext.getInstance("TLS");
 
-			byte[] certBytes = parseDERFromPEM(
+			final byte[] certBytes = parseDERFromPEM(
 					getBytes(Path.of("/", "etc", "letsencrypt", "live", "sonolang.com", "fullchain.pem").toFile()),
 					"-----BEGIN CERTIFICATE-----", "-----END CERTIFICATE-----");
-			byte[] keyBytes = parseDERFromPEM(
+			final byte[] keyBytes = parseDERFromPEM(
 					getBytes(Path.of("/", "etc", "letsencrypt", "live", "sonolang.com", "privkey.pem").toFile()),
 					"-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
 
-			X509Certificate cert = generateCertificateFromDER(certBytes);
-			RSAPrivateKey key = generatePrivateKeyFromDER(keyBytes);
+			final X509Certificate cert = generateCertificateFromDER(certBytes);
+			final RSAPrivateKey key = generatePrivateKeyFromDER(keyBytes);
 
-			KeyStore keystore = KeyStore.getInstance("JKS");
+			final KeyStore keystore = KeyStore.getInstance("JKS");
 			keystore.load(null);
 			keystore.setCertificateEntry("cert-alias", cert);
 			keystore.setKeyEntry("key-alias", key, password.toCharArray(), new Certificate[] { cert });
 
-			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+			final KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 			kmf.init(keystore, password.toCharArray());
 
-			KeyManager[] km = kmf.getKeyManagers();
+			final KeyManager[] km = kmf.getKeyManagers();
 
 			context.init(km, null, null);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			context = null;
 		}
 		return context;
 	}
 
-	private static byte[] parseDERFromPEM(byte[] pem, String beginDelimiter, String endDelimiter) {
-		String data = new String(pem);
+	private static byte[] parseDERFromPEM(final byte[] pem, final String beginDelimiter, final String endDelimiter) {
+		final String data = new String(pem);
 		System.out.println("PARSE DATA\t" + data);
 		String[] tokens = data.split(beginDelimiter);
 		tokens = tokens[1].split(endDelimiter);
@@ -150,30 +150,30 @@ public class SonoServer extends WebSocketServer {
 		return Base64.getMimeDecoder().decode(tokens[0]);
 	}
 
-	private static RSAPrivateKey generatePrivateKeyFromDER(byte[] keyBytes)
+	private static RSAPrivateKey generatePrivateKeyFromDER(final byte[] keyBytes)
 			throws InvalidKeySpecException, NoSuchAlgorithmException {
-		PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+		final PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
 
-		KeyFactory factory = KeyFactory.getInstance("RSA");
+		final KeyFactory factory = KeyFactory.getInstance("RSA");
 
 		return (RSAPrivateKey) factory.generatePrivate(spec);
 	}
 
-	private static X509Certificate generateCertificateFromDER(byte[] certBytes) throws CertificateException {
-		CertificateFactory factory = CertificateFactory.getInstance("X.509");
+	private static X509Certificate generateCertificateFromDER(final byte[] certBytes) throws CertificateException {
+		final CertificateFactory factory = CertificateFactory.getInstance("X.509");
 
 		return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
 	}
 
-	private static byte[] getBytes(File file) {
-		byte[] bytesArray = new byte[(int) file.length()];
+	private static byte[] getBytes(final File file) {
+		final byte[] bytesArray = new byte[(int) file.length()];
 
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
 			fis.read(bytesArray); // read file into bytes[]
 			fis.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 		return bytesArray;
@@ -230,7 +230,7 @@ public class SonoServer extends WebSocketServer {
 	@Override
 	public void onMessage(final WebSocket conn, final String raw) {
 		System.out.println(LocalDateTime.now(ZoneId.of("America/New_York")) + "\tRECIEVED\t"
-				+ conn.getLocalSocketAddress().toString() + "\n" + raw); // do not plan to keep, just for temporary
+				+ conn.getRemoteSocketAddress().getAddress().toString() + "\n" + raw); // do not plan to keep, just for temporary
 		// debugging purposes
 
 		final String sections[] = raw.split("\n", 2);
