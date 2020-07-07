@@ -7,7 +7,7 @@ String::hash(ref string, ref mod) => {
 	var h = 0;
 	var pp = 1;
 	e in vec string do {
-		h = (h + char e * pp) % m;
+		h = (h + code e * pp) % m;
 		pp = (pp * p) % m;
 	}
 	mod == null then {
