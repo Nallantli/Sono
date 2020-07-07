@@ -1,4 +1,4 @@
-let socket = new WebSocket("wss://" + location.host + "/wss");
+let socket = new WebSocket("wss://sonolang.com/wss");
 
 let past_commands = [];
 let index = 0;
