@@ -291,3 +291,9 @@ The `load` keyword will search for a file of a given `String` key and load its c
 External libraries can be compiled as `.jar` files and imported with the `import` keyword. These `.jar` files must be built with the [`build-lib`](build-lib.bat) script and extend [`main.base.Library`](src/main/base/Library.java). In addition, they must be compiled in the package [`ext`](src/ext).
 
 The commands of external libraries are activated using the keyword `_OUTER_CALL_` which requests a predefined function. The first parameter of the keyword is the `String` key of the function, while the second is the input of any type. See [`ext`](src/ext) for examples.
+
+## Various Regards
+
+*To* Andy Cline *for invaluable aid in setting up SSL*
+
+*To* [Dr. Kevin Tang](https://github.com/tang-kevin) *for providing input towards the project's development and goals*
