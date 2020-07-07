@@ -135,6 +135,7 @@ public class SonoServer extends WebSocketServer {
 
 			context.init(km, null, null);
 		} catch (Exception e) {
+			e.printStackTrace();
 			context = null;
 		}
 		return context;

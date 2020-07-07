@@ -1,5 +1,5 @@
 # Benjamin Park
-# 30-06-2020
+# 07-07-2020
 
 import "LIB_Console";
 load "math";
@@ -20,12 +20,60 @@ timeMS() => {
 	return ("LIB_Console.TIME" _OUTER_CALL_ null);
 }
 
+String::match(ref this, ref pattern) => {
+	return "LIB_Console.REGEX" _OUTER_CALL_ (pattern, string);
+}
+
+Number::log(ref this) => {
+	return "LIB_Console.LOG" _OUTER_CALL_ n;
+}
+
+getNum(ref x) => {
+	return num x;
+}
+
+getStr(ref x) => {
+	return str x;
+}
+
+getVec(ref x) => {
+	return vec x;
+}
+
+getLen(ref x) => {
+	return len x;
+}
+
+getWord(ref x) => {
+	return word x;
+}
+
+getPhone(ref x) => {
+	return (vec word x)[0];
+}
+
+getChar(ref x) => {
+	return char x;
+}
+
+getCode(ref x) => {
+	return code x;
+}
+
+getMat(ref x) => {
+	return mat x;
+}
+
+getCom(ref x) => {
+	return com x;
+}
+
 static Random class {
 	float() => {
 		return ("LIB_Console.RAND" _OUTER_CALL_ null);
 	}
 
-	int(final lower, final upper) => {
+	int(ref lower, ref upper) => {
 		return (float() * (upper - lower) + lower).floor();
 	}
 
@@ -41,52 +89,4 @@ static Input class {
 	number() => {
 		return ("LIB_Console.GET.NUMBER" _OUTER_CALL_ null);
 	}
-}
-
-String::match(final string, final pattern) => {
-	return "LIB_Console.REGEX" _OUTER_CALL_ (pattern, string);
-}
-
-Number::log(final n) => {
-	return "LIB_Console.LOG" _OUTER_CALL_ n;
-}
-
-getNum(final this) => {
-	return num this;
-}
-
-getStr(final this) => {
-	return str this;
-}
-
-getVec(final this) => {
-	return vec this;
-}
-
-getLen(final this) => {
-	return len this;
-}
-
-getWord(final this) => {
-	return word this;
-}
-
-getPhone(final this) => {
-	return (vec word this)[0];
-}
-
-getChar(final this) => {
-	return char this;
-}
-
-getCode(final this) => {
-	return code this;
-}
-
-getMat(final this) => {
-	return mat this;
-}
-
-getCom(final this) => {
-	return com this;
 }

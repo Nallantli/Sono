@@ -135,15 +135,15 @@ An example object and its instantiation are as follows:
 
 ```sono
 struct Point class {
- var x;
- var y;
- init(x, y) => {
-  this.x = x;
-  this.y = y
- }
- getStr() => {
-  return "(" + str x + ", " + str y + ")";
- }
+	var x;
+	var y;
+	init(x, y) => {
+		this.x = x;
+		this.y = y
+	}
+	getStr() => {
+		return "(" + str x + ", " + str y + ")";
+	}
 }
 
 var p = new Point(1, 2);
@@ -216,11 +216,11 @@ The for-loop syntax and while-loop syntax use the same keyword `do`, with the fo
 
 ```sono
 i in {0 until 10} do {
- # ....
+	# ....
 }
 
 true do {
- # ....
+	# ....
 }
 ```
 
@@ -232,7 +232,7 @@ var nums = {0, 1, 2, 3, 4};
 print(nums); # {0, 1, 2, 3, 4}
 
 i in nums do {
- i += 1;
+	i += 1;
 }
 
 print(nums); # {1, 2, 3, 4, 5}
@@ -244,9 +244,9 @@ If-then-else sequences use `then` and `else`:
 
 ```sono
 i == 1 then {
- # ....
+	# ....
 } else {
- # ....
+	# ....
 }
 ```
 
@@ -254,13 +254,13 @@ Else-if segments can be easily chained on using another `then`:
 
 ```sono
 i == 1 then {
- # ....
+	# ....
 } else i == 2 then {
- # ....
+	# ....
 } else i == 3 then {
- # ....
+	# ....
 } else {
- # ....
+	# ....
 }
 ```
 
@@ -272,9 +272,9 @@ Try-catch statements use the following form:
 
 ```sono
 try {
- # ....
+	# ....
 } catch {
- # ....
+	# ....
 }
 ```
 
