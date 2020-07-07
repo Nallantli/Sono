@@ -142,10 +142,11 @@ public class SonoServer extends WebSocketServer {
 	}
 
 	private static byte[] parseDERFromPEM(byte[] pem, String beginDelimiter, String endDelimiter) {
-		System.out.println("PARSE\t" + pem);
 		String data = new String(pem);
+		System.out.println("PARSE DATA\t" + data);
 		String[] tokens = data.split(beginDelimiter);
 		tokens = tokens[1].split(endDelimiter);
+		System.out.println("PARSE TOKENS\t" + tokens);
 		return Base64.getDecoder().decode(tokens[0]);
 	}
 
