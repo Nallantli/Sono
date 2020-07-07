@@ -21,7 +21,7 @@ timeMS() => {
 }
 
 String::match(ref this, ref pattern) => {
-	return "LIB_Console.REGEX" _OUTER_CALL_ (pattern, string);
+	return "LIB_Console.REGEX" _OUTER_CALL_ (pattern, this);
 }
 
 Number::log(ref this) => {

@@ -138,7 +138,6 @@ public class SonoClient {
 					System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
 				}
 			} catch (final SonoException e) {
-				System.err.println(e.getMessage());
 				e.printStackTrace();
 			}
 		}
