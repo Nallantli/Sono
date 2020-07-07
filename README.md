@@ -8,7 +8,7 @@
 
 ## Overview
 
-Online interface available at [sonolang.com](http://sonolang.com).
+Online interface available at [sonolang.com](https://sonolang.com).
 
 Sono is a high-level object-oriented and procedural scripting language developed with linguistic capabilities in mind. For that it supports multiple operators revolving around phonological analysis based upon distinctive features.
 
