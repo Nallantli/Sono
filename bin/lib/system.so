@@ -79,6 +79,10 @@ getChar(final this) => {
 	return char this;
 }
 
+getCode(final this) => {
+	return code this;
+}
+
 getMat(final this) => {
 	return mat this;
 }

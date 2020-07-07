@@ -17,7 +17,7 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NEQUAL, LESS, MORE, ELESS, EMORE, MATRIX_CONV, NUMBER_CONV,
 		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
 		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONV, TYPE_DEC, STRUCT_DEC, STATIC_DEC, CLASS_DEC, NEW_DEC, POW,
-		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER,
+		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
@@ -1056,9 +1056,9 @@ public abstract class Operator {
 		}
 	}
 
-	public static class Char extends Unary {
-		public Char(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.CHAR, a);
+	public static class Code extends Unary {
+		public Code(final Interpreter interpreter, final Operator a) {
+			super(interpreter, Type.CODE, a);
 		}
 
 		@Override
@@ -1073,7 +1073,32 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return "char " + a.toString();
+			return "code " + a.toString();
+		}
+	}
+
+	public static class Char extends Unary {
+		public Char(final Interpreter interpreter, final Operator a) {
+			super(interpreter, Type.CHAR, a);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, final List<String> trace) {
+			if (SonoWrapper.DEBUG)
+				trace.add(this.toString());
+			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+			try {
+				final int i = datumA.getNumber(trace).intValue();
+				return new Datum(String.valueOf((char) i));
+			} catch (final Exception e) {
+				throw new SonoRuntimeException("Value <" + datumA.toStringTrace(trace) + "> is not of type `Number`",
+						trace);
+			}
+		}
+
+		@Override
+		public String toString() {
+			return "code " + a.toString();
 		}
 	}
 

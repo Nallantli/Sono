@@ -1,4 +1,4 @@
-# Sono Beta 1.4.5
+# Sono Beta 1.4.6
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -92,7 +92,8 @@ Keyword | Conversion | Values
 `vec` | Converts to a `Vector` | `String`, `Matrix`, `Word`
 `mat` | Converts to a `Matrix` | `Vector` (of Features)
 `num` | Converts to a `Number` | `String`
-`char` | Converts to the character `Number` value of a single-value `String` | `String`
+`char` | Converts to a 1-element `String` value of a `Number` | `Number`
+`code` | Converts to a `Number` value of a 1-element `String`'s character code | `String`
 `word` | Converts to a `Word` | `String`, `Vector`
 `feat` | Converts to a `Feature` | `String`
 

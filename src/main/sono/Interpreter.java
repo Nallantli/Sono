@@ -246,6 +246,10 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Char(this, a));
 				}
+				if (token.equals("code")) {
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Code(this, a));
+				}
 				if (token.equals("feat")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.FeatDec(this, a));
