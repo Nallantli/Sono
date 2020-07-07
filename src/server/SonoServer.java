@@ -146,7 +146,7 @@ public class SonoServer extends WebSocketServer {
 		System.out.println("PARSE DATA\t" + data);
 		String[] tokens = data.split(beginDelimiter);
 		tokens = tokens[1].split(endDelimiter);
-		System.out.println("PARSE TOKENS\t" + tokens);
+		System.out.println("PARSE TOKENS\t" + tokens[0]);
 		return Base64.getDecoder().decode(tokens[0]);
 	}
 
