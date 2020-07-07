@@ -113,7 +113,7 @@ public class Interpreter {
 			return o.evaluate(main, new ArrayList<>());
 		} catch (final SonoRuntimeException e) {
 			stderr.println(e.getMessage());
-			stderr.print(e.getStackTrace().toString());
+			stderr.print(e.getStackString());
 			return new Datum();
 		}
 	}

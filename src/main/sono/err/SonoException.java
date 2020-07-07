@@ -11,14 +11,20 @@ public class SonoException extends RuntimeException {
 		this.trace = trace;
 	}
 
-	@Override
-	public void printStackTrace() {
+	public String getStackString() {
 		Collections.reverse(trace);
+		final StringBuilder sb = new StringBuilder();
 		for (final String o : trace) {
 			String s = o.substring(0, Math.min(100,o.length()));
 			if (!s.equals(o))
 				s += " ... (+" + (o.length() - 100) + ")";
-			System.err.println("\t^ " + s);
+			sb.append("\t^ " + s);
 		}
+		return sb.toString();
+	}
+
+	@Override
+	public void printStackTrace() {
+		System.err.print(getStackString());
 	}
 }

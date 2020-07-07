@@ -18,7 +18,6 @@ import main.SonoWrapper;
 import main.phl.PhoneLoader;
 import main.sono.Datum;
 import main.sono.err.SonoCompilationException;
-import main.sono.err.SonoException;
 
 public class SonoClient {
 	private static String getOption(final String option, final String[] args) {
@@ -137,7 +136,7 @@ public class SonoClient {
 				} else {
 					System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
 				}
-			} catch (final SonoException e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
