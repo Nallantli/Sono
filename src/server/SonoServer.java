@@ -147,7 +147,7 @@ public class SonoServer extends WebSocketServer {
 		String[] tokens = data.split(beginDelimiter);
 		tokens = tokens[1].split(endDelimiter);
 		System.out.println("PARSE TOKENS\t" + tokens[0]);
-		return Base64.getDecoder().decode(tokens[0]);
+		return Base64.getMimeDecoder().decode(tokens[0]);
 	}
 
 	private static RSAPrivateKey generatePrivateKeyFromDER(byte[] keyBytes)
