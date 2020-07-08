@@ -193,7 +193,7 @@ h1 {
 #examples {
     position: absolute;
     background: #232323;
-    z-index: 5;
+    z-index: 10;
     top: 0;
     left: 50px;
     width: 200px;
@@ -205,7 +205,7 @@ h1 {
 
 #docs {
     position: absolute;
-    z-index: 5;
+    z-index: 10;
     top: 0;
     left: 50px;
     width: calc(100% - 50px);
