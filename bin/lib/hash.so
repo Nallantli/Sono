@@ -1,12 +1,12 @@
 # Benjamin Park
-# 29-06-2020
+# 08-07-2020
 
-String::hash(ref string, ref mod) => {
+String::hash(ref this, ref mod) => {
 	var p = 31;
 	var m = 10 ** 9 + 9;
 	var h = 0;
 	var pp = 1;
-	e in vec string do {
+	e in vec this do {
 		h = (h + code e * pp) % m;
 		pp = (pp * p) % m;
 	}

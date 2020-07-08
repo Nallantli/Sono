@@ -203,6 +203,27 @@ h1 {
     box-shadow: #0f0f0f 0 0 20px;
 }
 
+#docs {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 50px;
+    width: calc(100% - 50px);
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: white;
+    overflow: hidden;
+}
+
+#docs iframe {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
 .navbuttons {
     display: block;
     width: 40px;

@@ -1,5 +1,5 @@
 # Benjamin Park
-# 29-06-2020
+# 08-07-2020
 
 Number::abs(ref this) => {
 	this < 0 then {
@@ -118,5 +118,9 @@ static Math class {
 
 	mod(ref a, ref b) => {
 		return a % b;
+	}
+
+	pow(ref a, ref b) => {
+		return a ** b;
 	}
 }
