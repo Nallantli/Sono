@@ -11,7 +11,7 @@ function writeValue(parent, v) {
 }
 
 function writeMethod(parent, m) {
-    let s = `<a style="height:10px; display:block;" name="${parent}.${m.name}"></a>`
+    let s = `<a style="height:65px; margin-top: -65px; display:block;" name="${parent}.${m.name}"></a>`
     nav_s += `<p class="nav_method_link"><a href="#${parent}.${m.name}">${m.name}()</a></p>`;
     s += `<div class="method">`;
     s += `<div class="method_head">`;
@@ -65,7 +65,7 @@ function writeMethod(parent, m) {
 }
 
 function writeClass(parent, c) {
-    let s = `<a style="height:10px; display:block;" name="${parent}.${c.name}"></a>`;
+    let s = `<a style="height:65px; margin-top: -65px; display:block;" name="${parent}.${c.name}"></a>`;
     nav_s += `<details><summary class="nav_class_link"><a href="#${parent}.${c.name}">${c.name}</a></summary>`;
     s += `<div class="class">`;
     s += `<div class="class_head">`;

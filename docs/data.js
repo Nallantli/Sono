@@ -654,7 +654,7 @@ const LIBRARIES = {
                 },
                 {
                     key: "rawsize",
-                    desc: "Actual size of the interal <code>bucket</code>.",
+                    desc: "Actual size of the internal <code>bucket</code>.",
                     value: "null"
                 }
             ],
@@ -859,5 +859,982 @@ const LIBRARIES = {
                 }
             ]
         }]
+    },
+    "file": {
+        name: "File Reading and Writing Library",
+        file: "map.so",
+        import: ["LIB_FileIO"],
+        load: [],
+        values: [],
+        methods: [],
+        classes: [{
+            name: "File",
+            modifier: "struct",
+            values: [{
+                key: "pointer",
+                desc: "Internal memory address to the file processor.",
+                value: "null"
+            }],
+            methods: [{
+                    name: "init",
+                    template: undefined,
+                    params: [{
+                        modifier: "ref",
+                        key: "filename",
+                        type: [
+                            "String"
+                        ]
+                    }],
+                    desc: "Constructor for the <code>File</code> object which accepts a path to a file in the form of a <code>String</code>.",
+                    return: undefined,
+                    see: []
+                },
+                {
+                    name: "getReader",
+                    template: undefined,
+                    params: [],
+                    desc: "Returns a <code>Reader</code> object for the file to have its contents parsed.",
+                    return: "Reader",
+                    see: ["file.File.Reader"]
+                },
+                {
+                    name: "getWriter",
+                    template: undefined,
+                    params: [],
+                    desc: "Returns a <code>Writer</code> object for the file allowing content to be written.",
+                    return: "Reader",
+                    see: ["file.File.Writer"]
+                },
+                {
+                    name: "getStr",
+                    template: undefined,
+                    params: [],
+                    desc: "Returns a <code>String</code> representation of the <code>File</code> object.",
+                    return: "String",
+                    see: []
+                }
+            ],
+            classes: [{
+                    name: "Reader",
+                    modifier: "struct",
+                    values: [{
+                        key: "pointer",
+                        desc: "Internal memory address to the file's reading manager.",
+                        value: "null"
+                    }],
+                    methods: [{
+                            name: "init",
+                            template: undefined,
+                            params: [{
+                                modifier: "ref",
+                                key: "pointer",
+                                type: [
+                                    "Pointer"
+                                ]
+                            }],
+                            desc: "Constructor for the <code>Reader</code> object.",
+                            return: undefined,
+                            see: []
+                        },
+                        {
+                            name: "readLine",
+                            template: undefined,
+                            params: [],
+                            desc: "Reads and returns a single line from the file, giving <code>null</code> if the <code>Reader</code> finds no more content to be read.",
+                            return: "String",
+                            see: []
+                        },
+                        {
+                            name: "read",
+                            template: undefined,
+                            params: [{
+                                modifier: undefined,
+                                key: "i",
+                                type: [
+                                    "Number"
+                                ]
+                            }],
+                            desc: "Reads and returns the contents of a file up to a given amount of bytes, defaulting to a single byte if no value is given.",
+                            return: "String",
+                            see: []
+                        },
+                        {
+                            name: "close",
+                            template: undefined,
+                            params: [],
+                            desc: "Closes the <code>Reader</code> object and removes it from memory.",
+                            return: undefined,
+                            see: []
+                        },
+                        {
+                            name: "getStr",
+                            template: undefined,
+                            params: [],
+                            desc: "Returns a <code>String</code> representation of the of <code>Reader</code> object.",
+                            return: "String",
+                            see: []
+                        }
+                    ],
+                    classes: []
+                },
+                {
+                    name: "Writer",
+                    modifier: "struct",
+                    values: [{
+                        key: "pointer",
+                        desc: "Internal memory address to the file's writing manager.",
+                        value: "null"
+                    }],
+                    methods: [{
+                            name: "init",
+                            template: undefined,
+                            params: [{
+                                modifier: "ref",
+                                key: "pointer",
+                                type: [
+                                    "Pointer"
+                                ]
+                            }],
+                            desc: "Constructor for the <code>Writer</code> object.",
+                            return: undefined,
+                            see: []
+                        },
+                        {
+                            name: "write",
+                            template: undefined,
+                            params: [{
+                                modifier: "ref",
+                                key: "string",
+                                type: [
+                                    "String"
+                                ]
+                            }],
+                            desc: "Writes a sequence of bytes to the <code>File</code>.",
+                            return: undefined,
+                            see: []
+                        },
+                        {
+                            name: "close",
+                            template: undefined,
+                            params: [],
+                            desc: "Closes the <code>Writer</code> object and removes it from memory.",
+                            return: undefined,
+                            see: []
+                        },
+                        {
+                            name: "getStr",
+                            template: undefined,
+                            params: [],
+                            desc: "Returns a <code>String</code> representation of the of <code>Writer</code> object.",
+                            return: "String",
+                            see: []
+                        }
+                    ],
+                    classes: []
+                }
+            ]
+        }]
+    },
+    "vector": {
+        name: "Vector Prototyping Methods Library",
+        file: "vector.so",
+        import: [],
+        load: ["math", "system"],
+        values: [],
+        methods: [{
+                name: "pop",
+                template: "Vector",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Vector"
+                    ]
+                }],
+                desc: "Returns the given <code>Vector</code> with the final element removed.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "shift",
+                template: "Vector",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Vector"
+                    ]
+                }],
+                desc: "Returns the given <code>Vector</code> with the first element removed.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "front",
+                template: "Vector",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Vector"
+                    ]
+                }],
+                desc: "Returns the first element of the given <code>Vector</code>.",
+                return: "Any",
+                see: []
+            },
+            {
+                name: "back",
+                template: "Vector",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Vector"
+                    ]
+                }],
+                desc: "Returns the last element of the given <code>Vector</code>.",
+                return: "Any",
+                see: []
+            },
+            {
+                name: "isEmpty",
+                template: "Vector",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Vector"
+                    ]
+                }],
+                desc: "Returns <code>true</code> if the given <code>Vector</code> contains no elements.",
+                return: "Number",
+                see: []
+            },
+            {
+                name: "contains",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "value",
+                        type: [
+                            "Any"
+                        ]
+                    }
+                ],
+                desc: "Returns <code>true</code> if the given <code>Vector</code> contains the an element equivalent to <code>value</code>.",
+                return: "Number",
+                see: []
+            },
+            {
+                name: "push",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "value",
+                        type: [
+                            "Any"
+                        ]
+                    }
+                ],
+                desc: "Appends an element to the back of the <code>Vector</code>.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "join",
+                template: "Vector",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Vector"
+                    ]
+                }],
+                desc: "Returns the value of the <code>Vector</code>'s elements concatanated.",
+                return: "String",
+                see: []
+            },
+            {
+                name: "remove",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "index",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Removes the element of a <code>Vector</code> at the given index.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "reverse",
+                template: "Vector",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Vector"
+                    ]
+                }],
+                desc: "Returns a <code>Vector</code> with the elements of the former in reversed order.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "distArray",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "vector",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: undefined,
+                        key: "costDel",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: undefined,
+                        key: "costIns",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: undefined,
+                        key: "costRep",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Generates a two-dimensional <code>Vector</code> containing the structure expressed in a full graph of the Levenshtein distance calculation. The cost parameters default to <code>1</code> when left <code>null</code>.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "dist",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "vector",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costDel",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costIns",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costRep",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Returns the calculated distance between two <code>Vector</code> values according to Levenshtein distance.",
+                return: "Number",
+                see: ["vector.distArray"]
+            },
+            {
+                name: "steps",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "vector",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costDel",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costIns",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costRep",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Returns a <code>Vector</code> list of the steps required to transform one <code>Vector</code> value into the other according to Levenshtein distance.",
+                return: "Vector",
+                see: ["vector.distArray", "vector.reverse"]
+            },
+            {
+                name: "nGram",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "n",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Calculates the n-gram values for a <code>Vector</code> value's contents.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "sort",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: undefined,
+                        key: "comp",
+                        type: [
+                            "Function"
+                        ]
+                    }
+                ],
+                desc: "Sorts a given <code>Vector</code> according to the comparator <code>Function</code>, which defaults to numerical order when left <code>null</code>.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "map",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "function",
+                        type: [
+                            "Function"
+                        ]
+                    }
+                ],
+                desc: "Maps a <code>Function</code> to each element in the <code>Vector</code> and returns the resultant <code>Vector</code>.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "filter",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "function",
+                        type: [
+                            "Function"
+                        ]
+                    }
+                ],
+                desc: "Filters the elements of a <code>Vector</code> according to the parameters set by a given <code>Function</code>.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "foldRight",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "function",
+                        type: [
+                            "Function"
+                        ]
+                    }
+                ],
+                desc: "Conducts the functional folding by the right on a given <code>Vector</code> according to the return values of the <code>Function</code>.",
+                return: "Vector",
+                see: ["vector.shift"]
+            },
+            {
+                name: "foldLeft",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "function",
+                        type: [
+                            "Function"
+                        ]
+                    }
+                ],
+                desc: "Conducts the functional folding by the left on a given <code>Vector</code> according to the return values of the <code>Function</code>.",
+                return: "Vector",
+                see: ["vector.pop"]
+            },
+            {
+                name: "randomize",
+                template: "Vector",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Vector"
+                    ]
+                }],
+                desc: "Returns a <code>Vector</code> with values in a random arrangement.",
+                return: "Vector",
+                see: ["vector.remove", "system.Random.int"]
+            }
+        ],
+        classes: []
+    },
+    "string": {
+        name: "String Prototyping Methods Library",
+        file: "string.so",
+        import: [],
+        load: ["system", "vector"],
+        values: [],
+        methods: [{
+                name: "pop",
+                template: "String",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "String"
+                    ]
+                }],
+                desc: "Returns the given <code>String</code> with the final character removed.",
+                return: "String",
+                see: ["vector.pop", "vector.join"]
+            },
+            {
+                name: "shift",
+                template: "String",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "String"
+                    ]
+                }],
+                desc: "Returns the given <code>String</code> with the first character removed.",
+                return: "String",
+                see: ["vector.shift", "vector.join"]
+            },
+            {
+                name: "front",
+                template: "String",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "String"
+                    ]
+                }],
+                desc: "Returns the first character of the given <code>String</code>.",
+                return: "String",
+                see: ["vector.front"]
+            },
+            {
+                name: "back",
+                template: "String",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "String"
+                    ]
+                }],
+                desc: "Returns the last character of the given <code>String</code>.",
+                return: "String",
+                see: ["vector.back"]
+            },
+            {
+                name: "isEmpty",
+                template: "String",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "String"
+                    ]
+                }],
+                desc: "Returns <code>true</code> if the given <code>String</code> contains no characters.",
+                return: "Number",
+                see: []
+            },
+            {
+                name: "at",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "index",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Returns the character of the <code>String</code> at the given index.",
+                return: "String",
+                see: []
+            },
+            {
+                name: "push",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "value",
+                        type: [
+                            "String"
+                        ]
+                    }
+                ],
+                desc: "Returns the concatanation of two <code>String</code> values.",
+                return: "String",
+                see: []
+            },
+            {
+                name: "contains",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "pattern",
+                        type: [
+                            "String"
+                        ]
+                    }
+                ],
+                desc: "Returns <code>true</code> if the given <code>String</code> has contents that match the REGEX value of <code>pattern</code>.",
+                return: "Number",
+                see: ["system.match"]
+            },
+            {
+                name: "distArray",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "string",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costDel",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costIns",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costRep",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Generates a two-dimensional <code>Vector</code> containing the structure expressed in a full graph of the Levenshtein distance calculation. The cost parameters default to <code>1</code> when left <code>null</code>.",
+                return: "Vector",
+                see: ["vector.distArray"]
+            },
+            {
+                name: "dist",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "string",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costDel",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costIns",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costRep",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Returns the calculated distance between two <code>String</code> values according to Levenshtein distance.",
+                return: "Number",
+                see: ["vector.dist"]
+            },
+            {
+                name: "steps",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "string",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costDel",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costIns",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "costRep",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Returns a <code>Vector</code> list of the steps required to transform one <code>String</code> value into the other according to Levenshtein distance.",
+                return: "Vector",
+                see: ["vector.steps"]
+            },
+            {
+                name: "nGram",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "n",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: undefined,
+                        key: "delim",
+                        type: [
+                            "String"
+                        ]
+                    }
+                ],
+                desc: "Calculates the n-gram values for a <code>String</code> value's contents, tokenized by a given delimiter.",
+                return: "Vector",
+                see: ["vector.nGram", "string.split"]
+            },
+            {
+                name: "split",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "pattern",
+                        type: [
+                            "String"
+                        ]
+                    }
+                ],
+                desc: "Splits a given <code>String</code> according to the given REGEX pattern.",
+                return: "Vector",
+                see: ["system.match", "vector.join"]
+            },
+            {
+                name: "replace",
+                template: "String",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "pattern",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "final",
+                        key: "value",
+                        type: [
+                            "String"
+                        ]
+                    }
+                ],
+                desc: "Replaces the contents of a given <code>String</code> according to the given REGEX pattern to a new value.",
+                return: "String",
+                see: ["system.match", "vector.join"]
+            }
+        ],
+        classes: []
     }
 }

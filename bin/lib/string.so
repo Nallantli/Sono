@@ -1,9 +1,8 @@
 # Benjamin Park
-# 29-06-2020
+# 08-07-2020
 
 load "system";
 load "vector";
-load "math";
 
 String::pop(ref this) => {
 	this = (vec this).pop().join();

@@ -1,6 +1,6 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 1-07-2020
+# 08-07-2020
 
 load "math";
 load "system";
@@ -68,7 +68,15 @@ Vector::remove(ref this, final index) => {
 	return this;
 }
 
-Vector::distArray(ref this, final vector, costDel, costIns, costRep) => {
+Vector::reverse(final this) => {
+	var nv = {};
+	i in {0 until len this} do {
+		nv += { this[len this - i - 1] };
+	}
+	return nv;
+}
+
+Vector::distArray(ref this, ref vector, costDel, costIns, costRep) => {
 	costDel == null then {
 		costDel = 1;
 	}
@@ -154,15 +162,7 @@ Vector::steps(ref this, ref vector, final costDel, final costIns, final costRep)
 	}
 }
 
-Vector::reverse(final this) => {
-	var nv = {};
-	i in {0 until len this} do {
-		nv += { this[len this - i - 1] };
-	}
-	return nv;
-}
-
-Vector::nGram(final this, final n) => {
+Vector::nGram(ref this, final n) => {
 	var nv = {};
 	i in {0 until (len this - n + 1)} do {
 		var gram = {};
@@ -174,7 +174,7 @@ Vector::nGram(final this, final n) => {
 	return nv;
 }
 
-Vector::sort(final this, comp) => {
+Vector::sort(ref this, comp) => {
 	comp == null then {
 		comp = (a, b) => { return a < b; };
 	} else type comp != "Function" then {
@@ -198,7 +198,7 @@ Vector::sort(final this, comp) => {
 	return this.merge_sort();
 }
 
-Vector::map(final this, final function) => {
+Vector::map(ref this, final function) => {
 	var nl = {};
 	e in this do {
 		nl += { function(e) };
@@ -206,7 +206,7 @@ Vector::map(final this, final function) => {
 	return nl;
 }
 
-Vector::filter(final this, final function) => {
+Vector::filter(ref this, final function) => {
 	var nl = {};
 	e in this do {
 		function(e) then {
@@ -216,7 +216,7 @@ Vector::filter(final this, final function) => {
 	return nl;
 }
 
-Vector::foldRight(final this, final function) => {
+Vector::foldRight(ref this, final function) => {
 	len this == 1 then {
 		return this[0];
 	}
@@ -224,7 +224,7 @@ Vector::foldRight(final this, final function) => {
 	return function(this[0], nl.shift().foldRight(function));
 }
 
-Vector::foldLeft(final this, final function) => {
+Vector::foldLeft(ref this, final function) => {
 	len this == 1 then {
 		return this[0];
 	}
