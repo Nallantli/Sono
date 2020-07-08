@@ -1,15 +1,21 @@
 package main.phl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Phone implements Comparable<Phone> {
 	private final PhoneManager pm;
 
 	private final String segment;
 	private final Matrix features;
 
+	private final Map<Matrix, Phone> transformation_cache;
+
 	public Phone(final PhoneManager pm, final String segment, final Matrix features, final boolean validate) {
 		this.pm = pm;
 		this.segment = segment;
 		this.features = features;
+		this.transformation_cache = new HashMap<>();
 
 		pm.add(this, validate);
 	}
@@ -56,6 +62,9 @@ public class Phone implements Comparable<Phone> {
 	}
 
 	public Phone transform(final Matrix matrix, final boolean search) {
+		if (transformation_cache.containsKey(matrix))
+			return transformation_cache.get(matrix);
+
 		final Matrix new_features = getMatrix();
 
 		for (final Pair e : matrix) {
@@ -90,7 +99,9 @@ public class Phone implements Comparable<Phone> {
 				return pm.validate(new_features);
 			}
 		}
-		return pm.validate(new_features);
+		Phone ret = pm.validate(new_features);
+		transformation_cache.put(matrix, ret);
+		return ret;
 	}
 
 	@Override
