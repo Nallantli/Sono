@@ -1,5 +1,5 @@
 # Benjamin Park
-# 29-06-2020
+# 08-07-2020
 
 load "feature";
 load "vector";
@@ -155,25 +155,23 @@ struct Corpus class {
 
 struct Inventory class {
 	var name;
-	var phonemes;
-	var rules;
+	var phonemes = {};
+	var rules = {};
 
 	init(final name) => {
 		this.name = name;
-		this.phonemes = {};
-		this.rules = {};
 	}
 
-	addPhoneme(phoneme) => {
+	addPhoneme(final phoneme) => {
 		type phoneme != "Phone" then {
 			throw "Cannot insert non-Phone value.";
 		}
-		phonemes.contains(phoneme) == false then {
+		phonemes.contains(final phoneme) == false then {
 			this.phonemes += { phoneme };
 		}
 	}
 
-	addRule(rule) => {
+	addRule(final rule) => {
 		type phoneme != "Rule" then {
 			throw "Cannot insert non-Rule value.";
 		}

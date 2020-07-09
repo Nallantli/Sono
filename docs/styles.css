@@ -62,11 +62,16 @@ p {
 }
 
 .lib_key {
+    position: -webkit-sticky;
+    position: sticky;
+    font-weight: bold;
+    font-size: 18px;
     background: #141414;
     color: white;
     padding: 15px;
     margin: 0;
-    height: 25px
+    height: 25px;
+    top: 0px;
 }
 
 .metadata,
@@ -181,14 +186,6 @@ td {
 .see_link:hover {
     text-decoration: underline;
     font-weight: bold;
-}
-
-.lib_key {
-    position: -webkit-sticky;
-    position: sticky;
-    font-weight: bold;
-    top: 0;
-    font-size: 18px;
 }
 
 .imports,

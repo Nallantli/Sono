@@ -632,6 +632,28 @@ const LIBRARIES = {
         }],
         classes: []
     },
+    "feature": {
+        name: "Feature Prototyping Method Library",
+        file: "feature.so",
+        import: [],
+        load: ["string"],
+        values: [],
+        methods: [{
+            name: "getPair",
+            template: "Feature",
+            params: [{
+                modifier: "ref",
+                key: "this",
+                type: [
+                    "Feature"
+                ]
+            }],
+            desc: "Return a <code>Vector</code> pair of a given <code>Feature</code> value's quality (0) and key (1).",
+            return: "Vector",
+            see: ["string.split"]
+        }],
+        classes: []
+    },
     "map": {
         name: "Map Library",
         file: "map.so",
@@ -862,7 +884,7 @@ const LIBRARIES = {
     },
     "file": {
         name: "File Reading and Writing Library",
-        file: "map.so",
+        file: "file.so",
         import: ["LIB_FileIO"],
         load: [],
         values: [],
@@ -1836,5 +1858,150 @@ const LIBRARIES = {
             }
         ],
         classes: []
+    },
+    "rule": {
+        name: "Rule and Rulesets Library",
+        file: "rule.so",
+        import: [],
+        load: [],
+        values: [],
+        methods: [{
+                name: "apply",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "ruleset",
+                        type: [
+                            "Vector",
+                            "Rule"
+                        ]
+                    }
+                ],
+                desc: "Applies a given set of rules or single rule to each element in a given <code>Vector</code>.",
+                return: "Vector",
+                see: []
+            },
+            {
+                name: "apply",
+                template: "Word",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "String"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "ruleset",
+                        type: [
+                            "Vector",
+                            "Rule"
+                        ]
+                    }
+                ],
+                desc: "Applies a given set of rules or single rule to a given <code>Word</code>.",
+                return: "Word",
+                see: []
+            }
+        ],
+        classes: [{
+            name: "RuleSets",
+            modifier: "static",
+            values: [{
+                    key: "vowelNasalization",
+                    desc: "<code>Rule</code> dictating the nasalization of vowels preceding a nasal consonant.",
+                    value: `S |> [+|syl] -> [+|nasal] // null ~ [-|syl, +|nasal]`
+                },
+                {
+                    key: "finalDevoicing",
+                    desc: "<code>Rule</code> dictating the devoicing of a word-final consonant.",
+                    value: `S |> [-|syl, +|cons, +|voice] -> [-|voice] // null ~ "#"`
+                },
+                {
+                    key: "schwaEpenthesis",
+                    desc: "<code>Rule</code> dictating the insertion of the phone [ə] between two stridents.",
+                    value: `S |> null -> 'ə' // [-|syl, +|cons, +|str] ~ [-|syl, +|cons, +|str]`
+                },
+                {
+                    key: "highVowelPalatalization",
+                    desc: "<code>Rule</code> dictating the palatalization of a consonant before a high front vowel.",
+                    value: `S |> [-|syl] -> [+|DOR, +|high, -|low, +|front, -|back] // null ~ [+|syl, +|high, +|front]`
+                },
+                {
+                    key: "yodPalatalization",
+                    desc: "<code>Rule</code> dictating the palatalization of a consonant before the phone [j].",
+                    value: `Af |> [-|syl] -> [+|DOR, +|high, -|low, +|front, -|back] // "$" ~ 'j'`
+                },
+                {
+                    key: "wLabialization",
+                    desc: "<code>Rule</code> dictating the labialization of a consonant before the phone [w].",
+                    value: `Af |> [-|syl] -> [+|LAB, +|round] // "$" ~ 'w'`
+                },
+                {
+                    key: "medialVoicing",
+                    desc: "<code>Rule</code> dictating the voicing of a consonant between two voiced vowels (Q: Aren't all vowels voiced? A: [soːd_ʑanaidesɯ̥])",
+                    value: `S |> [-|syl, -|voice, +|cons] -> [+|voice] // [+|syl, +|voice] ~ [+|syl, +|voice]`
+                },
+                {
+                    key: "medialFrication",
+                    desc: "<code>Rule</code> dictating the frication of some consonants between two voiced vowels",
+                    value: `S |> [-|syl, +|cons, -|son, -|del] -> [+|del, +|cont, +|str] // [+|syl, +|voice] ~ [+|syl, +|voice]`
+                },
+                {
+                    key: "hDropping",
+                    desc: "<code>Rule</code> dictating the elision of the phone [h] syllable initially.",
+                    value: `S |> 'h' -> null // "$" ~ [+|syl]`
+                },
+                {
+                    key: "nasalAssimilation",
+                    desc: "<code>Rule</code> dictating the assimilation of the phone [n] to the place of the following consonant.",
+                    value: `S |> 'n' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null ~ [-|syl, +|cons, -|cont, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back]`
+                },
+                {
+                    key: "deRhoticizationCons",
+                    desc: "<code>Rule</code> dictating the elision of rhotic consonants before a consonant.",
+                    value: `Af |> [+|syl] -> [+|long] // null ~ {[-|syl, +|son, -|nasal, -|LAB, -|LAT, -|DOR], "$", [-|syl]}`
+                },
+                {
+                    key: "deRhoticizationFinal",
+                    desc: "<code>Rule</code> dictating the elision of rhotic consonants at the end of a word.",
+                    value: `Af |> [+|syl] -> [+|long] // null ~ {[-|syl, +|son, -|nasal, -|LAB, -|LAT, -|DOR], "#"}`
+                },
+                {
+                    key: "stopDeletion",
+                    desc: "<code>Rule</code> dictating the elision of the first plosive consonant in a sequence of two consecutive plosives.",
+                    value: `S |> [-|son, -|del] -> null // null ~ {"$", [-|son, -|del]}`
+                },
+                {
+                    key: "Common",
+                    desc: "<code>Vector</code> containing rules commonly found in the realization or phonetic changes of the world's languages.",
+                    value: `{
+						vowelNasalization,
+						finalDevoicing,
+						schwaEpenthesis,
+						highVowelPalatalization,
+						yodPalatalization,
+						wLabialization,
+						medialVoicing,
+						medialFrication,
+						hDropping,
+						nasalAssimilation,
+						deRhoticizationCons,
+						deRhoticizationFinal,
+						stopDeletion
+					}`
+                }
+            ],
+            methods: [],
+            classes: []
+        }]
     }
 }
