@@ -13,7 +13,7 @@ import main.base.CommandManager;
 import main.SonoWrapper;
 import main.phl.*;
 import main.sono.err.SonoCompilationException;
-import main.sono.err.SonoRuntimeException;
+import main.sono.err.SonoException;
 import main.sono.io.Input;
 import main.sono.io.Output;
 
@@ -110,7 +110,7 @@ public class Interpreter {
 	public Datum evaluate(final Operator o) {
 		try {
 			return o.evaluate(main, new ArrayList<>());
-		} catch (final SonoRuntimeException e) {
+		} catch (final SonoException e) {
 			stderr.println(e.getMessage());
 			stderr.print(e.getStackString());
 			return new Datum();

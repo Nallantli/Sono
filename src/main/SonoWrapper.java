@@ -9,12 +9,11 @@ import main.phl.PhoneManager;
 import main.sono.Datum;
 import main.sono.Interpreter;
 import main.sono.Scope;
-import main.sono.err.SonoException;
 import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class SonoWrapper {
-	public static final String VERSION = "Beta 1.5.2";
+	public static final String VERSION = "Beta 1.5.3";
 	public static boolean DEBUG;
 
 	private Interpreter sono = null;
@@ -53,12 +52,7 @@ public class SonoWrapper {
 		}
 
 		if (filename != null) {
-			try {
-				sono.runCode(".", "load \"" + filename + "\"");
-				System.exit(0);
-			} catch (final SonoException e) {
-				stderr.println(e.getMessage());
-			}
+			sono.runCode(".", "load \"" + filename + "\"");
 		}
 	}
 }

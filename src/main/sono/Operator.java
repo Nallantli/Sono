@@ -1683,7 +1683,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(Double.compare(datumA.getNumber(trace), datumB.getNumber(trace)) < 0 ? 1 : 0);
+			return new Datum(datumA.getNumber(trace) < datumB.getNumber(trace) ? 1 : 0);
 		}
 
 		@Override
@@ -1703,7 +1703,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(Double.compare(datumA.getNumber(trace), datumB.getNumber(trace)) > 0 ? 1 : 0);
+			return new Datum(datumA.getNumber(trace) > datumB.getNumber(trace) ? 1 : 0);
 		}
 
 		@Override
@@ -1723,7 +1723,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(Double.compare(datumA.getNumber(trace), datumB.getNumber(trace)) <= 0 ? 1 : 0);
+			return new Datum(datumA.getNumber(trace) <= datumB.getNumber(trace) ? 1 : 0);
 		}
 
 		@Override
@@ -1743,7 +1743,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(Double.compare(datumA.getNumber(trace), datumB.getNumber(trace)) >= 0 ? 1 : 0);
+			return new Datum(datumA.getNumber(trace) >= datumB.getNumber(trace) ? 1 : 0);
 		}
 
 		@Override

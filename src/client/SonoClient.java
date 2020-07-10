@@ -111,33 +111,35 @@ public class SonoClient {
 		final SonoWrapper center = new SonoWrapper(pl, path, filename, new StandardOutput(), new ErrorOutput(),
 				new StandardInput(sc));
 
-		System.out.println("Sono " + SonoWrapper.VERSION);
-		if (SonoWrapper.getGlobalOption("LING").equals("TRUE")) {
-			System.out.println("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">");
-		} else {
-			System.out.println("Phonological Operations Disabled");
-		}
-		try {
-			center.run(".", "load \"system\"");
-			System.out.println("Loaded System Library");
-		} catch (final SonoCompilationException e) {
-			System.out.println("Could not load System Library");
-		}
-
-		while (true) {
-			System.out.print("> ");
-			final String line = sc.nextLine();
+		if (filename == null) {
+			System.out.println("Sono " + SonoWrapper.VERSION);
+			if (SonoWrapper.getGlobalOption("LING").equals("TRUE")) {
+				System.out.println("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">");
+			} else {
+				System.out.println("Phonological Operations Disabled");
+			}
 			try {
-				final Datum result = center.run(".", line);
-				if (result.getType() == Datum.Type.VECTOR) {
-					int i = 0;
-					for (final Datum d : result.getVector(new ArrayList<>()))
-						System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(new ArrayList<>()));
-				} else {
-					System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
+				center.run(".", "load \"system\"");
+				System.out.println("Loaded System Library");
+			} catch (final SonoCompilationException e) {
+				System.out.println("Could not load System Library");
+			}
+
+			while (true) {
+				System.out.print("> ");
+				final String line = sc.nextLine();
+				try {
+					final Datum result = center.run(".", line);
+					if (result.getType() == Datum.Type.VECTOR) {
+						int i = 0;
+						for (final Datum d : result.getVector(new ArrayList<>()))
+							System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(new ArrayList<>()));
+					} else {
+						System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
+					}
+				} catch (final Exception e) {
+					e.printStackTrace();
 				}
-			} catch (final Exception e) {
-				e.printStackTrace();
 			}
 		}
 	}

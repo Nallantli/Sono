@@ -580,7 +580,7 @@ public class Datum {
 			case NULL:
 				return d.getType() == Type.NULL;
 			case NUMBER:
-				return Double.compare(valueNumber, d.valueNumber) == 0;
+				return valueNumber == d.valueNumber;
 			case PAIR:
 				return valuePair.equals(d.valuePair);
 			case PHONE:
