@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import main.SonoWrapper;
 import main.base.Library;
@@ -28,9 +27,9 @@ public class LIB_FileIO extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final File file = (File) datum.getPointer(trace);
 					if (file.exists())
-						return new Datum(BigDecimal.ONE);
+						return new Datum(1);
 					else
-						return new Datum(BigDecimal.ZERO);
+						return new Datum(0);
 				});
 		commands.put("LIB_FileIO.CREATE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
@@ -39,9 +38,9 @@ public class LIB_FileIO extends Library {
 					final File file = (File) datum.getPointer(trace);
 					try {
 						if (file.createNewFile())
-							return new Datum(BigDecimal.ONE);
+							return new Datum(1);
 						else
-							return new Datum(BigDecimal.ZERO);
+							return new Datum(0);
 					} catch (final IOException e) {
 						throw error("Cannot create file <" + file.toString() + ">", trace);
 					}

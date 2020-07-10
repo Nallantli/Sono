@@ -1037,7 +1037,7 @@ public abstract class Operator {
 				return datumA;
 			} else if (datumA.getType() == Datum.Type.STRING) {
 				try {
-					return new Datum(Double.valueOf(datumA.getString(trace)));
+					return new Datum((double)Double.valueOf(datumA.getString(trace)));
 				} catch (final Exception e) {
 					return new Datum();
 				}
