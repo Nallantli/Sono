@@ -7,7 +7,8 @@ let files = [
     "jpn.so",
     "maptest.so",
     "nah.so",
-    "naturalsets.so"
+    "naturalsets.so",
+    "SOE.so"
 ];
 
 let fileCache = { "untitled.so": "" };
