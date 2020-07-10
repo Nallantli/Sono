@@ -1,6 +1,6 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 09-07-2020
+# 10-07-2020
 
 load "math";
 load "system";
@@ -198,7 +198,14 @@ Vector::sort(ref this, comp) => {
 	return this.merge_sort();
 }
 
-Vector::map(ref this, final function) => {
+Vector::setAll(ref this, ref value) => {
+	e in this do {
+		e = value;
+	}
+	refer this;
+}
+
+Vector::map(ref this, ref function) => {
 	var nl = {};
 	e in this do {
 		nl += { function(e) };
@@ -206,7 +213,7 @@ Vector::map(ref this, final function) => {
 	return nl;
 }
 
-Vector::filter(ref this, final function) => {
+Vector::filter(ref this, ref function) => {
 	var nl = {};
 	e in this do {
 		function(e) then {
@@ -216,7 +223,7 @@ Vector::filter(ref this, final function) => {
 	return nl;
 }
 
-Vector::foldRight(ref this, final function) => {
+Vector::foldRight(ref this, ref function) => {
 	len this == 1 then {
 		return this[0];
 	}
@@ -224,7 +231,7 @@ Vector::foldRight(ref this, final function) => {
 	return function(this[0], nl.shift().foldRight(function));
 }
 
-Vector::foldLeft(ref this, final function) => {
+Vector::foldLeft(ref this, ref function) => {
 	len this == 1 then {
 		return this[0];
 	}

@@ -20,7 +20,7 @@ public class LIB_Socket extends Library {
 					if (SonoWrapper.getGlobalOption("SOCKET").equals("FALSE"))
 						throw error("Socket permissions are disabled for this interpreter.", trace);
 					final String address = datum.getVector(trace).get(0).getString(trace);
-					final int port = datum.getVector(trace).get(1).getNumber(trace).intValue();
+					final int port = (int) datum.getVector(trace).get(1).getNumber(trace);
 					try {
 						final Socket socket = new Socket(address, port);
 						return new Datum((Object) socket);
@@ -104,7 +104,7 @@ public class LIB_Socket extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					if (SonoWrapper.getGlobalOption("SOCKET").equals("FALSE"))
 						throw error("Socket permissions are disabled for this interpreter.", trace);
-					final int port = datum.getNumber(trace).intValue();
+					final int port = (int) datum.getNumber(trace);
 					try {
 						final ServerSocket server = new ServerSocket(port);
 						return new Datum((Object) server);

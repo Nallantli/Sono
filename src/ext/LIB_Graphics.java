@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import java.awt.event.WindowEvent;
-import java.math.BigDecimal;
 import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Font;
@@ -253,13 +252,13 @@ class WindowFunctions extends JFrame {
 			public void mouseReleased(final MouseEvent e) {
 				if (onMouseReleased != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(e.getButton()));
+					params.add(new Datum(e.getClickCount()));
 					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-					params.add(new Datum(BigDecimal.valueOf(e.getX())));
-					params.add(new Datum(BigDecimal.valueOf(e.getY())));
-					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					params.add(new Datum(e.getX()));
+					params.add(new Datum(e.getY()));
+					params.add(new Datum(e.getXOnScreen()));
+					params.add(new Datum(e.getYOnScreen()));
 					onMouseReleased.execute(params, new ArrayList<>());
 				}
 			}
@@ -268,13 +267,13 @@ class WindowFunctions extends JFrame {
 			public void mousePressed(final MouseEvent e) {
 				if (onMousePressed != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(e.getButton()));
+					params.add(new Datum(e.getClickCount()));
 					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-					params.add(new Datum(BigDecimal.valueOf(e.getX())));
-					params.add(new Datum(BigDecimal.valueOf(e.getY())));
-					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					params.add(new Datum(e.getX()));
+					params.add(new Datum(e.getY()));
+					params.add(new Datum(e.getXOnScreen()));
+					params.add(new Datum(e.getYOnScreen()));
 					onMousePressed.execute(params, new ArrayList<>());
 				}
 			}
@@ -283,13 +282,13 @@ class WindowFunctions extends JFrame {
 			public void mouseExited(final MouseEvent e) {
 				if (onMouseExited != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(e.getButton()));
+					params.add(new Datum(e.getClickCount()));
 					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-					params.add(new Datum(BigDecimal.valueOf(e.getX())));
-					params.add(new Datum(BigDecimal.valueOf(e.getY())));
-					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					params.add(new Datum(e.getX()));
+					params.add(new Datum(e.getY()));
+					params.add(new Datum(e.getXOnScreen()));
+					params.add(new Datum(e.getYOnScreen()));
 					onMouseExited.execute(params, new ArrayList<>());
 				}
 			}
@@ -298,13 +297,13 @@ class WindowFunctions extends JFrame {
 			public void mouseEntered(final MouseEvent e) {
 				if (onMouseEntered != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(e.getButton()));
+					params.add(new Datum(e.getClickCount()));
 					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-					params.add(new Datum(BigDecimal.valueOf(e.getX())));
-					params.add(new Datum(BigDecimal.valueOf(e.getY())));
-					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					params.add(new Datum(e.getX()));
+					params.add(new Datum(e.getY()));
+					params.add(new Datum(e.getXOnScreen()));
+					params.add(new Datum(e.getYOnScreen()));
 					onMouseEntered.execute(params, new ArrayList<>());
 				}
 			}
@@ -313,13 +312,13 @@ class WindowFunctions extends JFrame {
 			public void mouseClicked(final MouseEvent e) {
 				if (onMouseClicked != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(e.getButton()));
+					params.add(new Datum(e.getClickCount()));
 					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-					params.add(new Datum(BigDecimal.valueOf(e.getX())));
-					params.add(new Datum(BigDecimal.valueOf(e.getY())));
-					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					params.add(new Datum(e.getX()));
+					params.add(new Datum(e.getY()));
+					params.add(new Datum(e.getXOnScreen()));
+					params.add(new Datum(e.getYOnScreen()));
 					onMouseClicked.execute(params, new ArrayList<>());
 				}
 			}
@@ -329,13 +328,13 @@ class WindowFunctions extends JFrame {
 			public void mouseMoved(final MouseEvent e) {
 				if (onMouseMoved != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(e.getButton()));
+					params.add(new Datum(e.getClickCount()));
 					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-					params.add(new Datum(BigDecimal.valueOf(e.getX())));
-					params.add(new Datum(BigDecimal.valueOf(e.getY())));
-					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					params.add(new Datum(e.getX()));
+					params.add(new Datum(e.getY()));
+					params.add(new Datum(e.getXOnScreen()));
+					params.add(new Datum(e.getYOnScreen()));
 					onMouseMoved.execute(params, new ArrayList<>());
 				}
 			}
@@ -344,13 +343,13 @@ class WindowFunctions extends JFrame {
 			public void mouseDragged(final MouseEvent e) {
 				if (onMouseDragged != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getButton())));
-					params.add(new Datum(BigDecimal.valueOf(e.getClickCount())));
+					params.add(new Datum(e.getButton()));
+					params.add(new Datum(e.getClickCount()));
 					params.add(new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())));
-					params.add(new Datum(BigDecimal.valueOf(e.getX())));
-					params.add(new Datum(BigDecimal.valueOf(e.getY())));
-					params.add(new Datum(BigDecimal.valueOf(e.getXOnScreen())));
-					params.add(new Datum(BigDecimal.valueOf(e.getYOnScreen())));
+					params.add(new Datum(e.getX()));
+					params.add(new Datum(e.getY()));
+					params.add(new Datum(e.getXOnScreen()));
+					params.add(new Datum(e.getYOnScreen()));
 					onMouseDragged.execute(params, new ArrayList<>());
 				}
 			}
@@ -360,9 +359,9 @@ class WindowFunctions extends JFrame {
 			public void keyTyped(final KeyEvent e) {
 				if (onKeyTyped != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+					params.add(new Datum(e.getKeyChar()));
 					params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
-					params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+					params.add(new Datum(e.isActionKey() ? 1 : 0));
 					onKeyTyped.execute(params, new ArrayList<>());
 				}
 			}
@@ -371,9 +370,9 @@ class WindowFunctions extends JFrame {
 			public void keyPressed(final KeyEvent e) {
 				if (onKeyPressed != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+					params.add(new Datum(e.getKeyChar()));
 					params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
-					params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+					params.add(new Datum(e.isActionKey() ? 1 : 0));
 					onKeyPressed.execute(params, new ArrayList<>());
 				}
 			}
@@ -382,9 +381,9 @@ class WindowFunctions extends JFrame {
 			public void keyReleased(final KeyEvent e) {
 				if (onKeyReleased != null) {
 					final List<Datum> params = new ArrayList<>();
-					params.add(new Datum(BigDecimal.valueOf(e.getKeyChar())));
+					params.add(new Datum(e.getKeyChar()));
 					params.add(new Datum(KeyEvent.getKeyText(e.getKeyCode())));
-					params.add(new Datum(BigDecimal.valueOf(e.isActionKey() ? 1 : 0)));
+					params.add(new Datum(e.isActionKey() ? 1 : 0));
 					onKeyReleased.execute(params, new ArrayList<>());
 				}
 			}
@@ -441,8 +440,8 @@ public class LIB_Graphics extends Library {
 						throw error("Graphics permissions are disabled for this interpreter.", trace);
 					final List<Datum> list = datum.getVector(trace);
 					final String title = list.get(0).getString(trace);
-					final int width = list.get(1).getNumber(trace).intValue();
-					final int height = list.get(2).getNumber(trace).intValue();
+					final int width = (int) list.get(1).getNumber(trace);
+					final int height = (int) list.get(2).getNumber(trace);
 					final WindowFunctions f = new WindowFunctions(title);
 					if (list.get(3).getType() == Datum.Type.FUNCTION) {
 						final Function close = list.get(3).getFunction(Datum.Type.ANY, trace);
@@ -480,7 +479,7 @@ public class LIB_Graphics extends Library {
 					final List<Datum> list = datum.getVector(trace);
 					final String fontName = list.get(0).getString(trace);
 					final String styleRaw = list.get(1).getString(trace);
-					final int size = list.get(2).getNumber(trace).intValue();
+					final int size = (int) list.get(2).getNumber(trace);
 					final String[] split = styleRaw.split("\\s");
 					int style = Font.PLAIN;
 					for (final String s : split) {
@@ -503,7 +502,7 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final WindowFunctions f = (WindowFunctions) list.get(0).getPointer(trace);
-					final int id = list.get(1).getNumber(trace).intValue();
+					final int id = (int) list.get(1).getNumber(trace);
 					final Function function = list.get(2).getFunction(Datum.Type.ANY, trace);
 					switch (id) {
 						case 0:
@@ -536,7 +535,7 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final WindowFunctions f = (WindowFunctions) list.get(0).getPointer(trace);
-					final int id = list.get(1).getNumber(trace).intValue();
+					final int id = (int) list.get(1).getNumber(trace);
 					final Function function = list.get(2).getFunction(Datum.Type.ANY, trace);
 					switch (id) {
 						case 0:
@@ -557,8 +556,8 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final WindowFunctions f = (WindowFunctions) list.get(0).getPointer(trace);
-					final int width = list.get(1).getNumber(trace).intValue();
-					final int height = list.get(2).getNumber(trace).intValue();
+					final int width = (int) list.get(1).getNumber(trace);
+					final int height = (int) list.get(2).getNumber(trace);
 					f.getContentPane().setPreferredSize(new Dimension(width, height));
 					f.pack();
 					return new Datum();
@@ -592,7 +591,7 @@ public class LIB_Graphics extends Library {
 					final GraphicsPanel gp = (GraphicsPanel) list.get(0).getPointer(trace);
 					final Paintable paintable = (Paintable) list.get(1).getPointer(trace);
 					final boolean success = gp.addBuffer(paintable);
-					return new Datum(BigDecimal.valueOf(success ? 1 : 0));
+					return new Datum(success ? 1 : 0);
 				});
 		commands.put("LIB_Graphics.GRAPHICS.REMOVE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
@@ -600,15 +599,15 @@ public class LIB_Graphics extends Library {
 					final GraphicsPanel gp = (GraphicsPanel) list.get(0).getPointer(trace);
 					final Paintable paintable = (Paintable) list.get(1).getPointer(trace);
 					final boolean success = gp.removeBuffer(paintable);
-					return new Datum(BigDecimal.valueOf(success ? 1 : 0));
+					return new Datum(success ? 1 : 0);
 				});
 		commands.put("LIB_Graphics.COLOR.INIT",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
-					final int r = list.get(0).getNumber(trace).intValue();
-					final int g = list.get(1).getNumber(trace).intValue();
-					final int b = list.get(2).getNumber(trace).intValue();
-					final int a = list.get(3).getNumber(trace).intValue();
+					final int r = (int) list.get(0).getNumber(trace);
+					final int g = (int) list.get(1).getNumber(trace);
+					final int b = (int) list.get(2).getNumber(trace);
+					final int a = (int) list.get(3).getNumber(trace);
 					final Color c = new Color(r, g, b, a);
 					return new Datum((Object) c);
 				});
@@ -639,10 +638,10 @@ public class LIB_Graphics extends Library {
 					if (list.get(1).getType() != Datum.Type.NULL) {
 						outline = (Color) list.get(1).getPointer(trace);
 					}
-					final int x = list.get(2).getNumber(trace).intValue();
-					final int y = list.get(3).getNumber(trace).intValue();
-					final int width = list.get(4).getNumber(trace).intValue();
-					final int height = list.get(5).getNumber(trace).intValue();
+					final int x = (int) list.get(2).getNumber(trace);
+					final int y = (int) list.get(3).getNumber(trace);
+					final int width = (int) list.get(4).getNumber(trace);
+					final int height = (int) list.get(5).getNumber(trace);
 					final Paintable.Rectangle rectangle = new Paintable.Rectangle(fill, outline, x, y, width, height);
 					return new Datum((Object) rectangle);
 				});
@@ -650,8 +649,8 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final Paintable.Rectangle rectangle = (Paintable.Rectangle) list.get(0).getPointer(trace);
-					final int x = list.get(1).getNumber(trace).intValue();
-					final int y = list.get(2).getNumber(trace).intValue();
+					final int x = (int) list.get(1).getNumber(trace);
+					final int y = (int) list.get(2).getNumber(trace);
 					rectangle.setOrigin(x, y);
 					return new Datum();
 				});
@@ -659,8 +658,8 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final Paintable.Rectangle rectangle = (Paintable.Rectangle) list.get(0).getPointer(trace);
-					final int width = list.get(1).getNumber(trace).intValue();
-					final int height = list.get(2).getNumber(trace).intValue();
+					final int width = (int) list.get(1).getNumber(trace);
+					final int height = (int) list.get(2).getNumber(trace);
 					rectangle.setSize(width, height);
 					return new Datum();
 				});
@@ -668,10 +667,10 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final Color fill = (Color) list.get(0).getPointer(trace);
-					final int x1 = list.get(1).getNumber(trace).intValue();
-					final int y1 = list.get(2).getNumber(trace).intValue();
-					final int x2 = list.get(3).getNumber(trace).intValue();
-					final int y2 = list.get(4).getNumber(trace).intValue();
+					final int x1 = (int) list.get(1).getNumber(trace);
+					final int y1 = (int) list.get(2).getNumber(trace);
+					final int x2 = (int) list.get(3).getNumber(trace);
+					final int y2 = (int) list.get(4).getNumber(trace);
 					final Paintable.Line line = new Paintable.Line(fill, x1, y1, x2, y2);
 					return new Datum((Object) line);
 				});
@@ -679,10 +678,10 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final Paintable.Line line = (Paintable.Line) list.get(0).getPointer(trace);
-					final int x1 = list.get(1).getNumber(trace).intValue();
-					final int y1 = list.get(2).getNumber(trace).intValue();
-					final int x2 = list.get(3).getNumber(trace).intValue();
-					final int y2 = list.get(4).getNumber(trace).intValue();
+					final int x1 = (int) list.get(1).getNumber(trace);
+					final int y1 = (int) list.get(2).getNumber(trace);
+					final int x2 = (int) list.get(3).getNumber(trace);
+					final int y2 = (int) list.get(4).getNumber(trace);
 					line.setPoints(x1, y1, x2, y2);
 					return new Datum();
 				});
@@ -697,10 +696,10 @@ public class LIB_Graphics extends Library {
 					if (list.get(1).getType() != Datum.Type.NULL) {
 						outline = (Color) list.get(1).getPointer(trace);
 					}
-					final int x = list.get(2).getNumber(trace).intValue();
-					final int y = list.get(3).getNumber(trace).intValue();
-					final int width = list.get(4).getNumber(trace).intValue();
-					final int height = list.get(5).getNumber(trace).intValue();
+					final int x = (int) list.get(2).getNumber(trace);
+					final int y = (int) list.get(3).getNumber(trace);
+					final int width = (int) list.get(4).getNumber(trace);
+					final int height = (int) list.get(5).getNumber(trace);
 					final Paintable.Oval oval = new Paintable.Oval(fill, outline, x, y, width, height);
 					return new Datum((Object) oval);
 				});
@@ -708,8 +707,8 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final Paintable.Oval oval = (Paintable.Oval) list.get(0).getPointer(trace);
-					final int x = list.get(1).getNumber(trace).intValue();
-					final int y = list.get(2).getNumber(trace).intValue();
+					final int x = (int) list.get(1).getNumber(trace);
+					final int y = (int) list.get(2).getNumber(trace);
 					oval.setOrigin(x, y);
 					return new Datum();
 				});
@@ -717,8 +716,8 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final Paintable.Oval oval = (Paintable.Oval) list.get(0).getPointer(trace);
-					final int width = list.get(1).getNumber(trace).intValue();
-					final int height = list.get(2).getNumber(trace).intValue();
+					final int width = (int) list.get(1).getNumber(trace);
+					final int height = (int) list.get(2).getNumber(trace);
 					oval.setSize(width, height);
 					return new Datum();
 				});
@@ -726,10 +725,10 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final Color fill = (Color) list.get(0).getPointer(trace);
-					final int x = list.get(1).getNumber(trace).intValue();
-					final int y = list.get(2).getNumber(trace).intValue();
+					final int x = (int) list.get(1).getNumber(trace);
+					final int y = (int) list.get(2).getNumber(trace);
 					final String string = list.get(3).getString(trace);
-					final int align = list.get(4).getNumber(trace).intValue();
+					final int align = (int) list.get(4).getNumber(trace);
 					final Paintable.Text text = new Paintable.Text(fill, x, y, string, align);
 					return new Datum((Object) text);
 				});
@@ -753,8 +752,8 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final List<Datum> list = datum.getVector(trace);
 					final Paintable.Text text = (Paintable.Text) list.get(0).getPointer(trace);
-					final int x = list.get(1).getNumber(trace).intValue();
-					final int y = list.get(2).getNumber(trace).intValue();
+					final int x = (int) list.get(1).getNumber(trace);
+					final int y = (int) list.get(2).getNumber(trace);
 					text.setOrigin(x, y);
 					return new Datum();
 				});

@@ -3,7 +3,6 @@ package main.sono;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.math.BigDecimal;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,11 +176,11 @@ public class Interpreter {
 				}
 				if (token.equals(".negative")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Sub(this, new Operator.Container(this, new Datum(new BigDecimal(0))), a));
+					o.addLast(new Operator.Sub(this, new Operator.Container(this, new Datum(0)), a));
 				}
 				if (token.equals(".positive")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Add(this, new Operator.Container(this, new Datum(new BigDecimal(0))), a));
+					o.addLast(new Operator.Add(this, new Operator.Container(this, new Datum(0)), a));
 				}
 				if (token.equals("new")) {
 					final Operator a = o.pollLast();
@@ -572,7 +571,7 @@ public class Interpreter {
 			} else if (Character.isDigit(token.charAt(0))) {
 				if (token.charAt(token.length() - 1) == 'D')
 					token = token.substring(0, token.length() - 1);
-				o.addLast(new Operator.Container(this, new Datum(new BigDecimal(token))));
+				o.addLast(new Operator.Container(this, new Datum((double)Double.valueOf(token))));
 			} else if (token.equals("null")) {
 				o.addLast(new Operator.Container(this, new Datum()));
 			} else if (token.equals("Vector")) {
@@ -594,9 +593,9 @@ public class Interpreter {
 			} else if (token.equals("Word")) {
 				o.addLast(new Operator.Container(this, new Datum(Datum.Type.WORD)));
 			} else if (token.equals("true")) {
-				o.addLast(new Operator.Container(this, new Datum(BigDecimal.valueOf(1))));
+				o.addLast(new Operator.Container(this, new Datum(1)));
 			} else if (token.equals("false")) {
-				o.addLast(new Operator.Container(this, new Datum(BigDecimal.valueOf(0))));
+				o.addLast(new Operator.Container(this, new Datum(0)));
 			} else if (token.equals("break")) {
 				o.addLast(new Operator.Break(this));
 			} else {
@@ -645,7 +644,7 @@ public class Interpreter {
 		return stdin.getLine();
 	}
 
-	public BigDecimal getNumber() {
+	public double getNumber() {
 		return stdin.getNumber();
 	}
 }

@@ -1,7 +1,5 @@
 package server.io;
 
-import java.math.BigDecimal;
-
 import main.sono.io.Input;
 
 public class StandardInput extends Input {
@@ -22,13 +20,13 @@ public class StandardInput extends Input {
 	}
 
 	@Override
-	public synchronized BigDecimal getNumber() {
+	public synchronized double getNumber() {
 		try {
 			wait();
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
-		return new BigDecimal(input);
+		return Double.valueOf(input);
 	}
 
 	public synchronized void setInput(final String input) {

@@ -1,6 +1,5 @@
 package ext;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,8 +26,8 @@ public class LIB_Console extends Library {
 					final List<Datum> list = new ArrayList<>();
 					while (m.find()) {
 						final List<Datum> temp = new ArrayList<>();
-						temp.add(new Datum(BigDecimal.valueOf(m.start())));
-						temp.add(new Datum(BigDecimal.valueOf(m.end())));
+						temp.add(new Datum(m.start()));
+						temp.add(new Datum(m.end()));
 						list.add(new Datum(temp));
 					}
 					return new Datum(list);
@@ -40,17 +39,17 @@ public class LIB_Console extends Library {
 				});
 		commands.put("LIB_Console.GET.NUMBER",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final BigDecimal i = interpreter.getNumber();
+					final double i = interpreter.getNumber();
 					return new Datum(i);
 				});
 		commands.put("LIB_Console.TIME",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final BigDecimal i = BigDecimal.valueOf(System.currentTimeMillis());
+					final double i = System.currentTimeMillis();
 					return new Datum(i);
 				});
 		commands.put("LIB_Console.RAND",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final BigDecimal i = BigDecimal.valueOf(Math.random());
+					final double i = Math.random();
 					return new Datum(i);
 				});
 		commands.put("LIB_Console.EXIT",
@@ -60,7 +59,7 @@ public class LIB_Console extends Library {
 				});
 		commands.put("LIB_Console.LOG",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final BigDecimal i = BigDecimal.valueOf(Math.log(datum.getNumber(trace).doubleValue()));
+					final double i = Math.log(datum.getNumber(trace));
 					return new Datum(i);
 				});
 	}

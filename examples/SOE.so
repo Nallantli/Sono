@@ -1,0 +1,36 @@
+load "system";
+
+SOE(final MAX) => {
+	var a = alloc MAX;
+	e in a do {
+		e = true;
+	}
+
+	i in {2 until (MAX ** 0.5)} do {
+		a[i] then {
+			var n = i ** 2;
+			n < MAX do {
+				a[n] = false;
+				n += i;
+			}
+		}
+	}
+
+	var b = {};
+	i in {0 until MAX} do {
+		a[i] then {
+			b += {i};
+		}
+	}
+
+	return b;
+}
+
+var MAX = 10 ** 5;
+
+var start = timeMS();
+var result = SOE(MAX);
+var time = timeMS() - start;
+
+println(str len result + " Primes found for numbers below " + str MAX);
+println("Time: " + str time + "ms");

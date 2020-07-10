@@ -1,7 +1,5 @@
 package main.sono;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
@@ -302,11 +300,11 @@ public abstract class Operator {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
 			final List<Datum> data = new ArrayList<>();
-			final BigDecimal datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace))
+			final double datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace))
 					.getNumber(trace);
-			final BigDecimal datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace))
+			final double datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace))
 					.getNumber(trace);
-			for (BigDecimal i = datumA; i.compareTo(datumB) < 0; i = i.add(new BigDecimal(1)))
+			for (double i = datumA; i < datumB; i++)
 				data.add(new Datum(i));
 			return data;
 		}
@@ -411,9 +409,10 @@ public abstract class Operator {
 		public Datum evaluate(final Scope scope, final List<String> trace) {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
-			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+			final double datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace))
+					.getNumber(trace);
 			final List<Datum> data = new ArrayList<>();
-			for (int i = 0; datumA.getNumber(trace).compareTo(BigDecimal.valueOf(i)) > 0; i++) {
+			for (int i = 0; i < datumA; i++) {
 				data.add(new Datum());
 			}
 			return new Datum(data);
@@ -613,9 +612,9 @@ public abstract class Operator {
 				final List<Datum> values = ((Iterator) a).getB()
 						.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace)).getVector(trace);
 				final int variable = ((Variable) ((Iterator) a).getA()).getKey();
-				for (final Datum d : values) {
+				for (int i = 0; i < values.size(); i++) {
 					final Scope loopScope = new Scope(scope);
-					loopScope.setVariable(interpreter, variable, d, trace);
+					loopScope.setVariable(interpreter, variable, values.get(i), trace);
 					final Datum result = b.evaluate(loopScope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 					if (result.getType() == Datum.Type.I_BREAK)
 						break;
@@ -623,8 +622,7 @@ public abstract class Operator {
 						return result;
 				}
 			} else {
-				while (a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace)).getNumber(trace)
-						.compareTo(BigDecimal.ZERO) != 0) {
+				while (a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace)).getNumber(trace) != 0) {
 					final Scope loopScope = new Scope(scope);
 					final Datum result = b.evaluate(loopScope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 					if (result.getType() == Datum.Type.I_BREAK)
@@ -1039,7 +1037,7 @@ public abstract class Operator {
 				return datumA;
 			} else if (datumA.getType() == Datum.Type.STRING) {
 				try {
-					return new Datum(new BigDecimal(datumA.getString(trace)));
+					return new Datum(Double.valueOf(datumA.getString(trace)));
 				} catch (final Exception e) {
 					return new Datum();
 				}
@@ -1068,7 +1066,7 @@ public abstract class Operator {
 			final String s = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace)).getString(trace);
 			if (s.length() != 1)
 				throw new SonoRuntimeException("Value <" + s + "> is not a single char.", trace);
-			return new Datum(BigDecimal.valueOf((int) s.charAt(0)));
+			return new Datum((int) s.charAt(0));
 		}
 
 		@Override
@@ -1088,7 +1086,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			try {
-				final int i = datumA.getNumber(trace).intValue();
+				final int i = (int) datumA.getNumber(trace);
 				return new Datum(String.valueOf((char) i));
 			} catch (final Exception e) {
 				throw new SonoRuntimeException("Value <" + datumA.toStringTrace(trace) + "> is not of type `Number`",
@@ -1114,21 +1112,21 @@ public abstract class Operator {
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			switch (datumA.getType()) {
 				case STRING:
-					return new Datum(BigDecimal.valueOf(datumA.getString(trace).length()));
+					return new Datum(datumA.getString(trace).length());
 				case WORD:
 					if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 						throw new SonoRuntimeException(
 								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
 								trace);
-					return new Datum(BigDecimal.valueOf(datumA.getWord(trace).size()));
+					return new Datum(datumA.getWord(trace).size());
 				case VECTOR:
-					return new Datum(BigDecimal.valueOf(datumA.getVector(trace).size()));
+					return new Datum(datumA.getVector(trace).size());
 				case MATRIX:
 					if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 						throw new SonoRuntimeException(
 								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
 								trace);
-					return new Datum(BigDecimal.valueOf(datumA.getMatrix(trace).size()));
+					return new Datum(datumA.getMatrix(trace).size());
 				case STRUCTURE:
 					return datumA.getStructure(trace).getScope().getVariable(interpreter.GETLEN, interpreter, trace)
 							.getFunction(Datum.Type.ANY, trace)
@@ -1205,7 +1203,7 @@ public abstract class Operator {
 						+ datumA.getType() + ", " + datumB.getType(), trace);
 			switch (datumA.getType()) {
 				case NUMBER:
-					return new Datum(datumA.getNumber(trace).add(datumB.getNumber(trace)));
+					return new Datum(datumA.getNumber(trace) + datumB.getNumber(trace));
 				case VECTOR:
 					final List<Datum> newList = new ArrayList<>();
 					newList.addAll(datumA.getVector(trace));
@@ -1253,7 +1251,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.getNumber(trace).subtract(datumB.getNumber(trace)));
+			return new Datum(datumA.getNumber(trace) - datumB.getNumber(trace));
 		}
 
 		@Override
@@ -1273,7 +1271,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.getNumber(trace).multiply(datumB.getNumber(trace), MathContext.DECIMAL128));
+			return new Datum(datumA.getNumber(trace) * datumB.getNumber(trace));
 		}
 
 		@Override
@@ -1294,7 +1292,7 @@ public abstract class Operator {
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			try {
-				return new Datum(datumA.getNumber(trace).divide(datumB.getNumber(trace), MathContext.DECIMAL128));
+				return new Datum(datumA.getNumber(trace) / datumB.getNumber(trace));
 			} catch (final Exception e) {
 				return new Datum();
 			}
@@ -1318,7 +1316,7 @@ public abstract class Operator {
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			try {
-				return new Datum(datumA.getNumber(trace).remainder(datumB.getNumber(trace)));
+				return new Datum(datumA.getNumber(trace) % datumB.getNumber(trace));
 			} catch (final Exception e) {
 				return new Datum();
 			}
@@ -1342,8 +1340,7 @@ public abstract class Operator {
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			try {
-				return new Datum(BigDecimal.valueOf(
-						Math.pow(datumA.getNumber(trace).doubleValue(), datumB.getNumber(trace).doubleValue())));
+				return new Datum(Math.pow(datumA.getNumber(trace), datumB.getNumber(trace)));
 			} catch (final Exception e) {
 				return new Datum();
 			}
@@ -1368,7 +1365,7 @@ public abstract class Operator {
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				try {
-					return datumA.getVector(trace).get(datumB.getNumber(trace).intValue());
+					return datumA.getVector(trace).get((int) datumB.getNumber(trace));
 				} catch (final Exception e) {
 					throw new SonoRuntimeException(
 							"Cannot index List <" + datumA.toStringTrace(trace) + "> with value <"
@@ -1401,7 +1398,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.equals(datumB) ? new BigDecimal(1) : new BigDecimal(0));
+			return new Datum(datumA.equals(datumB) ? 1 : 0);
 		}
 
 		@Override
@@ -1421,7 +1418,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.equals(datumB) ? new BigDecimal(0) : new BigDecimal(1));
+			return new Datum(datumA.equals(datumB) ? 0 : 1);
 		}
 
 		@Override
@@ -1546,7 +1543,7 @@ public abstract class Operator {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
 			final Datum condition = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			if (condition.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
+			if (condition.getNumber(trace) != 0) {
 				return b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			} else if (c != null) {
 				return c.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
@@ -1686,8 +1683,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.getNumber(trace).compareTo(datumB.getNumber(trace)) < 0 ? new BigDecimal(1)
-					: new BigDecimal(0));
+			return new Datum(Double.compare(datumA.getNumber(trace), datumB.getNumber(trace)) < 0 ? 1 : 0);
 		}
 
 		@Override
@@ -1707,8 +1703,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.getNumber(trace).compareTo(datumB.getNumber(trace)) > 0 ? new BigDecimal(1)
-					: new BigDecimal(0));
+			return new Datum(Double.compare(datumA.getNumber(trace), datumB.getNumber(trace)) > 0 ? 1 : 0);
 		}
 
 		@Override
@@ -1728,8 +1723,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.getNumber(trace).compareTo(datumB.getNumber(trace)) <= 0 ? new BigDecimal(1)
-					: new BigDecimal(0));
+			return new Datum(Double.compare(datumA.getNumber(trace), datumB.getNumber(trace)) <= 0 ? 1 : 0);
 		}
 
 		@Override
@@ -1749,8 +1743,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.getNumber(trace).compareTo(datumB.getNumber(trace)) >= 0 ? new BigDecimal(1)
-					: new BigDecimal(0));
+			return new Datum(Double.compare(datumA.getNumber(trace), datumB.getNumber(trace)) >= 0 ? 1 : 0);
 		}
 
 		@Override
@@ -1769,13 +1762,13 @@ public abstract class Operator {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			if (datumA.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
+			if (datumA.getNumber(trace) != 0) {
 				final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-				if (datumB.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
-					return new Datum(BigDecimal.ONE);
+				if (datumB.getNumber(trace) != 0) {
+					return new Datum(1);
 				}
 			}
-			return new Datum(BigDecimal.ZERO);
+			return new Datum(0);
 		}
 
 		@Override
@@ -1794,15 +1787,15 @@ public abstract class Operator {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			if (datumA.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
-				return new Datum(BigDecimal.ONE);
+			if (datumA.getNumber(trace) != 0) {
+				return new Datum(1);
 			} else {
 				final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-				if (datumB.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
-					return new Datum(BigDecimal.ONE);
+				if (datumB.getNumber(trace) != 0) {
+					return new Datum(1);
 				}
 			}
-			return new Datum(BigDecimal.ZERO);
+			return new Datum(0);
 		}
 
 		@Override

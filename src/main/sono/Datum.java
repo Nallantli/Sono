@@ -94,7 +94,7 @@ public class Datum {
 	private Pair valuePair = null;
 	private Matrix valueMatrix = null;
 	private Rule valueRule = null;
-	private BigDecimal valueNumber = null;
+	private double valueNumber = 0;
 	private Map<Type, Function> valueFunction = null;
 	private Word valueWord = null;
 	private Structure valueStructure = null;
@@ -160,9 +160,9 @@ public class Datum {
 		this.valueRule = valueRule;
 	}
 
-	public Datum(final BigDecimal valueNumber) {
+	public Datum(final double valueNumber) {
 		this.type = Type.NUMBER;
-		this.valueNumber = valueNumber.stripTrailingZeros();
+		this.valueNumber = valueNumber;
 	}
 
 	public Datum(final Type fType, final Function valueFunction) {
@@ -221,7 +221,7 @@ public class Datum {
 		return this.valueString;
 	}
 
-	public BigDecimal getNumber(final List<String> trace) {
+	public double getNumber(final List<String> trace) {
 		if (type != Type.NUMBER)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Number.", trace);
 		return this.valueNumber;
@@ -270,7 +270,7 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -289,7 +289,7 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -305,7 +305,7 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -320,7 +320,7 @@ public class Datum {
 				this.valuePair = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -334,7 +334,7 @@ public class Datum {
 				this.valuePair = null;
 				this.valuePhone = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -348,7 +348,7 @@ public class Datum {
 				this.valuePair = null;
 				this.valuePhone = null;
 				this.valueRule = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -377,7 +377,7 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
@@ -393,7 +393,7 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
@@ -407,7 +407,7 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valuePointer = null;
@@ -421,7 +421,7 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -435,7 +435,7 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = null;
+				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -465,7 +465,7 @@ public class Datum {
 			case STRING:
 				return "\"" + valueString + "\"";
 			case NUMBER:
-				return valueNumber.toPlainString();
+				return BigDecimal.valueOf(valueNumber).stripTrailingZeros().toPlainString();
 			case FUNCTION:
 				return valueFunction.toString();
 			case WORD:
@@ -498,7 +498,7 @@ public class Datum {
 			case STRING:
 				return valueString;
 			case NUMBER:
-				return valueNumber.toPlainString();
+				return BigDecimal.valueOf(valueNumber).stripTrailingZeros().toPlainString();
 			case FUNCTION:
 				return valueFunction.toString();
 			case WORD:
@@ -580,7 +580,7 @@ public class Datum {
 			case NULL:
 				return d.getType() == Type.NULL;
 			case NUMBER:
-				return valueNumber.compareTo(d.valueNumber) == 0;
+				return Double.compare(valueNumber, d.valueNumber) == 0;
 			case PAIR:
 				return valuePair.equals(d.valuePair);
 			case PHONE:

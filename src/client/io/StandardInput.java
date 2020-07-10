@@ -1,6 +1,5 @@
 package client.io;
 
-import java.math.BigDecimal;
 import java.util.Scanner;
 
 import main.sono.io.Input;
@@ -21,8 +20,8 @@ public class StandardInput extends Input {
 	}
 
 	@Override
-	public BigDecimal getNumber() {
-		return sc.nextBigDecimal();
+	public double getNumber() {
+		return sc.nextDouble();
 	}
 
 }
