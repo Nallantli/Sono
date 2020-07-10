@@ -287,7 +287,7 @@ public class Rule {
 				case WORD_INITIAL:
 					return index == 0;
 				case SYLLABLE_INIT:
-					return index == sequence.size() - 1 || index == 0
+					return index == sequence.size() || index == 0
 							|| sequence.getDelim(index) == Word.SyllableDelim.DELIM
 							|| sequence.getDelim(index) == Word.SyllableDelim.MORPHEME;
 				case SYLLABLE_END:
