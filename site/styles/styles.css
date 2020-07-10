@@ -5,6 +5,7 @@ body {
     height: 100%;
     font-family: "Iosevka SS05", monospace;
     font-size: 14px;
+    background: black;
 }
 
 #banner {
@@ -24,9 +25,34 @@ body {
 }
 
 #logo {
+    position: absolute;
+    top: 50vh;
+    left: 50vw;
     height: 200px;
-    margin: auto;
     display: block;
+    transform: translate(-50%, -50%);
+}
+
+#loader {
+    position: absolute;
+    border: 4px solid #00000000;
+    border-top: 4px solid #aed1ff;
+    border-radius: 50%;
+    top: 50vh;
+    left: 50vw;
+    width: 250px;
+    height: 250px;
+    margin: -125px 0 0 -125px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 h1 {
@@ -35,7 +61,7 @@ h1 {
     margin-top: 10px;
     padding: 0;
     text-align: center;
-    color: #66aaff;
+    color: #aed1ff;
     font-size: 16px;
     font-weight: normal;
     font-family: Arial, Helvetica, sans-serif;
@@ -181,7 +207,7 @@ h1 {
 }
 
 .file:hover {
-    color: #66aaff;
+    color: #aed1ff;
     font-weight: bold;
 }
 
@@ -240,7 +266,7 @@ h1 {
 }
 
 .navbuttons:hover {
-    color: #66aaff;
+    color: #aed1ff;
 }
 
 summary {
@@ -298,7 +324,7 @@ input::-moz-focus-inner {
 }
 
 .fold {
-    color: #66aaff;
+    color: #aed1ff;
     margin-left: 25px;
 }
 
@@ -336,6 +362,6 @@ table th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #66aaff;
+    background-color: #aed1ff;
     color: black;
 }

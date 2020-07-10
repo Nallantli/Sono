@@ -3,7 +3,7 @@ html {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 #nav {
@@ -65,7 +65,7 @@ p {
     position: -webkit-sticky;
     position: sticky;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
     background: #141414;
     color: white;
     padding: 15px;
@@ -160,7 +160,7 @@ td {
 }
 
 .lib_name {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
 }
 
@@ -173,7 +173,7 @@ td {
     clear: both;
     margin-top: 10px;
     color: #aaaaaa;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .see_link {

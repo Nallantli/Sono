@@ -7,6 +7,7 @@ let init = false;
 function initialize() {
     init = true;
     document.getElementById("banner").style.opacity = 1;
+    document.getElementById("loader").remove();
     setTimeout(() => {
         document.getElementById("banner").style.opacity = 0;
         document.getElementById("banner").style.pointerEvents = "none";
