@@ -15,15 +15,16 @@ dataset.setRules(RuleSets.Common.randomize());
 var morphemeB = dataset.genSyllable();
 var morphemeC = dataset.genSyllable();
 
-var header = {"Form A", "Form B+A", "Form A+C", "Form B+A+C"};
+var header = {"Form A", "Form B+A", "Form A+C", "Form B+A+C", "Form A+A"};
 var vector = {};
 i in {0 until 20} do {
 	var w = dataset.genWord();
 	var wA = (str dataset.toPhonetic(w)).replace("[\\.\\+]", "");
-	var wAB = (str dataset.toPhonetic(word (vec morphemeB + { "+" } + vec w))).replace("[\\.\\+]", "");
+	var wBA = (str dataset.toPhonetic(word (vec morphemeB + { "+" } + vec w))).replace("[\\.\\+]", "");
 	var wAC = (str dataset.toPhonetic(word (vec w + { "+" } + vec morphemeC))).replace("[\\.\\+]", "");
-	var wABC = (str dataset.toPhonetic(word (vec morphemeB + { "+" } + vec w + { "+" } + vec morphemeC))).replace("[\\.\\+]", "");
-	vector += {{wA, wAB, wAC, wABC}};
+	var wBAC = (str dataset.toPhonetic(word (vec morphemeB + { "+" } + vec w + { "+" } + vec morphemeC))).replace("[\\.\\+]", "");
+	var wAA = (str dataset.toPhonetic(word (vec w + { "+" } + vec w))).replace("[\\.\\+]", "");
+	vector += {{wA, wBA, wAC, wBAC, wAA}};
 }
 
 print(Format.table(header, vector));
