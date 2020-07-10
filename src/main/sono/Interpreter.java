@@ -195,6 +195,10 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Return(this, a));
 				}
+				if (token.equals("refer")) {
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Refer(this, a));
+				}
 				if (token.equals("var")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.VarDec(this, ((Operator.Variable) a).getKey()));

@@ -1,5 +1,5 @@
 # Benjamin Park
-# 30-06-2020
+# 09-07-2020
 
 import "LIB_FileIO";
 
@@ -23,11 +23,11 @@ struct File class {
 	}
 
 	getReader() => {
-		return new Reader(this.pointer);
+		refer new Reader(this.pointer);
 	}
 
 	getWriter() => {
-		return new Writer(this.pointer);
+		refer new Writer(this.pointer);
 	}
 
 	struct Reader class {
@@ -38,8 +38,7 @@ struct File class {
 		}
 
 		readLine() => {
-			var line = ("LIB_FileIO.READER.GETLINE" _OUTER_CALL_ pointer);
-			return line;
+			return ("LIB_FileIO.READER.GETLINE" _OUTER_CALL_ pointer);
 		}
 
 		read(i) => {

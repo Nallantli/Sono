@@ -18,7 +18,7 @@ public class SonoException extends RuntimeException {
 			String s = o.substring(0, Math.min(100,o.length()));
 			if (!s.equals(o))
 				s += " ... (+" + (o.length() - 100) + ")";
-			sb.append("\t^ " + s);
+			sb.append("\t^ " + s + "\n");
 		}
 		return sb.toString();
 	}

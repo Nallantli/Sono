@@ -1,6 +1,6 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 08-07-2020
+# 09-07-2020
 
 load "math";
 load "system";
@@ -11,7 +11,7 @@ Vector::pop(ref this) => {
 		nl += { this[i] };
 	}
 	this = nl;
-	return this;
+	refer this;
 }
 
 Vector::shift(ref this) => {
@@ -20,15 +20,15 @@ Vector::shift(ref this) => {
 		nl += { this[i] };
 	}
 	this = nl;
-	return this;
+	refer this;
 }
 
 Vector::front(ref this) => {
-	return this[0];
+	refer this[0];
 }
 
 Vector::back(ref this) => {
-	return this[len this - 1];
+	refer this[len this - 1];
 }
 
 Vector::isEmpty(ref this) => {
@@ -46,7 +46,7 @@ Vector::contains(ref this, ref value) => {
 
 Vector::push(ref this, ref value) => {
 	this += { value };
-	return this;
+	refer this;
 }
 
 Vector::join(ref this) => {
@@ -65,7 +65,7 @@ Vector::remove(ref this, final index) => {
 		}
 	}
 	this = nv;
-	return this;
+	refer this;
 }
 
 Vector::reverse(final this) => {

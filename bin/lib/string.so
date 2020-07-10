@@ -1,17 +1,17 @@
 # Benjamin Park
-# 08-07-2020
+# 09-07-2020
 
 load "system";
 load "vector";
 
 String::pop(ref this) => {
 	this = (vec this).pop().join();
-	return this;
+	refer this;
 }
 
 String::shift(ref this) => {
 	this = (vec this).shift().join();
-	return this;
+	refer this;
 }
 
 String::front(ref this) => {
@@ -32,7 +32,7 @@ String::at(ref this, final index) => {
 
 String::push(ref this, ref value) => {
 	this += str value;
-	return this;
+	refer this;
 }
 
 String::contains(ref this, final pattern) => {
@@ -119,5 +119,5 @@ String::replace(ref this, final pattern, final value) => {
 		array = array + { curr.join() };
 	}
 	this = array.join();
-	return this;
+	refer this;
 }

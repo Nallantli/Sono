@@ -46,9 +46,14 @@ public class Function {
 		}
 
 		final Datum r = body.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-		if (r.getRet()) {
-			r.setRet(false);
+		if (r.getRefer()) {
+			r.setRefer(false);
 			return r;
+		} else if (r.getRet()) {
+			r.setRet(false);
+			Datum nr = new Datum();
+			nr.set(interpreter.getManager(), r, trace);
+			return nr;
 		}
 		return new Datum();
 	}

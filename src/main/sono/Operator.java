@@ -17,7 +17,7 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NEQUAL, LESS, MORE, ELESS, EMORE, MATRIX_CONV, NUMBER_CONV,
 		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
 		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONV, TYPE_DEC, STRUCT_DEC, STATIC_DEC, CLASS_DEC, NEW_DEC, POW,
-		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE,
+		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
@@ -218,7 +218,7 @@ public abstract class Operator {
 					final Datum d = o.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 					if (d.getType() == Datum.Type.I_BREAK)
 						return d;
-					if (d.getRet())
+					if (d.getRet() || d.getRefer())
 						return d;
 					data.add(d);
 				}
@@ -253,7 +253,7 @@ public abstract class Operator {
 					final Datum d = o.evaluate(newScope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 					if (d.getType() == Datum.Type.I_BREAK)
 						return d;
-					if (d.getRet())
+					if (d.getRet() || d.getRefer())
 						return d;
 					data.add(d);
 				}
@@ -619,7 +619,7 @@ public abstract class Operator {
 					final Datum result = b.evaluate(loopScope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 					if (result.getType() == Datum.Type.I_BREAK)
 						break;
-					if (result.getRet())
+					if (result.getRet() || result.getRefer())
 						return result;
 				}
 			} else {
@@ -629,7 +629,7 @@ public abstract class Operator {
 					final Datum result = b.evaluate(loopScope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 					if (result.getType() == Datum.Type.I_BREAK)
 						break;
-					if (result.getRet())
+					if (result.getRet() || result.getRefer())
 						return result;
 				}
 			}
@@ -1167,6 +1167,26 @@ public abstract class Operator {
 		}
 	}
 
+	public static class Refer extends Unary {
+		public Refer(final Interpreter interpreter, final Operator a) {
+			super(interpreter, Type.REFER, a);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, final List<String> trace) {
+			if (SonoWrapper.DEBUG)
+				trace.add(this.toString());
+			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+			datumA.setRefer(true);
+			return datumA;
+		}
+
+		@Override
+		public String toString() {
+			return "refer " + a.toString();
+		}
+	}
+
 	public static class Add extends Binary {
 		public Add(final Interpreter interpreter, final Operator a, final Operator b) {
 			super(interpreter, Type.ADD, a, b);
@@ -1526,7 +1546,7 @@ public abstract class Operator {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
 			final Datum condition = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			if (condition.getNumber(trace).compareTo(new BigDecimal(1)) == 0) {
+			if (condition.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
 				return b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
 			} else if (c != null) {
 				return c.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
@@ -1620,8 +1640,8 @@ public abstract class Operator {
 		public Datum evaluate(final Scope scope, final List<String> trace) {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
-			final List<Datum> pValues = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace))
-					.getVector(trace);
+			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+			final List<Datum> pValues = datumB.getVector(trace);
 			Function f = null;
 			if (a.type == Type.INNER) {
 				final Datum datumA = ((Inner) a).getA().evaluate(scope,
@@ -1749,10 +1769,13 @@ public abstract class Operator {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.getNumber(trace).compareTo(BigDecimal.valueOf(1)) == 0
-					&& datumB.getNumber(trace).compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1)
-							: new BigDecimal(0));
+			if (datumA.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
+				final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+				if (datumB.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
+					return new Datum(BigDecimal.ONE);
+				}
+			}
+			return new Datum(BigDecimal.ZERO);
 		}
 
 		@Override
@@ -1771,10 +1794,15 @@ public abstract class Operator {
 			if (SonoWrapper.DEBUG)
 				trace.add(this.toString());
 			final Datum datumA = a.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
-			return new Datum(datumA.getNumber(trace).compareTo(BigDecimal.valueOf(1)) == 0
-					|| datumB.getNumber(trace).compareTo(BigDecimal.valueOf(1)) == 0 ? new BigDecimal(1)
-							: new BigDecimal(0));
+			if (datumA.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
+				return new Datum(BigDecimal.ONE);
+			} else {
+				final Datum datumB = b.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+				if (datumB.getNumber(trace).compareTo(BigDecimal.ZERO) != 0) {
+					return new Datum(BigDecimal.ONE);
+				}
+			}
+			return new Datum(BigDecimal.ZERO);
 		}
 
 		@Override

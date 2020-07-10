@@ -1,5 +1,5 @@
 # Benjamin Park
-# 30-06-2020
+# 09-07-2020
 
 import "LIB_Graphics";
 
@@ -38,7 +38,7 @@ struct Window class {
 		this.graphics == null then {
 			this.graphics = new Graphics("LIB_Graphics.GETGRAPHICS" _OUTER_CALL_ (this.window));
 		}
-		return this.graphics;
+		refer this.graphics;
 	}
 
 	repaint() => {
@@ -47,70 +47,70 @@ struct Window class {
 
 	onMouseMove(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
-			return function(new MouseEvent(a, b, c, d, e, f, g));
+			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
 		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 0, mousef);
 	}
 
 	onMouseDrag(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
-			return function(new MouseEvent(a, b, c, d, e, f, g));
+			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
 		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 1, mousef);
 	}
 
 	onMouseRelease(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
-			return function(new MouseEvent(a, b, c, d, e, f, g));
+			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
 		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 2, mousef);
 	}
 
 	onMousePress(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
-			return function(new MouseEvent(a, b, c, d, e, f, g));
+			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
 		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 3, mousef);
 	}
 
 	onMouseExit(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
-			return function(new MouseEvent(a, b, c, d, e, f, g));
+			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
 		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 4, mousef);
 	}
 
 	onMouseEnter(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
-			return function(new MouseEvent(a, b, c, d, e, f, g));
+			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
 		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 5, mousef);
 	}
 
 	onMouseClick(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
-			return function(new MouseEvent(a, b, c, d, e, f, g));
+			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
 		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 6, mousef);
 	}
 
 	onKeyPress(ref function) => {
 		var keyf = (a, b, c) => {
-			return function(new KeyEvent(a, b, c));
+			refer function(new KeyEvent(a, b, c));
 		}
 		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 0, keyf);
 	}
 
 	onKeyRelease(ref function) => {
 		var keyf = (a, b, c) => {
-			return function(new KeyEvent(a, b, c));
+			refer function(new KeyEvent(a, b, c));
 		}
 		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 1, keyf);
 	}
 
 	onKeyType(ref function) => {
 		var keyf = (a, b, c) => {
-			return function(new KeyEvent(a, b, c));
+			refer function(new KeyEvent(a, b, c));
 		}
 		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 2, keyf);
 	}

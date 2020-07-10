@@ -1,5 +1,5 @@
 # Benjamin Park
-# 27-06-2020
+# 09-07-2020
 
 import "LIB_Socket";
 
@@ -37,13 +37,13 @@ struct Socket class {
 	##	Gets a `Socket.Output` object referring to the current instance of `Socket`
 	##	@return	Socket.Output	The relevant `Output` object
 	getOutput() => {
-		return new Output(this.socket);
+		refer new Output(this.socket);
 	}
 
 	##	Gets a `Socket.Input` object referring to the current instance of `Socket`
 	##	@return	Socket.Input	The relevant `Input` object
 	getInput() => {
-		return new Input(this.socket);
+		refer new Input(this.socket);
 	}
 
 	##	Gets the value of the Socket's connecting address
@@ -140,7 +140,7 @@ struct Server class {
 	##	Waits for an incoming socket to connect to the server, pauses the thread until a socket connects
 	##	@return	Socket	Object of the connected socket
 	accept() => {
-		return new Socket("LIB_Socket.SERVER.ACCEPT" _OUTER_CALL_ (this.server));
+		refer new Socket("LIB_Socket.SERVER.ACCEPT" _OUTER_CALL_ (this.server));
 	}
 
 	##	Gets the value of the Server's connecting port

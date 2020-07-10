@@ -1,11 +1,11 @@
 # Benjamin Park
-# 08-07-2020
+# 09-07-2020
 
 Number::abs(ref this) => {
 	this < 0 then {
 		return -this ;
 	} else {
-		return +this;
+		return this;
 	}
 }
 
@@ -24,13 +24,13 @@ Number::ceil(ref this) => {
 		d > 0 then {
 			return this - d + 1;
 		} else {
-			return +this;
+			return this;
 		}
 	} else {
 		d < 0 then {
 			return this - d;
 		} else {
-			return +this;
+			return this;
 		}
 	}
 }
@@ -85,7 +85,7 @@ static Math class {
 				n = vector[i];
 			}
 		}
-		return n;
+		refer n;
 	}
 
 	minIndex(ref vector) => {

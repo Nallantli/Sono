@@ -1,4 +1,4 @@
-# Sono Beta 1.4.7
+# Sono Beta 1.5.0
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -209,6 +209,53 @@ S |> 'ɴ' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 
 ```
 
 Place assimilation may be revised in the future using macros for the sake of brevity.
+
+### Functions
+
+Function syntax is expressed in two ways: anonymous or dedicated functions. The only difference in declaration is a lack of identifier with anonymous functions. For a dedicated function, one identifier can only be declared once (with the exception of prototypical functions) within a scope, and it will only exist within that scope. Anonymous functions can server as variables, callbacks, and generally more mutable values.
+
+```sono
+# Dedicated
+f(x) => {
+	return x * x;
+}
+
+#Anonymous
+f = (x) => {
+	return x * x;
+}```
+
+The operator `=>` is used in both to signify the function body. Within the function body, there are two possible keywords for returning values. The keyword `return` will return the value by _value_, and does not affect the value referred to by the function:
+
+```sono
+var a = 0;
+
+f() => {
+	return a;
+}
+
+var b = f(); # 0
+f() = 10; # 10
+a; # 0
+```
+
+On the other hand, the keyword `refer` designates the opposite, it passes the value by reference:
+
+```sono
+var a = 0;
+
+f() => {
+	refer a;
+}
+
+var b = f(); # 0
+f() = 10; # 10
+a; # 10
+```
+
+Note that using `f()` returns the reference to the variable itself and thus when using `=` sets the value of the variable.
+
+All functions are first-class values and can be used in any situation regarding variables.
 
 ### Loops
 

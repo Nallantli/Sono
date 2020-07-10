@@ -11,7 +11,7 @@ var c;
 var charMap = new Map();
 
 (c = reader.read(1)) != null do {
-	char c >= char "A" && char c <= char "z" then {
+	code c >= code "A" && code c <= code "z" then {
 		charMap.containsKey(c) == false then {
 			charMap[c] = 0;
 		}

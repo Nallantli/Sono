@@ -1,5 +1,5 @@
 # Benjamin Park
-# 3-07-2020
+# 09-07-2020
 
 load "hash";
 
@@ -56,11 +56,11 @@ struct Map class {
 		curr == null then {
 			buckets[h] = new Node(key, null, null);
 			size += 1;
-			return buckets[h].value;
+			refer buckets[h].value;
 		}
 		true do {
 			curr.key == key then {
-				return curr.value;
+				refer curr.value;
 			}
 			curr.next == null then {
 				break;
@@ -70,7 +70,7 @@ struct Map class {
 		var p = new Node(key, null, curr);
 		curr.next = p;
 		size += 1;
-		return p.value;
+		refer p.value;
 	}
 
 	remove(ref key) => {

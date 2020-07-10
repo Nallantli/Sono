@@ -1,5 +1,5 @@
 # Benjamin Park
-# 08-07-2020
+# 09-07-2020
 
 load "feature";
 load "vector";
@@ -58,7 +58,7 @@ static Phonology class {
 			len list == 0 then {
 				return { matrix };
 			} else {
-				return list;
+				refer list;
 			}
 		}
 		return natural(phones, com getNaturalSet(phones, set))[0];

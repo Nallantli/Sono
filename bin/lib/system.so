@@ -1,5 +1,5 @@
 # Benjamin Park
-# 07-07-2020
+# 09-07-2020
 
 import "LIB_Console";
 load "math";
@@ -78,7 +78,7 @@ static Random class {
 	}
 
 	set(ref vector) => {
-		return vector[int(0, len vector)]
+		refer vector[int(0, len vector)]
 	}
 }
 

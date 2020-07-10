@@ -103,6 +103,7 @@ public class Datum {
 	protected Type type;
 
 	private boolean ret = false;
+	private boolean refer = false;
 	private boolean mutable = true;
 	private boolean templative = false;
 
@@ -474,7 +475,7 @@ public class Datum {
 			case POINTER:
 				return valuePointer.toString();
 			default:
-				throw new SonoRuntimeException("Unknown value.", trace);
+				return "undefined";
 		}
 	}
 
@@ -507,7 +508,7 @@ public class Datum {
 			case POINTER:
 				return valuePointer.toString();
 			default:
-				throw new SonoRuntimeException("Unknown value.", trace);
+				return "undefined";
 		}
 	}
 
@@ -532,8 +533,16 @@ public class Datum {
 		this.ret = ret;
 	}
 
+	public void setRefer(final boolean refer) {
+		this.refer = refer;
+	}
+
 	public boolean getRet() {
 		return ret;
+	}
+
+	public boolean getRefer() {
+		return refer;
 	}
 
 	public boolean isTemplative() {
