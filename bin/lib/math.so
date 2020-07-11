@@ -54,6 +54,28 @@ static Math class {
 		return index;
 	}
 
+	max(ref vector) => {
+		var n = vector[0];
+		i in {1 until len vector} do {
+			vector[i] > n then {
+				n = vector[i];
+			}
+		}
+		refer n;
+	}
+
+	maxIndex(ref vector) => {
+		var n = vector[0];
+		var index = 0;
+		i in {1 until len vector} do {
+			vector[i] > n then {
+				n = vector[i];
+				index = i;
+			}
+		}
+		return index;
+	}
+
 	add(ref a, ref b) => {
 		return a + b;
 	}

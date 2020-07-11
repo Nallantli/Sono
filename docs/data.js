@@ -433,6 +433,34 @@ const LIBRARIES = {
                     see: []
                 },
                 {
+                    name: "max",
+                    template: undefined,
+                    params: [{
+                        modifier: "ref",
+                        key: "vector",
+                        type: [
+                            "Vector"
+                        ]
+                    }],
+                    desc: "Returns the maximum value from a set of elements in a given <code>Vector</code>.",
+                    return: "Number",
+                    see: []
+                },
+                {
+                    name: "maxIndex",
+                    template: undefined,
+                    params: [{
+                        modifier: "ref",
+                        key: "vector",
+                        type: [
+                            "Vector"
+                        ]
+                    }],
+                    desc: "Returns the index of the highest element from a given <code>Vector</code>.",
+                    return: "Number",
+                    see: []
+                },
+                {
                     name: "add",
                     template: undefined,
                     params: [{
