@@ -17,7 +17,7 @@ SOE(final MAX) => {
 	}
 
 	var b = {};
-	i in {0 until MAX} do {
+	i in {2 until MAX} do {
 		a[i] then {
 			b += {i};
 		}
