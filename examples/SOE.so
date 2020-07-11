@@ -32,7 +32,7 @@ SOE(final MAX) => {
 	return b;
 }
 
-var MAX = 10 ** 5;
+var MAX = 10 ** 6;
 
 var start = timeMS();
 var result = SOE(MAX);
