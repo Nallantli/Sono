@@ -223,7 +223,8 @@ f(x) => {
 #Anonymous
 f = (x) => {
 	return x * x;
-}```
+}
+```
 
 The operator `=>` is used in both to signify the function body. Within the function body, there are two possible keywords for returning values. The keyword `return` will return the value by _value_, and does not affect the value referred to by the function:
 
