@@ -33,11 +33,10 @@ public class ThreadWrapper extends Thread {
 
 		if (output.getType() == Datum.Type.VECTOR) {
 			sb.append("\n<details class=\"fold\">");
-			sb.append("<summary>Raw Output Vector (" + output.getVector(new ArrayList<>()).length
+			sb.append("<summary>Raw Output Vector (" + output.getVectorLength(null)
 					+ " <i class=\"fab fa-buffer\"></i>)</summary>");
-			int i = 0;
-			for (final Datum e : output.getVector(new ArrayList<>())) {
-				sb.append("\t" + i++ + ":\t" + SonoServer.validate(e.toStringTrace(new ArrayList<>())) + "\n");
+			for (int i = 0; i < output.getVectorLength(null); i++) {
+				sb.append("\t" + i + ":\t" + SonoServer.validate(output.indexVector(i, null).toStringTrace(new ArrayList<>())) + "\n");
 			}
 			sb.append("</details>");
 		} else {

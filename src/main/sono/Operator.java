@@ -679,11 +679,12 @@ public abstract class Operator {
 				trace.add(this.toString());
 			}
 			if (a.type == Type.ITERATOR) {
-				final Datum[] values = ((Iterator) a).getB().evaluate(scope, trace).getVector(trace);
+				final Datum datumAB = ((Iterator) a).getB().evaluate(scope, trace);
+				final int valuesSize = datumAB.getVectorLength(trace);
 				final int variable = ((Variable) ((Iterator) a).getA()).getKey();
-				for (final Datum d : values) {
+				for (int i = 0; i < valuesSize; i++) {
 					final Scope loopScope = new Scope(scope);
-					loopScope.setVariable(interpreter, variable, d, trace);
+					loopScope.setVariable(interpreter, variable, datumAB.indexVector(i, trace), trace);
 					final Datum result = b.evaluate(loopScope, trace);
 					if (result.getType() == Datum.Type.I_BREAK)
 						break;
@@ -864,12 +865,13 @@ public abstract class Operator {
 			final Phone ret = interpreter.getManager().registerNewPhone(segment, features);
 			if (ret == null)
 				throw new SonoRuntimeException("Cannot register Phone with features <" + features + ">", trace);
-			final Datum[] oldV = interpreter.getScope().getVariable(interpreter.ALL, interpreter, trace)
-					.getVector(trace);
-			final Datum[] newV = new Datum[oldV.length + 1];
-			for (int i = 0; i < oldV.length; i++)
-				newV[i] = oldV[i];
-			newV[oldV.length] = new Datum(ret);
+			final Datum allV = interpreter.getScope().getVariable(interpreter.ALL, interpreter, trace);
+			final int oldVSize = interpreter.getScope().getVariable(interpreter.ALL, interpreter, trace)
+					.getVectorLength(trace);
+			final Datum[] newV = new Datum[oldVSize + 1];
+			for (int i = 0; i < oldVSize; i++)
+				newV[i] = allV.indexVector(i, trace);
+			newV[oldVSize] = new Datum(ret);
 			interpreter.getScope().setVariable(interpreter, interpreter.ALL, new Datum(newV), trace);
 			return new Datum(ret);
 		}
@@ -899,7 +901,9 @@ public abstract class Operator {
 				final List<Phone> phones = new ArrayList<>();
 				final List<Word.SyllableDelim> delims = new ArrayList<>();
 				boolean flag = true;
-				for (final Datum d : datumA.getVector(trace)) {
+				final int dataSize = datumA.getVectorLength(trace);
+				for (int i = 0; i < dataSize; i++) {
+					final Datum d = datumA.indexVector(i, trace);
 					if (d.getType() == Datum.Type.PHONE) {
 						phones.add(d.getPhone(trace));
 						if (flag)
@@ -1056,10 +1060,10 @@ public abstract class Operator {
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			final Datum datumA = a.evaluate(scope, trace);
 			if (datumA.getType() == Datum.Type.VECTOR) {
-				final Datum[] list = datumA.getVector(trace);
+				final int listSize = datumA.getVectorLength(trace);
 				final Matrix m = new Matrix();
-				for (final Datum d : list)
-					m.put(interpreter.getManager(), d.getPair(trace));
+				for (int i = 0; i < listSize; i++)
+					m.put(interpreter.getManager(), datumA.indexVector(i, trace).getPair(trace));
 				return new Datum(m);
 			} else if (datumA.getType() == Datum.Type.PHONE) {
 				return new Datum(datumA.getPhone(trace).getMatrix());
@@ -1089,10 +1093,11 @@ public abstract class Operator {
 				throw new SonoRuntimeException(
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			final Matrix matrix = a.evaluate(scope, trace).getMatrix(trace);
-			final Datum[] data = b.evaluate(scope, trace).getVector(trace);
+			final Datum datumB = b.evaluate(scope, trace);
+			final int dataSize = datumB.getVectorLength(trace);
 			final List<Phone> phones = new ArrayList<>();
-			for (final Datum d : data)
-				phones.add(d.getPhone(trace));
+			for (int i = 0; i < dataSize; i++)
+				phones.add(datumB.indexVector(i, trace).getPhone(trace));
 			final List<Phone> list = interpreter.getManager().getPhones(phones, matrix);
 			final Datum[] newData = new Datum[list.size()];
 			for (int i = 0; i < list.size(); i++) {
@@ -1211,7 +1216,7 @@ public abstract class Operator {
 								trace);
 					return new Datum(datumA.getWord(trace).size());
 				case VECTOR:
-					return new Datum(datumA.getVector(trace).length);
+					return new Datum(datumA.getVectorLength(trace));
 				case MATRIX:
 					if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 						throw new SonoRuntimeException(
@@ -1298,12 +1303,7 @@ public abstract class Operator {
 				case NUMBER:
 					return new Datum(datumA.getNumber(trace) + datumB.getNumber(trace));
 				case VECTOR:
-					final Datum[] vectorA = datumA.getVector(trace);
-					final Datum[] vectorB = datumB.getVector(trace);
-					final Datum[] newList = new Datum[vectorA.length + vectorB.length];
-					System.arraycopy(vectorA, 0, newList, 0, vectorA.length);
-					System.arraycopy(vectorB, 0, newList, vectorA.length, vectorB.length);
-					return new Datum(newList);
+					return Datum.arrayConcat(datumA, datumB);
 				case MATRIX:
 					if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 						throw new SonoRuntimeException(
@@ -1472,11 +1472,11 @@ public abstract class Operator {
 			final Datum datumB = b.evaluate(scope, trace);
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				try {
-					return datumA.getVector(trace)[(int) datumB.getNumber(trace)];
+					return datumA.indexVector((int) datumB.getNumber(trace), trace);
 				} catch (final Exception e) {
 					throw new SonoRuntimeException(
 							"Cannot index List <" + datumA.toStringTrace(trace) + "> with value <"
-									+ datumB.toStringTrace(trace) + ">; Length: " + datumA.getVector(trace).length,
+									+ datumB.toStringTrace(trace) + ">; Length: " + datumA.getVectorLength(trace),
 							trace);
 				}
 			} else if (datumA.getType() == Datum.Type.STRUCTURE) {
@@ -1574,10 +1574,11 @@ public abstract class Operator {
 			if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 				throw new SonoRuntimeException(
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
-			final Datum[] data = a.evaluate(scope, trace).getVector(trace);
+			final Datum datumA = a.evaluate(scope, trace);
+			final int dataSize = datumA.getVectorLength(trace);
 			final List<Phone> phones = new ArrayList<>();
-			for (final Datum d : data)
-				phones.add(d.getPhone(trace));
+			for (int i = 0; i < dataSize; i++)
+				phones.add(datumA.indexVector(i, trace).getPhone(trace));
 			return new Datum(interpreter.getManager().getCommon(phones));
 		}
 
@@ -1770,15 +1771,16 @@ public abstract class Operator {
 				trace.add(this.toString());
 			}
 			final Datum datumB = b.evaluate(scope, trace);
-			Datum[] pValues = datumB.getVector(trace);
+			final int pValuesSize = datumB.getVectorLength(trace);
+			Datum[] pValues = null;
 			Function f = null;
 			if (a.type == Type.INNER) {
 				final Datum datumA = ((Inner) a).getA().evaluate(scope, trace);
 				if (datumA.getType() != Datum.Type.STRUCTURE) {
-					final Datum[] tempValues = new Datum[pValues.length + 1];
+					final Datum[] tempValues = new Datum[pValuesSize + 1];
 					tempValues[0] = datumA;
-					for (int i = 0; i < pValues.length; i++) {
-						tempValues[i + 1] = pValues[i];
+					for (int i = 0; i < pValuesSize; i++) {
+						tempValues[i + 1] = datumB.indexVector(i, trace);
 					}
 					pValues = tempValues;
 					final Datum functionB = ((Inner) a).getB().evaluate(scope, trace);
@@ -1786,12 +1788,14 @@ public abstract class Operator {
 					if (f == null)
 						f = functionB.getFunction(Datum.Type.ANY, trace);
 				} else {
+					pValues = datumB.getVector(trace);
 					f = a.evaluate(scope, trace).getFunction(Datum.Type.ANY, trace);
 				}
 			} else {
+				pValues = datumB.getVector(trace);
 				final Datum fDatum = a.evaluate(scope, trace);
-				if (pValues.length != 0) {
-					f = fDatum.getFunction(pValues[0].getType(), trace);
+				if (pValuesSize != 0) {
+					f = fDatum.getFunction(datumB.indexVector(0, trace).getType(), trace);
 				}
 				if (f == null) {
 					f = fDatum.getFunction(Datum.Type.ANY, trace);

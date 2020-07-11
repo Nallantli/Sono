@@ -279,7 +279,7 @@ public class Datum {
 				this.valueStructure = null;
 				this.valuePointer = null;
 
-				final Datum[] dVec = datum.getVector(trace);
+				final Datum[] dVec = datum.valueVector;
 				this.valueVector = new Datum[dVec.length];
 				for (int i = 0; i < dVec.length; i++) {
 					final Datum n = new Datum();
@@ -529,8 +529,18 @@ public class Datum {
 
 	public Datum[] getVector(final List<String> trace) {
 		if (type != Type.VECTOR)
-			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a List.", trace);
+			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Vector.", trace);
 		return valueVector;
+	}
+
+	public Datum indexVector(final int i, final List<String> trace) {
+		return valueVector[i];
+	}
+
+	public int getVectorLength(final List<String> trace) {
+		if (type != Type.VECTOR)
+			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Vector.", trace);
+		return valueVector.length;
 	}
 
 	public void setRet(final boolean ret) {
@@ -604,5 +614,12 @@ public class Datum {
 			default:
 				return false;
 		}
+	}
+
+	public static Datum arrayConcat(final Datum a, final Datum b) {
+		final Datum[] newList = new Datum[a.valueVector.length + b.valueVector.length];
+		System.arraycopy(a.valueVector, 0, newList, 0, a.valueVector.length);
+		System.arraycopy(b.valueVector, 0, newList, a.valueVector.length, b.valueVector.length);
+		return new Datum(newList);
 	}
 }
