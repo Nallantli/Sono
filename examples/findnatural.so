@@ -13,6 +13,6 @@ println("Natural Sets:");
 print(Format.table(
 	null,
 	naturalsets.map((ref set) => {
-    	refer {set, Phonology.naturalize(_base, set)};
+    	return {set, Phonology.naturalize(_base, set)};
 	})
 ));

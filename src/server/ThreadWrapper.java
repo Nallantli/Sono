@@ -33,7 +33,7 @@ public class ThreadWrapper extends Thread {
 
 		if (output.getType() == Datum.Type.VECTOR) {
 			sb.append("\n<details class=\"fold\">");
-			sb.append("<summary>Raw Output Vector (" + output.getVector(new ArrayList<>()).size()
+			sb.append("<summary>Raw Output Vector (" + output.getVector(new ArrayList<>()).length
 					+ " <i class=\"fab fa-buffer\"></i>)</summary>");
 			int i = 0;
 			for (final Datum e : output.getVector(new ArrayList<>())) {

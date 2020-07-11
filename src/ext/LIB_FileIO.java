@@ -107,9 +107,9 @@ public class LIB_FileIO extends Library {
 				});
 		commands.put("LIB_FileIO.WRITER.WRITE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final BufferedWriter bw = (BufferedWriter) datum.getVector(trace).get(0).getPointer(trace);
+					final BufferedWriter bw = (BufferedWriter) datum.getVector(trace)[0].getPointer(trace);
 					try {
-						bw.write(datum.getVector(trace).get(1).getString(trace));
+						bw.write(datum.getVector(trace)[1].getString(trace));
 						return new Datum();
 					} catch (final IOException e) {
 						throw error("Cannot write from write <" + bw.toString() + ">", trace);

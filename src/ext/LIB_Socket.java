@@ -19,8 +19,8 @@ public class LIB_Socket extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					if (SonoWrapper.getGlobalOption("SOCKET").equals("FALSE"))
 						throw error("Socket permissions are disabled for this interpreter.", trace);
-					final String address = datum.getVector(trace).get(0).getString(trace);
-					final int port = (int) datum.getVector(trace).get(1).getNumber(trace);
+					final String address = datum.getVector(trace)[0].getString(trace);
+					final int port = (int) datum.getVector(trace)[1].getNumber(trace);
 					try {
 						final Socket socket = new Socket(address, port);
 						return new Datum((Object) socket);
@@ -40,8 +40,8 @@ public class LIB_Socket extends Library {
 				});
 		commands.put("LIB_Socket.OUT.SEND",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final DataOutputStream out = (DataOutputStream) datum.getVector(trace).get(0).getPointer(trace);
-					final String value = datum.getVector(trace).get(1).getString(trace);
+					final DataOutputStream out = (DataOutputStream) datum.getVector(trace)[0].getPointer(trace);
+					final String value = datum.getVector(trace)[1].getString(trace);
 					try {
 						out.writeUTF(value);
 						return new Datum((Object) out);

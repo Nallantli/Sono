@@ -88,7 +88,7 @@ public class Datum {
 		I_BREAK, ANY
 	}
 
-	private List<Datum> valueVector = null;
+	private Datum valueVector[] = null;
 	private String valueString = null;
 	private Phone valuePhone = null;
 	private Pair valuePair = null;
@@ -125,7 +125,7 @@ public class Datum {
 		this.templative = true;
 	}
 
-	public Datum(final List<Datum> valueVector) {
+	public Datum(final Datum valueVector[]) {
 		this.type = Type.VECTOR;
 		this.valueVector = valueVector;
 	}
@@ -259,6 +259,9 @@ public class Datum {
 	}
 
 	public void set(final PhoneManager pm, final Datum datum, final List<String> trace) {
+		if (datum == null) {
+			throw new SonoRuntimeException("ERROR", trace);
+		}
 		if (!mutable)
 			throw new SonoRuntimeException("You cannot set the value of a constant <" + this.toStringTrace(trace)
 					+ "> (to value <" + datum.toStringTrace(trace) + ">)", trace);
@@ -276,11 +279,12 @@ public class Datum {
 				this.valueStructure = null;
 				this.valuePointer = null;
 
-				this.valueVector = new ArrayList<>();
-				for (final Datum d : datum.getVector(trace)) {
+				final Datum[] dVec = datum.getVector(trace);
+				this.valueVector = new Datum[dVec.length];
+				for (int i = 0; i < dVec.length; i++) {
 					final Datum n = new Datum();
-					n.set(pm, d, trace);
-					this.valueVector.add(n);
+					n.set(pm, dVec[i], trace);
+					this.valueVector[i] = n;
 				}
 				break;
 			case MATRIX:
@@ -523,7 +527,7 @@ public class Datum {
 		return valuePair;
 	}
 
-	public List<Datum> getVector(final List<String> trace) {
+	public Datum[] getVector(final List<String> trace) {
 		if (type != Type.VECTOR)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a List.", trace);
 		return valueVector;
@@ -569,10 +573,10 @@ public class Datum {
 
 		switch (type) {
 			case VECTOR:
-				if (valueVector.size() != d.valueVector.size())
+				if (valueVector.length != d.valueVector.length)
 					return false;
-				for (int i = 0; i < valueVector.size(); i++)
-					if (!valueVector.get(i).equals(d.valueVector.get(i)))
+				for (int i = 0; i < valueVector.length; i++)
+					if (!valueVector[i].equals(d.valueVector[i]))
 						return false;
 				return true;
 			case MATRIX:

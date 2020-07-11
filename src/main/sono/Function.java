@@ -2,20 +2,16 @@ package main.sono;
 
 import java.util.List;
 
-import main.SonoWrapper;
-
-import java.util.ArrayList;
-
 public class Function {
 	private Scope parent;
-	private final List<Integer> paramKeys;
-	private final List<Boolean> paramFins;
-	private final List<Boolean> paramRefs;
+	private final int[] paramKeys;
+	private final boolean[] paramFins;
+	private final boolean[] paramRefs;
 	private final Operator body;
 	private final Interpreter interpreter;
 
-	public Function(final Scope parent, final List<Integer> paramKeys, final List<Boolean> paramRefs,
-			final List<Boolean> paramFins, final Operator body, final Interpreter interpreter) {
+	public Function(final Scope parent, final int[] paramKeys, final boolean[] paramRefs,
+			final boolean[] paramFins, final Operator body, final Interpreter interpreter) {
 		this.paramKeys = paramKeys;
 		this.paramRefs = paramRefs;
 		this.paramFins = paramFins;
@@ -24,34 +20,34 @@ public class Function {
 		this.interpreter = interpreter;
 	}
 
-	public Datum execute(final List<Datum> paramValues, final List<String> trace) {
+	public Datum execute(final Datum[] pValues, final List<String> trace) {
 		final Scope scope = new Scope(parent);
-		for (int i = 0; i < paramKeys.size(); i++) {
-			if (i < paramValues.size()) {
-				if (Boolean.TRUE.equals(paramRefs.get(i))) {
-					scope.setVariable(interpreter, paramKeys.get(i), paramValues.get(i), trace);
-				} else if (Boolean.TRUE.equals(paramFins.get(i))) {
+		for (int i = 0; i < paramKeys.length; i++) {
+			if (pValues != null && i < pValues.length) {
+				if (Boolean.TRUE.equals(paramRefs[i])) {
+					scope.setVariable(interpreter, paramKeys[i], pValues[i], trace);
+				} else if (Boolean.TRUE.equals(paramFins[i])) {
 					final Datum d = new Datum();
-					d.set(interpreter.getManager(), paramValues.get(i), trace);
+					d.set(interpreter.getManager(), pValues[i], trace);
 					d.setMutable(false);
-					scope.setVariable(interpreter, paramKeys.get(i), d, trace);
+					scope.setVariable(interpreter, paramKeys[i], d, trace);
 				} else {
 					final Datum d = new Datum();
-					d.set(interpreter.getManager(), paramValues.get(i), trace);
-					scope.setVariable(interpreter, paramKeys.get(i), d, trace);
+					d.set(interpreter.getManager(), pValues[i], trace);
+					scope.setVariable(interpreter, paramKeys[i], d, trace);
 				}
 			} else {
-				scope.setVariable(interpreter, paramKeys.get(i), new Datum(), trace);
+				scope.setVariable(interpreter, paramKeys[i], new Datum(), trace);
 			}
 		}
 
-		final Datum r = body.evaluate(scope, (SonoWrapper.DEBUG ? new ArrayList<>(trace) : trace));
+		final Datum r = body.evaluate(scope, trace);
 		if (r.getRefer()) {
 			r.setRefer(false);
 			return r;
 		} else if (r.getRet()) {
 			r.setRet(false);
-			Datum nr = new Datum();
+			final Datum nr = new Datum();
 			nr.set(interpreter.getManager(), r, trace);
 			return nr;
 		}

@@ -206,9 +206,9 @@ Vector::setAll(ref this, ref value) => {
 }
 
 Vector::map(ref this, ref function) => {
-	var nl = this;
-	e in nl do {
-		e = function(e);
+	var nl = alloc len this;
+	i in {0 until len this} do {
+		nl[i] = function(this[i]);
 	}
 	return nl;
 }

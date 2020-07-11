@@ -62,9 +62,9 @@ public class Interpreter {
 		for (final Phone p : pl.getBasePhones()) {
 			dataBase.add(new Datum(p));
 		}
-		final Datum d = new Datum(data);
+		final Datum d = new Datum(data.toArray(new Datum[0]));
 		d.setMutable(false);
-		final Datum db = new Datum(dataBase);
+		final Datum db = new Datum(dataBase.toArray(new Datum[0]));
 		db.setMutable(false);
 		variableHash = new ArrayList<>();
 
@@ -571,7 +571,7 @@ public class Interpreter {
 			} else if (Character.isDigit(token.charAt(0))) {
 				if (token.charAt(token.length() - 1) == 'D')
 					token = token.substring(0, token.length() - 1);
-				o.addLast(new Operator.Container(this, new Datum((double)Double.valueOf(token))));
+				o.addLast(new Operator.Container(this, new Datum((double) Double.valueOf(token))));
 			} else if (token.equals("null")) {
 				o.addLast(new Operator.Container(this, new Datum()));
 			} else if (token.equals("Vector")) {
@@ -617,15 +617,19 @@ public class Interpreter {
 		}
 	}
 
-	public static <T> String stringFromList(final List<T> list, final String init, final String fin) {
+	public static <T> String stringFromList(final T[] list, final String init, final String fin) {
 		final StringBuilder s = new StringBuilder(init);
-		for (int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < list.length; i++) {
 			if (i > 0)
 				s.append(", ");
-			s.append(list.get(i).toString());
+			s.append(list[i].toString());
 		}
 		s.append(fin);
 		return s.toString();
+	}
+
+	public static <E> boolean containsInstance(final List<E> list, final Class<? extends E> clazz) {
+		return list.stream().anyMatch(e -> clazz.isInstance(e));
 	}
 
 	public PhoneManager getManager() {
@@ -646,5 +650,16 @@ public class Interpreter {
 
 	public double getNumber() {
 		return stdin.getNumber();
+	}
+
+	public static Object stringFromList(final int[] list, final String init, final String fin) {
+		final StringBuilder s = new StringBuilder(init);
+		for (int i = 0; i < list.length; i++) {
+			if (i > 0)
+				s.append(", ");
+			s.append(Integer.toString(list[i]));
+		}
+		s.append(fin);
+		return s.toString();
 	}
 }
