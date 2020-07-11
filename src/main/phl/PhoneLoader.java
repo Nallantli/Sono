@@ -60,7 +60,7 @@ public class PhoneLoader {
 		}
 	}
 
-	private static void initalizeSecondary(final PhoneManager pm) {
+	private static void initializeSecondary(final PhoneManager pm) {
 		secondaryLibrary = new HashMap<>();
 		secondaryLibrary.put(Secondary.VOCALIC,
 				new SecondaryArticulation("̩", Hasher.hash("syl"), Hasher.TRUE, new Secondary[] {},
@@ -211,7 +211,7 @@ public class PhoneLoader {
 	public PhoneLoader(final String baseFilename, final boolean force) throws IOException {
 		loadedPhones = new HashMap<>();
 		this.pm = new PhoneManager();
-		initalizeSecondary(pm);
+		initializeSecondary(pm);
 		if (force)
 			initCache(baseFilename);
 		else {

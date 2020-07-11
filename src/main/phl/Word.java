@@ -26,16 +26,16 @@ public class Word {
 	}
 
 	private final List<Phone> phones;
-	private final List<SyllableDelim> delims;
+	private final List<SyllableDelim> delimits;
 
 	public Word() {
 		this.phones = new ArrayList<>();
-		this.delims = new ArrayList<>();
+		this.delimits = new ArrayList<>();
 	}
 
-	public Word(final List<Phone> phones, final List<SyllableDelim> delims) {
+	public Word(final List<Phone> phones, final List<SyllableDelim> delimits) {
 		this.phones = phones;
-		this.delims = delims;
+		this.delimits = delimits;
 	}
 
 	public void add(final Phone p) {
@@ -48,7 +48,7 @@ public class Word {
 
 	public void addAll(final Word w) {
 		this.phones.addAll(w.phones);
-		this.delims.addAll(w.delims);
+		this.delimits.addAll(w.delimits);
 	}
 
 	public int size() {
@@ -62,8 +62,8 @@ public class Word {
 	}
 
 	public SyllableDelim getDelim(final int i) {
-		if (i < this.delims.size() && i >= 0)
-			return this.delims.get(i);
+		if (i < this.delimits.size() && i >= 0)
+			return this.delimits.get(i);
 		return SyllableDelim.NULL;
 	}
 
@@ -71,7 +71,7 @@ public class Word {
 	public String toString() {
 		final StringBuilder s = new StringBuilder();
 		for (int i = 0; i < phones.size(); i++) {
-			s.append(delims.get(i).toString());
+			s.append(delimits.get(i).toString());
 			s.append(phones.get(i).toString());
 		}
 		return s.toString();

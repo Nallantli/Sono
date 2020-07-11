@@ -22,17 +22,21 @@ public class PhoneManager {
 
 	public Word interpretSequence(final String s) {
 		final List<Phone> phones = new ArrayList<>();
-		final List<Word.SyllableDelim> delims = new ArrayList<>();
+		final List<Word.SyllableDelim> delimits = new ArrayList<>();
 		int i = 0;
 		while (i < s.length()) {
-			if (s.charAt(i) == '+') {
-				delims.add(Word.SyllableDelim.MORPHEME);
-				i++;
-			} else if (s.charAt(i) == '.') {
-				delims.add(Word.SyllableDelim.DELIM);
-				i++;
-			} else {
-				delims.add(Word.SyllableDelim.NULL);
+			switch (s.charAt(i)) {
+				case '+':
+					delimits.add(Word.SyllableDelim.MORPHEME);
+					i++;
+					break;
+				case '.':
+					delimits.add(Word.SyllableDelim.DELIM);
+					i++;
+					break;
+				default:
+					delimits.add(Word.SyllableDelim.NULL);
+					break;
 			}
 			final StringBuilder curr = new StringBuilder();
 			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString()))) {
@@ -45,7 +49,7 @@ public class PhoneManager {
 				phones.add(interpretSegment(curr.toString()));
 			}
 		}
-		return new Word(phones, delims);
+		return new Word(phones, delimits);
 	}
 
 	public Phone interpretSegment(String s) {

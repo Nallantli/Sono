@@ -48,6 +48,6 @@ public class ThreadWrapper extends Thread {
 
 		stdout.printHeader("OUT", SonoServer.validate("> "));
 
-		server.unpause(conn);
+		server.unPause(conn);
 	}
 }

@@ -229,10 +229,6 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onMessage(final WebSocket conn, final String raw) {
-		System.out.println(LocalDateTime.now(ZoneId.of("America/New_York")) + "\tRECIEVED\t"
-				+ conn.getRemoteSocketAddress().getAddress().toString() + "\n" + raw); // do not plan to keep, just for temporary
-		// debugging purposes
-
 		final String sections[] = raw.split("\n", 2);
 		final String header = sections[0];
 		final String message = sections[1];
@@ -287,7 +283,7 @@ public class SonoServer extends WebSocketServer {
 		this.WAIT.put(conn, true);
 	}
 
-	public void unpause(final WebSocket conn) {
+	public void unPause(final WebSocket conn) {
 		this.WAIT.put(conn, false);
 	}
 

@@ -1,4 +1,4 @@
-# Sono Beta 1.5.8
+# Sono Beta 1.5.9
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -30,7 +30,7 @@ The first argument (if the user wishes to run a file) must be the path to the fi
 
 There are currently only three command line arguments: `-l` which disables all phonological features of the language (for use as a general scripting language), `-d` which takes in a file path for phonological base data, and `-g`, which activates debug mode which will create a stack trace for any caught error.
 
-During the initial run, `-d` will be required to develop a cache for the phonological data, and this process will take time depending on the extent of the data file given. Thereafter however the interpreter will automatically load the cached data at a significantly faster rate. A cache can always be re-initalized with `-d`.
+During the initial run, `-d` will be required to develop a cache for the phonological data, and this process will take time depending on the extent of the data file given. Thereafter however the interpreter will automatically load the cached data at a significantly faster rate. A cache can always be re-initialized with `-d`.
 
 Example usages:
 
@@ -84,7 +84,7 @@ var a = 1; # Variable 'a' is type 'Number' with value '1'
 a = "Hello World"; # Now variable 'a' is type 'String' with value '"Hello World"'
 ```
 
-Operators are strictly typed however, and thus a variable of type `Number` cannot be added to a variable of type `String`, etc. Explicit conversion is necessary using the following keywords. All keywords are reflexive for their own types, and reversable with the exception of `str` (if `a` is a `Vector`, then `vec word a == a`):
+Operators are strictly typed however, and thus a variable of type `Number` cannot be added to a variable of type `String`, etc. Explicit conversion is necessary using the following keywords. All keywords are reflexive for their own types, and reversible with the exception of `str` (if `a` is a `Vector`, then `vec word a == a`):
 
 Keyword | Conversion | Values
 -|-|-
@@ -118,7 +118,7 @@ Objects are declared using two modifiers, either `static` or `struct`, and then 
 
 Objects declared as `static` cannot be instantiated, they exist as "holders" for methods and values. Objects declared with `struct` however are able to be instantiated with the `new`.
 
-`struct` objects _must_ have a method `init`, which is called during instantiation as the constructor method. Other methods may be overrided:
+`struct` objects _must_ have a method `init`, which is called during instantiation as the constructor method. Other methods may be overridden:
 
 Method | Arguments | Use
 -|-|-
@@ -129,7 +129,7 @@ Method | Arguments | Use
 
 While it is possible to override these methods to return values of any type, that practice may lead to some confusion (for instance, `getList` returning a `Number`).
 
-There is currently no draw to implement an override for the `==` operator, as the scripter may wish to compare whether two objects point to the same object in one circumstance and to establish equivalency by value in a different circumstance. For that reason it is recommended to implement an `equals` method.
+There is currently no draw to implement an override for the `==` operator, as the user may wish to compare whether two objects point to the same object in one circumstance and to establish equivalency by value in a different circumstance. For that reason it is recommended to implement an `equals` method.
 
 An example object and its instantiation are as follows:
 

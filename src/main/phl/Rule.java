@@ -81,7 +81,7 @@ public class Rule {
 
 	public Word transform(final PhoneManager pm, final Word sequence) {
 		final List<Phone> phones = new ArrayList<>();
-		final List<Word.SyllableDelim> delims = new ArrayList<>();
+		final List<Word.SyllableDelim> delimits = new ArrayList<>();
 		boolean assimilateFlag = false;
 		int dOffset = 0;
 		for (int i = 0; i < sequence.size(); i++) {
@@ -90,7 +90,7 @@ public class Rule {
 			if (assimilateFlag) {
 				assimilateFlag = false;
 				if (delim != Word.SyllableDelim.NULL) {
-					delims.add(delim);
+					delimits.add(delim);
 					dOffset++;
 				}
 				continue;
@@ -228,11 +228,11 @@ public class Rule {
 				int c = 0;
 				if (type == Type.A_BACKWARD) {
 					phones.remove(phones.size() - 1);
-					delims.remove(delims.size() - 1);
+					delimits.remove(delimits.size() - 1);
 				}
-				if (tempTrans.isEmpty() && !delims.isEmpty() && sequence.getDelim(i + 1) != Word.SyllableDelim.NULL) {
-					delims.remove(delims.size() - 1);
-					delims.add(delim);
+				if (tempTrans.isEmpty() && !delimits.isEmpty() && sequence.getDelim(i + 1) != Word.SyllableDelim.NULL) {
+					delimits.remove(delimits.size() - 1);
+					delimits.add(delim);
 				}
 				for (final Object e : tempTrans) {
 					Phone addition = null;
@@ -242,22 +242,22 @@ public class Rule {
 						addition = (Phone) e;
 					}
 					phones.add(addition);
-					if (phones.size() > delims.size()) {
+					if (phones.size() > delimits.size()) {
 						if (c == 0) {
-							delims.add(delim);
+							delimits.add(delim);
 						} else if (c >= 1) {
-							delims.add(Word.SyllableDelim.NULL);
+							delimits.add(Word.SyllableDelim.NULL);
 						}
 						if (search == null) {
 							phones.add(phone);
-							if (delims.size() > 2) {
-								delims.remove(delims.size() - 1);
-								delims.remove(delims.size() - 1);
-								delims.add(Word.SyllableDelim.DELIM);
-								delims.add(Word.SyllableDelim.NULL);
-								delims.add(Word.SyllableDelim.DELIM);
+							if (delimits.size() > 2) {
+								delimits.remove(delimits.size() - 1);
+								delimits.remove(delimits.size() - 1);
+								delimits.add(Word.SyllableDelim.DELIM);
+								delimits.add(Word.SyllableDelim.NULL);
+								delimits.add(Word.SyllableDelim.DELIM);
 							} else {
-								delims.add(Word.SyllableDelim.DELIM);
+								delimits.add(Word.SyllableDelim.DELIM);
 							}
 						}
 					}
@@ -267,10 +267,10 @@ public class Rule {
 					assimilateFlag = true;
 			} else {
 				phones.add(phone);
-				delims.add(delim);
+				delimits.add(delim);
 			}
 		}
-		return new Word(phones, delims);
+		return new Word(phones, delimits);
 	}
 
 	private boolean applicable(final int index, final Word sequence, final Object o) {

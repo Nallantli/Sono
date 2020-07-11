@@ -58,8 +58,8 @@ public class Structure {
 		if (!instantiated)
 			return (stat ? "STATIC-" : "STRUCT-") + interpreter.deHash(key);
 		else {
-			if (this.mainScope.variableExists(interpreter.GETSTR)) {
-				return this.mainScope.getVariable(interpreter.GETSTR, interpreter, trace)
+			if (this.mainScope.variableExists(interpreter.GET_STR)) {
+				return this.mainScope.getVariable(interpreter.GET_STR, interpreter, trace)
 						.getFunction(Datum.Type.ANY, trace).execute(null, trace).toRawStringTrace(trace);
 			} else {
 				return "STRUCT-" + interpreter.deHash(key);

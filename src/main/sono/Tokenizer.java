@@ -295,12 +295,12 @@ public class Tokenizer {
 					case ')':
 						pCount--;
 						if (stack.isEmpty())
-							throw new SonoCompilationException("Unmatched paranthesis!");
+							throw new SonoCompilationException("Unmatched parenthesis!");
 						while (!stack.peekLast().equals("(")) {
 							output.addLast(stack.peekLast());
 							stack.pollLast();
 							if (stack.isEmpty())
-								throw new SonoCompilationException("Unmatched paranthesis!");
+								throw new SonoCompilationException("Unmatched parenthesis!");
 						}
 						break;
 					case ']':
@@ -334,7 +334,7 @@ public class Tokenizer {
 		}
 
 		if (pCount != 0)
-			throw new SonoCompilationException("Unmatched paranthesis!");
+			throw new SonoCompilationException("Unmatched parenthesis!");
 		if (bCount != 0)
 			throw new SonoCompilationException("Unmatched bracket!");
 		if (cCount != 0)

@@ -30,18 +30,18 @@ public class Interpreter {
 
 	public final int INIT;
 	public final int THIS;
-	public final int GETSTR;
-	public final int GETLEN;
-	public final int GETINDEX;
-	public final int GETLIST;
+	public final int GET_STR;
+	public final int GET_LEN;
+	public final int GET_INDEX;
+	public final int GET_LIST;
 	public final int ERROR;
 	public final int TRACE;
-	public final int SRULE;
-	public final int AFRULE;
-	public final int ABRULE;
-	public final int SQUAREBRACKET;
-	public final int CURLYBRACKET;
-	public final int PARANTHESIS;
+	public final int S_RULE;
+	public final int AF_RULE;
+	public final int AB_RULE;
+	public final int SQUARE_BRACKET;
+	public final int CURLY_BRACKET;
+	public final int PARENTHESES;
 	public final int ALL;
 	public final int BASE;
 
@@ -70,18 +70,18 @@ public class Interpreter {
 
 		INIT = hashVariable("init");
 		THIS = hashVariable("this");
-		GETSTR = hashVariable("getStr");
-		GETLEN = hashVariable("getLen");
-		GETINDEX = hashVariable("getIndex");
-		GETLIST = hashVariable("getVec");
+		GET_STR = hashVariable("getStr");
+		GET_LEN = hashVariable("getLen");
+		GET_INDEX = hashVariable("getIndex");
+		GET_LIST = hashVariable("getVec");
 		ERROR = hashVariable("_e");
 		TRACE = hashVariable("_trace");
-		SRULE = hashVariable("S");
-		AFRULE = hashVariable("Af");
-		ABRULE = hashVariable("Ab");
-		SQUAREBRACKET = hashVariable("[");
-		CURLYBRACKET = hashVariable("{");
-		PARANTHESIS = hashVariable("(");
+		S_RULE = hashVariable("S");
+		AF_RULE = hashVariable("Af");
+		AB_RULE = hashVariable("Ab");
+		SQUARE_BRACKET = hashVariable("[");
+		CURLY_BRACKET = hashVariable("{");
+		PARENTHESES = hashVariable("(");
 		ALL = hashVariable("_all");
 		BASE = hashVariable("_base");
 
@@ -232,7 +232,7 @@ public class Interpreter {
 				}
 				if (token.equals("type")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.TypeConv(this, a));
+					o.addLast(new Operator.TypeConvert(this, a));
 				}
 				if (token.equals("vec")) {
 					final Operator a = o.pollLast();
@@ -240,11 +240,11 @@ public class Interpreter {
 				}
 				if (token.equals("mat")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.MatConv(this, a));
+					o.addLast(new Operator.MatConvert(this, a));
 				}
 				if (token.equals("num")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.NumConv(this, a));
+					o.addLast(new Operator.NumConvert(this, a));
 				}
 				if (token.equals("str")) {
 					final Operator a = o.pollLast();
@@ -264,7 +264,7 @@ public class Interpreter {
 				}
 				if (token.equals("alloc")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.Alloc(this, a));
+					o.addLast(new Operator.Allocate(this, a));
 				}
 				if (token.equals("throw")) {
 					final Operator a = o.pollLast();
@@ -513,22 +513,22 @@ public class Interpreter {
 					o.addLast(new Operator.OuterCall(this, a, b));
 				}
 				if (token.equals("|>")) {
-					Rule.Type rtype = null;
+					Rule.Type rType = null;
 					final Operator b = o.pollLast();
 					final int a = ((Operator.Variable) o.pollLast()).getKey();
-					if (a == SRULE)
-						rtype = Rule.Type.SIMPLE;
-					if (a == AFRULE)
-						rtype = Rule.Type.A_FORWARD;
-					if (a == ABRULE)
-						rtype = Rule.Type.A_BACKWARD;
-					o.addLast(new Operator.RuleDec(this, rtype, b));
+					if (a == S_RULE)
+						rType = Rule.Type.SIMPLE;
+					if (a == AF_RULE)
+						rType = Rule.Type.A_FORWARD;
+					if (a == AB_RULE)
+						rType = Rule.Type.A_BACKWARD;
+					o.addLast(new Operator.RuleDec(this, rType, b));
 				}
 			} else if (token.equals("]")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
 				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == this.SQUAREBRACKET)) {
+						&& ((Operator.Variable) curr).getKey() == this.SQUARE_BRACKET)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
@@ -537,7 +537,7 @@ public class Interpreter {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
 				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == this.PARANTHESIS)) {
+						&& ((Operator.Variable) curr).getKey() == this.PARENTHESES)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
@@ -546,7 +546,7 @@ public class Interpreter {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
 				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == this.CURLYBRACKET)) {
+						&& ((Operator.Variable) curr).getKey() == this.CURLY_BRACKET)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}

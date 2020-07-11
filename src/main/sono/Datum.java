@@ -105,7 +105,7 @@ public class Datum {
 	private boolean ret = false;
 	private boolean refer = false;
 	private boolean mutable = true;
-	private boolean templative = false;
+	private boolean prototypic = false;
 
 	public Datum() {
 		this.type = Type.NULL;
@@ -122,7 +122,7 @@ public class Datum {
 	public Datum(final Type type) {
 		this.type = type;
 		this.mutable = false;
-		this.templative = true;
+		this.prototypic = true;
 	}
 
 	public Datum(final Datum valueVector[]) {
@@ -451,7 +451,7 @@ public class Datum {
 	}
 
 	public String toStringTrace(final List<String> trace) {
-		if (templative)
+		if (prototypic)
 			return "OBJ-" + type;
 		switch (type) {
 			case VECTOR:
@@ -484,7 +484,7 @@ public class Datum {
 	}
 
 	public String toRawStringTrace(final List<String> trace) {
-		if (templative)
+		if (prototypic)
 			return "OBJ-" + type;
 		switch (type) {
 			case VECTOR:
@@ -559,8 +559,8 @@ public class Datum {
 		return refer;
 	}
 
-	public boolean isTemplative() {
-		return templative;
+	public boolean isPrototypic() {
+		return prototypic;
 	}
 
 	public boolean isMutable() {
@@ -578,7 +578,7 @@ public class Datum {
 
 		if (type != d.getType())
 			return false;
-		if (templative && d.isTemplative())
+		if (prototypic && d.isPrototypic())
 			return true;
 
 		switch (type) {

@@ -21,13 +21,13 @@ public class CommandManager {
 		commands = new HashMap<>();
 	}
 
-	public void importLibrary(final String directory, final String filename, final String classname) {
+	public void importLibrary(final String directory, final String filename, final String classpath) {
 		File file = new File(directory, filename);
 		if (!file.exists())
 			file = new File(SonoWrapper.getGlobalOption("PATH"), "lib/" + filename);
 		try {
 			final ExtensionLoader<Library> loader = new ExtensionLoader<>();
-			final Library library = loader.loadClass(file, classname, Library.class);
+			final Library library = loader.loadClass(file, classpath, Library.class);
 			commands.putAll(library.getCommands());
 		} catch (final ClassNotFoundException e) {
 			throw new SonoCompilationException("Cannot find library <" + filename + ">");
