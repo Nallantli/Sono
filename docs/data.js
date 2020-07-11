@@ -5,9 +5,7 @@ const LIBRARIES = {
         import: [
             "LIB_Console"
         ],
-        load: [
-            "math"
-        ],
+        load: [],
         values: [],
         methods: [{
                 name: "print",
@@ -86,6 +84,61 @@ const LIBRARIES = {
                     ]
                 }],
                 desc: "Returns the natural log of a given <code>Number</code>.",
+                return: "Number",
+                see: []
+            }, {
+                name: "abs",
+                template: "Number",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Number"
+                    ]
+                }],
+                desc: "Returns the absolute value of a <code>Number</code>.",
+                return: "Number",
+                see: []
+            },
+            {
+                name: "floor",
+                template: "Number",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Number"
+                    ]
+                }],
+                desc: "Returns the value of a <code>Number</code> rounded down to the nearest integer.",
+                return: "Number",
+                see: []
+            },
+            {
+                name: "ceil",
+                template: "Number",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Number"
+                    ]
+                }],
+                desc: "Returns the value of a <code>Number</code> rounded up to the nearest integer.",
+                return: "Number",
+                see: []
+            },
+            {
+                name: "round",
+                template: "Number",
+                params: [{
+                    modifier: "ref",
+                    key: "this",
+                    type: [
+                        "Number"
+                    ]
+                }],
+                desc: "Returns the value of a <code>Number</code> rounded to the nearest integer.",
                 return: "Number",
                 see: []
             },
@@ -326,84 +379,27 @@ const LIBRARIES = {
         load: [],
         values: [],
         methods: [{
-                name: "abs",
-                template: "Number",
-                params: [{
+            name: "format",
+            template: "Number",
+            params: [{
                     modifier: "ref",
                     key: "this",
                     type: [
                         "Number"
                     ]
-                }],
-                desc: "Returns the absolute value of a <code>Number</code>.",
-                return: "Number",
-                see: []
-            },
-            {
-                name: "floor",
-                template: "Number",
-                params: [{
-                    modifier: "ref",
-                    key: "this",
+                },
+                {
+                    modifier: "final",
+                    key: "d",
                     type: [
                         "Number"
                     ]
-                }],
-                desc: "Returns the value of a <code>Number</code> rounded down to the nearest integer.",
-                return: "Number",
-                see: []
-            },
-            {
-                name: "ceil",
-                template: "Number",
-                params: [{
-                    modifier: "ref",
-                    key: "this",
-                    type: [
-                        "Number"
-                    ]
-                }],
-                desc: "Returns the value of a <code>Number</code> rounded up to the nearest integer.",
-                return: "Number",
-                see: []
-            },
-            {
-                name: "round",
-                template: "Number",
-                params: [{
-                    modifier: "ref",
-                    key: "this",
-                    type: [
-                        "Number"
-                    ]
-                }],
-                desc: "Returns the value of a <code>Number</code> rounded to the nearest integer.",
-                return: "Number",
-                see: ["math.floor", "math.ceil", "math.abs"]
-            },
-            {
-                name: "format",
-                template: "Number",
-                params: [{
-                        modifier: "ref",
-                        key: "this",
-                        type: [
-                            "Number"
-                        ]
-                    },
-                    {
-                        modifier: "final",
-                        key: "d",
-                        type: [
-                            "Number"
-                        ]
-                    }
-                ],
-                desc: "Returns a <code>String</code> value of the given <code>Number</code> formatted to show the given amount of significant figures.",
-                return: "String",
-                see: []
-            }
-        ],
+                }
+            ],
+            desc: "Returns a <code>String</code> value of the given <code>Number</code> formatted to show the given amount of significant figures.",
+            return: "String",
+            see: []
+        }],
         classes: [{
             name: "Math",
             modifier: "static",

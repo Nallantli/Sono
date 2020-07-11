@@ -1,51 +1,5 @@
 # Benjamin Park
-# 09-07-2020
-
-Number::abs(ref this) => {
-	this < 0 then {
-		return -this ;
-	} else {
-		return this;
-	}
-}
-
-Number::floor(ref this) => {
-	var d = ((this * 10) % 10) / 10;
-	this >= 0 then {
-		return this - d;
-	} else {
-		return this - d - 1;
-	}
-}
-
-Number::ceil(ref this) => {
-	var d = ((this * 10) % 10) / 10;
-	this > 0 then {
-		d > 0 then {
-			return this - d + 1;
-		} else {
-			return this;
-		}
-	} else {
-		d < 0 then {
-			return this - d;
-		} else {
-			return this;
-		}
-	}
-}
-
-Number::round(ref this) => {
-	var f = this.floor();
-	var c = this.ceil();
-	var df = (this - f).abs();
-	var dc = (this - c).abs();
-	df < dc then {
-		return f;
-	} else {
-		return c;
-	}
-}
+# 10-07-2020
 
 Number::format(ref this, final d) => {
 	var s = vec str this;

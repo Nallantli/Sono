@@ -1,8 +1,8 @@
 # Benjamin Park
-# 30-06-2020
+# 10-07-2020
 
+load "system";
 load "graphics";
-load "math";
 
 static Data class {
 	struct Tuple class {

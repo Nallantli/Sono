@@ -60,5 +60,20 @@ public class LIB_Console extends Library {
 					final double i = Math.log(datum.getNumber(trace));
 					return new Datum(i);
 				});
+		commands.put("LIB_Console.FLOOR",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final double i = Math.floor(datum.getNumber(trace));
+					return new Datum(i);
+				});
+		commands.put("LIB_Console.CEIL",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final double i = Math.ceil(datum.getNumber(trace));
+					return new Datum(i);
+				});
+		commands.put("LIB_Console.ROUND",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final double i = Math.round(datum.getNumber(trace));
+					return new Datum(i);
+				});
 	}
 }

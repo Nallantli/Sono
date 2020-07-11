@@ -1,8 +1,7 @@
 # Benjamin Park
-# 09-07-2020
+# 10-07-2020
 
 import "LIB_Console";
-load "math";
 
 print(final message) => {
 	"LIB_Console.PRINT" _OUTER_CALL_ (str message);
@@ -25,7 +24,27 @@ String::match(ref this, ref pattern) => {
 }
 
 Number::log(ref this) => {
-	return "LIB_Console.LOG" _OUTER_CALL_ n;
+	return "LIB_Console.LOG" _OUTER_CALL_ this;
+}
+
+Number::abs(ref this) => {
+	this < 0 then {
+		return -this ;
+	} else {
+		return this;
+	}
+}
+
+Number::floor(ref this) => {
+	return "LIB_Console.FLOOR" _OUTER_CALL_ this;
+}
+
+Number::ceil(ref this) => {
+	return "LIB_Console.CEIL" _OUTER_CALL_ this;
+}
+
+Number::round(ref this) => {
+	return "LIB_Console.ROUND" _OUTER_CALL_ this;
 }
 
 getNum(ref x) => {
