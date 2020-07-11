@@ -174,6 +174,10 @@ public class Interpreter {
 						console.importLibrary(fileDirectory, filename, "ext." + path);
 					}
 				}
+				if (token.equals("!")) {
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.NEqual(this, new Operator.Container(this, new Datum(1)), a));
+				}
 				if (token.equals(".negative")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Sub(this, new Operator.Container(this, new Datum(0)), a));

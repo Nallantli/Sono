@@ -26,7 +26,7 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>("return", 2),
 			new SimpleImmutableEntry<String, Integer>("refer", 2),
 			new SimpleImmutableEntry<String, Integer>("throw", 2), new SimpleImmutableEntry<String, Integer>("=>", 12),
-			new SimpleImmutableEntry<String, Integer>("len", -11),
+			new SimpleImmutableEntry<String, Integer>("!", -12), new SimpleImmutableEntry<String, Integer>("len", -11),
 			new SimpleImmutableEntry<String, Integer>("word", -11),
 			new SimpleImmutableEntry<String, Integer>("str", -11),
 			new SimpleImmutableEntry<String, Integer>("alloc", -11),
