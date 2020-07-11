@@ -1,5 +1,5 @@
 # Benjamin Park
-# 09-07-2020
+# 11-07-2020
 
 import "LIB_Graphics";
 
@@ -210,13 +210,17 @@ static Shape class {
 		}
 
 		setFill(ref fill) => {
-			this.fill = fill;
-			"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+			!fill.equals(this.fill) then {
+				this.fill = fill;
+				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+			}
 		}
 
 		setOutline(ref outline) => {
-			this.outline = outline;
-			"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline);
+			!outline.equals(this.outline) then {
+				this.outline = outline;
+				"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline.data);
+			}
 		}
 
 		setSize(final width, final height) => {
@@ -265,13 +269,17 @@ static Shape class {
 		}
 
 		setFill(ref fill) => {
-			this.fill = fill;
-			"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+			!fill.equals(this.fill) then {
+				this.fill = fill;
+				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+			}
 		}
 
 		setOutline(ref outline) => {
-			this.outline = outline;
-			"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline.data);
+			!outline.equals(this.outline) then {
+				this.outline = outline;
+				"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline.data);
+			}
 		}
 
 		setSize(final width, final height) => {
@@ -312,8 +320,10 @@ static Shape class {
 		}
 
 		setFill(ref fill) => {
-			this.fill = fill;
-			"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+			!fill.equals(this.fill) then {
+				this.fill = fill;
+				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+			}
 		}
 
 		setPoints(final x1, final y1, final x2, final y2) => {
@@ -353,8 +363,10 @@ static Shape class {
 		}
 
 		setFill(ref fill) => {
-			this.fill = fill;
-			"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+			!fill.equals(this.fill) then {
+				this.fill = fill;
+				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+			}
 		}
 
 		setFont(ref font) => {
@@ -421,6 +433,13 @@ static Color class {
 
 		getStr() => {
 			return "(" + str r + ", " + str g + ", " + str b + ", " + str a + ")";
+		}
+
+		equals(ref o) => {
+			type o != type this {
+				return false;
+			}
+			return r == o.r && g == o.g && b == o.b && a == o.a;
 		}
 	}
 
