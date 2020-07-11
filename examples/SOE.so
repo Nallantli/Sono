@@ -6,20 +6,26 @@ SOE(final MAX) => {
 		e = true;
 	}
 
+    var c = MAX - 2;
 	i in {2 until (MAX ** 0.5)} do {
 		a[i] then {
 			var n = i ** 2;
 			n < MAX do {
-				a[n] = false;
+			    a[n] then {
+			        c -= 1;
+					a[n] = false;
+			    }
 				n += i;
 			}
 		}
 	}
 
-	var b = {};
+	var b = alloc c;
+	var j = 0;
 	i in {2 until MAX} do {
 		a[i] then {
-			b += {i};
+			b[j] = i;
+			j += 1;
 		}
 	}
 
