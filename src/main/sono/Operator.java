@@ -1301,12 +1301,8 @@ public abstract class Operator {
 					final Datum[] vectorA = datumA.getVector(trace);
 					final Datum[] vectorB = datumB.getVector(trace);
 					final Datum[] newList = new Datum[vectorA.length + vectorB.length];
-					for (int i = 0; i < vectorA.length; i++) {
-						newList[i] = vectorA[i];
-					}
-					for (int i = 0; i < vectorB.length; i++) {
-						newList[i + vectorA.length] = vectorB[i];
-					}
+					System.arraycopy(vectorA, 0, newList, 0, vectorA.length);
+					System.arraycopy(vectorB, 0, newList, vectorA.length, vectorB.length);
 					return new Datum(newList);
 				case MATRIX:
 					if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
