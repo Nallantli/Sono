@@ -327,7 +327,7 @@ const LIBRARIES = {
                     return: "Number",
                     see: [
                         "system.Random.float",
-                        "math.floor"
+                        "system.floor"
                     ]
                 },
                 {
