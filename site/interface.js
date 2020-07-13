@@ -79,6 +79,8 @@ function writeOutput(string) {
             newString += "<br>";
         else if (string.charAt(i) == "\t")
             newString += "&nbsp;&nbsp;&nbsp;&nbsp;";
+        else if (string.charAt(i) == " ")
+            newString += "&nbsp;";
         else
             newString += string.charAt(i);
     }
