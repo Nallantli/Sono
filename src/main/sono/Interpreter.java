@@ -459,7 +459,10 @@ public class Interpreter {
 					o.addLast(new Operator.RangeUntil(this, a, b));
 				}
 				if (token.equals("do")) {
-					final Operator b = o.pollLast();
+					Operator b = o.pollLast();
+					if (b.type == Operator.Type.HARD_LIST) {
+						b = new Operator.SoftList(this, b.getChildren());
+					}
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Loop(this, a, b));
 				}
