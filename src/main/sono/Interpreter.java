@@ -502,7 +502,7 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					final Map<Datum, Operator> ops = new HashMap<>();
 					for (final Operator r : b.getChildren()) {
-						Operator.SwitchCase c = (Operator.SwitchCase) r;
+						final Operator.SwitchCase c = (Operator.SwitchCase) r;
 						ops.put(c.getKey(), c.getOperator());
 					}
 					o.addLast(new Operator.Switch(this, a, ops));
@@ -624,7 +624,7 @@ public class Interpreter {
 			}
 		}
 
-		Operator m = new Operator.SoftList(this, Arrays.asList(o.toArray(new Operator[0])));
+		final Operator m = new Operator.SoftList(this, Arrays.asList(o.toArray(new Operator[0])));
 		m.condense();
 		return m;
 	}

@@ -240,8 +240,10 @@ public abstract class Operator {
 							datumA.getWord(trace));
 					return new Datum(result);
 				default:
-					throw new SonoRuntimeException("Cannot transform value <" + datumA.toStringTrace(trace)
-							+ "> with value <" + datumB.toStringTrace(trace) + ">", trace);
+					throw new SonoRuntimeException(
+							"Cannot transform value <" + datumA.getDebugString(interpreter, trace) + "> with value <"
+									+ datumB.getDebugString(interpreter, trace) + ">",
+							trace);
 			}
 		}
 
@@ -804,8 +806,8 @@ public abstract class Operator {
 					case NULL:
 						break;
 					default:
-						throw new SonoRuntimeException(
-								"Value <" + d.toStringTrace(trace) + "> cannot be used in a Rule declaration.", trace);
+						throw new SonoRuntimeException("Value <" + d.getDebugString(interpreter, trace)
+								+ "> cannot be used in a Rule declaration.", trace);
 				}
 			}
 
@@ -842,8 +844,8 @@ public abstract class Operator {
 					case NULL:
 						break;
 					default:
-						throw new SonoRuntimeException(
-								"Value <" + d.toStringTrace(trace) + "> cannot be used in a Rule declaration.", trace);
+						throw new SonoRuntimeException("Value <" + d.getDebugString(interpreter, trace)
+								+ "> cannot be used in a Rule declaration.", trace);
 				}
 			}
 
@@ -880,8 +882,8 @@ public abstract class Operator {
 					case NULL:
 						break;
 					default:
-						throw new SonoRuntimeException(
-								"Value <" + d.toStringTrace(trace) + "> cannot be used in a Rule declaration.", trace);
+						throw new SonoRuntimeException("Value <" + d.getDebugString(interpreter, trace)
+								+ "> cannot be used in a Rule declaration.", trace);
 				}
 			}
 
@@ -977,9 +979,8 @@ public abstract class Operator {
 								delimits.add(Word.SyllableDelim.MORPHEME);
 								break;
 							default:
-								throw new SonoRuntimeException(
-										"Value <" + d.getString(trace) + "> is not applicable as a word delimiter",
-										trace);
+								throw new SonoRuntimeException("Value <" + d.getDebugString(interpreter, trace)
+										+ "> is not applicable as a word delimiter", trace);
 						}
 					}
 				}
@@ -987,8 +988,8 @@ public abstract class Operator {
 			} else if (datumA.getType() == Datum.Type.STRING) {
 				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(trace)));
 			}
-			throw new SonoRuntimeException("Value <" + datumA.toStringTrace(trace) + "> cannot be converted to a Word.",
-					trace);
+			throw new SonoRuntimeException(
+					"Value <" + datumA.getDebugString(interpreter, trace) + "> cannot be converted to a Word.", trace);
 		}
 
 		@Override
@@ -1048,7 +1049,8 @@ public abstract class Operator {
 							.getFunction(Datum.Type.ANY, trace).execute(null, trace);
 				default:
 					throw new SonoRuntimeException(
-							"Cannot convert value <" + datumA.toStringTrace(trace) + "> into a List", trace);
+							"Cannot convert value <" + datumA.getDebugString(interpreter, trace) + "> into a List",
+							trace);
 			}
 			return new Datum(list);
 		}
@@ -1125,8 +1127,8 @@ public abstract class Operator {
 			} else if (datumA.getType() == Datum.Type.PHONE) {
 				return new Datum(datumA.getPhone(trace).getMatrix());
 			}
-			throw new SonoRuntimeException("Cannot convert value <" + datumA.toStringTrace(trace) + "> to a Matrix.",
-					trace);
+			throw new SonoRuntimeException(
+					"Cannot convert value <" + datumA.getDebugString(interpreter, trace) + "> to a Matrix.", trace);
 		}
 
 		@Override
@@ -1191,7 +1193,7 @@ public abstract class Operator {
 				}
 			} else {
 				throw new SonoRuntimeException(
-						"Cannot convert value <" + datumA.toStringTrace(trace) + "> to a Number.", trace);
+						"Cannot convert value <" + datumA.getDebugString(interpreter, trace) + "> to a Number.", trace);
 			}
 		}
 
@@ -1240,8 +1242,8 @@ public abstract class Operator {
 				final int i = (int) datumA.getNumber(trace);
 				return new Datum(String.valueOf((char) i));
 			} catch (final Exception e) {
-				throw new SonoRuntimeException("Value <" + datumA.toStringTrace(trace) + "> is not of type `Number`",
-						trace);
+				throw new SonoRuntimeException(
+						"Value <" + datumA.getDebugString(interpreter, trace) + "> is not of type `Number`", trace);
 			}
 		}
 
@@ -1284,8 +1286,8 @@ public abstract class Operator {
 					return datumA.getStructure(trace).getScope().getVariable(interpreter.GET_LEN, interpreter, trace)
 							.getFunction(Datum.Type.ANY, trace).execute(null, trace);
 				default:
-					throw new SonoRuntimeException("Cannot get length of value <" + datumA.toStringTrace(trace) + ">",
-							trace);
+					throw new SonoRuntimeException(
+							"Cannot get length of value <" + datumA.getDebugString(interpreter, trace) + ">", trace);
 			}
 		}
 
@@ -1353,9 +1355,8 @@ public abstract class Operator {
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
 			if (datumA.getType() != datumB.getType())
-				throw new SonoRuntimeException("Cannot add values <" + datumA.toStringTrace(trace) + "> and <"
-						+ datumB.toStringTrace(trace) + ">, of types: " + datumA.getType() + ", " + datumB.getType(),
-						trace);
+				throw new SonoRuntimeException("Cannot add values <" + datumA.getDebugString(interpreter, trace)
+						+ "> and <" + datumB.getDebugString(interpreter, trace) + ">", trace);
 			switch (datumA.getType()) {
 				case NUMBER:
 					return new Datum(datumA.getNumber(trace) + datumB.getNumber(trace));
@@ -1531,16 +1532,16 @@ public abstract class Operator {
 				try {
 					return datumA.indexVector((int) datumB.getNumber(trace), trace);
 				} catch (final Exception e) {
-					throw new SonoRuntimeException(
-							"Cannot index List <" + datumA.toStringTrace(trace) + "> with value <"
-									+ datumB.toStringTrace(trace) + ">; Length: " + datumA.getVectorLength(trace),
-							trace);
+					throw new SonoRuntimeException("Cannot index List <" + datumA.getDebugString(interpreter, trace)
+							+ "> with value <" + datumB.getDebugString(interpreter, trace) + ">; Length: "
+							+ datumA.getVectorLength(trace), trace);
 				}
 			} else if (datumA.getType() == Datum.Type.STRUCTURE) {
 				return datumA.getStructure(trace).getScope().getVariable(interpreter.GET_INDEX, interpreter, trace)
 						.getFunction(Datum.Type.ANY, trace).execute(new Datum[] { datumB }, trace);
 			}
-			throw new SonoRuntimeException("Cannot index value <" + datumA.toStringTrace(trace) + ">", trace);
+			throw new SonoRuntimeException("Cannot index value <" + datumA.getDebugString(interpreter, trace) + ">",
+					trace);
 		}
 
 		@Override
@@ -1796,9 +1797,8 @@ public abstract class Operator {
 			} else if (a.type == Type.TYPE_DEC) {
 				final Datum t = ((TypeDec) a).getA().evaluate(scope, trace);
 				if (!t.isPrototypic())
-					throw new SonoRuntimeException(
-							"Value <" + t.toStringTrace(trace) + "> cannot be used to designate an objective function.",
-							trace);
+					throw new SonoRuntimeException("Value <" + t.getDebugString(interpreter, trace)
+							+ "> cannot be used to designate an objective function.", trace);
 				fType = t.getType();
 				paramsRaw = ((Sequence) ((TypeDec) a).getB()).getVector();
 				pNames = new int[paramsRaw.size()];
@@ -2043,7 +2043,7 @@ public abstract class Operator {
 			final Datum object = a.evaluate(scope, trace);
 			if (object.type != Datum.Type.STRUCTURE) {
 				if (!object.isPrototypic())
-					throw new SonoRuntimeException("Value <" + object.toStringTrace(trace)
+					throw new SonoRuntimeException("Value <" + object.getDebugString(interpreter, trace)
 							+ "> is not prototypic and therefore cannot extract objective methods.", trace);
 				final Datum fHolder = b.evaluate(scope, trace);
 				return new Datum(object.getType(), fHolder.getFunction(object.getType(), trace));
@@ -2158,7 +2158,7 @@ public abstract class Operator {
 
 		@Override
 		public List<Operator> getChildren() {
-			List<Operator> ops = new ArrayList<>();
+			final List<Operator> ops = new ArrayList<>();
 			ops.add(a);
 			ops.addAll(map.values());
 			return ops;
@@ -2167,9 +2167,9 @@ public abstract class Operator {
 		@Override
 		public void condense() {
 			super.condense();
-			Map<Datum, Operator> newMap = new HashMap<>();
+			final Map<Datum, Operator> newMap = new HashMap<>();
 			for (final Map.Entry<Datum, Operator> entry : map.entrySet()) {
-				Operator e = entry.getValue();
+				final Operator e = entry.getValue();
 				e.condense();
 				if (e.type == Type.SOFT_LIST && e.getChildren().size() == 1)
 					newMap.put(entry.getKey(), e.getChildren().get(0));

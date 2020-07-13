@@ -518,7 +518,7 @@ public class Datum {
 
 	@Override
 	public String toString() {
-		return this.getDebugString(null, new ArrayList<>());
+		return this.toStringTrace(new ArrayList<>());
 	}
 
 	public Pair getPair(final List<String> trace) {
