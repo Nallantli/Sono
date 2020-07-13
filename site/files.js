@@ -4,6 +4,7 @@ let files = [
     "epenthesis.so",
     "findnatural.so",
     "hello.so",
+    "hilo.so",
     "jpn.so",
     "maptest.so",
     "nah.so",
