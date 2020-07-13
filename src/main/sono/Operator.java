@@ -2146,9 +2146,8 @@ public abstract class Operator {
 			final Datum key = a.evaluate(scope, trace);
 			final Operator b = map.get(key);
 			if (b == null)
-				return new Datum(1);
-			map.get(key).evaluate(scope, trace);
-			return new Datum(0);
+				return new Datum();
+			return map.get(key).evaluate(scope, trace);
 		}
 
 		@Override

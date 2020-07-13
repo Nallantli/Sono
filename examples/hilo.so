@@ -1,0 +1,31 @@
+load "system";
+
+HiLo(final MAX) => {
+	println("██╗  ██╗██╗██╗      ██████╗ ");
+	println("██║  ██║██║██║     ██╔═══██╗");
+	println("███████║██║██║     ██║   ██║");
+	println("██╔══██║██║██║     ██║   ██║");
+	println("██║  ██║██║███████╗╚██████╔╝");
+	println("╚═╝  ╚═╝╚═╝╚══════╝ ╚═════╝ ");
+
+	var correct = Random.int(0, MAX);
+	var c = 0;
+
+	true do {
+		c += 1;
+		print("Enter a guess (0 - " + str MAX + "): ");
+		var input = Input.number();
+		input < correct then {
+			println("Higher!");
+		} else input > correct then {
+			println("Lower!");
+		} else {
+			break;
+		}
+	}
+
+	println("Correct! The answer was " + str correct);
+	println("You took " + str c + " guesses");
+}
+
+HiLo(100);
