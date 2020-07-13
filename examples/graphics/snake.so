@@ -55,18 +55,24 @@ setApple() => {
 	valueArray[x][y] = -1;
 }
 
-var directionSwitch = {
-	() => { posX = (posX + 1 + SIZE_X) % SIZE_X; },
-	() => { posX = (posX - 1 + SIZE_X) % SIZE_X; },
-	() => { posY = (posY + 1 + SIZE_Y) % SIZE_Y; },
-	() => { posY = (posY - 1 + SIZE_Y) % SIZE_Y; }
-};
-
 refresh() => {
 	!LOST then {
 		direction = newDir;
 
-		directionSwitch[direction]();
+		direction switch {
+			0 goto {
+				posX = (posX + 1 + SIZE_X) % SIZE_X;
+			}
+			1 goto {
+				posX = (posX - 1 + SIZE_X) % SIZE_X;
+			}
+			2 goto {
+				posY = (posY + 1 + SIZE_Y) % SIZE_Y;
+			}
+			3 goto {
+				posY = (posY - 1 + SIZE_Y) % SIZE_Y;
+			}
+		}
 
 		valueArray[posX][posY] == -1 then {
 			size += 1;

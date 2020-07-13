@@ -2,8 +2,9 @@ package main.sono;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import main.SonoWrapper;
 import main.phl.*;
@@ -13,13 +14,13 @@ public abstract class Operator {
 
 	public enum Type {
 		VARIABLE, DATUM, SET, TRANSFORM, SOFT_LIST, HARD_LIST, RULE_DEC, ARROW, SLASH, UNDERSCORE, MATRIX_DEC, SEQ_DEC,
-		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NOT_EQUAL, LESS, MORE, E_LESS, E_MORE, MATRIX_CONVERT, NUMBER_CONVERT,
-		CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN, JOIN_DEC, STR_DEC,
-		FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONVERT, TYPE_DEC, STRUCT_DEC, STATIC_DEC, CLASS_DEC, NEW_DEC, POW,
-		FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER,
+		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NOT_EQUAL, LESS, MORE, E_LESS, E_MORE, MATRIX_CONVERT,
+		NUMBER_CONVERT, CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN,
+		JOIN_DEC, STR_DEC, FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONVERT, TYPE_DEC, STRUCT_DEC, STATIC_DEC,
+		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH,
 
 		// INTERPRETER USE
-		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL
+		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL, SWITCH_CASE
 	}
 
 	protected Type type;
@@ -41,6 +42,14 @@ public abstract class Operator {
 		public List<Operator> getChildren() {
 			return Arrays.asList(a);
 		}
+
+		@Override
+		public void condense() {
+			a.condense();
+			if (a.type == Type.SOFT_LIST && a.getChildren().size() == 1) {
+				a = a.getChildren().get(0);
+			}
+		}
 	}
 
 	private abstract static class Binary extends Unary {
@@ -58,6 +67,15 @@ public abstract class Operator {
 		@Override
 		public List<Operator> getChildren() {
 			return Arrays.asList(a, b);
+		}
+
+		@Override
+		public void condense() {
+			super.condense();
+			b.condense();
+			if (b.type == Type.SOFT_LIST && b.getChildren().size() == 1) {
+				b = b.getChildren().get(0);
+			}
 		}
 	}
 
@@ -77,6 +95,19 @@ public abstract class Operator {
 		public List<Operator> getChildren() {
 			return getVector();
 		}
+
+		@Override
+		public void condense() {
+			final List<Operator> newO = new ArrayList<>();
+			for (final Operator o : operators) {
+				o.condense();
+				if (o.type == Type.SOFT_LIST && o.getChildren().size() == 1)
+					newO.add(o.getChildren().get(0));
+				else
+					newO.add(o);
+			}
+			this.operators = newO;
+		}
 	}
 
 	public abstract static class Casting extends Operator {
@@ -94,6 +125,11 @@ public abstract class Operator {
 		@Override
 		public List<Operator> getChildren() {
 			return new ArrayList<>();
+		}
+
+		@Override
+		public void condense() {
+			return;
 		}
 	}
 
@@ -146,6 +182,11 @@ public abstract class Operator {
 		@Override
 		public List<Operator> getChildren() {
 			return new ArrayList<>();
+		}
+
+		@Override
+		public void condense() {
+			return;
 		}
 	}
 
@@ -1631,6 +1672,11 @@ public abstract class Operator {
 		public List<Operator> getChildren() {
 			return new ArrayList<>();
 		}
+
+		@Override
+		public void condense() {
+			return;
+		}
 	}
 
 	public static class Break extends Operator {
@@ -1655,6 +1701,11 @@ public abstract class Operator {
 		@Override
 		public List<Operator> getChildren() {
 			return new ArrayList<>();
+		}
+
+		@Override
+		public void condense() {
+			return;
 		}
 	}
 
@@ -2077,12 +2128,110 @@ public abstract class Operator {
 		}
 	}
 
+	public static class Switch extends Unary {
+		final private Map<Datum, Operator> map;
+
+		public Switch(final Interpreter interpreter, final Operator a, final Map<Datum, Operator> map) {
+			super(interpreter, Type.SWITCH, a);
+			this.map = map;
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, List<String> trace) {
+			if (SonoWrapper.DEBUG) {
+				trace = new ArrayList<>(trace);
+				trace.add(this.toString());
+			}
+
+			final Datum key = a.evaluate(scope, trace);
+			final Operator b = map.get(key);
+			if (b == null)
+				return new Datum(1);
+			map.get(key).evaluate(scope, trace);
+			return new Datum(0);
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " switch " + map;
+		}
+
+		@Override
+		public List<Operator> getChildren() {
+			List<Operator> ops = new ArrayList<>();
+			ops.add(a);
+			ops.addAll(map.values());
+			return ops;
+		}
+
+		@Override
+		public void condense() {
+			super.condense();
+			Map<Datum, Operator> newMap = new HashMap<>();
+			for (final Map.Entry<Datum, Operator> entry : map.entrySet()) {
+				Operator e = entry.getValue();
+				e.condense();
+				if (e.type == Type.SOFT_LIST && e.getChildren().size() == 1)
+					newMap.put(entry.getKey(), e.getChildren().get(0));
+				else
+					newMap.put(entry.getKey(), e);
+			}
+			this.map.clear();
+			this.map.putAll(newMap);
+		}
+	}
+
+	public static class SwitchCase extends Operator {
+		final private Datum key;
+		final private Operator seq;
+
+		public SwitchCase(final Interpreter interpreter, final Datum key, final Operator seq) {
+			super(interpreter, Type.SWITCH_CASE);
+			this.key = key;
+			this.seq = seq;
+		}
+
+		public Datum getKey() {
+			return this.key;
+		}
+
+		public Operator getOperator() {
+			return this.seq;
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, List<String> trace) {
+			if (SonoWrapper.DEBUG) {
+				trace = new ArrayList<>(trace);
+				trace.add(this.toString());
+			}
+			throw new SonoRuntimeException("Cannot evaluate uncontrolled goto statement", trace);
+		}
+
+		@Override
+		public String toString() {
+			return key.toString() + " goto " + seq.toString();
+		}
+
+		@Override
+		public List<Operator> getChildren() {
+			return null;
+		}
+
+		@Override
+		public void condense() {
+			return;
+		}
+	}
+
 	public Operator(final Interpreter interpreter, final Type type) {
 		this.interpreter = interpreter;
 		this.type = type;
 	}
 
 	public abstract List<Operator> getChildren();
+
+	public abstract void condense();
 
 	public abstract Datum evaluate(Scope scope, List<String> trace);
 

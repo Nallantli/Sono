@@ -7,7 +7,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import main.base.CommandManager;
 import main.SonoWrapper;
@@ -490,6 +492,21 @@ public class Interpreter {
 					b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
 					o.addLast(new Operator.Execute(this, a, b));
 				}
+				if (token.equals("goto")) {
+					final Operator b = o.pollLast();
+					final Datum a = o.pollLast().evaluate(null, new ArrayList<>());
+					o.addLast(new Operator.SwitchCase(this, a, b));
+				}
+				if (token.equals("switch")) {
+					final Operator b = o.pollLast();
+					final Operator a = o.pollLast();
+					final Map<Datum, Operator> ops = new HashMap<>();
+					for (final Operator r : b.getChildren()) {
+						Operator.SwitchCase c = (Operator.SwitchCase) r;
+						ops.put(c.getKey(), c.getOperator());
+					}
+					o.addLast(new Operator.Switch(this, a, ops));
+				}
 				if (token.equals("then")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
@@ -607,18 +624,9 @@ public class Interpreter {
 			}
 		}
 
-		return condense(new Operator.SoftList(this, Arrays.asList(o.toArray(new Operator[0]))));
-	}
-
-	private static Operator condense(final Operator parent) {
-		if (parent.getChildren().size() == 1 && parent.type == Operator.Type.SOFT_LIST) {
-			return parent.getChildren().get(0);
-		} else {
-			for (Operator e : parent.getChildren()) {
-				e = condense(e);
-			}
-			return parent;
-		}
+		Operator m = new Operator.SoftList(this, Arrays.asList(o.toArray(new Operator[0])));
+		m.condense();
+		return m;
 	}
 
 	public static <T> String stringFromList(final T[] list, final String init, final String fin) {

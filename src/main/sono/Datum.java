@@ -192,7 +192,7 @@ public class Datum {
 	}
 
 	public String getTypeString(final Interpreter i) {
-		if (this.type == Type.STRUCTURE)
+		if (this.type == Type.STRUCTURE && i != null)
 			return i.deHash(this.valueStructure.getKey());
 		return this.type.toString();
 	}
@@ -518,7 +518,7 @@ public class Datum {
 
 	@Override
 	public String toString() {
-		return this.toStringTrace(new ArrayList<>());
+		return this.getDebugString(null, new ArrayList<>());
 	}
 
 	public Pair getPair(final List<String> trace) {
@@ -565,6 +565,11 @@ public class Datum {
 
 	public boolean isMutable() {
 		return mutable;
+	}
+
+	@Override
+	public int hashCode() {
+		return 1;
 	}
 
 	@Override
@@ -621,5 +626,9 @@ public class Datum {
 		System.arraycopy(a.valueVector, 0, newList, 0, a.valueVector.length);
 		System.arraycopy(b.valueVector, 0, newList, a.valueVector.length, b.valueVector.length);
 		return new Datum(newList);
+	}
+
+	public String getDebugString(Interpreter i, List<String> trace) {
+		return getTypeString(i) + ":" + toStringTrace(trace);
 	}
 }

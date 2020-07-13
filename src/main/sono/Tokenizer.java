@@ -59,12 +59,14 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>("/=", -4), new SimpleImmutableEntry<String, Integer>("%=", -4),
 			new SimpleImmutableEntry<String, Integer>(">>=", -4), new SimpleImmutableEntry<String, Integer>("->", 7),
 			new SimpleImmutableEntry<String, Integer>("//", 6), new SimpleImmutableEntry<String, Integer>("~", 7),
-			new SimpleImmutableEntry<String, Integer>("in", 3), new SimpleImmutableEntry<String, Integer>("switch", 3),
-			new SimpleImmutableEntry<String, Integer>("do", 3), new SimpleImmutableEntry<String, Integer>("|>", 5),
-			new SimpleImmutableEntry<String, Integer>("until", 4), new SimpleImmutableEntry<String, Integer>("then", 3),
-			new SimpleImmutableEntry<String, Integer>("else", -3), new SimpleImmutableEntry<String, Integer>("try", -4),
-			new SimpleImmutableEntry<String, Integer>("catch", 3), new SimpleImmutableEntry<String, Integer>(",", 2),
-			new SimpleImmutableEntry<String, Integer>(";", -1), new SimpleImmutableEntry<String, Integer>("|", 999));
+			new SimpleImmutableEntry<String, Integer>("in", 3), new SimpleImmutableEntry<String, Integer>("do", 3),
+			new SimpleImmutableEntry<String, Integer>("|>", 5), new SimpleImmutableEntry<String, Integer>("until", 4),
+			new SimpleImmutableEntry<String, Integer>("then", 3),
+			new SimpleImmutableEntry<String, Integer>("switch", 3),
+			new SimpleImmutableEntry<String, Integer>("goto", 3), new SimpleImmutableEntry<String, Integer>("else", -3),
+			new SimpleImmutableEntry<String, Integer>("try", -4), new SimpleImmutableEntry<String, Integer>("catch", 3),
+			new SimpleImmutableEntry<String, Integer>(",", 2), new SimpleImmutableEntry<String, Integer>(";", -1),
+			new SimpleImmutableEntry<String, Integer>("|", 999));
 
 	public static List<String> tokenize(final String str) {
 		char pChar = 0;
