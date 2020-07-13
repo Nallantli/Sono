@@ -289,6 +289,7 @@ public class SonoServer extends WebSocketServer {
 
 	public static String validate(String s) {
 		s = s.replace("&", "&amp;");
+		s = s.replace(" ", "&nbsp;");
 		s = s.replace(">", "&gt;");
 		s = s.replace("<", "&lt;");
 		s = s.replace("\"", "&quot;");
