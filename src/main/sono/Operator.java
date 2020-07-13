@@ -1545,7 +1545,7 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return a.toString() + Interpreter.stringFromList(((Sequence) b).getVector().toArray(), "[", "]");
+			return a.toString() + "[" + b.toString() + "]";
 		}
 	}
 

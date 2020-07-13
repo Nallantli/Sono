@@ -385,7 +385,7 @@ public class Interpreter {
 					o.addLast(new Operator.ClassDec(this, a, b));
 				}
 				if (token.equals(".index")) {
-					final Operator b = new Operator.SoftList(this, ((Operator.MatrixDec) o.pollLast()).operators);
+					final Operator b = ((Operator.MatrixDec) o.pollLast()).operators.get(0);
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Index(this, a, b));
 				}
