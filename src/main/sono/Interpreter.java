@@ -12,8 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import main.base.CommandManager;
+import main.phl.Pair;
+import main.phl.Phone;
+import main.phl.PhoneManager;
+import main.phl.Rule;
+import main.phl.Word;
 import main.SonoWrapper;
-import main.phl.*;
 import main.sono.err.SonoCompilationException;
 import main.sono.err.SonoException;
 import main.sono.io.Input;
@@ -515,7 +519,10 @@ public class Interpreter {
 				if (token.equals("else")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					((Operator.IfElse) a).setElse(b);
+					if (a.type == Operator.Type.IF_ELSE)
+						((Operator.IfElse) a).setElse(b);
+					else if (a.type == Operator.Type.SWITCH)
+						((Operator.Switch) a).setElse(b);
 					o.addLast(a);
 				}
 				if (token.equals("catch")) {

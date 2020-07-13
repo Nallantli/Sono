@@ -539,10 +539,11 @@ public abstract class Operator {
 	}
 
 	public static class TryCatch extends Unary {
-		private Operator b = null;
+		private Operator b;
 
 		public TryCatch(final Interpreter interpreter, final Operator a) {
 			super(interpreter, Type.TRY_CATCH, a);
+			this.b = null;
 		}
 
 		public void setCatch(final Operator b) {
@@ -588,7 +589,6 @@ public abstract class Operator {
 	}
 
 	public static class Slash extends Binary {
-
 		public Slash(final Interpreter interpreter, final Operator a, final Operator b) {
 			super(interpreter, Type.SLASH, a, b);
 		}
@@ -1648,7 +1648,7 @@ public abstract class Operator {
 	}
 
 	public static class VarDec extends Operator {
-		int varName;
+		private final int varName;
 
 		public VarDec(final Interpreter interpreter, final int varName) {
 			super(interpreter, Type.VAR_DEC);
@@ -1711,7 +1711,7 @@ public abstract class Operator {
 	}
 
 	public static class IfElse extends Binary {
-		Operator c;
+		private Operator c;
 
 		public IfElse(final Interpreter interpreter, final Operator a, final Operator b) {
 			super(interpreter, Type.IF_ELSE, a, b);
@@ -1740,6 +1740,16 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return a.toString() + " then " + b.toString() + (c != null ? " else " + c.toString() : "");
+		}
+
+		@Override
+		public void condense() {
+			super.condense();
+			if (c != null) {
+				c.condense();
+				if (c.type == Type.SOFT_LIST && c.getChildren().size() == 1)
+					c = c.getChildren().get(0);
+			}
 		}
 
 		@Override
@@ -2130,10 +2140,16 @@ public abstract class Operator {
 
 	public static class Switch extends Unary {
 		final private Map<Datum, Operator> map;
+		private Operator c;
 
 		public Switch(final Interpreter interpreter, final Operator a, final Map<Datum, Operator> map) {
 			super(interpreter, Type.SWITCH, a);
 			this.map = map;
+			this.c = null;
+		}
+
+		public void setElse(final Operator c) {
+			this.c = c;
 		}
 
 		@Override
@@ -2145,14 +2161,18 @@ public abstract class Operator {
 
 			final Datum key = a.evaluate(scope, trace);
 			final Operator b = map.get(key);
-			if (b == null)
-				return new Datum();
+			if (b == null) {
+				if (c == null)
+					return new Datum();
+				else
+					return c.evaluate(scope, trace);
+			}
 			return map.get(key).evaluate(scope, trace);
 		}
 
 		@Override
 		public String toString() {
-			return a.toString() + " switch " + map;
+			return a.toString() + " switch " + map + (c != null ? " else " + c.toString() : "");
 		}
 
 		@Override
@@ -2177,6 +2197,11 @@ public abstract class Operator {
 			}
 			this.map.clear();
 			this.map.putAll(newMap);
+			if (c != null) {
+				c.condense();
+				if (c.type == Type.SOFT_LIST && c.getChildren().size() == 1)
+					c = c.getChildren().get(0);
+			}
 		}
 	}
 
