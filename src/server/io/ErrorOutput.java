@@ -3,6 +3,7 @@ package server.io;
 import org.java_websocket.WebSocket;
 
 import main.sono.io.Output;
+import server.SonoServer;
 
 public class ErrorOutput extends Output {
 	private final WebSocket conn;
@@ -13,6 +14,6 @@ public class ErrorOutput extends Output {
 
 	@Override
 	public void print(final String s) {
-		conn.send("OUT\n<span class=\"red\">" + s + "</span>");
+		conn.send("OUT\n<span class=\"red\">" + SonoServer.validate(s) + "</span>");
 	}
 }

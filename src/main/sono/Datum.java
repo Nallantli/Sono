@@ -628,7 +628,7 @@ public class Datum {
 		return new Datum(newList);
 	}
 
-	public String getDebugString(Interpreter i, List<String> trace) {
+	public String getDebugString(final Interpreter i, final List<String> trace) {
 		return getTypeString(i) + ":" + toStringTrace(trace);
 	}
 }
