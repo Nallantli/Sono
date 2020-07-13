@@ -9,13 +9,13 @@ public class Phone implements Comparable<Phone> {
 	private final String segment;
 	private final Matrix features;
 
-	private final Map<Matrix, Phone> transformation_cache;
+	private final Map<Matrix, Phone> transformationCache;
 
 	public Phone(final PhoneManager pm, final String segment, final Matrix features, final boolean validate) {
 		this.pm = pm;
 		this.segment = segment;
 		this.features = features;
-		this.transformation_cache = new HashMap<>();
+		this.transformationCache = new HashMap<>();
 
 		pm.add(this, validate);
 	}
@@ -42,10 +42,10 @@ public class Phone implements Comparable<Phone> {
 	}
 
 	private int[] getQualityArray(final PhoneManager pm) {
-		final int[] values = new int[pm.featureNames.size()];
+		final int[] values = new int[pm.getFeatureNames().size()];
 
 		int i = 0;
-		for (final int v : pm.featureNames)
+		for (final int v : pm.getFeatureNames())
 			values[i++] = getFeatureQuality(v);
 
 		return values;
@@ -62,45 +62,45 @@ public class Phone implements Comparable<Phone> {
 	}
 
 	public Phone transform(final Matrix matrix, final boolean search) {
-		if (transformation_cache.containsKey(matrix))
-			return transformation_cache.get(matrix);
+		if (transformationCache.containsKey(matrix))
+			return transformationCache.get(matrix);
 
-		final Matrix new_features = getMatrix();
+		final Matrix newFeatures = getMatrix();
 
 		for (final Pair e : matrix) {
-			new_features.put(pm, e.getFeature(), e.getQuality());
+			newFeatures.put(pm, e.getFeature(), e.getQuality());
 			final int im = pm.inMajorClass(e.getFeature());
 			if (im != -1 && e.getQuality() != Hasher.ZERO) {
-				new_features.put(pm, im, Hasher.TRUE);
-				for (final int f : pm.majorClasses.get(im)) {
-					if (new_features.getQuality(f) == Hasher.ZERO)
-						new_features.put(pm, f, Hasher.FALSE);
+				newFeatures.put(pm, im, Hasher.TRUE);
+				for (final int f : pm.getMajorClasses().get(im)) {
+					if (newFeatures.getQuality(f) == Hasher.ZERO)
+						newFeatures.put(pm, f, Hasher.FALSE);
 				}
-			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
-				for (final int f : pm.majorClasses.get(e.getFeature())) {
-					if (new_features.getQuality(f) == Hasher.ZERO)
-						new_features.put(pm, f, Hasher.FALSE);
+			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
+				for (final int f : pm.getMajorClasses().get(e.getFeature())) {
+					if (newFeatures.getQuality(f) == Hasher.ZERO)
+						newFeatures.put(pm, f, Hasher.FALSE);
 				}
-			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
-				for (final int f : pm.majorClasses.get(e.getFeature())) {
-					new_features.put(pm, f, Hasher.ZERO);
+			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
+				for (final int f : pm.getMajorClasses().get(e.getFeature())) {
+					newFeatures.put(pm, f, Hasher.ZERO);
 				}
 			}
 		}
 
-		if (!pm.contains(new_features)) {
+		if (!pm.contains(newFeatures)) {
 			if (search) {
-				final Phone fuzzy = pm.validate(pm.fuzzySearch(new_features));
+				final Phone fuzzy = pm.validate(pm.fuzzySearch(newFeatures));
 				if (fuzzy != null)
 					return fuzzy;
 				else
-					return pm.validate(new_features);
+					return pm.validate(newFeatures);
 			} else {
-				return pm.validate(new_features);
+				return pm.validate(newFeatures);
 			}
 		}
-		Phone ret = pm.validate(new_features);
-		transformation_cache.put(matrix, ret);
+		Phone ret = pm.validate(newFeatures);
+		transformationCache.put(matrix, ret);
 		return ret;
 	}
 

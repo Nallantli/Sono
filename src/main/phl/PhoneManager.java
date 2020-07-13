@@ -10,14 +10,25 @@ public class PhoneManager {
 	private final List<Phone> baseLibrary;
 	private final List<String> baseValues;
 
-	public List<Integer> featureNames = new ArrayList<>();
+	private List<Integer> featureNames = new ArrayList<>();
 
-	public Map<Integer, List<Integer>> majorClasses = new HashMap<>();
+	private Map<Integer, List<Integer>> majorClasses = new HashMap<>();
 
-	public PhoneManager() {
+	private final PhoneLoader loader;
+
+	public PhoneManager(final PhoneLoader loader) {
+		this.loader = loader;
 		phoneLibrary = new HashMap<>();
 		baseLibrary = new ArrayList<>();
 		baseValues = new ArrayList<>();
+	}
+
+	public List<Integer> getFeatureNames() {
+		return this.featureNames;
+	}
+
+	public Map<Integer, List<Integer>> getMajorClasses() {
+		return this.majorClasses;
 	}
 
 	public Word interpretSequence(final String s) {
@@ -42,7 +53,7 @@ public class PhoneManager {
 			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString()))) {
 				curr.append(s.charAt(i++));
 			}
-			while (i < s.length() && PhoneLoader.isSecondary(s.charAt(i))) {
+			while (i < s.length() && loader.isSecondary(s.charAt(i))) {
 				curr.append(s.charAt(i++));
 			}
 			if (curr.length() > 0) {
@@ -78,12 +89,12 @@ public class PhoneManager {
 		final List<PhoneLoader.Secondary> applied = new ArrayList<>();
 		for (int i = 0; i < s.length(); i++) {
 			boolean flag = false;
-			for (final Map.Entry<PhoneLoader.Secondary, SecondaryArticulation> e : PhoneLoader.secondaryLibrary
+			for (final Map.Entry<PhoneLoader.Secondary, SecondaryArticulation> e : loader.getSecondaryLibrary()
 					.entrySet()) {
 				if (s.charAt(i) == e.getValue().getSegment().charAt(0)) {
 					flag = true;
 					applied.add(e.getKey());
-					newMatrix = newMatrix.transform(this, PhoneLoader.secondaryLibrary.get(e.getKey()).getMatrix());
+					newMatrix = newMatrix.transform(this, loader.getSecondaryLibrary().get(e.getKey()).getMatrix());
 					break;
 				}
 			}
@@ -157,9 +168,7 @@ public class PhoneManager {
 
 	public void add(final Phone phone, final boolean validate) {
 		if (validate) {
-			if (!phoneLibrary.containsKey(phone.getMatrix())) {
-				phoneLibrary.put(phone.getMatrix(), phone.getSegment());
-			} else if (phoneLibrary.get(phone.getMatrix()).length() > phone.getSegment().length()) {
+			if (!phoneLibrary.containsKey(phone.getMatrix()) || phoneLibrary.get(phone.getMatrix()).length() > phone.getSegment().length()) {
 				phoneLibrary.put(phone.getMatrix(), phone.getSegment());
 			}
 		} else if (!phone.getSegment().equals("*")) {

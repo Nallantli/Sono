@@ -168,11 +168,8 @@ public class SonoServer extends WebSocketServer {
 	private static byte[] getBytes(final File file) {
 		final byte[] bytesArray = new byte[(int) file.length()];
 
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(file);
-			fis.read(bytesArray); // read file into bytes[]
-			fis.close();
+		try (FileInputStream fis = new FileInputStream(file);) {
+			fis.read(bytesArray);
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
@@ -206,7 +203,7 @@ public class SonoServer extends WebSocketServer {
 		stderr.put(conn, err);
 		stdin.put(conn, in);
 		WAIT.put(conn, false);
-		final SonoWrapper wrapper = new SonoWrapper(pl, path, null, out, err, in);
+		final SonoWrapper wrapper = new SonoWrapper(pl, null, out, err, in);
 		conns.put(conn, wrapper);
 		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
 		out.printHeader("OUT",
@@ -229,7 +226,7 @@ public class SonoServer extends WebSocketServer {
 
 	@Override
 	public void onMessage(final WebSocket conn, final String raw) {
-		final String sections[] = raw.split("\n", 2);
+		final String[] sections = raw.split("\n", 2);
 		final String header = sections[0];
 		final String message = sections[1];
 
@@ -238,8 +235,7 @@ public class SonoServer extends WebSocketServer {
 		} else if (header.equals("FILE")) {
 			final StringBuilder sb = new StringBuilder();
 			String line;
-			try {
-				final BufferedReader br = new BufferedReader(new FileReader(new File("examples", message)));
+			try (BufferedReader br = new BufferedReader(new FileReader(new File("examples", message)));) {
 				while ((line = br.readLine()) != null) {
 					sb.append(line + "\n");
 				}

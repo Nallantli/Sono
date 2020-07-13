@@ -153,15 +153,15 @@ abstract class Paintable {
 	public static class Text extends Paintable {
 		private int x;
 		private int y;
-		private String text;
+		private String textValue;
 		private Font font = null;
 		private final int align;
 
-		public Text(final Color fill, final int x, final int y, final String text, final int align) {
+		public Text(final Color fill, final int x, final int y, final String textValue, final int align) {
 			super(fill, null);
 			this.x = x;
 			this.y = y;
-			this.text = text;
+			this.textValue = textValue;
 			this.align = align;
 		}
 
@@ -169,8 +169,8 @@ abstract class Paintable {
 			this.font = font;
 		}
 
-		public void setText(final String text) {
-			this.text = text;
+		public void setText(final String textValue) {
+			this.textValue = textValue;
 		}
 
 		public void setOrigin(final int x, final int y) {
@@ -184,18 +184,18 @@ abstract class Paintable {
 			if (font != null)
 				g.setFont(font);
 			final FontMetrics metrics = g.getFontMetrics(g.getFont());
-			int temp_x = x;
+			int tempX = x;
 			switch (align) {
 				case 1:
-					temp_x = x - metrics.stringWidth(text) / 2;
+					tempX = x - metrics.stringWidth(textValue) / 2;
 					break;
 				case 2:
-					temp_x = x - metrics.stringWidth(text);
+					tempX = x - metrics.stringWidth(textValue);
 					break;
 				default:
 					break;
 			}
-			g.drawString(text, temp_x, y);
+			g.drawString(textValue, tempX, y);
 		}
 	}
 }
@@ -234,16 +234,16 @@ class GraphicsPanel extends JPanel {
 class WindowFunctions extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	private Function onMouseMoved = null;
-	private Function onMouseDragged = null;
-	private Function onMouseReleased = null;
-	private Function onMousePressed = null;
-	private Function onMouseExited = null;
-	private Function onMouseEntered = null;
-	private Function onMouseClicked = null;
-	private Function onKeyPressed = null;
-	private Function onKeyReleased = null;
-	private Function onKeyTyped = null;
+	private transient Function onMouseMoved = null;
+	private transient Function onMouseDragged = null;
+	private transient Function onMouseReleased = null;
+	private transient Function onMousePressed = null;
+	private transient Function onMouseExited = null;
+	private transient Function onMouseEntered = null;
+	private transient Function onMouseClicked = null;
+	private transient Function onKeyPressed = null;
+	private transient Function onKeyReleased = null;
+	private transient Function onKeyTyped = null;
 
 	public WindowFunctions(final String title) {
 		super(title);
@@ -451,6 +451,8 @@ public class LIB_Graphics extends Library {
 								break;
 							case "Plain":
 								style |= Font.PLAIN;
+								break;
+							default:
 								break;
 						}
 					}

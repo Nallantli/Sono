@@ -332,6 +332,11 @@ public class Rule {
 	}
 
 	@Override
+	public int hashCode() {
+		return 1;
+	}
+
+	@Override
 	public boolean equals(final Object o) {
 		if (o.getClass() != this.getClass())
 			return false;

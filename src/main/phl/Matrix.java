@@ -12,7 +12,7 @@ public class Matrix implements Iterable<Pair> {
 		holder = new ArrayList<>();
 	}
 
-	public Matrix(final PhoneManager pm, final Matrix m) {
+	public Matrix(final Matrix m) {
 		holder = new ArrayList<>();
 		for (final Pair p : m.holder) {
 			holder.add(new Pair(p.getFeature(), p.getQuality()));
@@ -38,9 +38,9 @@ public class Matrix implements Iterable<Pair> {
 	}
 
 	public void put(final PhoneManager pm, Pair p) {
-		if (pm.majorClasses.containsKey(p.getFeature())
+		if (pm.getMajorClasses().containsKey(p.getFeature())
 				&& (p.getQuality() == Hasher.FALSE || p.getQuality() == Hasher.ANY)) {
-			for (final int f : pm.majorClasses.get(p.getFeature()))
+			for (final int f : pm.getMajorClasses().get(p.getFeature()))
 				put(pm, f, Hasher.ZERO);
 		} else {
 			final int im = pm.inMajorClass(p.getFeature());
@@ -81,30 +81,30 @@ public class Matrix implements Iterable<Pair> {
 	}
 
 	public Matrix transform(final PhoneManager pm, final Matrix matrix) {
-		final Matrix new_features = new Matrix(pm, this);
+		final Matrix newFeatures = new Matrix(this);
 
 		for (final Pair e : matrix) {
-			new_features.put(pm, e.getFeature(), e.getQuality());
+			newFeatures.put(pm, e.getFeature(), e.getQuality());
 			final int im = pm.inMajorClass(e.getFeature());
 			if (im != -1 && e.getQuality() != Hasher.ZERO) {
-				new_features.put(pm, im, Hasher.TRUE);
-				for (final int f : pm.majorClasses.get(im)) {
-					if (new_features.getQuality(f) == Hasher.ZERO)
-						new_features.put(pm, f, Hasher.FALSE);
+				newFeatures.put(pm, im, Hasher.TRUE);
+				for (final int f : pm.getMajorClasses().get(im)) {
+					if (newFeatures.getQuality(f) == Hasher.ZERO)
+						newFeatures.put(pm, f, Hasher.FALSE);
 				}
-			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
-				for (final int f : pm.majorClasses.get(e.getFeature())) {
-					if (new_features.getQuality(f) == Hasher.ZERO)
-						new_features.put(pm, f, Hasher.FALSE);
+			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
+				for (final int f : pm.getMajorClasses().get(e.getFeature())) {
+					if (newFeatures.getQuality(f) == Hasher.ZERO)
+						newFeatures.put(pm, f, Hasher.FALSE);
 				}
-			} else if (pm.majorClasses.containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
-				for (final int f : pm.majorClasses.get(e.getFeature())) {
-					new_features.put(pm, f, Hasher.ZERO);
+			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
+				for (final int f : pm.getMajorClasses().get(e.getFeature())) {
+					newFeatures.put(pm, f, Hasher.ZERO);
 				}
 			}
 		}
 
-		return new_features;
+		return newFeatures;
 	}
 
 	public int size() {

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import main.base.CommandManager;
 import main.phl.PhoneLoader;
-import main.phl.PhoneManager;
 import main.sono.Datum;
 import main.sono.Interpreter;
 import main.sono.Scope;
@@ -41,12 +40,12 @@ public class SonoWrapper {
 		return new Datum();
 	}
 
-	public SonoWrapper(final PhoneLoader pl, final String path, final String filename, final Output stdout,
+	public SonoWrapper(final PhoneLoader pl, final String filename, final Output stdout,
 			final Output stderr, final Input stdin) {
 		this.stderr = stderr;
 		final CommandManager command = new CommandManager();
 		if (pl == null) {
-			sono = new Interpreter(new Scope(null), new PhoneManager(), command, stdout, stderr, stdin);
+			sono = new Interpreter(new Scope(null), null, command, stdout, stderr, stdin);
 		} else {
 			sono = new Interpreter(new Scope(null), pl.getManager(), command, stdout, stderr, stdin);
 		}

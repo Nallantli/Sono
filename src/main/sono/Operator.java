@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import main.SonoWrapper;
@@ -129,7 +130,7 @@ public abstract class Operator {
 
 		@Override
 		public void condense() {
-			return;
+			// Unnecessary
 		}
 	}
 
@@ -186,7 +187,7 @@ public abstract class Operator {
 
 		@Override
 		public void condense() {
-			return;
+			// Unnecessary
 		}
 	}
 
@@ -725,7 +726,7 @@ public abstract class Operator {
 				final int variable = ((Variable) ((Iterator) a).getA()).getKey();
 				for (int i = 0; i < valuesSize; i++) {
 					final Scope loopScope = new Scope(scope);
-					loopScope.setVariable(interpreter, variable, datumAB.indexVector(i, trace), trace);
+					loopScope.setVariable(interpreter, variable, datumAB.indexVector(i), trace);
 					final Datum result = b.evaluate(loopScope, trace);
 					if (result.getType() == Datum.Type.I_BREAK)
 						break;
@@ -929,7 +930,7 @@ public abstract class Operator {
 					.getVectorLength(trace);
 			final Datum[] newV = new Datum[oldVSize + 1];
 			for (int i = 0; i < oldVSize; i++)
-				newV[i] = allV.indexVector(i, trace);
+				newV[i] = allV.indexVector(i);
 			newV[oldVSize] = new Datum(ret);
 			interpreter.getScope().setVariable(interpreter, interpreter.ALL, new Datum(newV), trace);
 			return new Datum(ret);
@@ -962,7 +963,7 @@ public abstract class Operator {
 				boolean flag = true;
 				final int dataSize = datumA.getVectorLength(trace);
 				for (int i = 0; i < dataSize; i++) {
-					final Datum d = datumA.indexVector(i, trace);
+					final Datum d = datumA.indexVector(i);
 					if (d.getType() == Datum.Type.PHONE) {
 						phones.add(d.getPhone(trace));
 						if (flag)
@@ -1122,7 +1123,7 @@ public abstract class Operator {
 				final int listSize = datumA.getVectorLength(trace);
 				final Matrix m = new Matrix();
 				for (int i = 0; i < listSize; i++)
-					m.put(interpreter.getManager(), datumA.indexVector(i, trace).getPair(trace));
+					m.put(interpreter.getManager(), datumA.indexVector(i).getPair(trace));
 				return new Datum(m);
 			} else if (datumA.getType() == Datum.Type.PHONE) {
 				return new Datum(datumA.getPhone(trace).getMatrix());
@@ -1156,7 +1157,7 @@ public abstract class Operator {
 			final int dataSize = datumB.getVectorLength(trace);
 			final List<Phone> phones = new ArrayList<>();
 			for (int i = 0; i < dataSize; i++)
-				phones.add(datumB.indexVector(i, trace).getPhone(trace));
+				phones.add(datumB.indexVector(i).getPhone(trace));
 			final List<Phone> list = interpreter.getManager().getPhones(phones, matrix);
 			final Datum[] newData = new Datum[list.size()];
 			for (int i = 0; i < list.size(); i++) {
@@ -1530,7 +1531,7 @@ public abstract class Operator {
 			final Datum datumB = b.evaluate(scope, trace);
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				try {
-					return datumA.indexVector((int) datumB.getNumber(trace), trace);
+					return datumA.indexVector((int) datumB.getNumber(trace));
 				} catch (final Exception e) {
 					throw new SonoRuntimeException("Cannot index List <" + datumA.getDebugString(interpreter, trace)
 							+ "> with value <" + datumB.getDebugString(interpreter, trace) + ">; Length: "
@@ -1636,7 +1637,7 @@ public abstract class Operator {
 			final int dataSize = datumA.getVectorLength(trace);
 			final List<Phone> phones = new ArrayList<>();
 			for (int i = 0; i < dataSize; i++)
-				phones.add(datumA.indexVector(i, trace).getPhone(trace));
+				phones.add(datumA.indexVector(i).getPhone(trace));
 			return new Datum(interpreter.getManager().getCommon(phones));
 		}
 
@@ -1676,7 +1677,7 @@ public abstract class Operator {
 
 		@Override
 		public void condense() {
-			return;
+			// Unnecessary
 		}
 	}
 
@@ -1706,7 +1707,7 @@ public abstract class Operator {
 
 		@Override
 		public void condense() {
-			return;
+			// Unnecessary
 		}
 	}
 
@@ -1865,7 +1866,7 @@ public abstract class Operator {
 					final Datum[] tempValues = new Datum[pValuesSize + 1];
 					tempValues[0] = datumA;
 					for (int i = 0; i < pValuesSize; i++) {
-						tempValues[i + 1] = datumB.indexVector(i, trace);
+						tempValues[i + 1] = datumB.indexVector(i);
 					}
 					pValues = tempValues;
 					final Datum functionB = ((Inner) a).getB().evaluate(scope, trace);
@@ -1880,7 +1881,7 @@ public abstract class Operator {
 				pValues = datumB.getVector(trace);
 				final Datum fDatum = a.evaluate(scope, trace);
 				if (pValuesSize != 0) {
-					f = fDatum.getFunction(datumB.indexVector(0, trace).getType(), trace);
+					f = fDatum.getFunction(datumB.indexVector(0).getType(), trace);
 				}
 				if (f == null) {
 					f = fDatum.getFunction(Datum.Type.ANY, trace);
@@ -2139,7 +2140,7 @@ public abstract class Operator {
 	}
 
 	public static class Switch extends Unary {
-		final private Map<Datum, Operator> map;
+		private final Map<Datum, Operator> map;
 		private Operator c;
 
 		public Switch(final Interpreter interpreter, final Operator a, final Map<Datum, Operator> map) {
@@ -2206,8 +2207,8 @@ public abstract class Operator {
 	}
 
 	public static class SwitchCase extends Operator {
-		final private Datum key;
-		final private Operator seq;
+		private final Datum key;
+		private final Operator seq;
 
 		public SwitchCase(final Interpreter interpreter, final Datum key, final Operator seq) {
 			super(interpreter, Type.SWITCH_CASE);
@@ -2239,12 +2240,12 @@ public abstract class Operator {
 
 		@Override
 		public List<Operator> getChildren() {
-			return null;
+			return Collections.emptyList();
 		}
 
 		@Override
 		public void condense() {
-			return;
+			// Unnecessary
 		}
 	}
 

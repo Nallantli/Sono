@@ -88,7 +88,7 @@ public class Datum {
 		I_BREAK, ANY
 	}
 
-	private Datum valueVector[] = null;
+	private Datum[] valueVector = null;
 	private String valueString = null;
 	private Phone valuePhone = null;
 	private Pair valuePair = null;
@@ -125,7 +125,7 @@ public class Datum {
 		this.prototypic = true;
 	}
 
-	public Datum(final Datum valueVector[]) {
+	public Datum(final Datum[] valueVector) {
 		this.type = Type.VECTOR;
 		this.valueVector = valueVector;
 	}
@@ -533,7 +533,7 @@ public class Datum {
 		return valueVector;
 	}
 
-	public Datum indexVector(final int i, final List<String> trace) {
+	public Datum indexVector(final int i) {
 		return valueVector[i];
 	}
 

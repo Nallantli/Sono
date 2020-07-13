@@ -60,18 +60,7 @@ public class Interpreter {
 		this.pl = pl;
 		this.loadedFiles = new ArrayList<>();
 		this.console = console;
-		final List<Datum> data = new ArrayList<>();
-		for (final Phone p : pl.getAllPhones()) {
-			data.add(new Datum(p));
-		}
-		final List<Datum> dataBase = new ArrayList<>();
-		for (final Phone p : pl.getBasePhones()) {
-			dataBase.add(new Datum(p));
-		}
-		final Datum d = new Datum(data.toArray(new Datum[0]));
-		d.setMutable(false);
-		final Datum db = new Datum(dataBase.toArray(new Datum[0]));
-		db.setMutable(false);
+
 		variableHash = new ArrayList<>();
 
 		INIT = hashVariable("init");
@@ -91,8 +80,23 @@ public class Interpreter {
 		ALL = hashVariable("_all");
 		BASE = hashVariable("_base");
 
-		main.setVariable(this, ALL, d, new ArrayList<>());
-		main.setVariable(this, BASE, db, new ArrayList<>());
+		if (this.pl != null) {
+			final List<Datum> data = new ArrayList<>();
+			for (final Phone p : pl.getAllPhones()) {
+				data.add(new Datum(p));
+			}
+			final List<Datum> dataBase = new ArrayList<>();
+			for (final Phone p : pl.getBasePhones()) {
+				dataBase.add(new Datum(p));
+			}
+			final Datum d = new Datum(data.toArray(new Datum[0]));
+			d.setMutable(false);
+			final Datum db = new Datum(dataBase.toArray(new Datum[0]));
+			db.setMutable(false);
+
+			main.setVariable(this, ALL, d, new ArrayList<>());
+			main.setVariable(this, BASE, db, new ArrayList<>());
+		}
 	}
 
 	public Scope getScope() {
@@ -651,7 +655,7 @@ public class Interpreter {
 	}
 
 	public static <E> boolean containsInstance(final List<E> list, final Class<? extends E> clazz) {
-		return list.stream().anyMatch(e -> clazz.isInstance(e));
+		return list.stream().anyMatch(clazz::isInstance);
 	}
 
 	public PhoneManager getManager() {

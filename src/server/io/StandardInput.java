@@ -15,6 +15,7 @@ public class StandardInput extends Input {
 			wait();
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		}
 		return input;
 	}
@@ -25,6 +26,7 @@ public class StandardInput extends Input {
 			wait();
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		}
 		return Double.valueOf(input);
 	}
@@ -33,5 +35,4 @@ public class StandardInput extends Input {
 		this.input = input;
 		notify();
 	}
-
 }

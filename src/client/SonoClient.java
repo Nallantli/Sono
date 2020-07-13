@@ -108,7 +108,7 @@ public class SonoClient {
 			filename = args[0];
 		}
 		final Scanner sc = new Scanner(System.in);
-		final SonoWrapper center = new SonoWrapper(pl, path, filename, new StandardOutput(), new ErrorOutput(),
+		final SonoWrapper center = new SonoWrapper(pl, filename, new StandardOutput(), new ErrorOutput(),
 				new StandardInput(sc));
 
 		if (filename == null) {

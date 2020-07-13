@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class PhoneLoader {
 		VELARIZATION, PHARYNGEALIZATION, ASPIRATION, LENGTH
 	}
 
-	public static Map<Secondary, SecondaryArticulation> secondaryLibrary;
+	private final Map<Secondary, SecondaryArticulation> secondaryLibrary = new EnumMap<>(Secondary.class);
 
 	private final PhoneManager pm;
 	private final Map<Matrix, ArrayList<String>> loadedPhones;
@@ -36,19 +37,19 @@ public class PhoneLoader {
 				if (segment.equals("SEGMENT")) {
 					for (int i = 1; i < split.length; i++) {
 						if (Character.isUpperCase(split[i].charAt(0))) {
-							pm.majorClasses.put(Hasher.hash(split[i]), new ArrayList<>());
+							pm.getMajorClasses().put(Hasher.hash(split[i]), new ArrayList<>());
 							major = split[i];
 						}
-						pm.featureNames.add(Hasher.hash(split[i]));
+						pm.getFeatureNames().add(Hasher.hash(split[i]));
 						if (major != null && !major.equals(split[i])) {
-							pm.majorClasses.get(Hasher.hash(major)).add(Hasher.hash(split[i]));
+							pm.getMajorClasses().get(Hasher.hash(major)).add(Hasher.hash(split[i]));
 						}
 					}
 					continue;
 				}
 				final Matrix features = new Matrix();
 				int i = 1;
-				for (final int f : pm.featureNames) {
+				for (final int f : pm.getFeatureNames()) {
 					features.put(pm, f, Hasher.hash(split[i]));
 					i++;
 				}
@@ -60,8 +61,61 @@ public class PhoneLoader {
 		}
 	}
 
-	private static void initializeSecondary(final PhoneManager pm) {
-		secondaryLibrary = new HashMap<>();
+	private void initCache(final String baseFilename) throws IOException {
+		final String cacheFilename = baseFilename.replaceFirst(".*[\\\\\\/]", "");
+		System.out.println("Cache not initialized...");
+		try {
+			System.out.println("Reading file <" + baseFilename + ">...");
+			readFile(pm, null, baseFilename, "\t");
+
+			System.out.println("Generating variants...");
+
+			final Map<Matrix, ArrayList<String>> base = new HashMap<>();
+			base.putAll(loadedPhones);
+
+			for (final Map.Entry<Matrix, ArrayList<String>> e : base.entrySet()) {
+				System.out.println("\tGenerating Variants of <" + e.getValue().get(0) + ">");
+				recursiveApply(e.getValue().get(0), e.getKey(), new ArrayList<>(),
+						new ArrayList<>(List.of(Secondary.values())));
+			}
+
+			final List<Phone> phones = new ArrayList<>();
+
+			for (final Map.Entry<Matrix, ArrayList<String>> e : loadedPhones.entrySet()) {
+				String shortest = e.getValue().get(0);
+				for (final String s : e.getValue())
+					if (s.length() <= shortest.length())
+						shortest = s;
+				phones.add(new Phone(pm, shortest, e.getKey(), false));
+			}
+
+			final File directory = new File(SonoWrapper.getGlobalOption("PATH"), ".config/cache");
+			if (!directory.exists())
+				directory.mkdir();
+
+			System.out.println("Saving cache (" + loadedPhones.size() + ") to " + directory.getAbsolutePath() + "/"
+					+ cacheFilename + ".data...");
+
+			try (BufferedWriter bw = new BufferedWriter(
+					new FileWriter(new File(directory, cacheFilename + ".data")));) {
+				bw.write("SEGMENT");
+				for (final int i : pm.getFeatureNames()) {
+					bw.write("\t" + Hasher.deHash(i));
+				}
+				bw.write("\n");
+				for (final Phone p : phones) {
+					bw.write(p.getDataString("\t") + "\n");
+				}
+			}
+		} catch (final Exception e2) {
+			e2.printStackTrace();
+			throw new IOException("File <" + baseFilename + "> not in directory, cannot load base phones");
+		}
+	}
+
+	public PhoneLoader(final String baseFilename, final boolean force) throws IOException {
+		loadedPhones = new HashMap<>();
+		this.pm = new PhoneManager(this);
 		secondaryLibrary.put(Secondary.VOCALIC,
 				new SecondaryArticulation("̩", Hasher.hash("syl"), Hasher.TRUE, new Secondary[] {},
 						List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
@@ -155,63 +209,6 @@ public class PhoneLoader {
 										new Pair(Hasher.hash("syl"), Hasher.FALSE)))));
 		secondaryLibrary.put(Secondary.LENGTH, new SecondaryArticulation("ː", Hasher.hash("long"), Hasher.TRUE,
 				new Secondary[] {}, List.of(new Matrix(new Pair(Hasher.hash("long"), Hasher.FALSE)))));
-	}
-
-	private void initCache(final String baseFilename) throws IOException {
-		final String cacheFilename = baseFilename.replaceFirst(".*[\\\\\\/]", "");
-		System.out.println("Cache not initialized...");
-		try {
-			System.out.println("Reading file <" + baseFilename + ">...");
-			readFile(pm, null, baseFilename, "\t");
-
-			System.out.println("Generating variants...");
-
-			final Map<Matrix, ArrayList<String>> base = new HashMap<>();
-			base.putAll(loadedPhones);
-
-			for (final Map.Entry<Matrix, ArrayList<String>> e : base.entrySet()) {
-				System.out.println("\tGenerating Variants of <" + e.getValue().get(0) + ">");
-				recursiveApply(e.getValue().get(0), e.getKey(), new ArrayList<>(),
-						new ArrayList<>(List.of(Secondary.values())));
-			}
-
-			final List<Phone> phones = new ArrayList<>();
-
-			for (final Map.Entry<Matrix, ArrayList<String>> e : loadedPhones.entrySet()) {
-				String shortest = e.getValue().get(0);
-				for (final String s : e.getValue())
-					if (s.length() <= shortest.length())
-						shortest = s;
-				phones.add(new Phone(pm, shortest, e.getKey(), false));
-			}
-
-			final File directory = new File(SonoWrapper.getGlobalOption("PATH"), ".config/cache");
-			if (!directory.exists())
-				directory.mkdir();
-
-			System.out.println("Saving cache (" + loadedPhones.size() + ") to " + directory.getAbsolutePath() + "/"
-					+ cacheFilename + ".data...");
-
-			final BufferedWriter bw = new BufferedWriter(new FileWriter(new File(directory, cacheFilename + ".data")));
-			bw.write("SEGMENT");
-			for (final int i : pm.featureNames) {
-				bw.write("\t" + Hasher.deHash(i));
-			}
-			bw.write("\n");
-			for (final Phone p : phones) {
-				bw.write(p.getDataString("\t") + "\n");
-			}
-			bw.close();
-		} catch (final Exception e2) {
-			e2.printStackTrace();
-			throw new IOException("File <" + baseFilename + "> not in directory, cannot load base phones");
-		}
-	}
-
-	public PhoneLoader(final String baseFilename, final boolean force) throws IOException {
-		loadedPhones = new HashMap<>();
-		this.pm = new PhoneManager();
-		initializeSecondary(pm);
 		if (force)
 			initCache(baseFilename);
 		else {
@@ -261,7 +258,11 @@ public class PhoneLoader {
 		}
 	}
 
-	static boolean isSecondary(final char c) {
+	public Map<Secondary, SecondaryArticulation> getSecondaryLibrary() {
+		return this.secondaryLibrary;
+	}
+
+	public boolean isSecondary(final char c) {
 		for (final Map.Entry<Secondary, SecondaryArticulation> e : secondaryLibrary.entrySet()) {
 			if (e.getValue().getSegment().charAt(0) == c)
 				return true;
