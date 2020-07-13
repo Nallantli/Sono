@@ -295,6 +295,7 @@ summary:hover {
     padding: 15px;
     overflow-y: scroll;
     overflow-x: auto;
+    white-space: pre;
 }
 
 #input {

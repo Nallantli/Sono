@@ -35,9 +35,7 @@
         </div>
         <div id="editor"></div>
     </div>
-    <div id="output" onclick="focusMethod()">
-        <pre contenteditable="true" id="input" onkeydown="sendInput(this)"><br></pre>
-    </div>
+    <div id="output" onclick="focusMethod()"><pre contenteditable="true" id="input" onkeydown="sendInput(this)"><br></pre></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
         var editor = ace.edit("editor");

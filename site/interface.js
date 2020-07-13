@@ -77,8 +77,6 @@ function writeOutput(string) {
     for (let i = 0; i < string.length; i++) {
         if (string.charAt(i) == "\n")
             newString += "<br>";
-        else if (string.charAt(i) == "\t")
-            newString += "&nbsp;&nbsp;&nbsp;&nbsp;";
         else
             newString += string.charAt(i);
     }
