@@ -10,8 +10,8 @@ public class Function {
 	private final Operator body;
 	private final Interpreter interpreter;
 
-	public Function(final Scope parent, final int[] paramKeys, final boolean[] paramRefs,
-			final boolean[] paramFins, final Operator body, final Interpreter interpreter) {
+	public Function(final Scope parent, final int[] paramKeys, final boolean[] paramRefs, final boolean[] paramFins,
+			final Operator body, final Interpreter interpreter) {
 		this.paramKeys = paramKeys;
 		this.paramRefs = paramRefs;
 		this.paramFins = paramFins;

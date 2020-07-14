@@ -8,11 +8,11 @@
 
 ## Overview
 
-Online interface available at [sonolang.com](https://sonolang.com).
+Online interface available at [sonolang.com](https://www.sonolang.com).
 
 Sono is a high-level object-oriented and procedural scripting language developed with linguistic capabilities in mind. For that it supports multiple operators revolving around phonological analysis based upon distinctive features.
 
-While the included file [hayes.tsv](assets/hayes.tsv) is used for the example codes under [examples/](examples), any set of TSV separated distinctive feature list may be used, with or without all the features expressed in [hayes.tsv](assets/hayes.tsv).
+While the included file [hayes.tsv](assets/hayes.tsv) is used for the example codes under [examples](examples), any set of TSV separated distinctive feature list may be used, with or without all the features expressed in [hayes.tsv](assets/hayes.tsv).
 
 Place features in all-caps have sub-features that are considered to be `0` in quality when the corresponding place feature is `-`. For instance (using [hayes.tsv](assets/hayes.tsv)), the segment `/p/` is `-DOR` and the sub-features `[0high, 0low, 0front, 0back, 0tense]`. Any transformation that affects one of those sub-features will automatically activate the rest and set the place feature to `+`. If a transformation rule gives `[+front]`, `/p/` will be transformed to `[+DOR, -high, -low, +front, -back, -tense]`. Likewise, if a `+DOR` segment is transformed by `[-DOR]`, all sub-features will be nullified to quality `0`. In a custom TSV feature file, major features are determined the same way, with all lowercase features following them to be considered sub-features.
 
@@ -22,7 +22,7 @@ There are two pairs of files necessary to build, depending on your OS. For Windo
 
 ## Running
 
-It is possible to run the JAR file directly, however it is recommended for the sake of brevity to use the files [bin/sono.bat](bin/sono.bat) for Windows or [bin/sono](bin/sono) for Linux/OSX, as these contain the necessary arguments to run the interpreter in UTF-8, necessary for IPA.
+It is possible to run the JAR file directly, however it is recommended for the sake of brevity to use the files [bin/sono.bat](bin/sono.bat) for Windows or [bin/sono.sh](bin/sono.sh) for Linux/OSX, as these contain the necessary arguments to run the interpreter in UTF-8, necessary for IPA.
 
 ## Command Line Arguments
 
@@ -220,7 +220,7 @@ f(x) => {
 	return x * x;
 }
 
-#Anonymous
+# Anonymous
 f = (x) => {
 	return x * x;
 }
@@ -313,6 +313,34 @@ i == 1 then {
 ```
 
 A final `else` statement is not required.
+
+### Switch Statement
+
+As a great man once said, a `switch` statement is always necessary. Switch statements can be much more efficient than long else-then sequences due to hashing the input and comparing it against values directly rather than going sequentially through all the if-statements.
+
+The syntax is relatively similar to all other code blocks in the language, following the subsequent pattern:
+
+```sono
+KEY switch {
+	0 goto {
+		# ....
+	}
+	1 goto {
+		# ....
+	}
+	# ....
+}
+```
+
+To implement the `default` case, the keyword `else` is optionally used. A `default` case is not required, and omission of one just indicates that the switch statement will not be executed if the key value does not match any elements.
+
+```sono
+KEY switch {
+	# ....
+} else {
+	# ....
+}
+```
 
 ### Try-Catch
 

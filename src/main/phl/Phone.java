@@ -99,7 +99,7 @@ public class Phone implements Comparable<Phone> {
 				return pm.validate(newFeatures);
 			}
 		}
-		Phone ret = pm.validate(newFeatures);
+		final Phone ret = pm.validate(newFeatures);
 		transformationCache.put(matrix, ret);
 		return ret;
 	}
