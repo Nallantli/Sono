@@ -33,6 +33,14 @@ socket.onmessage = function(event) {
         createTab(message);
     } else if (header == "STATUS") {
         running = (message == "TRUE");
+        let elem = document.getElementById("runbutton");
+        if (running) {
+            elem.innerHTML = `<i class="fas fa-redo-alt"></i>`;
+            elem.classList.add("spinning");
+        } else {
+            elem.innerHTML = `<i class="far fa-play-circle"></i>`;
+            elem.classList.remove("spinning");
+        }
     }
 }
 
@@ -71,7 +79,9 @@ function sendInput(elem) {
 }
 
 function runCode() {
-    socket.send("CODE\n" + editor.getValue());
+    if (!running) {
+        socket.send("CODE\n" + editor.getValue());
+    }
 }
 
 function writeOutput(string) {
