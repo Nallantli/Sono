@@ -8,6 +8,31 @@ body {
     background: black;
 }
 
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+
+/* Track */
+
+ ::-webkit-scrollbar-track {
+    background: #232323;
+}
+
+
+/* Handle */
+
+ ::-webkit-scrollbar-thumb {
+    background: #444444;
+}
+
+
+/* Handle on hover */
+
+ ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 #banner {
     position: absolute;
     z-index: 999;
