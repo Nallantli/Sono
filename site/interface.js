@@ -55,14 +55,14 @@ function sendInput(elem) {
         s = s.split(/\&gt\;/g).join(">");
         s = s.split(/\&amp\;/g).join("&");
         socket.send("CODE\n" + s);
-        elem.innerHTML = "";
+        elem.innerHTML = '';
     } else if (event.key == 'ArrowUp') {
         if (past_commands.length > index) {
             index++;
             elem.innerHTML = past_commands[past_commands.length - index];
         }
     } else if (event.key == 'Escape') {
-        elem.innerHTML = "";
+        elem.innerHTML = '';
         index = 0;
     }
 }
@@ -84,7 +84,7 @@ function writeOutput(string) {
     document.querySelector("#output").scrollTop = document.querySelector("#output").scrollHeight;
 }
 
-focusMethod = function getFocus() {
+const focusMethod = function getFocus() {
     var elem = document.getElementById("input");
     var x = document.getElementById("output").scrollLeft,
         y = document.getElementById("output").scrollTop;
@@ -100,3 +100,5 @@ function toggleElement(id) {
         x.style.display = "none";
     }
 }
+
+$("#input").keypress(function(e) { return e.which != 13; });

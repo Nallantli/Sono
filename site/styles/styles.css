@@ -306,6 +306,7 @@ summary:hover {
     margin: 0;
     outline: none;
     margin-bottom: 15px;
+    white-space: nowrap;
 }
 
 input::-moz-focus-inner {

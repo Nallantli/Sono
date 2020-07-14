@@ -5,24 +5,25 @@
     <title> Sono Interface </title>
     <link rel="stylesheet" href="styles/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
     <div id="banner">
         <div id="loader"></div>
-        <img src="Sono.svg" id="logo">
+        <img src="Sono.svg" id="logo" alt="Sono Logo">
     </div>
     <div id="examples" style="display: none;">
         <h1>Examples</h1>
     </div>
     <div id="docs" style="display: none;">
-        <iframe src="https://nallantli.github.io/Sono/"></iframe>
+        <iframe title="Sono Docs" src="https://nallantli.github.io/Sono/"></iframe>
     </div>
     <div id="nav">
         <button class="navbuttons" onclick="runCode()"><i class="far fa-play-circle"></i></button>
         <button class="navbuttons" onclick="toggleElement('examples')"><i class="fas fa-th-list"></i></button>
         <button class="navbuttons" onclick="toggleElement('docs')"><i class="fas fa-book"></i></button>
-        <a class="navbuttons" id="github" target="_blank" href="https://github.com/Nallantli/Sono"><i class="fab fa-github"></i></a>
+        <a class="navbuttons" id="github" target="_blank" href="https://github.com/Nallantli/Sono" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
     </div>
     <div id="codecont">
         <div id="upperbar">
@@ -35,7 +36,7 @@
         </div>
         <div id="editor"></div>
     </div>
-    <div id="output" onclick="focusMethod()"><pre contenteditable="true" id="input" onkeydown="sendInput(this)"><br></pre></div>
+    <div id="output" onclick="focusMethod()"><pre contenteditable="true" id="input" onkeydown="sendInput(this)"></pre></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
         var editor = ace.edit("editor");
