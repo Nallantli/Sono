@@ -26,6 +26,7 @@ public class ThreadWrapper extends Thread {
 
 	@Override
 	public void run() {
+		stdout.printHeader("STATUS", "TRUE");
 		server.pause(conn);
 		final Datum output = wrapper.run("examples", code);
 
@@ -48,6 +49,7 @@ public class ThreadWrapper extends Thread {
 
 		stdout.printHeader("OUT", SonoServer.validate("> "));
 
+		stdout.printHeader("STATUS", "FALSE");
 		server.unPause(conn);
 	}
 }

@@ -3,6 +3,7 @@ let socket = new WebSocket("wss://sonolang.com/wss");
 let past_commands = [];
 let index = 0;
 let init = false;
+let running = false;
 
 function initialize() {
     init = true;
@@ -30,6 +31,8 @@ socket.onmessage = function(event) {
         writeOutput(message);
     } else if (header == "FILE") {
         createTab(message);
+    } else if (header == "STATUS") {
+        running = (message == "TRUE");
     }
 }
 
