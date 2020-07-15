@@ -204,9 +204,9 @@ public class Rule {
 				flag = true;
 				int initOffset = 0;
 				for (int j = 0; j < tempInit.size(); j++) {
-					if (tempInit.get(j).getClass() == Phone.class || tempInit.get(j).getClass() == Matrix.class) {
+					if (tempInit.get(j).getClass() == Phone.class || tempInit.get(j).getClass() == Matrix.class)
 						initOffset++;
-					}
+
 					if (!applicable(i - initOffset, sequence, tempInit.get(j))) {
 						flag = false;
 						break;
@@ -214,9 +214,9 @@ public class Rule {
 				}
 				int finOffset = (search == null ? -1 : 0);
 				for (int j = 0; j < tempFin.size(); j++) {
-					if (tempFin.get(j).getClass() == Phone.class || tempFin.get(j).getClass() == Matrix.class) {
+					if (tempFin.get(j).getClass() == Phone.class || tempFin.get(j).getClass() == Matrix.class)
 						finOffset++;
-					}
+
 					if (!applicable(i + finOffset, sequence, tempFin.get(j))) {
 						flag = false;
 						break;
@@ -236,18 +236,18 @@ public class Rule {
 				}
 				for (final Object e : tempTrans) {
 					Phone addition = null;
-					if (e.getClass() == Matrix.class) {
+					if (e.getClass() == Matrix.class)
 						addition = phone.transform((Matrix) e, true);
-					} else if (e.getClass() == Phone.class) {
+					else if (e.getClass() == Phone.class)
 						addition = (Phone) e;
-					}
+
 					phones.add(addition);
 					if (phones.size() > delimits.size()) {
-						if (c == 0) {
+						if (c == 0)
 							delimits.add(delim);
-						} else if (c >= 1) {
+						else if (c >= 1)
 							delimits.add(Word.SyllableDelim.NULL);
-						}
+
 						if (search == null) {
 							phones.add(phone);
 							if (delimits.size() > 2) {

@@ -10,6 +10,10 @@ public class Hasher {
 	public static final int FALSE = Hasher.hash("-");
 	public static final int ANY = Hasher.hash("~");
 
+	private Hasher() {
+		throw new IllegalStateException("Hasher Utility Class");
+	}
+
 	public static int hash(final String s) {
 		if (!hashCode.contains(s))
 			hashCode.add(s);

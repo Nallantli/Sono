@@ -14,9 +14,8 @@ public class Matrix implements Iterable<Pair> {
 
 	public Matrix(final Matrix m) {
 		holder = new ArrayList<>();
-		for (final Pair p : m.holder) {
+		for (final Pair p : m.holder)
 			holder.add(new Pair(p.getFeature(), p.getQuality()));
-		}
 	}
 
 	public Matrix(final Pair... entries) {
@@ -44,9 +43,8 @@ public class Matrix implements Iterable<Pair> {
 				put(pm, f, Hasher.ZERO);
 		} else {
 			final int im = pm.inMajorClass(p.getFeature());
-			if (im != -1 && getQuality(im) == Hasher.ANY) {
+			if (im != -1 && getQuality(im) == Hasher.ANY)
 				p = new Pair(p.getFeature(), Hasher.ZERO);
-			}
 		}
 
 		final int i = getIndexOf(p.getFeature());
@@ -88,19 +86,16 @@ public class Matrix implements Iterable<Pair> {
 			final int im = pm.inMajorClass(e.getFeature());
 			if (im != -1 && e.getQuality() != Hasher.ZERO) {
 				newFeatures.put(pm, im, Hasher.TRUE);
-				for (final int f : pm.getMajorClasses().get(im)) {
+				for (final int f : pm.getMajorClasses().get(im))
 					if (newFeatures.getQuality(f) == Hasher.ZERO)
 						newFeatures.put(pm, f, Hasher.FALSE);
-				}
 			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
-				for (final int f : pm.getMajorClasses().get(e.getFeature())) {
+				for (final int f : pm.getMajorClasses().get(e.getFeature()))
 					if (newFeatures.getQuality(f) == Hasher.ZERO)
 						newFeatures.put(pm, f, Hasher.FALSE);
-				}
 			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
-				for (final int f : pm.getMajorClasses().get(e.getFeature())) {
+				for (final int f : pm.getMajorClasses().get(e.getFeature()))
 					newFeatures.put(pm, f, Hasher.ZERO);
-				}
 			}
 		}
 
@@ -137,14 +132,13 @@ public class Matrix implements Iterable<Pair> {
 		if (o.getClass() != this.getClass())
 			return false;
 		final Matrix m = (Matrix) o;
-		for (final Pair p : holder) {
+		for (final Pair p : holder)
 			if (m.getQuality(p.getFeature()) != p.getQuality())
 				return false;
-		}
-		for (final Pair p : m.holder) {
+		for (final Pair p : m.holder)
 			if (getQuality(p.getFeature()) != p.getQuality())
 				return false;
-		}
+
 		return true;
 	}
 }

@@ -464,9 +464,8 @@ public class Interpreter {
 				}
 				if (token.equals("do")) {
 					Operator b = o.pollLast();
-					if (b.type == Operator.Type.HARD_LIST) {
+					if (b.type == Operator.Type.HARD_LIST)
 						b = new Operator.SoftList(this, b.getChildren());
-					}
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Loop(this, a, b));
 				}

@@ -47,9 +47,8 @@ public abstract class Operator {
 		@Override
 		public void condense() {
 			a.condense();
-			if (a.type == Type.SOFT_LIST && a.getChildren().size() == 1) {
+			if (a.type == Type.SOFT_LIST && a.getChildren().size() == 1)
 				a = a.getChildren().get(0);
-			}
 		}
 	}
 
@@ -74,9 +73,8 @@ public abstract class Operator {
 		public void condense() {
 			super.condense();
 			b.condense();
-			if (b.type == Type.SOFT_LIST && b.getChildren().size() == 1) {
+			if (b.type == Type.SOFT_LIST && b.getChildren().size() == 1)
 				b = b.getChildren().get(0);
-			}
 		}
 	}
 
@@ -506,9 +504,8 @@ public abstract class Operator {
 			}
 			final double datumA = a.evaluate(scope, trace).getNumber(trace);
 			final Datum[] data = new Datum[(int) datumA];
-			for (int i = 0; i < datumA; i++) {
+			for (int i = 0; i < datumA; i++)
 				data[i] = new Datum();
-			}
 			return new Datum(data);
 		}
 
@@ -581,11 +578,10 @@ public abstract class Operator {
 
 		@Override
 		public List<Operator> getChildren() {
-			if (b == null) {
+			if (b == null)
 				return Arrays.asList(a);
-			} else {
+			else
 				return Arrays.asList(a, b);
-			}
 		}
 	}
 
@@ -1160,9 +1156,8 @@ public abstract class Operator {
 				phones.add(datumB.indexVector(i).getPhone(trace));
 			final List<Phone> list = interpreter.getManager().getPhones(phones, matrix);
 			final Datum[] newData = new Datum[list.size()];
-			for (int i = 0; i < list.size(); i++) {
+			for (int i = 0; i < list.size(); i++)
 				newData[i] = new Datum(list.get(i));
-			}
 			return new Datum(newData);
 		}
 
@@ -1730,11 +1725,10 @@ public abstract class Operator {
 				trace.add(this.toString());
 			}
 			final Datum condition = a.evaluate(scope, trace);
-			if (condition.getNumber(trace) != 0) {
+			if (condition.getNumber(trace) != 0)
 				return b.evaluate(scope, trace);
-			} else if (c != null) {
+			else if (c != null)
 				return c.evaluate(scope, trace);
-			}
 			return new Datum();
 		}
 
@@ -1755,11 +1749,10 @@ public abstract class Operator {
 
 		@Override
 		public List<Operator> getChildren() {
-			if (c == null) {
+			if (c == null)
 				return Arrays.asList(a, b);
-			} else {
+			else
 				return Arrays.asList(a, b, c);
-			}
 		}
 	}
 
@@ -1865,9 +1858,8 @@ public abstract class Operator {
 				if (datumA.getType() != Datum.Type.STRUCTURE) {
 					final Datum[] tempValues = new Datum[pValuesSize + 1];
 					tempValues[0] = datumA;
-					for (int i = 0; i < pValuesSize; i++) {
+					for (int i = 0; i < pValuesSize; i++)
 						tempValues[i + 1] = datumB.indexVector(i);
-					}
 					pValues = tempValues;
 					final Datum functionB = ((Inner) a).getB().evaluate(scope, trace);
 					f = functionB.getFunction(datumA.getType(), trace);
@@ -1880,12 +1872,10 @@ public abstract class Operator {
 			} else {
 				pValues = datumB.getVector(trace);
 				final Datum fDatum = a.evaluate(scope, trace);
-				if (pValuesSize != 0) {
+				if (pValuesSize != 0)
 					f = fDatum.getFunction(datumB.indexVector(0).getType(), trace);
-				}
-				if (f == null) {
+				if (f == null)
 					f = fDatum.getFunction(Datum.Type.ANY, trace);
-				}
 			}
 			return f.execute(pValues, trace);
 		}
@@ -1998,9 +1988,8 @@ public abstract class Operator {
 			final Datum datumA = a.evaluate(scope, trace);
 			if (datumA.getNumber(trace) != 0) {
 				final Datum datumB = b.evaluate(scope, trace);
-				if (datumB.getNumber(trace) != 0) {
+				if (datumB.getNumber(trace) != 0)
 					return new Datum(1);
-				}
 			}
 			return new Datum(0);
 		}
@@ -2027,9 +2016,8 @@ public abstract class Operator {
 				return new Datum(1);
 			} else {
 				final Datum datumB = b.evaluate(scope, trace);
-				if (datumB.getNumber(trace) != 0) {
+				if (datumB.getNumber(trace) != 0)
 					return new Datum(1);
-				}
 			}
 			return new Datum(0);
 		}

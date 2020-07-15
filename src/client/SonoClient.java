@@ -47,7 +47,10 @@ public class SonoClient {
 		SonoWrapper.setGlobalOption("SOCKET", "TRUE");
 		SonoWrapper.setGlobalOption("GRAPHICS", "TRUE");
 
+		boolean force = false;
+
 		if (getOption("-d", args) != null) {
+			force = true;
 			final File directory = new File(path, ".config");
 			if (!directory.exists())
 				directory.mkdir();
@@ -90,7 +93,7 @@ public class SonoClient {
 			SonoWrapper.setGlobalOption("LING", "FALSE");
 		} else {
 			try {
-				pl = new PhoneLoader(SonoWrapper.getGlobalOption("DATA"), false);
+				pl = new PhoneLoader(SonoWrapper.getGlobalOption("DATA"), force);
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}

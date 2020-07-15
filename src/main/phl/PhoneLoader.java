@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ public class PhoneLoader {
 							pm.getMajorClasses().get(Hasher.hash(major)).add(Hasher.hash(split[i]));
 						}
 					}
+					System.out.println("FEATURES\t" + pm.getFeatureNames());
 					continue;
 				}
 				final Matrix features = new Matrix();
@@ -84,7 +86,7 @@ public class PhoneLoader {
 			for (final Map.Entry<Matrix, ArrayList<String>> e : loadedPhones.entrySet()) {
 				String shortest = e.getValue().get(0);
 				for (final String s : e.getValue())
-					if (s.length() <= shortest.length())
+					if (s.length() < shortest.length())
 						shortest = s;
 				phones.add(new Phone(pm, shortest, e.getKey(), false));
 			}
@@ -99,13 +101,11 @@ public class PhoneLoader {
 			try (BufferedWriter bw = new BufferedWriter(
 					new FileWriter(new File(directory, cacheFilename + ".data")));) {
 				bw.write("SEGMENT");
-				for (final int i : pm.getFeatureNames()) {
+				for (final int i : pm.getFeatureNames())
 					bw.write("\t" + Hasher.deHash(i));
-				}
 				bw.write("\n");
-				for (final Phone p : phones) {
+				for (final Phone p : phones)
 					bw.write(p.getDataString("\t") + "\n");
-				}
 			}
 		} catch (final Exception e2) {
 			e2.printStackTrace();
@@ -117,7 +117,7 @@ public class PhoneLoader {
 		loadedPhones = new HashMap<>();
 		this.pm = new PhoneManager(this);
 		secondaryLibrary.put(Secondary.VOCALIC,
-				new SecondaryArticulation("̩", Hasher.hash("syl"), Hasher.TRUE, new Secondary[] {},
+				new SecondaryArticulation("̩", Hasher.hash("syl"), Hasher.TRUE, Collections.emptyList(),
 						List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
 								new Pair(Hasher.hash("son"), Hasher.TRUE),
 								new Pair(Hasher.hash("syl"), Hasher.FALSE)))));
@@ -125,37 +125,34 @@ public class PhoneLoader {
 				new SecondaryArticulation("̠",
 						new Matrix(new Pair(Hasher.hash("front"), Hasher.FALSE),
 								new Pair(Hasher.hash("back"), Hasher.TRUE)),
-						new Secondary[] { Secondary.ADVANCED },
-						List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE)))));
+						List.of(Secondary.ADVANCED), List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE)))));
 		secondaryLibrary.put(Secondary.ADVANCED,
 				new SecondaryArticulation("̟",
 						new Matrix(new Pair(Hasher.hash("front"), Hasher.TRUE),
 								new Pair(Hasher.hash("back"), Hasher.FALSE)),
-						new Secondary[] { Secondary.RETRACTED },
-						List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE)))));
+						List.of(Secondary.RETRACTED), List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE)))));
 		secondaryLibrary.put(Secondary.DENTAL,
 				new SecondaryArticulation("̪",
 						new Matrix(new Pair(Hasher.hash("ant"), Hasher.TRUE),
 								new Pair(Hasher.hash("dist"), Hasher.TRUE)),
-						new Secondary[] { Secondary.PALATOALVEOLAR },
+						List.of(Secondary.PALATOALVEOLAR),
 						List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE)))));
 		secondaryLibrary.put(Secondary.PALATOALVEOLAR,
 				new SecondaryArticulation("̺",
 						new Matrix(new Pair(Hasher.hash("ant"), Hasher.FALSE),
 								new Pair(Hasher.hash("dist"), Hasher.TRUE)),
-						new Secondary[] { Secondary.DENTAL },
-						List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE)))));
+						List.of(Secondary.DENTAL), List.of(new Matrix(new Pair(Hasher.hash("COR"), Hasher.TRUE)))));
 		secondaryLibrary.put(Secondary.DEVOICING, new SecondaryArticulation("̥", Hasher.hash("voice"), Hasher.FALSE,
-				new Secondary[] {}, List.of(new Matrix(new Pair(Hasher.hash("voice"), Hasher.TRUE)))));
+				Collections.emptyList(), List.of(new Matrix(new Pair(Hasher.hash("voice"), Hasher.TRUE)))));
 		secondaryLibrary.put(Secondary.NASALIZATION,
-				new SecondaryArticulation("̃", Hasher.hash("nasal"), Hasher.TRUE, new Secondary[] {},
+				new SecondaryArticulation("̃", Hasher.hash("nasal"), Hasher.TRUE, Collections.emptyList(),
 						List.of(new Matrix(new Pair(Hasher.hash("son"), Hasher.TRUE),
 								new Pair(Hasher.hash("nasal"), Hasher.FALSE)))));
 		secondaryLibrary.put(Secondary.LABIALIZATION,
 				new SecondaryArticulation("ʷ",
 						new Matrix(
 								new Pair(Hasher.hash("LAB"), Hasher.TRUE), new Pair(Hasher.hash("round"), Hasher.TRUE)),
-						new Secondary[] {},
+						Collections.emptyList(),
 						List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
 								new Pair(Hasher.hash("syl"), Hasher.FALSE)),
 								new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
@@ -164,7 +161,7 @@ public class PhoneLoader {
 				new Matrix(new Pair(Hasher.hash("DOR"), Hasher.TRUE), new Pair(Hasher.hash("high"), Hasher.TRUE),
 						new Pair(Hasher.hash("low"), Hasher.FALSE), new Pair(Hasher.hash("front"), Hasher.TRUE),
 						new Pair(Hasher.hash("back"), Hasher.FALSE)),
-				new Secondary[] { Secondary.VELARIZATION, Secondary.PHARYNGEALIZATION },
+				List.of(Secondary.VELARIZATION, Secondary.PHARYNGEALIZATION),
 				List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
 						new Pair(Hasher.hash("syl"), Hasher.FALSE), new Pair(Hasher.hash("back"), Hasher.FALSE)),
 						new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
@@ -179,7 +176,7 @@ public class PhoneLoader {
 				new Matrix(new Pair(Hasher.hash("DOR"), Hasher.TRUE), new Pair(Hasher.hash("high"), Hasher.TRUE),
 						new Pair(Hasher.hash("low"), Hasher.FALSE), new Pair(Hasher.hash("front"), Hasher.FALSE),
 						new Pair(Hasher.hash("back"), Hasher.TRUE)),
-				new Secondary[] { Secondary.PALATALIZATION, Secondary.PHARYNGEALIZATION },
+				List.of(Secondary.PALATALIZATION, Secondary.PHARYNGEALIZATION),
 				List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
 						new Pair(Hasher.hash("syl"), Hasher.FALSE), new Pair(Hasher.hash("back"), Hasher.FALSE)),
 						new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
@@ -194,7 +191,7 @@ public class PhoneLoader {
 				new SecondaryArticulation("ˤ", new Matrix(new Pair(Hasher.hash("DOR"), Hasher.TRUE),
 						new Pair(Hasher.hash("high"), Hasher.FALSE), new Pair(Hasher.hash("low"), Hasher.TRUE),
 						new Pair(Hasher.hash("front"), Hasher.FALSE), new Pair(Hasher.hash("back"), Hasher.TRUE)),
-						new Secondary[] { Secondary.VELARIZATION, Secondary.PALATALIZATION },
+						List.of(Secondary.VELARIZATION, Secondary.PALATALIZATION),
 						List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
 								new Pair(Hasher.hash("syl"), Hasher.FALSE)),
 								new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
@@ -202,13 +199,13 @@ public class PhoneLoader {
 		secondaryLibrary.put(Secondary.ASPIRATION,
 				new SecondaryArticulation("ʰ",
 						new Matrix(new Pair(Hasher.hash("sg"), Hasher.TRUE), new Pair(Hasher.hash("cg"), Hasher.FALSE)),
-						new Secondary[] {},
+						Collections.emptyList(),
 						List.of(new Matrix(new Pair(Hasher.hash("cons"), Hasher.TRUE),
 								new Pair(Hasher.hash("syl"), Hasher.FALSE)),
 								new Matrix(new Pair(Hasher.hash("cons"), Hasher.FALSE),
 										new Pair(Hasher.hash("syl"), Hasher.FALSE)))));
 		secondaryLibrary.put(Secondary.LENGTH, new SecondaryArticulation("ː", Hasher.hash("long"), Hasher.TRUE,
-				new Secondary[] {}, List.of(new Matrix(new Pair(Hasher.hash("long"), Hasher.FALSE)))));
+				Collections.emptyList(), List.of(new Matrix(new Pair(Hasher.hash("long"), Hasher.FALSE)))));
 		if (force)
 			initCache(baseFilename);
 		else {
@@ -218,9 +215,8 @@ public class PhoneLoader {
 			try {
 				readFile(pm, directory.getAbsolutePath(), cacheFilename + ".data", "\t");
 				System.out.println("Setting Phones...");
-				for (final Map.Entry<Matrix, ArrayList<String>> e : loadedPhones.entrySet()) {
+				for (final Map.Entry<Matrix, ArrayList<String>> e : loadedPhones.entrySet())
 					new Phone(pm, e.getValue().get(0), e.getKey(), false);
-				}
 			} catch (final Exception e) {
 				System.out.println("Cache not found <" + directory.getAbsolutePath() + "\\" + cacheFilename
 						+ ".data> generating new cache");
@@ -263,10 +259,10 @@ public class PhoneLoader {
 	}
 
 	public boolean isSecondary(final char c) {
-		for (final Map.Entry<Secondary, SecondaryArticulation> e : secondaryLibrary.entrySet()) {
+		for (final Map.Entry<Secondary, SecondaryArticulation> e : secondaryLibrary.entrySet())
 			if (e.getValue().getSegment().charAt(0) == c)
 				return true;
-		}
+
 		return false;
 	}
 

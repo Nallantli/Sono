@@ -24,7 +24,7 @@ public class Pair {
 
 	@Override
 	public int hashCode() {
-		return quality * 100 + feature;
+		return 1;
 	}
 
 	@Override

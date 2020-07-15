@@ -113,10 +113,9 @@ public class Datum {
 
 	public Datum(final PhoneManager pm, final Datum datum, final Scope parent, final List<String> trace) {
 		this.set(pm, datum, trace);
-		if (this.type == Type.FUNCTION) {
+		if (this.type == Type.FUNCTION)
 			for (final Map.Entry<Type, Function> e : valueFunction.entrySet())
 				e.getValue().setParent(parent);
-		}
 	}
 
 	public Datum(final Type type) {

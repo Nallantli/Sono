@@ -100,9 +100,8 @@ public class SonoServer extends WebSocketServer {
 
 		final SonoServer server = new SonoServer();
 		final SSLContext context = getContext();
-		if (context != null) {
+		if (context != null)
 			server.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(getContext()));
-		}
 		server.setConnectionLostTimeout(30);
 		server.start();
 	}
@@ -236,9 +235,8 @@ public class SonoServer extends WebSocketServer {
 			final StringBuilder sb = new StringBuilder();
 			String line;
 			try (BufferedReader br = new BufferedReader(new FileReader(new File("examples", message)));) {
-				while ((line = br.readLine()) != null) {
+				while ((line = br.readLine()) != null)
 					sb.append(line + "\n");
-				}
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
@@ -268,9 +266,8 @@ public class SonoServer extends WebSocketServer {
 	@Override
 	public void onError(final WebSocket conn, final Exception ex) {
 		ex.printStackTrace();
-		if (conn != null) {
+		if (conn != null)
 			conns.remove(conn);
-		}
 		System.out.println(LocalDateTime.now(ZoneId.of("America/New_York")) + "\tERROR from "
 				+ conn.getRemoteSocketAddress().getAddress().getHostAddress());
 	}

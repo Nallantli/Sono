@@ -50,15 +50,12 @@ public class PhoneManager {
 					break;
 			}
 			final StringBuilder curr = new StringBuilder();
-			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString()))) {
+			while (i < s.length() && (s.charAt(i) == '_' || !baseValues.contains(curr.toString())))
 				curr.append(s.charAt(i++));
-			}
-			while (i < s.length() && loader.isSecondary(s.charAt(i))) {
+			while (i < s.length() && loader.isSecondary(s.charAt(i)))
 				curr.append(s.charAt(i++));
-			}
-			if (curr.length() > 0) {
+			if (curr.length() > 0)
 				phones.add(interpretSegment(curr.toString()));
-			}
 		}
 		return new Word(phones, delimits);
 	}
@@ -144,20 +141,18 @@ public class PhoneManager {
 	}
 
 	public int inMajorClass(final int feature) {
-		for (final Map.Entry<Integer, List<Integer>> e : majorClasses.entrySet()) {
+		for (final Map.Entry<Integer, List<Integer>> e : majorClasses.entrySet())
 			if (e.getValue().contains(feature))
 				return e.getKey();
-		}
 		return -1;
 	}
 
 	public List<Phone> getPhones(final List<Phone> library, final Matrix map) {
 		final List<Phone> phones = new ArrayList<>();
 
-		for (int i = 0; i < library.size(); i++) {
+		for (int i = 0; i < library.size(); i++)
 			if (library.get(i).hasFeatures(map))
 				phones.add(library.get(i));
-		}
 
 		return phones;
 	}
@@ -168,9 +163,9 @@ public class PhoneManager {
 
 	public void add(final Phone phone, final boolean validate) {
 		if (validate) {
-			if (!phoneLibrary.containsKey(phone.getMatrix()) || phoneLibrary.get(phone.getMatrix()).length() > phone.getSegment().length()) {
+			if (!phoneLibrary.containsKey(phone.getMatrix())
+					|| phoneLibrary.get(phone.getMatrix()).length() > phone.getSegment().length())
 				phoneLibrary.put(phone.getMatrix(), phone.getSegment());
-			}
 		} else if (!phone.getSegment().equals("*")) {
 			phoneLibrary.put(phone.getMatrix(), phone.getSegment());
 			if (!baseValues.contains(phone.getSegment())
@@ -200,20 +195,19 @@ public class PhoneManager {
 
 	public Matrix getContrast(final Phone a, final Phone b) {
 		final Matrix contrast = new Matrix();
-		for (int i = 0; i < featureNames.size(); i++) {
+		for (int i = 0; i < featureNames.size(); i++)
 			if (a.getFeatureQuality(featureNames.get(i)) != b.getFeatureQuality(featureNames.get(i))
-					&& b.getFeatureQuality(featureNames.get(i)) != Hasher.ZERO) {
+					&& b.getFeatureQuality(featureNames.get(i)) != Hasher.ZERO)
 				contrast.put(this, featureNames.get(i), b.getFeatureQuality(featureNames.get(i)));
-			}
-		}
+
 		return contrast;
 	}
 
 	public List<Phone> getAllPhones() {
 		final List<Phone> phones = new ArrayList<>();
-		for (final Map.Entry<Matrix, String> e : phoneLibrary.entrySet()) {
+		for (final Map.Entry<Matrix, String> e : phoneLibrary.entrySet())
 			phones.add(new Phone(this, e.getValue(), e.getKey(), false));
-		}
+
 		return phones;
 	}
 
@@ -231,10 +225,9 @@ public class PhoneManager {
 	public Phone validate(final Matrix m) {
 		if (m == null)
 			return null;
-		if (phoneLibrary.containsKey(m)) {
+		if (phoneLibrary.containsKey(m))
 			return new Phone(this, phoneLibrary.get(m), m, true);
-		} else {
+		else
 			return new Phone(this, "*", m, false);
-		}
 	}
 }

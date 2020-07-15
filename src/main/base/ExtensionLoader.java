@@ -17,7 +17,6 @@ public class ExtensionLoader<C> {
 			final Class<? extends C> newClass = clazz.asSubclass(parentClass);
 			final Constructor<? extends C> constructor = newClass.getConstructor();
 			return constructor.newInstance();
-
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

@@ -6,9 +6,9 @@ public class SecondaryArticulation {
 	private final String segment;
 	private final Matrix matrix;
 	private final List<Matrix> requirements;
-	private final PhoneLoader.Secondary[] restrictions;
+	private final List<PhoneLoader.Secondary> restrictions;
 
-	public SecondaryArticulation(final String segment, final Matrix matrix, final PhoneLoader.Secondary[] restrictions,
+	public SecondaryArticulation(final String segment, final Matrix matrix, final List<PhoneLoader.Secondary> restrictions,
 			final List<Matrix> requirements) {
 		this.matrix = matrix;
 		this.restrictions = restrictions;
@@ -17,7 +17,7 @@ public class SecondaryArticulation {
 	}
 
 	public SecondaryArticulation(final String segment, final int feature, final int value,
-			final PhoneLoader.Secondary[] restrictions, final List<Matrix> requirements) {
+			final List<PhoneLoader.Secondary> restrictions, final List<Matrix> requirements) {
 		this(segment, new Matrix(new Pair(feature, value)), restrictions, requirements);
 	}
 
@@ -26,8 +26,8 @@ public class SecondaryArticulation {
 	}
 
 	public boolean canApply(final Matrix matrix, final List<PhoneLoader.Secondary> applied) {
-		for (int i = 0; i < restrictions.length; i++)
-			if (applied.contains(restrictions[i]))
+		for (int i = 0; i < restrictions.size(); i++)
+			if (applied.contains(restrictions.get(i)))
 				return false;
 
 		if (requirements.isEmpty())
