@@ -86,7 +86,7 @@ public class PhoneLoader {
 			for (final Map.Entry<Matrix, ArrayList<String>> e : loadedPhones.entrySet()) {
 				String shortest = e.getValue().get(0);
 				for (final String s : e.getValue())
-					if (s.length() < shortest.length())
+					if (s.length() <= shortest.length())
 						shortest = s;
 				phones.add(new Phone(pm, shortest, e.getKey(), false));
 			}
