@@ -11,7 +11,7 @@ const LIBRARIES = {
                 name: "print",
                 template: undefined,
                 params: [{
-                    modifier: "final",
+                    modifier: "ref",
                     key: "message",
                     type: [
                         "Any"
@@ -25,7 +25,7 @@ const LIBRARIES = {
                 name: "println",
                 template: undefined,
                 params: [{
-                    modifier: "final",
+                    modifier: "ref",
                     key: "message",
                     type: [
                         "Any"
@@ -132,13 +132,21 @@ const LIBRARIES = {
                 name: "round",
                 template: "Number",
                 params: [{
-                    modifier: "ref",
-                    key: "this",
-                    type: [
-                        "Number"
-                    ]
-                }],
-                desc: "Returns the value of a <code>Number</code> rounded to the nearest integer.",
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Number"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "place",
+                        type: [
+                            "Number"
+                        ]
+                    }
+                ],
+                desc: "Returns the value of a <code>Number</code> rounded to the nearest value with a given (place) amount of trailing decimals. Defaults to 0.",
                 return: "Number",
                 see: []
             },

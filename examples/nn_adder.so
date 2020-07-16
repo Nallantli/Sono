@@ -1,0 +1,38 @@
+load "system";
+load "vector";
+load "neural";
+
+# Binary Adder - Neural Network
+# Adds two binary digits with a possible carry, formatted as {carry-alpha, a, b} => {c, carry-beta}
+# Network size might be overkill for an adder, but it's good for stress testing
+
+var n = new Network.Basic(3, 6, 2, 2);
+
+var data = {
+	{{0,0,0}, {0,0}},
+	{{0,0,1}, {1,0}},
+	{{0,1,0}, {1,0}},
+	{{0,1,1}, {0,1}},
+	{{1,0,0}, {1,0}},
+	{{1,0,1}, {0,1}},
+	{{1,1,0}, {0,1}},
+	{{1,1,1}, {1,1}}
+};
+
+var cycles = 0;
+var success = 0;
+success <= 95 do {
+	success = 0;
+	i in {0 until 100} do {
+		cycles += 1;
+		var c = Random.set(data);
+		var ret = n.train(0.5, c[0], c[1]).map(round);
+		success += ret == c[1];
+	}
+	println("Success Rate:\t" + str success + "%");
+}
+
+println("Cycles:\t" + str cycles);
+data.map((e) => {
+	println(str e[0] + " -> " + str n.propogate(e[0]).map((x) => {return x.round(2)}));
+});

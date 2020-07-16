@@ -1,0 +1,153 @@
+# Benjamin Park
+# 16-07-2020
+
+load "system";
+load "vector";
+
+static Network class {
+	struct Basic class {
+		var BIAS = 1;
+
+		var layers;
+
+		init(final iSize, final hSize, final hCount, final oSize) => {
+			layers = {};
+			layers.push(new Layer(null, iSize));
+			i in {0 until hCount} do {
+				layers.push(new Layer(layers.back(), hSize));
+			}
+			layers.push(new Layer(layers.back(), oSize));
+		}
+
+		dSigmoid(ref x) => {
+			return x * (1 - x);
+		}
+
+		train(final learningRate, ref values, ref correct) => {
+			var ret = propogate(values);
+			backpropogate(learningRate, correct);
+			return ret;
+		}
+
+		propogate(ref values) => {
+			layers[0].set(values);
+			l in layers do {
+				l.propogate();
+			}
+			return layers.back().get();
+		}
+
+		backpropogate(final learningRate, ref correct) => {
+			var outputLayer = layers.back();
+			i in {0 until len outputLayer.nodes} do {
+				var n = outputLayer.nodes[i];
+				n.delta = (correct[i] - n.value) * dSigmoid(n.value);
+			}
+
+			var i = len layers - 2;
+			i >= 1 do {
+				var layer1 = layers[i];
+				var layer2 = layers[i + 1];
+				j in {0 until len layer1.nodes} do {
+					var error = 0;
+					n in layer2.nodes do {
+						error += n.weights[j] * n.delta;
+					}
+					layer1.nodes[j].delta = error * dSigmoid(layer1.nodes[j].value);
+				}
+				i -= 1;
+			}
+
+			i in {1 until len layers} do {
+				n in layers[i].nodes do {
+					j in {0 until len n.inputs} do {
+						n.weights[j] += learningRate * n.delta * n.inputs[j].value;
+					}
+					n.weights.back() += learningRate * n.delta * BIAS;
+				}
+			}
+		}
+
+		getStr() => {
+			return str layers;
+		}
+
+		struct Layer class {
+			var nodes;
+
+			init(ref input, final size) => {
+				nodes = alloc size;
+				input != null then {
+					i in {0 until size} do {
+						nodes[i] = new Neuron(input.nodes);
+					}
+				} else {
+					i in {0 until size} do {
+						nodes[i] = new Neuron(null);
+					}
+				}
+			}
+
+			propogate() => {
+				n in nodes do {
+					n.propogate()
+				}
+			}
+
+			set(ref values) => {
+				i in {0 until len values} do {
+					nodes[i].value = values[i];
+				}
+			}
+
+			get() => {
+				var values = alloc len nodes;
+				i in {0 until len nodes} do {
+					values[i] = nodes[i].value;
+				}
+				return values;
+			}
+
+			getStr() => {
+				return str nodes;
+			}
+
+			struct Neuron class {
+				var inputs;
+				var weights;
+				var value;
+				var delta;
+
+				init(ref inputs) => {
+					this.inputs = inputs;
+					this.value = -1;
+					inputs != null then {
+						this.weights = alloc (len inputs + 1);
+						w in this.weights do {
+							w = Random.float() - 1;
+						}
+					}
+				}
+
+				sigmoid(ref x) => {
+					return 1 / (1 + 2.718281828459045 ** (-x / 1));
+				}
+
+				propogate() => {
+					inputs != null then {
+						var sum = 0;
+						i in {0 until len inputs} do {
+							sum += inputs[i].value * weights[i];
+						}
+						sum += weights.back() * BIAS;
+						value = sigmoid(sum);
+					}
+				}
+
+				getStr() => {
+					return str weights;
+				}
+			}
+		}
+	}
+}

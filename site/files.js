@@ -9,7 +9,8 @@ let files = [
     "maptest.so",
     "nah.so",
     "naturalsets.so",
-    "SOE.so"
+    "nn_adder.so",
+    "SOE.so",
 ];
 
 let fileCache = { "untitled.so": "" };
