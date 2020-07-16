@@ -26,7 +26,11 @@ static Network class {
 		train(final learningRate, ref values, ref correct) => {
 			var ret = propogate(values);
 			backpropogate(learningRate, correct);
-			return ret;
+			var error = 0;
+			i in {0 until len ret} do {
+				error += abs(ret[i] - correct[i]);
+			}
+			return error / len ret;
 		}
 
 		propogate(ref values) => {

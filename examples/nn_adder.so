@@ -20,20 +20,20 @@ var data = {
 };
 
 var cycles = 0;
-var success = 0;
-success <= 0.95 do {
-	success = 0;
+var error = 1;
+error >= 0.05 do {
+	error = 0;
 	var sets = {};
 	i in {0 until 10} do {
 		sets += data.randomize();
 	}
 	s in sets do {
 		cycles += 1;
-		var ret = n.train(0.5, s[0], s[1]).map(round);
-		success += ret == s[1];
+		var ret = n.train(0.5, s[0], s[1]);
+		error += ret;
 	}
-	success /= len sets;
-	println("Success Rate:\t" + str (success * 100).round() + "%");
+	error /= len sets;
+	println("Error:\t" + str (error * 100).round() + "%");
 }
 
 println("Cycles:\t" + str cycles);
