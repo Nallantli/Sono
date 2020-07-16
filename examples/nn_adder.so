@@ -27,11 +27,10 @@ success <= 0.95 do {
 	i in {0 until 10} do {
 		sets += data.randomize();
 	}
-	i in {0 until len sets} do {
+	s in sets do {
 		cycles += 1;
-		var c = sets[i];
-		var ret = n.train(0.5, c[0], c[1]).map(round);
-		success += ret == c[1];
+		var ret = n.train(0.5, s[0], s[1]).map(round);
+		success += ret == s[1];
 	}
 	success /= len sets;
 	println("Success Rate:\t" + str (success * 100).round() + "%");
