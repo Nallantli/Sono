@@ -21,15 +21,20 @@ var data = {
 
 var cycles = 0;
 var success = 0;
-success <= 95 do {
+success <= 0.95 do {
 	success = 0;
-	i in {0 until 100} do {
+	var sets = {};
+	i in {0 until 10} do {
+		sets += data.randomize();
+	}
+	i in {0 until len sets} do {
 		cycles += 1;
-		var c = Random.set(data);
+		var c = sets[i];
 		var ret = n.train(0.5, c[0], c[1]).map(round);
 		success += ret == c[1];
 	}
-	println("Success Rate:\t" + str success + "%");
+	success /= len sets;
+	println("Success Rate:\t" + str (success * 100).round() + "%");
 }
 
 println("Cycles:\t" + str cycles);
