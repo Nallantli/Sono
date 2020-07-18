@@ -18,7 +18,7 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NOT_EQUAL, LESS, MORE, E_LESS, E_MORE, MATRIX_CONVERT,
 		NUMBER_CONVERT, CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN,
 		JOIN_DEC, STR_DEC, FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONVERT, TYPE_DEC, STRUCT_DEC, STATIC_DEC,
-		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH,
+		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH, HASH,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL, SWITCH_CASE
@@ -239,10 +239,8 @@ public abstract class Operator {
 							datumA.getWord(trace));
 					return new Datum(result);
 				default:
-					throw new SonoRuntimeException(
-							"Cannot transform value <" + datumA.getDebugString(interpreter, trace) + "> with value <"
-									+ datumB.getDebugString(interpreter, trace) + ">",
-							trace);
+					throw new SonoRuntimeException("Cannot transform value <" + datumA.getDebugString(trace)
+							+ "> with value <" + datumB.getDebugString(trace) + ">", trace);
 			}
 		}
 
@@ -314,13 +312,14 @@ public abstract class Operator {
 				trace.add(this.toString());
 			}
 			Datum[] data = null;
+			final Scope newScope = new Scope(scope.getStructure(), scope);
 			if (Interpreter.containsInstance(operators, RangeUntil.class)) {
 				final List<Datum> list = new ArrayList<>();
 				for (final Operator o : operators) {
 					if (o.type == Type.RANGE_UNTIL)
-						list.addAll(((RangeUntil) o).getRange(scope, trace));
+						list.addAll(((RangeUntil) o).getRange(newScope, trace));
 					else {
-						final Datum d = o.evaluate(scope, trace);
+						final Datum d = o.evaluate(newScope, trace);
 						if (d.getType() == Datum.Type.I_BREAK || d.getRet() || d.getRefer())
 							return d;
 						list.add(d);
@@ -331,7 +330,7 @@ public abstract class Operator {
 				data = new Datum[operators.size()];
 				int i = 0;
 				for (final Operator o : operators) {
-					final Datum d = o.evaluate(scope, trace);
+					final Datum d = o.evaluate(newScope, trace);
 					if (d.getType() == Datum.Type.I_BREAK || d.getRet() || d.getRefer())
 						return d;
 					data[i++] = d;
@@ -558,7 +557,7 @@ public abstract class Operator {
 				return a.evaluate(scope, trace);
 			} catch (final SonoRuntimeException e) {
 				if (b != null) {
-					final Scope catchScope = new Scope(scope);
+					final Scope catchScope = new Scope(scope.getStructure(), scope);
 					catchScope.setVariable(interpreter, interpreter.ERROR, new Datum(e.getMessage()), trace);
 					final Datum[] list = new Datum[trace.size()];
 					for (int i = 0; i < trace.size(); i++)
@@ -721,7 +720,7 @@ public abstract class Operator {
 				final int valuesSize = datumAB.getVectorLength(trace);
 				final int variable = ((Variable) ((Iterator) a).getA()).getKey();
 				for (int i = 0; i < valuesSize; i++) {
-					final Scope loopScope = new Scope(scope);
+					final Scope loopScope = new Scope(scope.getStructure(), scope);
 					loopScope.setVariable(interpreter, variable, datumAB.indexVector(i), trace);
 					final Datum result = b.evaluate(loopScope, trace);
 					if (result.getType() == Datum.Type.I_BREAK)
@@ -731,7 +730,7 @@ public abstract class Operator {
 				}
 			} else {
 				while (a.evaluate(scope, trace).getNumber(trace) != 0) {
-					final Scope loopScope = new Scope(scope);
+					final Scope loopScope = new Scope(scope.getStructure(), scope);
 					final Datum result = b.evaluate(loopScope, trace);
 					if (result.getType() == Datum.Type.I_BREAK)
 						break;
@@ -803,8 +802,8 @@ public abstract class Operator {
 					case NULL:
 						break;
 					default:
-						throw new SonoRuntimeException("Value <" + d.getDebugString(interpreter, trace)
-								+ "> cannot be used in a Rule declaration.", trace);
+						throw new SonoRuntimeException(
+								"Value <" + d.getDebugString(trace) + "> cannot be used in a Rule declaration.", trace);
 				}
 			}
 
@@ -841,8 +840,8 @@ public abstract class Operator {
 					case NULL:
 						break;
 					default:
-						throw new SonoRuntimeException("Value <" + d.getDebugString(interpreter, trace)
-								+ "> cannot be used in a Rule declaration.", trace);
+						throw new SonoRuntimeException(
+								"Value <" + d.getDebugString(trace) + "> cannot be used in a Rule declaration.", trace);
 				}
 			}
 
@@ -879,8 +878,8 @@ public abstract class Operator {
 					case NULL:
 						break;
 					default:
-						throw new SonoRuntimeException("Value <" + d.getDebugString(interpreter, trace)
-								+ "> cannot be used in a Rule declaration.", trace);
+						throw new SonoRuntimeException(
+								"Value <" + d.getDebugString(trace) + "> cannot be used in a Rule declaration.", trace);
 				}
 			}
 
@@ -976,8 +975,9 @@ public abstract class Operator {
 								delimits.add(Word.SyllableDelim.MORPHEME);
 								break;
 							default:
-								throw new SonoRuntimeException("Value <" + d.getDebugString(interpreter, trace)
-										+ "> is not applicable as a word delimiter", trace);
+								throw new SonoRuntimeException(
+										"Value <" + d.getDebugString(trace) + "> is not applicable as a word delimiter",
+										trace);
 						}
 					}
 				}
@@ -986,7 +986,7 @@ public abstract class Operator {
 				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(trace)));
 			}
 			throw new SonoRuntimeException(
-					"Value <" + datumA.getDebugString(interpreter, trace) + "> cannot be converted to a Word.", trace);
+					"Value <" + datumA.getDebugString(trace) + "> cannot be converted to a Word.", trace);
 		}
 
 		@Override
@@ -1046,8 +1046,7 @@ public abstract class Operator {
 							.getFunction(Datum.Type.ANY, trace).execute(null, trace);
 				default:
 					throw new SonoRuntimeException(
-							"Cannot convert value <" + datumA.getDebugString(interpreter, trace) + "> into a List",
-							trace);
+							"Cannot convert value <" + datumA.getDebugString(trace) + "> into a List", trace);
 			}
 			return new Datum(list);
 		}
@@ -1091,7 +1090,28 @@ public abstract class Operator {
 				trace.add(this.toString());
 			}
 			final Datum datumA = a.evaluate(scope, trace);
-			return new Datum(datumA.getTypeString(interpreter));
+			return new Datum(datumA.getTypeString());
+		}
+
+		@Override
+		public String toString() {
+			return "type " + a.toString();
+		}
+	}
+
+	public static class Hash extends Unary {
+		public Hash(final Interpreter interpreter, final Operator a) {
+			super(interpreter, Type.HASH, a);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, List<String> trace) {
+			if (SonoWrapper.DEBUG) {
+				trace = new ArrayList<>(trace);
+				trace.add(this.toString());
+			}
+			final Datum datumA = a.evaluate(scope, trace);
+			return new Datum(datumA.hashCode());
 		}
 
 		@Override
@@ -1124,8 +1144,8 @@ public abstract class Operator {
 			} else if (datumA.getType() == Datum.Type.PHONE) {
 				return new Datum(datumA.getPhone(trace).getMatrix());
 			}
-			throw new SonoRuntimeException(
-					"Cannot convert value <" + datumA.getDebugString(interpreter, trace) + "> to a Matrix.", trace);
+			throw new SonoRuntimeException("Cannot convert value <" + datumA.getDebugString(trace) + "> to a Matrix.",
+					trace);
 		}
 
 		@Override
@@ -1189,7 +1209,7 @@ public abstract class Operator {
 				}
 			} else {
 				throw new SonoRuntimeException(
-						"Cannot convert value <" + datumA.getDebugString(interpreter, trace) + "> to a Number.", trace);
+						"Cannot convert value <" + datumA.getDebugString(trace) + "> to a Number.", trace);
 			}
 		}
 
@@ -1238,8 +1258,8 @@ public abstract class Operator {
 				final int i = (int) datumA.getNumber(trace);
 				return new Datum(String.valueOf((char) i));
 			} catch (final Exception e) {
-				throw new SonoRuntimeException(
-						"Value <" + datumA.getDebugString(interpreter, trace) + "> is not of type `Number`", trace);
+				throw new SonoRuntimeException("Value <" + datumA.getDebugString(trace) + "> is not of type `Number`",
+						trace);
 			}
 		}
 
@@ -1282,8 +1302,8 @@ public abstract class Operator {
 					return datumA.getStructure(trace).getScope().getVariable(interpreter.GET_LEN, interpreter, trace)
 							.getFunction(Datum.Type.ANY, trace).execute(null, trace);
 				default:
-					throw new SonoRuntimeException(
-							"Cannot get length of value <" + datumA.getDebugString(interpreter, trace) + ">", trace);
+					throw new SonoRuntimeException("Cannot get length of value <" + datumA.getDebugString(trace) + ">",
+							trace);
 			}
 		}
 
@@ -1351,8 +1371,8 @@ public abstract class Operator {
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
 			if (datumA.getType() != datumB.getType())
-				throw new SonoRuntimeException("Cannot add values <" + datumA.getDebugString(interpreter, trace)
-						+ "> and <" + datumB.getDebugString(interpreter, trace) + ">", trace);
+				throw new SonoRuntimeException("Cannot add values <" + datumA.getDebugString(trace) + "> and <"
+						+ datumB.getDebugString(trace) + ">", trace);
 			switch (datumA.getType()) {
 				case NUMBER:
 					return new Datum(datumA.getNumber(trace) + datumB.getNumber(trace));
@@ -1528,16 +1548,16 @@ public abstract class Operator {
 				try {
 					return datumA.indexVector((int) datumB.getNumber(trace));
 				} catch (final Exception e) {
-					throw new SonoRuntimeException("Cannot index List <" + datumA.getDebugString(interpreter, trace)
-							+ "> with value <" + datumB.getDebugString(interpreter, trace) + ">; Length: "
-							+ datumA.getVectorLength(trace), trace);
+					throw new SonoRuntimeException(
+							"Cannot index List <" + datumA.getDebugString(trace) + "> with value <"
+									+ datumB.getDebugString(trace) + ">; Length: " + datumA.getVectorLength(trace),
+							trace);
 				}
 			} else if (datumA.getType() == Datum.Type.STRUCTURE) {
 				return datumA.getStructure(trace).getScope().getVariable(interpreter.GET_INDEX, interpreter, trace)
 						.getFunction(Datum.Type.ANY, trace).execute(new Datum[] { datumB }, trace);
 			}
-			throw new SonoRuntimeException("Cannot index value <" + datumA.getDebugString(interpreter, trace) + ">",
-					trace);
+			throw new SonoRuntimeException("Cannot index value <" + datumA.getDebugString(trace) + ">", trace);
 		}
 
 		@Override
@@ -1801,7 +1821,7 @@ public abstract class Operator {
 			} else if (a.type == Type.TYPE_DEC) {
 				final Datum t = ((TypeDec) a).getA().evaluate(scope, trace);
 				if (!t.isPrototypic())
-					throw new SonoRuntimeException("Value <" + t.getDebugString(interpreter, trace)
+					throw new SonoRuntimeException("Value <" + t.getDebugString(trace)
 							+ "> cannot be used to designate an objective function.", trace);
 				fType = t.getType();
 				paramsRaw = ((Sequence) ((TypeDec) a).getB()).getVector();
@@ -2042,7 +2062,7 @@ public abstract class Operator {
 			final Datum object = a.evaluate(scope, trace);
 			if (object.type != Datum.Type.STRUCTURE) {
 				if (!object.isPrototypic())
-					throw new SonoRuntimeException("Value <" + object.getDebugString(interpreter, trace)
+					throw new SonoRuntimeException("Value <" + object.getDebugString(trace)
 							+ "> is not prototypic and therefore cannot extract objective methods.", trace);
 				final Datum fHolder = b.evaluate(scope, trace);
 				return new Datum(object.getType(), fHolder.getFunction(object.getType(), trace));
@@ -2093,7 +2113,7 @@ public abstract class Operator {
 			final int varName = ((Casting) a).getKey();
 			if (a.type == Type.STATIC_DEC)
 				stat = true;
-			final Structure structure = new Structure(stat, scope, b, varName, interpreter);
+			final Structure structure = new Structure(scope.getStructure(), stat, scope, b, varName, interpreter);
 			if (stat)
 				b.evaluate(structure.getScope(), trace);
 			return scope.setVariable(interpreter, varName, new Datum(structure), trace);

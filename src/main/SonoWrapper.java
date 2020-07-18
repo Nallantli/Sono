@@ -12,7 +12,7 @@ import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class SonoWrapper {
-	public static final String VERSION = "Beta 1.5.11";
+	public static final String VERSION = "Beta 1.5.12";
 	public static boolean DEBUG;
 
 	private Interpreter sono = null;
@@ -40,14 +40,14 @@ public class SonoWrapper {
 		return new Datum();
 	}
 
-	public SonoWrapper(final PhoneLoader pl, final String filename, final Output stdout,
-			final Output stderr, final Input stdin) {
+	public SonoWrapper(final PhoneLoader pl, final String filename, final Output stdout, final Output stderr,
+			final Input stdin) {
 		this.stderr = stderr;
 		final CommandManager command = new CommandManager();
 		if (pl == null) {
-			sono = new Interpreter(new Scope(null), null, command, stdout, stderr, stdin);
+			sono = new Interpreter(new Scope(null, null), null, command, stdout, stderr, stdin);
 		} else {
-			sono = new Interpreter(new Scope(null), pl.getManager(), command, stdout, stderr, stdin);
+			sono = new Interpreter(new Scope(null, null), pl.getManager(), command, stdout, stderr, stdin);
 		}
 
 		if (filename != null) {

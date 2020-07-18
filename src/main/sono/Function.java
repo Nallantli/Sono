@@ -21,7 +21,7 @@ public class Function {
 	}
 
 	public Datum execute(final Datum[] pValues, final List<String> trace) {
-		final Scope scope = new Scope(parent);
+		final Scope scope = new Scope(parent.getStructure(), parent);
 		for (int i = 0; i < paramKeys.length; i++) {
 			if (pValues != null && i < pValues.length) {
 				if (Boolean.TRUE.equals(paramRefs[i])) {
@@ -56,6 +56,21 @@ public class Function {
 
 	public void setParent(final Scope parent) {
 		this.parent = parent;
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (o == null)
+			return false;
+		if (o.getClass() != this.getClass())
+			return false;
+		final Function f = (Function) o;
+		return f.toString().equals(this.toString());
 	}
 
 	@Override

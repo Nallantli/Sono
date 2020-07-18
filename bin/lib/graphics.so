@@ -1,5 +1,5 @@
 # Benjamin Park
-# 11-07-2020
+# 18-07-2020
 
 import "LIB_Graphics";
 
@@ -210,14 +210,14 @@ static Shape class {
 		}
 
 		setFill(ref fill) => {
-			!fill.equals(this.fill) then {
+			fill != this.fill then {
 				this.fill = fill;
 				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
 			}
 		}
 
 		setOutline(ref outline) => {
-			!outline.equals(this.outline) then {
+			outline != this.outline then {
 				this.outline = outline;
 				"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline.data);
 			}
@@ -269,14 +269,14 @@ static Shape class {
 		}
 
 		setFill(ref fill) => {
-			!fill.equals(this.fill) then {
+			fill != this.fill then {
 				this.fill = fill;
 				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
 			}
 		}
 
 		setOutline(ref outline) => {
-			!outline.equals(this.outline) then {
+			outline != this.outline then {
 				this.outline = outline;
 				"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline.data);
 			}
@@ -320,7 +320,7 @@ static Shape class {
 		}
 
 		setFill(ref fill) => {
-			!fill.equals(this.fill) then {
+			fill != this.fill then {
 				this.fill = fill;
 				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
 			}
@@ -363,7 +363,7 @@ static Shape class {
 		}
 
 		setFill(ref fill) => {
-			!fill.equals(this.fill) then {
+			fill != this.fill then {
 				this.fill = fill;
 				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
 			}
@@ -436,7 +436,7 @@ static Color class {
 		}
 
 		equals(ref o) => {
-			type o != type this {
+			type o != type this then {
 				return false;
 			}
 			return r == o.r && g == o.g && b == o.b && a == o.a;

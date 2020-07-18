@@ -33,6 +33,7 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>("char", -11),
 			new SimpleImmutableEntry<String, Integer>("code", -11),
 			new SimpleImmutableEntry<String, Integer>("feat", -11),
+			new SimpleImmutableEntry<String, Integer>("hash", -11),
 			new SimpleImmutableEntry<String, Integer>("type", -11),
 			new SimpleImmutableEntry<String, Integer>("from", 10),
 			new SimpleImmutableEntry<String, Integer>("register", 10),

@@ -1,4 +1,4 @@
-# Sono Beta 1.5.11
+# Sono Beta 1.5.12
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -96,6 +96,7 @@ Keyword | Conversion | Values
 `code` | Converts to a `Number` value of a 1-element `String`'s character code | `String`
 `word` | Converts to a `Word` | `String`, `Vector`
 `feat` | Converts to a `Feature` | `String`
+`hash` | Converts to a unique `Number` value for identifying the object or value | `Any`
 
 ### Operators
 
@@ -126,10 +127,9 @@ Method | Arguments | Use
 `getIndex`|Any single value|Overrides the `Vector` indexing operator `[]`
 `getVec`|None|Returns a `Vector` representation of the object when the object is called with `vec`
 `getLen`|None|Returns the length of the object when called with `len`
+`equals`|Any single value|Overrides the `==` operator (and by extension, the `!=` operator)
 
 While it is possible to override these methods to return values of any type, that practice may lead to some confusion (for instance, `getList` returning a `Number`).
-
-There is currently no draw to implement an override for the `==` operator, as the user may wish to compare whether two objects point to the same object in one circumstance and to establish equivalency by value in a different circumstance. For that reason it is recommended to implement an `equals` method.
 
 An example object and its instantiation are as follows:
 

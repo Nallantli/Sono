@@ -299,6 +299,20 @@ const LIBRARIES = {
                 desc: "Returns a <code>Matrix</code> value of the given inputs common features.",
                 return: "Matrix",
                 see: []
+            },
+            {
+                name: "getHash",
+                template: undefined,
+                params: [{
+                    modifier: "ref",
+                    key: "x",
+                    type: [
+                        "Any"
+                    ]
+                }],
+                desc: "Returns a unique <code>Number</code> value hash of the given value.",
+                return: "Number",
+                see: []
             }
         ],
         classes: [{
@@ -641,7 +655,7 @@ const LIBRARIES = {
         load: [],
         values: [],
         methods: [{
-            name: "hash",
+            name: "hashString",
             template: "String",
             params: [{
                     modifier: "ref",
@@ -690,7 +704,7 @@ const LIBRARIES = {
         name: "Map Library",
         file: "map.so",
         import: [],
-        load: ["hash"],
+        load: ["system"],
         values: [],
         methods: [],
         classes: [{
@@ -746,7 +760,7 @@ const LIBRARIES = {
                     }],
                     desc: "Retrieves the value of element from the <code>Map</code> at a given index.",
                     return: "Any",
-                    see: ["map.Map.expand", "map.Map.Node", "hash.hash"]
+                    see: ["map.Map.expand", "map.Map.Node", "system.abs"]
                 },
                 {
                     name: "remove",
@@ -760,7 +774,7 @@ const LIBRARIES = {
                     }],
                     desc: "Removes the element of a given key value. Returns <code>true</code> if successful.",
                     return: "Number",
-                    see: ["hash.hash"]
+                    see: ["system.abs"]
                 },
                 {
                     name: "containsKey",
@@ -774,7 +788,7 @@ const LIBRARIES = {
                     }],
                     desc: "Returns whether the <code>Map</code> contains an element assigned to the given key value.",
                     return: "Number",
-                    see: ["hash.hash"]
+                    see: ["system.abs"]
                 },
                 {
                     name: "expand",

@@ -2,6 +2,7 @@ package main.sono;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -190,9 +191,9 @@ public class Datum {
 		return this.type;
 	}
 
-	public String getTypeString(final Interpreter i) {
-		if (this.type == Type.STRUCTURE && i != null)
-			return i.deHash(this.valueStructure.getKey());
+	public String getTypeString() {
+		if (this.type == Type.STRUCTURE)
+			return this.valueStructure.getName();
 		return this.type.toString();
 	}
 
@@ -568,7 +569,32 @@ public class Datum {
 
 	@Override
 	public int hashCode() {
-		return 1;
+		switch (type) {
+			case FUNCTION:
+				return valueFunction.hashCode();
+			case MATRIX:
+				return valueMatrix.toString().hashCode();
+			case NUMBER:
+				return String.valueOf(valueNumber).hashCode();
+			case PAIR:
+				return valuePair.toString().hashCode();
+			case PHONE:
+				return valuePhone.toString().hashCode();
+			case POINTER:
+				return valuePointer.hashCode();
+			case RULE:
+				return valueRule.toString().hashCode();
+			case STRING:
+				return valueString.hashCode();
+			case STRUCTURE:
+				return valueStructure.hashCode();
+			case VECTOR:
+				return Arrays.deepHashCode(valueVector);
+			case WORD:
+				return valueWord.toString().hashCode();
+			default:
+				return 1;
+		}
 	}
 
 	@Override
@@ -627,7 +653,7 @@ public class Datum {
 		return new Datum(newList);
 	}
 
-	public String getDebugString(final Interpreter i, final List<String> trace) {
-		return getTypeString(i) + ":" + toStringTrace(trace);
+	public String getDebugString(final List<String> trace) {
+		return getTypeString() + ":" + toStringTrace(trace);
 	}
 }

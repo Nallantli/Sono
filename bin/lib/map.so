@@ -1,7 +1,7 @@
 # Benjamin Park
-# 09-07-2020
+# 18-07-2020
 
-load "hash";
+load "system";
 
 struct Map class {
 	struct Node class {
@@ -9,6 +9,7 @@ struct Map class {
 		var value;
 		var prev;
 		var next;
+
 		init(ref key, ref value, ref prev) => {
 			this.key = key;
 			this.value = value;
@@ -19,12 +20,21 @@ struct Map class {
 	struct Element class {
 		var key;
 		var value;
+
 		init(ref key, ref value) => {
 			this.key = key;
 			this.value = value;
 		}
+
 		getStr() => {
 			return str key + "=" + str value;
+		}
+
+		equals(ref o) => {
+			type o != type this then {
+				return false;
+			}
+			return o.key == key && o.value == value;
 		}
 	}
 
@@ -51,7 +61,7 @@ struct Map class {
 		size >= rawSize then {
 			expand();
 		}
-		var h = hash(str key, rawSize);
+		var h = abs(hash key) % rawSize;
 		var curr = buckets[h];
 		curr == null then {
 			buckets[h] = new Node(key, null, null);
@@ -74,7 +84,7 @@ struct Map class {
 	}
 
 	remove(ref key) => {
-		var h = hash(str key, rawSize);
+		var h = abs(hash key) % rawSize;
 		var curr = buckets[h];
 		true do {
 			curr.key == key then {
@@ -95,7 +105,7 @@ struct Map class {
 	}
 
 	containsKey(ref key) => {
-		var h = hash(str key, rawSize);
+		var h = abs(hash key) % rawSize;
 		var curr = buckets[h];
 		curr != null do {
 			curr.key == key then {

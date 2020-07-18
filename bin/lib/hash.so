@@ -1,7 +1,8 @@
 # Benjamin Park
-# 08-07-2020
+# 18-07-2020
 
-String::hash(ref this, ref mod) => {
+# Somewhat deprecated
+String::hashString(ref this, ref mod) => {
 	var p = 31;
 	var m = 10 ** 9 + 9;
 	var h = 0;

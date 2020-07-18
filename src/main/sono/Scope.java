@@ -10,22 +10,24 @@ import main.sono.err.SonoRuntimeException;
 public class Scope {
 	private Map<Integer, Datum> data;
 	private final Scope parent;
+	private final Structure correspondent;
 
-	private Scope(final Scope parent, final Map<Integer, Datum> data) {
+	private Scope(final Structure correspondent, final Scope parent, final Map<Integer, Datum> data) {
+		this.correspondent = correspondent;
 		this.parent = parent;
 		this.data = data;
 	}
 
-	public Scope(final Scope parent) {
-		this(parent, new HashMap<>());
+	public Scope(final Structure correspondent, final Scope parent) {
+		this(correspondent, parent, new HashMap<>());
 	}
 
 	private void setMap(final Map<Integer, Datum> data) {
 		this.data = data;
 	}
 
-	public Scope instantiate(final PhoneManager pm, final List<String> trace) {
-		final Scope scope = new Scope(this.parent);
+	public Scope instantiate(final Structure correspondent, final PhoneManager pm, final List<String> trace) {
+		final Scope scope = new Scope(correspondent, this.parent);
 		final Map<Integer, Datum> newMap = new HashMap<>();
 		for (final Map.Entry<Integer, Datum> e : data.entrySet())
 			newMap.put(e.getKey(), new Datum(pm, e.getValue(), scope, trace));
@@ -61,5 +63,9 @@ public class Scope {
 
 	public boolean variableExists(final int key) {
 		return data.containsKey(key);
+	}
+
+	public Structure getStructure() {
+		return correspondent;
 	}
 }

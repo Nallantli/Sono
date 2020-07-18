@@ -40,6 +40,7 @@ public class Interpreter {
 	public final int GET_LEN;
 	public final int GET_INDEX;
 	public final int GET_LIST;
+	public final int ISEQUALS;
 	public final int ERROR;
 	public final int TRACE;
 	public final int S_RULE;
@@ -69,6 +70,7 @@ public class Interpreter {
 		GET_LEN = hashVariable("getLen");
 		GET_INDEX = hashVariable("getIndex");
 		GET_LIST = hashVariable("getVec");
+		ISEQUALS = hashVariable("equals");
 		ERROR = hashVariable("_e");
 		TRACE = hashVariable("_trace");
 		S_RULE = hashVariable("S");
@@ -255,6 +257,10 @@ public class Interpreter {
 				if (token.equals("num")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.NumConvert(this, a));
+				}
+				if (token.equals("hash")) {
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Hash(this, a));
 				}
 				if (token.equals("str")) {
 					final Operator a = o.pollLast();
