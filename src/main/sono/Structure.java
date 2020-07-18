@@ -80,17 +80,43 @@ public class Structure {
 		}
 	}
 
-	@Override
-	public int hashCode() {
+	public int getHash() {
+		if (instantiated && this.mainScope.variableExists(interpreter.GET_HASH))
+			return (int) this.mainScope.getVariable(interpreter.GET_HASH, interpreter, Collections.emptyList())
+					.getFunction(Datum.Type.ANY, Collections.emptyList()).execute(null, Collections.emptyList())
+					.getNumber(Collections.emptyList());
 		return this.hash;
 	}
 
-	@Override
-	public boolean equals(final Object o) {
+	public boolean getEquals(final Structure o) {
 		if (instantiated && this.mainScope.variableExists(interpreter.ISEQUALS))
 			return this.mainScope.getVariable(interpreter.ISEQUALS, interpreter, Collections.emptyList())
-					.getFunction(Datum.Type.ANY, Collections.emptyList()).execute(null, Collections.emptyList())
+					.getFunction(Datum.Type.ANY, Collections.emptyList())
+					.execute(new Datum[] { new Datum(o) }, Collections.emptyList())
 					.getNumber(Collections.emptyList()) != 0;
-		return o == this;
+		return this == o;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	@Override
+	@Deprecated(since = "1.5.13")
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	@Override
+	@Deprecated(since = "1.5.13")
+	public boolean equals(final Object o) {
+		if (o == null)
+			return false;
+		if (o.getClass() != this.getClass())
+			return false;
+
+			return this.getEquals((Structure) o);
 	}
 }

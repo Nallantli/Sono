@@ -30,6 +30,10 @@ struct Map class {
 			return str key + "=" + str value;
 		}
 
+		getHash() => {
+			return hash (str hash key + str hash value);
+		}
+
 		equals(ref o) => {
 			type o != type this then {
 				return false;

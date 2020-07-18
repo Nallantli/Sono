@@ -41,6 +41,7 @@ public class Interpreter {
 	public final int GET_INDEX;
 	public final int GET_LIST;
 	public final int ISEQUALS;
+	public final int GET_HASH;
 	public final int ERROR;
 	public final int TRACE;
 	public final int S_RULE;
@@ -71,6 +72,7 @@ public class Interpreter {
 		GET_INDEX = hashVariable("getIndex");
 		GET_LIST = hashVariable("getVec");
 		ISEQUALS = hashVariable("equals");
+		GET_HASH = hashVariable("getHash");
 		ERROR = hashVariable("_e");
 		TRACE = hashVariable("_trace");
 		S_RULE = hashVariable("S");

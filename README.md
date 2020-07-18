@@ -1,4 +1,4 @@
-# Sono Beta 1.5.12
+# Sono Beta 1.5.13
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -127,6 +127,7 @@ Method | Arguments | Use
 `getIndex`|Any single value|Overrides the `Vector` indexing operator `[]`
 `getVec`|None|Returns a `Vector` representation of the object when the object is called with `vec`
 `getLen`|None|Returns the length of the object when called with `len`
+`getHash`|None|Returns the hashcode of the object when called with `hash`
 `equals`|Any single value|Overrides the `==` operator (and by extension, the `!=` operator)
 
 While it is possible to override these methods to return values of any type, that practice may lead to some confusion (for instance, `getList` returning a `Number`).

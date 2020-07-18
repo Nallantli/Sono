@@ -587,7 +587,7 @@ public class Datum {
 			case STRING:
 				return valueString.hashCode();
 			case STRUCTURE:
-				return valueStructure.hashCode();
+				return valueStructure.getHash();
 			case VECTOR:
 				return Arrays.deepHashCode(valueVector);
 			case WORD:
@@ -597,15 +597,7 @@ public class Datum {
 		}
 	}
 
-	@Override
-	public boolean equals(final Object o) {
-		if (o == null)
-			return false;
-		if (o.getClass() != this.getClass())
-			return false;
-
-		final Datum d = (Datum) o;
-
+	public boolean isEqual(final Datum d) {
 		if (type != d.getType())
 			return false;
 		if (prototypic && d.isPrototypic())
@@ -616,7 +608,7 @@ public class Datum {
 				if (valueVector.length != d.valueVector.length)
 					return false;
 				for (int i = 0; i < valueVector.length; i++)
-					if (!valueVector[i].equals(d.valueVector[i]))
+					if (!valueVector[i].isEqual(d.valueVector[i]))
 						return false;
 				return true;
 			case MATRIX:
@@ -638,12 +630,22 @@ public class Datum {
 			case WORD:
 				return valueWord.equals(d.valueWord);
 			case STRUCTURE:
-				return valueStructure.equals(d.valueStructure);
+				return valueStructure.getEquals(d.valueStructure);
 			case POINTER:
 				return valuePointer.equals(d.valuePointer);
 			default:
 				return false;
 		}
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (o == null)
+			return false;
+		if (o.getClass() != this.getClass())
+			return false;
+
+		return this.isEqual((Datum) o);
 	}
 
 	public static Datum arrayConcat(final Datum a, final Datum b) {

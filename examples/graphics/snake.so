@@ -12,8 +12,8 @@ var valueArray = alloc SIZE_X;
 var shapeArray = alloc SIZE_X;
 var direction = 0;
 var newDir = 0;
-var posX = 30;
-var posY = 20;
+var posX = 5;
+var posY = 5;
 var size = 1;
 var LOST = false;
 

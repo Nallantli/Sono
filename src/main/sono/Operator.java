@@ -1579,7 +1579,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.equals(datumB) ? 1 : 0);
+			return new Datum(datumA.isEqual(datumB) ? 1 : 0);
 		}
 
 		@Override
@@ -1601,7 +1601,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.equals(datumB) ? 0 : 1);
+			return new Datum(datumA.isEqual(datumB) ? 0 : 1);
 		}
 
 		@Override
