@@ -18,7 +18,7 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NOT_EQUAL, LESS, MORE, E_LESS, E_MORE, MATRIX_CONVERT,
 		NUMBER_CONVERT, CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN,
 		JOIN_DEC, STR_DEC, FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONVERT, TYPE_DEC, STRUCT_DEC, STATIC_DEC,
-		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH, HASH,
+		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH, HASH, P_EQUALS, P_NOT_EQUAL,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL, SWITCH_CASE
@@ -1588,6 +1588,28 @@ public abstract class Operator {
 		}
 	}
 
+	public static class PureEqual extends Binary {
+		public PureEqual(final Interpreter interpreter, final Operator a, final Operator b) {
+			super(interpreter, Type.P_EQUALS, a, b);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, List<String> trace) {
+			if (SonoWrapper.DEBUG) {
+				trace = new ArrayList<>(trace);
+				trace.add(this.toString());
+			}
+			final Datum datumA = a.evaluate(scope, trace);
+			final Datum datumB = b.evaluate(scope, trace);
+			return new Datum(datumA.isEqualPure(datumB) ? 1 : 0);
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " === " + b.toString();
+		}
+	}
+
 	public static class NEqual extends Binary {
 		public NEqual(final Interpreter interpreter, final Operator a, final Operator b) {
 			super(interpreter, Type.NOT_EQUAL, a, b);
@@ -1607,6 +1629,28 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return a.toString() + " != " + b.toString();
+		}
+	}
+
+	public static class PureNEqual extends Binary {
+		public PureNEqual(final Interpreter interpreter, final Operator a, final Operator b) {
+			super(interpreter, Type.P_NOT_EQUAL, a, b);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, List<String> trace) {
+			if (SonoWrapper.DEBUG) {
+				trace = new ArrayList<>(trace);
+				trace.add(this.toString());
+			}
+			final Datum datumA = a.evaluate(scope, trace);
+			final Datum datumB = b.evaluate(scope, trace);
+			return new Datum(datumA.isEqualPure(datumB) ? 0 : 1);
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " !== " + b.toString();
 		}
 	}
 

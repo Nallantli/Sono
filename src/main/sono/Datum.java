@@ -638,6 +638,20 @@ public class Datum {
 		}
 	}
 
+	public boolean isEqualPure(final Datum d) {
+		if (type != d.getType())
+			return false;
+		if (prototypic && d.isPrototypic())
+			return true;
+
+		switch (type) {
+			case STRUCTURE:
+				return valueStructure == d.valueStructure;
+			default:
+				return this.isEqual(d);
+		}
+	}
+
 	@Override
 	public boolean equals(final Object o) {
 		if (o == null)

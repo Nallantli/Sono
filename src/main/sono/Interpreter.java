@@ -415,10 +415,20 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Equal(this, a, b));
 				}
+				if (token.equals("===")) {
+					final Operator b = o.pollLast();
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.PureEqual(this, a, b));
+				}
 				if (token.equals("!=")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.NEqual(this, a, b));
+				}
+				if (token.equals("!==")) {
+					final Operator b = o.pollLast();
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.PureNEqual(this, a, b));
 				}
 				if (token.equals("<")) {
 					final Operator b = o.pollLast();

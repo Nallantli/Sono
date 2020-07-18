@@ -1,4 +1,4 @@
-# Sono Beta 1.5.13
+# Sono Beta 1.5.14
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -112,6 +112,8 @@ Operator | Function | Values
 `a from b` | Returns all `Phone` values from `b` that contain features expressed in `a` | `Matrix` and `Vector` (of Phones)
 `a >> b` | Transforms `a` by `b` | `Word` and `Rule`, `Phone` and `Matrix`
 `a until b` | Creates a `Vector` of values within the range of `a` and `b` (exclusive) | `Number`
+`a === b` | Equivalent to `==` in all values except `Structure` values, for which it compares whether the objects are the same instance, overriding any implementation of `equals()` | `Any`
+`a !== b` | Correspondent to the above | `Any`
 
 ### Objects
 

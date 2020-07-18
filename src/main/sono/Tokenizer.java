@@ -51,6 +51,8 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>("/", 9), new SimpleImmutableEntry<String, Integer>("%", 9),
 			new SimpleImmutableEntry<String, Integer>("+", 8), new SimpleImmutableEntry<String, Integer>("-", 8),
 			new SimpleImmutableEntry<String, Integer>(">>", 8), new SimpleImmutableEntry<String, Integer>("?>", 8),
+			new SimpleImmutableEntry<String, Integer>("===", 6),
+			new SimpleImmutableEntry<String, Integer>("!==", 6),
 			new SimpleImmutableEntry<String, Integer>("==", 6), new SimpleImmutableEntry<String, Integer>("!=", 6),
 			new SimpleImmutableEntry<String, Integer>("<", 6), new SimpleImmutableEntry<String, Integer>(">", 6),
 			new SimpleImmutableEntry<String, Integer>("<=", 6), new SimpleImmutableEntry<String, Integer>(">=", 6),
