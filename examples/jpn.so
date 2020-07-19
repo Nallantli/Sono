@@ -3,28 +3,28 @@ load "rule";
 
 var ruleSet = {
 	# All consonants that are followed by another consonant (except nasals) are [+long]; /kk/ -> /kː/
-	Af |> [-|syl, -|nasal] -> [+|long] // null ~ [-|syl, -|approx],
+	Af |> [-|syl, -|nasal] -> [+|long] // null .. [-|syl, -|approx],
 	# All vowels followed by another vowel of equal frontness are [+long]; /aa/ -> /aː/, /ei/ -> /eː/
-	Af |> [+|syl, 2|back, 2|front] -> [+|long] // null ~ [+|syl, 2|back, 2|front],
+	Af |> [+|syl, 2|back, 2|front] -> [+|long] // null .. [+|syl, 2|back, 2|front],
 	# Consonants are palatalized before /i(ː)/
-	S |> [-|syl] -> [+|DOR, +|high, -|low, +|front, -|back] // null ~ [+|syl, +|high, +|front],
+	S |> [-|syl] -> [+|DOR, +|high, -|low, +|front, -|back] // null .. [+|syl, +|high, +|front],
 	# Consonants are palatalized before /j/ and the approximant is removed
-	Af |> [-|syl] -> [+|DOR, +|high, -|low, +|front, -|back] // null ~ [-|syl, +|approx, +|high, +|front],
+	Af |> [-|syl] -> [+|DOR, +|high, -|low, +|front, -|back] // null .. [-|syl, +|approx, +|high, +|front],
 	# Palatalized coronals are further palatalized into fricatives/affricates; /tʲ/ -> /t_ɕ/
-	S |> [+|cons, -|syl, -|son, +|COR, +|high, -|low, +|front, -|back] -> [+|del, +|str, +|dist, -|front, +|back] // null ~ [+|syl],
+	S |> [+|cons, -|syl, -|son, +|COR, +|high, -|low, +|front, -|back] -> [+|del, +|str, +|dist, -|front, +|back] // null .. [+|syl],
 	# Miscellaneous palatalization of consonants that are unable to be grouped with coronals
-	S |> 'hʲ' -> 'ç' // null ~ [+|syl],
-	S |> 'nʲ' -> 'ɲ' // null ~ [+|syl],
+	S |> 'hʲ' -> 'ç' // null .. [+|syl],
+	S |> 'nʲ' -> 'ɲ' // null .. [+|syl],
 	# Anterior consonants are palatalized before /ɯ(ː)/
-	S |> [-|syl, -|approx, +|ant, -|dist] -> [+|DOR, +|high, -|low, +|front, -|back] // null ~ [+|syl, +|high, +|back],
+	S |> [-|syl, -|approx, +|ant, -|dist] -> [+|DOR, +|high, -|low, +|front, -|back] // null .. [+|syl, +|high, +|back],
 	# /ɯ(ː)/ is centralized to /ɨ(ː)/ after a palatalized consonant
-	S |> [+|syl, +|high, +|back, 1|long] -> [+|syl, +|high, -|back, 1|long] // [-|syl, +|high, +|front] ~ null,
+	S |> [+|syl, +|high, +|back, 1|long] -> [+|syl, +|high, -|back, 1|long] // [-|syl, +|high, +|front] .. null,
 	# Palatalized anterior consonants become sibilants; /tʲ/ -> /t_s/
-	S |> [-|syl, -|approx, +|ant, -|dist] -> [+|del, +|str, -|DOR] // null ~ [+|syl, +|high, -|back, -|front],
+	S |> [-|syl, -|approx, +|ant, -|dist] -> [+|del, +|str, -|DOR] // null .. [+|syl, +|high, -|back, -|front],
 	# Vowels before the moraic nasal are nasalized
-	S |> [+|syl] -> [+|nasal] // null ~ 'ɴ',
+	S |> [+|syl] -> [+|nasal] // null .. 'ɴ',
 	# The moraic nasal assimilates to the place of the following consonant
-	S |> 'ɴ' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null ~ [-|syl, +|cons, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back]
+	S |> 'ɴ' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null .. [-|syl, +|cons, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back]
 };
 
 var words = {

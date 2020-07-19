@@ -314,7 +314,7 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Arrow(this, a, b));
 				}
-				if (token.equals("~")) {
+				if (token.equals("..")) {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Underscore(this, a, b));

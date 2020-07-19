@@ -3,6 +3,7 @@ package main.sono;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -597,7 +598,7 @@ public class Datum {
 		}
 	}
 
-	public boolean isEqual(final Datum d) {
+	public boolean isEqual(final Datum d, final List<String> trace) {
 		if (type != d.getType())
 			return false;
 		if (prototypic && d.isPrototypic())
@@ -608,7 +609,7 @@ public class Datum {
 				if (valueVector.length != d.valueVector.length)
 					return false;
 				for (int i = 0; i < valueVector.length; i++)
-					if (!valueVector[i].isEqual(d.valueVector[i]))
+					if (!valueVector[i].isEqual(d.valueVector[i], trace))
 						return false;
 				return true;
 			case MATRIX:
@@ -630,7 +631,7 @@ public class Datum {
 			case WORD:
 				return valueWord.equals(d.valueWord);
 			case STRUCTURE:
-				return valueStructure.getEquals(d.valueStructure);
+				return valueStructure.isEqual(d.valueStructure, trace);
 			case POINTER:
 				return valuePointer.equals(d.valuePointer);
 			default:
@@ -638,7 +639,7 @@ public class Datum {
 		}
 	}
 
-	public boolean isEqualPure(final Datum d) {
+	public boolean isEqualPure(final Datum d, final List<String> trace) {
 		if (type != d.getType())
 			return false;
 		if (prototypic && d.isPrototypic())
@@ -648,7 +649,7 @@ public class Datum {
 			case STRUCTURE:
 				return valueStructure == d.valueStructure;
 			default:
-				return this.isEqual(d);
+				return this.isEqual(d, trace);
 		}
 	}
 
@@ -659,7 +660,7 @@ public class Datum {
 		if (o.getClass() != this.getClass())
 			return false;
 
-		return this.isEqual((Datum) o);
+		return this.isEqual((Datum) o, Collections.emptyList());
 	}
 
 	public static Datum arrayConcat(final Datum a, final Datum b) {

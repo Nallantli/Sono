@@ -88,12 +88,11 @@ public class Structure {
 		return this.hash;
 	}
 
-	public boolean getEquals(final Structure o) {
+	public boolean isEqual(final Structure o, final List<String> trace) {
 		if (instantiated && this.mainScope.variableExists(interpreter.ISEQUALS))
-			return this.mainScope.getVariable(interpreter.ISEQUALS, interpreter, Collections.emptyList())
-					.getFunction(Datum.Type.ANY, Collections.emptyList())
-					.execute(new Datum[] { new Datum(o) }, Collections.emptyList())
-					.getNumber(Collections.emptyList()) != 0;
+			return this.mainScope.getVariable(interpreter.ISEQUALS, interpreter, trace)
+					.getFunction(Datum.Type.ANY, trace).execute(new Datum[] { new Datum(o) }, trace)
+					.getNumber(trace) != 0;
 		return this == o;
 	}
 
@@ -103,7 +102,7 @@ public class Structure {
 	@Override
 	@Deprecated(since = "1.5.13")
 	public int hashCode() {
-		return super.hashCode();
+		return getHash();
 	}
 
 	/**
@@ -117,6 +116,6 @@ public class Structure {
 		if (o.getClass() != this.getClass())
 			return false;
 
-			return this.getEquals((Structure) o);
+		return this.isEqual((Structure) o, Collections.emptyList());
 	}
 }

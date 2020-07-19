@@ -326,7 +326,7 @@ public class Rule {
 		s.append(trans.toString());
 		s.append(" // ");
 		s.append(init.toString());
-		s.append(" ~ ");
+		s.append(" .. ");
 		s.append(fin.toString());
 		return s.toString();
 	}

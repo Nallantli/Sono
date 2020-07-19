@@ -8,7 +8,11 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import main.SonoWrapper;
-import main.phl.*;
+import main.phl.Matrix;
+import main.phl.Pair;
+import main.phl.Phone;
+import main.phl.Rule;
+import main.phl.Word;
 import main.sono.err.SonoRuntimeException;
 
 public abstract class Operator {
@@ -18,7 +22,8 @@ public abstract class Operator {
 		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NOT_EQUAL, LESS, MORE, E_LESS, E_MORE, MATRIX_CONVERT,
 		NUMBER_CONVERT, CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN,
 		JOIN_DEC, STR_DEC, FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONVERT, TYPE_DEC, STRUCT_DEC, STATIC_DEC,
-		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH, HASH, P_EQUALS, P_NOT_EQUAL,
+		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH, HASH,
+		P_EQUALS, P_NOT_EQUAL,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL, SWITCH_CASE
@@ -620,7 +625,7 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return a.toString() + " _ " + b.toString();
+			return a.toString() + " .. " + b.toString();
 		}
 	}
 
@@ -1579,7 +1584,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqual(datumB) ? 1 : 0);
+			return new Datum(datumA.isEqual(datumB, trace) ? 1 : 0);
 		}
 
 		@Override
@@ -1601,7 +1606,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqualPure(datumB) ? 1 : 0);
+			return new Datum(datumA.isEqualPure(datumB, trace) ? 1 : 0);
 		}
 
 		@Override
@@ -1623,7 +1628,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqual(datumB) ? 0 : 1);
+			return new Datum(datumA.isEqual(datumB, trace) ? 0 : 1);
 		}
 
 		@Override
@@ -1645,7 +1650,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqualPure(datumB) ? 0 : 1);
+			return new Datum(datumA.isEqualPure(datumB, trace) ? 0 : 1);
 		}
 
 		@Override
