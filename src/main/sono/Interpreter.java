@@ -489,7 +489,9 @@ public class Interpreter {
 				}
 				if (token.equals("=>")) {
 					// (((VAR) :: (pop)) .exec (params)) => {}
-					final Operator b = o.pollLast();
+					Operator b = o.pollLast();
+					if (b.type == Operator.Type.HARD_LIST)
+						b = new Operator.SoftList(this, b.getChildren());
 					Operator a = o.pollLast();
 					if (a.type == Operator.Type.EXECUTE) {
 						final Operator name = ((Operator.Execute) a).getA();
