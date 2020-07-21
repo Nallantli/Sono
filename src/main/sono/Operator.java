@@ -364,9 +364,9 @@ public abstract class Operator {
 			if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 				throw new SonoRuntimeException(
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
-			final Matrix matrix = new Matrix();
+			final Matrix matrix = new Matrix(interpreter.getManager());
 			for (final Operator o : operators)
-				matrix.put(interpreter.getManager(), o.evaluate(scope, trace).getPair(trace));
+				matrix.put(o.evaluate(scope, trace).getPair(trace));
 			return new Datum(matrix);
 		}
 
@@ -1142,9 +1142,9 @@ public abstract class Operator {
 			final Datum datumA = a.evaluate(scope, trace);
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				final int listSize = datumA.getVectorLength(trace);
-				final Matrix m = new Matrix();
+				final Matrix m = new Matrix(interpreter.getManager());
 				for (int i = 0; i < listSize; i++)
-					m.put(interpreter.getManager(), datumA.indexVector(i).getPair(trace));
+					m.put(datumA.indexVector(i).getPair(trace));
 				return new Datum(m);
 			} else if (datumA.getType() == Datum.Type.PHONE) {
 				return new Datum(datumA.getPhone(trace).getMatrix());
@@ -1388,9 +1388,9 @@ public abstract class Operator {
 						throw new SonoRuntimeException(
 								"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.",
 								trace);
-					final Matrix newMatrix = new Matrix();
-					newMatrix.putAll(interpreter.getManager(), datumA.getMatrix(trace));
-					newMatrix.putAll(interpreter.getManager(), datumB.getMatrix(trace));
+					final Matrix newMatrix = new Matrix(interpreter.getManager());
+					newMatrix.putAll(datumA.getMatrix(trace));
+					newMatrix.putAll(datumB.getMatrix(trace));
 					return new Datum(newMatrix);
 				case WORD:
 					if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))

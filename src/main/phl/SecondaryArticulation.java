@@ -8,17 +8,17 @@ public class SecondaryArticulation {
 	private final List<Matrix> requirements;
 	private final List<PhoneLoader.Secondary> restrictions;
 
-	public SecondaryArticulation(final String segment, final Matrix matrix, final List<PhoneLoader.Secondary> restrictions,
-			final List<Matrix> requirements) {
+	public SecondaryArticulation(final String segment, final Matrix matrix,
+			final List<PhoneLoader.Secondary> restrictions, final List<Matrix> requirements) {
 		this.matrix = matrix;
 		this.restrictions = restrictions;
 		this.segment = segment;
 		this.requirements = requirements;
 	}
 
-	public SecondaryArticulation(final String segment, final int feature, final int value,
+	public SecondaryArticulation(final PhoneManager pm, final String segment, final int feature, final int value,
 			final List<PhoneLoader.Secondary> restrictions, final List<Matrix> requirements) {
-		this(segment, new Matrix(new Pair(feature, value)), restrictions, requirements);
+		this(segment, new Matrix(pm, new Pair(feature, value)), restrictions, requirements);
 	}
 
 	public Matrix getMatrix() {

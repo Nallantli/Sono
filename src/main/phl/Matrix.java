@@ -7,18 +7,22 @@ import java.util.NoSuchElementException;
 
 public class Matrix implements Iterable<Pair> {
 	private final List<Pair> holder;
+	private final PhoneManager pm;
 
-	public Matrix() {
+	public Matrix(final PhoneManager pm) {
 		holder = new ArrayList<>();
+		this.pm = pm;
 	}
 
-	public Matrix(final Matrix m) {
+	public Matrix(final PhoneManager pm, final Matrix m) {
+		this.pm = pm;
 		holder = new ArrayList<>();
 		for (final Pair p : m.holder)
 			holder.add(new Pair(p.getFeature(), p.getQuality()));
 	}
 
-	public Matrix(final Pair... entries) {
+	public Matrix(final PhoneManager pm, final Pair... entries) {
+		this.pm = pm;
 		holder = new ArrayList<>(List.of(entries));
 	}
 
@@ -36,11 +40,11 @@ public class Matrix implements Iterable<Pair> {
 		return Hasher.ZERO;
 	}
 
-	public void put(final PhoneManager pm, Pair p) {
+	public void put(Pair p) {
 		if (pm.getMajorClasses().containsKey(p.getFeature())
 				&& (p.getQuality() == Hasher.FALSE || p.getQuality() == Hasher.ANY)) {
 			for (final int f : pm.getMajorClasses().get(p.getFeature()))
-				put(pm, f, Hasher.ZERO);
+				put(f, Hasher.ZERO);
 		} else {
 			final int im = pm.inMajorClass(p.getFeature());
 			if (im != -1 && getQuality(im) == Hasher.ANY)
@@ -62,40 +66,40 @@ public class Matrix implements Iterable<Pair> {
 			holder.add(p);
 	}
 
-	public void put(final PhoneManager pm, final int f, final int q) {
-		put(pm, new Pair(f, q));
+	public void put(final int f, final int q) {
+		put(new Pair(f, q));
 	}
 
-	public void putAll(final PhoneManager pm, final Matrix m) {
+	public void putAll(final Matrix m) {
 		for (final Pair p : m.holder) {
 			if ((getQuality(p.getFeature()) == Hasher.TRUE && p.getQuality() == Hasher.FALSE)
 					|| (getQuality(p.getFeature()) == Hasher.FALSE && p.getQuality() == Hasher.TRUE))
-				put(pm, new Pair(p.getFeature(), Hasher.ANY));
+				put(new Pair(p.getFeature(), Hasher.ANY));
 			else if (getQuality(p.getFeature()) == Hasher.ANY || p.getQuality() == Hasher.ANY)
-				put(pm, new Pair(p.getFeature(), Hasher.ANY));
+				put(new Pair(p.getFeature(), Hasher.ANY));
 			else
-				put(pm, p);
+				put(p);
 		}
 	}
 
-	public Matrix transform(final PhoneManager pm, final Matrix matrix) {
-		final Matrix newFeatures = new Matrix(this);
+	public Matrix transform(final Matrix matrix) {
+		final Matrix newFeatures = new Matrix(pm, this);
 
 		for (final Pair e : matrix) {
-			newFeatures.put(pm, e.getFeature(), e.getQuality());
+			newFeatures.put(e.getFeature(), e.getQuality());
 			final int im = pm.inMajorClass(e.getFeature());
 			if (im != -1 && e.getQuality() != Hasher.ZERO) {
-				newFeatures.put(pm, im, Hasher.TRUE);
+				newFeatures.put(im, Hasher.TRUE);
 				for (final int f : pm.getMajorClasses().get(im))
 					if (newFeatures.getQuality(f) == Hasher.ZERO)
-						newFeatures.put(pm, f, Hasher.FALSE);
+						newFeatures.put(f, Hasher.FALSE);
 			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
 				for (final int f : pm.getMajorClasses().get(e.getFeature()))
 					if (newFeatures.getQuality(f) == Hasher.ZERO)
-						newFeatures.put(pm, f, Hasher.FALSE);
+						newFeatures.put(f, Hasher.FALSE);
 			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
 				for (final int f : pm.getMajorClasses().get(e.getFeature()))
-					newFeatures.put(pm, f, Hasher.ZERO);
+					newFeatures.put(f, Hasher.ZERO);
 			}
 		}
 
@@ -127,16 +131,15 @@ public class Matrix implements Iterable<Pair> {
 
 	@Override
 	public boolean equals(final Object o) {
+		if (o == this)
+			return true;
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())
 			return false;
 		final Matrix m = (Matrix) o;
-		for (final Pair p : holder)
-			if (m.getQuality(p.getFeature()) != p.getQuality())
-				return false;
-		for (final Pair p : m.holder)
-			if (getQuality(p.getFeature()) != p.getQuality())
+		for (final int f : pm.getFeatureNames())
+			if (m.getQuality(f) != getQuality(f))
 				return false;
 
 		return true;

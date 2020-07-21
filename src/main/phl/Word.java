@@ -84,6 +84,8 @@ public class Word {
 
 	@Override
 	public boolean equals(final Object o) {
+		if (o == this)
+			return true;
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())

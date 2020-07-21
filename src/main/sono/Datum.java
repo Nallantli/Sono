@@ -300,9 +300,9 @@ public class Datum {
 				this.valueStructure = null;
 				this.valuePointer = null;
 
-				this.valueMatrix = new Matrix();
+				this.valueMatrix = new Matrix(pm);
 				for (final Pair p : datum.valueMatrix)
-					this.valueMatrix.put(pm, p.getFeature(), p.getQuality());
+					this.valueMatrix.put(p.getFeature(), p.getQuality());
 				break;
 			case PAIR:
 				this.valueVector = null;

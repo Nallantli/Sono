@@ -91,7 +91,7 @@ public class PhoneManager {
 				if (s.charAt(i) == e.getValue().getSegment().charAt(0)) {
 					flag = true;
 					applied.add(e.getKey());
-					newMatrix = newMatrix.transform(this, loader.getSecondaryLibrary().get(e.getKey()).getMatrix());
+					newMatrix = newMatrix.transform(loader.getSecondaryLibrary().get(e.getKey()).getMatrix());
 					break;
 				}
 			}
@@ -178,7 +178,7 @@ public class PhoneManager {
 	}
 
 	public Matrix getCommon(final List<Phone> phones) {
-		final Matrix common = new Matrix();
+		final Matrix common = new Matrix(this);
 		for (int i = 0; i < featureNames.size(); i++) {
 			final int f = phones.get(0).getFeatureQuality(featureNames.get(i));
 			boolean flag = true;
@@ -188,17 +188,17 @@ public class PhoneManager {
 					break;
 				}
 			if (flag && f != Hasher.ZERO)
-				common.put(this, featureNames.get(i), f);
+				common.put(featureNames.get(i), f);
 		}
 		return common;
 	}
 
 	public Matrix getContrast(final Phone a, final Phone b) {
-		final Matrix contrast = new Matrix();
+		final Matrix contrast = new Matrix(this);
 		for (int i = 0; i < featureNames.size(); i++)
 			if (a.getFeatureQuality(featureNames.get(i)) != b.getFeatureQuality(featureNames.get(i))
 					&& b.getFeatureQuality(featureNames.get(i)) != Hasher.ZERO)
-				contrast.put(this, featureNames.get(i), b.getFeatureQuality(featureNames.get(i)));
+				contrast.put(featureNames.get(i), b.getFeatureQuality(featureNames.get(i)));
 
 		return contrast;
 	}

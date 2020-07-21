@@ -33,10 +33,10 @@ public class Phone implements Comparable<Phone> {
 	}
 
 	public Matrix getMatrix() {
-		final Matrix map = new Matrix();
+		final Matrix map = new Matrix(pm);
 		for (final Pair p : features)
 			if (p.getQuality() != Hasher.ZERO)
-				map.put(pm, p);
+				map.put(p);
 
 		return map;
 	}
@@ -68,20 +68,20 @@ public class Phone implements Comparable<Phone> {
 		final Matrix newFeatures = getMatrix();
 
 		for (final Pair e : matrix) {
-			newFeatures.put(pm, e.getFeature(), e.getQuality());
+			newFeatures.put(e.getFeature(), e.getQuality());
 			final int im = pm.inMajorClass(e.getFeature());
 			if (im != -1 && e.getQuality() != Hasher.ZERO) {
-				newFeatures.put(pm, im, Hasher.TRUE);
+				newFeatures.put(im, Hasher.TRUE);
 				for (final int f : pm.getMajorClasses().get(im))
 					if (newFeatures.getQuality(f) == Hasher.ZERO)
-						newFeatures.put(pm, f, Hasher.FALSE);
+						newFeatures.put(f, Hasher.FALSE);
 			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
 				for (final int f : pm.getMajorClasses().get(e.getFeature()))
 					if (newFeatures.getQuality(f) == Hasher.ZERO)
-						newFeatures.put(pm, f, Hasher.FALSE);
+						newFeatures.put(f, Hasher.FALSE);
 			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
 				for (final int f : pm.getMajorClasses().get(e.getFeature())) {
-					newFeatures.put(pm, f, Hasher.ZERO);
+					newFeatures.put(f, Hasher.ZERO);
 				}
 			}
 		}
@@ -114,6 +114,8 @@ public class Phone implements Comparable<Phone> {
 
 	@Override
 	public boolean equals(final Object o) {
+		if (o == this)
+			return true;
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())
