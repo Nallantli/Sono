@@ -1,6 +1,7 @@
 package main.phl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -8,14 +9,17 @@ import java.util.NoSuchElementException;
 public class Matrix implements Iterable<Pair> {
 	private final List<Pair> holder;
 	private final PhoneManager pm;
+	private byte[] bytes;
 
 	public Matrix(final PhoneManager pm) {
 		holder = new ArrayList<>();
+		this.bytes = new byte[pm.getFeatureNames().size()];
 		this.pm = pm;
 	}
 
 	public Matrix(final PhoneManager pm, final Matrix m) {
 		this.pm = pm;
+		this.bytes = m.bytes;
 		holder = new ArrayList<>();
 		for (final Pair p : m.holder)
 			holder.add(new Pair(p.getFeature(), p.getQuality()));
@@ -64,6 +68,8 @@ public class Matrix implements Iterable<Pair> {
 			holder.set(i, p);
 		else
 			holder.add(p);
+
+		bytes[pm.getFeatureNames().indexOf(p.getFeature())] = (byte) p.getQuality();
 	}
 
 	public void put(final int f, final int q) {
@@ -126,7 +132,7 @@ public class Matrix implements Iterable<Pair> {
 
 	@Override
 	public int hashCode() {
-		return 1;
+		return Arrays.hashCode(bytes);
 	}
 
 	@Override
