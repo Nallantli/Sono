@@ -1946,6 +1946,8 @@ public abstract class Operator {
 				if (f == null)
 					f = fDatum.getFunction(Datum.Type.ANY, trace);
 			}
+			if (f == null)
+				throw new SonoRuntimeException("No function found", trace);
 			return f.execute(pValues, trace);
 		}
 

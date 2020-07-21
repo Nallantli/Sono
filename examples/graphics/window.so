@@ -32,7 +32,7 @@ evaluate() => {
 	}
 }
 
-setPhone(final p) => {
+setPhone(ref p) => {
 	var matrix = (vec mat p).map(getPair);
 	f in _features do {
 		matrix.contains({"+", f}) then {
