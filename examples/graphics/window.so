@@ -1,0 +1,114 @@
+load "graphics";
+load "system";
+load "map";
+load "vector";
+load "feature";
+
+var window = new Window("Feature Pad", 800, 600, exit);
+
+var menuBar = new Component.Menu.Bar();
+var first = menuBar.add(new Component.Menu.Item("Options"));
+var reset = first.add(new Component.Menu.Label("Reset"));
+var exitLabel = first.add(new Component.Menu.Label("Exit"));
+
+window.add(menuBar, Component.NORTH);
+
+var selected = new Map();
+var FB = new Map();
+var phoneB = new Map();
+
+evaluate() => {
+	var m = {};
+	e in vec selected do {
+		m += {feat (e.value + "|" + e.key)};
+	}
+	var phones = (mat m) from _base;
+	p in _base do {
+		phones.contains(p) then {
+			phoneB[p].enable();
+		} else {
+			phoneB[p].disable();
+		}
+	}
+}
+
+setPhone(final p) => {
+	var matrix = (vec mat p).map(getPair);
+	f in _features do {
+		matrix.contains({"+", f}) then {
+			selected[f] = "+";
+			FB[f][0].enable();
+			FB[f][1].enable();
+			FB[f][2].disable();
+		} else matrix.contains({"-", f}) then {
+			selected[f] = "-";
+			FB[f][0].disable();
+			FB[f][1].enable();
+			FB[f][2].enable();
+		} else {
+			selected[f] = "~";
+			FB[f][0].enable();
+			FB[f][1].disable();
+			FB[f][2].enable();
+		}
+	}
+	evaluate();
+}
+
+reset.action(() => {
+	f in _features do {
+		selected[f] = "~";
+		FB[f][0].enable();
+		FB[f][1].disable();
+		FB[f][2].enable();
+	}
+	evaluate();
+});
+
+exitLabel.action(exit);
+
+var features = window.add(new Component.Panel.Table(0, 4), Component.WEST);
+f in _features do {
+	var button1 = features.add(new Component.Button("-"));
+	var button2 = features.add(new Component.Button("~"));
+	var button3 = features.add(new Component.Button("+"));
+	FB[f] = {button1, button2, button3};
+	var text = features.add(new Component.Text(f));
+	button2.disable();
+
+	button1.action(() => {
+		selected[f] = "-";
+		button1.disable();
+		button2.enable();
+		button3.enable();
+		evaluate();
+	});
+
+	button2.action(() => {
+		selected[f] = "~";
+		button1.enable();
+		button2.disable();
+		button3.enable();
+		evaluate();
+	});
+
+	button3.action(() => {
+		selected[f] = "+";
+		button1.enable();
+		button2.enable();
+		button3.disable();
+		evaluate();
+	});
+}
+
+var panel = window.add(new Component.Panel.Table(0, 10), Component.MIDDLE);
+p in _base do {
+	var button = panel.add(new Component.Button(str p));
+	phoneB[p] = button;
+
+	button.action(() => {
+		setPhone(p);
+	});
+}
+
+window.repaint();

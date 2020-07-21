@@ -10,9 +10,9 @@ public class PhoneManager {
 	private final List<Phone> baseLibrary;
 	private final List<String> baseValues;
 
-	private List<Integer> featureNames = new ArrayList<>();
+	private final List<Integer> featureNames = new ArrayList<>();
 
-	private Map<Integer, List<Integer>> majorClasses = new HashMap<>();
+	private final Map<Integer, List<Integer>> majorClasses = new HashMap<>();
 
 	private final PhoneLoader loader;
 

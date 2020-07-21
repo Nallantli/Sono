@@ -1,25 +1,38 @@
 package ext;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-
-import java.awt.event.WindowEvent;
-import java.awt.Toolkit;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.AbstractButton;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import main.SonoWrapper;
 import main.base.Library;
@@ -419,7 +432,7 @@ public class LIB_Graphics extends Library {
 					f.getContentPane().setPreferredSize(new Dimension(width, height));
 					f.pack();
 					f.setVisible(true);
-					return new Datum((Object) f);
+					return new Datum(new Datum[] { new Datum((Object) f), new Datum((Object) f.getContentPane()) });
 				});
 		commands.put("LIB_Graphics.SHOW",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
@@ -529,14 +542,9 @@ public class LIB_Graphics extends Library {
 					f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
 					return new Datum();
 				});
-		commands.put("LIB_Graphics.GETGRAPHICS",
+		commands.put("LIB_Graphics.GRAPHICS.INIT",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
 					final GraphicsPanel gp = new GraphicsPanel();
-					final Dimension d = f.getSize();
-					f.getContentPane().add("Center", gp);
-					f.pack();
-					f.setSize(d);
 					return new Datum((Object) gp);
 				});
 		commands.put("LIB_Graphics.REPAINT",
@@ -717,6 +725,133 @@ public class LIB_Graphics extends Library {
 					final int y = (int) list[2].getNumber(trace);
 					text.setOrigin(x, y);
 					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.ADD",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final JComponent frame = ((JComponent) list[0].getPointer(trace));
+					final JComponent child = (JComponent) list[1].getPointer(trace);
+					if (list.length > 2)
+						frame.add(child, list[2].getString(trace));
+					else
+						frame.add(child);
+					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.SETENABLE",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final AbstractButton component = (AbstractButton) list[0].getPointer(trace);
+					final boolean enabled = list[1].getNumber(trace) != 0;
+					component.setEnabled(enabled);
+					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.CLICK",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final AbstractButton component = (AbstractButton) datum.getPointer(trace);
+					component.doClick();
+					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.ACTION",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final AbstractButton component = ((AbstractButton) list[0].getPointer(trace));
+					final Function function = list[1].getFunction(Datum.Type.ANY, trace);
+					component.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(final ActionEvent e) {
+							function.execute(null, trace);
+						}
+					});
+					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.MENU.BAR.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JMenuBar mb = new JMenuBar();
+					return new Datum((Object) mb);
+				});
+		commands.put("LIB_Graphics.COMPONENT.MENU.ITEM.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JMenu menu = new JMenu(datum.getString(trace));
+					return new Datum((Object) menu);
+				});
+		commands.put("LIB_Graphics.COMPONENT.MENU.LABEL.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JMenuItem item = new JMenuItem(datum.getString(trace));
+					return new Datum((Object) item);
+				});
+		commands.put("LIB_Graphics.COMPONENT.TEXT.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JLabel component = new JLabel(datum.getString(trace));
+					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.TEXT.ALIGN",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final JLabel component = (JLabel) list[0].getPointer(trace);
+					final int alignmentX = (int) list[1].getNumber(trace);
+					final int alignmentY = (int) list[2].getNumber(trace);
+					component.setHorizontalAlignment(alignmentX);
+					component.setVerticalAlignment(alignmentY);
+					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.TEXT.SETTEXT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final JLabel component = (JLabel) list[0].getPointer(trace);
+					final String label = list[1].getString(trace);
+					component.setText(label);
+					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.BUTTON.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JButton component = new JButton(datum.getString(trace));
+					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.BUTTON.SETTEXT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final JButton component = (JButton) list[0].getPointer(trace);
+					final String label = list[1].getString(trace);
+					component.setText(label);
+					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.CHECKBOX.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JCheckBox component = new JCheckBox(datum.getString(trace));
+					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.CHECKBOX.SETTEXT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final JCheckBox component = (JCheckBox) list[0].getPointer(trace);
+					final String label = list[1].getString(trace);
+					component.setText(label);
+					return new Datum();
+				});
+		commands.put("LIB_Graphics.COMPONENT.PANEL.BORDER.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JPanel component = new JPanel();
+					component.setLayout(new BorderLayout());
+					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.PANEL.BLOCK.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JPanel component = new JPanel();
+					component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
+					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.PANEL.INLINE.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JPanel component = new JPanel();
+					component.setLayout(new FlowLayout());
+					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.PANEL.TABLE.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final JPanel component = new JPanel();
+					component.setLayout(new GridLayout((int) list[0].getNumber(trace), (int) list[1].getNumber(trace)));
+					return new Datum((Object) component);
 				});
 	}
 }

@@ -1,5 +1,5 @@
 # Benjamin Park
-# 18-07-2020
+# 21-07-2020
 
 import "LIB_Graphics";
 
@@ -7,12 +7,15 @@ struct Window class {
 	var width;
 	var height;
 	var window;
+	var component;
 	var graphics;
 
 	init(final title, final width, final height, ref closefunction) => {
 		this.width = width;
 		this.height = height;
-		this.window = ("LIB_Graphics.INIT" _OUTER_CALL_ (title, width, height, closefunction));
+		var data = ("LIB_Graphics.INIT" _OUTER_CALL_ (title, width, height, closefunction));
+		this.window = data[0];
+		this.component = data[1];
 	}
 
 	show() => {
@@ -29,6 +32,11 @@ struct Window class {
 		this.height = height;
 	}
 
+	add(ref child, ref position) => {
+		"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component, position);
+		return child;
+	}
+
 	close() => {
 		"LIB_Graphics.CLOSE" _OUTER_CALL_ (this.window);
 		this.window = null;
@@ -36,7 +44,8 @@ struct Window class {
 
 	getGraphics() => {
 		this.graphics == null then {
-			this.graphics = new Graphics("LIB_Graphics.GETGRAPHICS" _OUTER_CALL_ (this.window));
+			this.graphics = new Component.Graphics();
+			add(this.graphics, "Center");
 		}
 		refer this.graphics;
 	}
@@ -115,26 +124,15 @@ struct Window class {
 		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 2, keyf);
 	}
 
-	struct Graphics class {
-		var graphics;
+	getHash() => {
+		return hash window;
+	}
 
-		init(ref graphics) => {
-			this.graphics = graphics;
+	equals(ref o) => {
+		type this != type o then {
+			return false;
 		}
-
-		add(ref shape) => {
-			var success = ("LIB_Graphics.GRAPHICS.ADD" _OUTER_CALL_ (this.graphics, shape.data));
-			success == false then {
-				throw "Shape already exists in Graphics";
-			}
-		}
-
-		remove(ref shape) => {
-			"LIB_Graphics.GRAPHICS.REMOVE" _OUTER_CALL_ (this.graphics, shape.data);
-			success == false then {
-				throw "Shape does not exist in Graphics";
-			}
-		}
+		return window == o.window;
 	}
 
 	struct MouseEvent class {
@@ -174,6 +172,392 @@ struct Window class {
 
 		getStr() => {
 			return "(CODE=" + str charCode + ", STR=" + charStr + ", ISACTION=" + str actionKey + ")";
+		}
+	}
+}
+
+static Component class {
+	var NORTH = "North";
+	var SOUTH = "South";
+	var EAST = "East";
+	var WEST = "West";
+	var MIDDLE = "Center";
+
+	var CENTER = 0;
+	var TOP = 1;
+	var LEFT = 2;
+	var BOTTOM = 3;
+	var RIGHT = 4;
+	var LEADING = 10;
+
+	struct Graphics class {
+		var component;
+
+		init() => {
+			this.component = ("LIB_Graphics.GRAPHICS.INIT" _OUTER_CALL_ null);
+		}
+
+		add(ref shape) => {
+			var success = ("LIB_Graphics.GRAPHICS.ADD" _OUTER_CALL_ (this.component, shape.data));
+			success == false then {
+				throw "Shape already exists in Graphics";
+			}
+		}
+
+		remove(ref shape) => {
+			"LIB_Graphics.GRAPHICS.REMOVE" _OUTER_CALL_ (this.component, shape.data);
+			success == false then {
+				throw "Shape does not exist in Graphics";
+			}
+		}
+
+		getHash() => {
+			return hash component;
+		}
+
+		equals(ref o) => {
+			type this != type o then {
+				return false;
+			}
+			return component == o.component;
+		}
+	}
+
+	struct Text class {
+		var component;
+		var label;
+		var alignmentX;
+		var alignmentY;
+
+		init(final label) => {
+			this.label = label;
+			this.component = ("LIB_Graphics.COMPONENT.TEXT.INIT" _OUTER_CALL_ label);
+		}
+
+		add(ref child) => {
+			"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+			refer child;
+		}
+
+		align(final alignmentX, final alignmentY) => {
+			this.alignmentX = alignmentX;
+			this.alignmentY	= alignmentY;
+			"LIB_Graphics.COMPONENT.TEXT.ALIGN" _OUTER_CALL_ (component, alignmentX, alignmentY);
+		}
+
+		setText(final label) => {
+			this.label = label;
+			"LIB_Graphics.COMPONENT.TEXT.SETTEXT" _OUTER_CALL_ (component, label);
+		}
+
+		getHash() => {
+			return hash component;
+		}
+
+		equals(ref o) => {
+			type this != type o then {
+				return false;
+			}
+			return component == o.component;
+		}
+	}
+
+	struct Button class {
+		var component;
+		var label;
+		var enabled;
+
+		init(final label) => {
+			this.label = label;
+			this.component = ("LIB_Graphics.COMPONENT.BUTTON.INIT" _OUTER_CALL_ label);
+		}
+
+		add(ref child) => {
+			"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+			refer child;
+		}
+
+		enable() => {
+			this.enabled = true;
+			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, true);
+		}
+
+		disable() => {
+			this.enabled = false;
+			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, false);
+		}
+
+		action(ref function) => {
+			"LIB_Graphics.COMPONENT.ACTION" _OUTER_CALL_ (component, function);
+		}
+
+		click() => {
+			"LIB_Graphics.COMPONENT.CLICK" _OUTER_CALL_ component;
+		}
+
+		setText(final label) => {
+			this.label = label;
+			"LIB_Graphics.COMPONENT.BUTTON.SETTEXT" _OUTER_CALL_ (component, label);
+		}
+
+		getHash() => {
+			return hash component;
+		}
+
+		equals(ref o) => {
+			type this != type o then {
+				return false;
+			}
+			return component == o.component;
+		}
+	}
+
+	struct CheckBox class {
+		var component;
+		var label;
+		var enabled;
+
+		init(final label) => {
+			this.label = label;
+			this.component = ("LIB_Graphics.COMPONENT.CHECKBOX.INIT" _OUTER_CALL_ label);
+		}
+
+		add(ref child) => {
+			"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+			refer child;
+		}
+
+		enable() => {
+			this.enabled = true;
+			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, true);
+		}
+
+		disable() => {
+			this.enabled = false;
+			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, false);
+		}
+
+		action(ref function) => {
+			"LIB_Graphics.COMPONENT.ACTION" _OUTER_CALL_ (component, function);
+		}
+
+		click() => {
+			"LIB_Graphics.COMPONENT.CLICK" _OUTER_CALL_ component;
+		}
+
+		setText(final label) => {
+			this.label = label;
+			"LIB_Graphics.COMPONENT.CHECKBOX.SETTEXT" _OUTER_CALL_ (component, label);
+		}
+
+		getHash() => {
+			return hash component;
+		}
+
+		equals(ref o) => {
+			type this != type o then {
+				return false;
+			}
+			return component == o.component;
+		}
+	}
+
+	static Panel class {
+		struct Border class {
+			var component;
+
+			init() => {
+				this.component = ("LIB_Graphics.COMPONENT.PANEL.BORDER.INIT" _OUTER_CALL_ null);
+			}
+
+			add(ref child, final position) => {
+				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component, position);
+				refer child;
+			}
+
+			getHash() => {
+				return hash component;
+			}
+
+			equals(ref o) => {
+				type this != type o then {
+					return false;
+				}
+				return component == o.component;
+			}
+		}
+
+		struct Block class {
+			var component;
+
+			init() => {
+				this.component = ("LIB_Graphics.COMPONENT.PANEL.BLOCK.INIT" _OUTER_CALL_ null);
+			}
+
+			add(ref child) => {
+				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+				refer child;
+			}
+
+			getHash() => {
+				return hash component;
+			}
+
+			equals(ref o) => {
+				type this != type o then {
+					return false;
+				}
+				return component == o.component;
+			}
+		}
+
+		struct Inline class {
+			var component;
+
+			init() => {
+				this.component = ("LIB_Graphics.COMPONENT.PANEL.INLINE.INIT" _OUTER_CALL_ null);
+			}
+
+			add(ref child) => {
+				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+				refer child;
+			}
+
+			getHash() => {
+				return hash component;
+			}
+
+			equals(ref o) => {
+				type this != type o then {
+					return false;
+				}
+				return component == o.component;
+			}
+		}
+
+		struct Table class {
+			var component;
+			var rows;
+			var cols;
+
+			init(final rows, final cols) => {
+				this.rows = rows;
+				this.cols = cols;
+				this.component = ("LIB_Graphics.COMPONENT.PANEL.TABLE.INIT" _OUTER_CALL_ (rows, cols));
+			}
+
+			add(ref child) => {
+				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+				refer child;
+			}
+
+			getHash() => {
+				return hash component;
+			}
+
+			equals(ref o) => {
+				type this != type o then {
+					return false;
+				}
+				return component == o.component;
+			}
+		}
+	}
+
+	static Menu class {
+		struct Bar class {
+			var component;
+
+			init() => {
+				this.component = ("LIB_Graphics.COMPONENT.MENU.BAR.INIT" _OUTER_CALL_ null);
+			}
+
+			add(ref child) => {
+				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+				refer child;
+			}
+
+			getHash() => {
+				return hash component;
+			}
+
+			equals(ref o) => {
+				type this != type o then {
+					return false;
+				}
+				return component == o.component;
+			}
+		}
+
+		struct Item class {
+			var component;
+			var label;
+
+			init(final label) => {
+				this.label = label;
+				this.component = ("LIB_Graphics.COMPONENT.MENU.ITEM.INIT" _OUTER_CALL_ label);
+			}
+
+			add(ref child) => {
+				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+				refer child;
+			}
+
+			getHash() => {
+				return hash component;
+			}
+
+			equals(ref o) => {
+				type this != type o then {
+					return false;
+				}
+				return component == o.component;
+			}
+		}
+
+		struct Label class {
+			var component;
+			var label;
+			var enabled;
+
+			init(final label) => {
+				this.label = label;
+				this.component = ("LIB_Graphics.COMPONENT.MENU.LABEL.INIT" _OUTER_CALL_ label);
+			}
+
+			add(ref child) => {
+				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+				refer child;
+			}
+
+			enable() => {
+				this.enabled = true;
+				"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, true);
+			}
+
+			disable() => {
+				this.enabled = false;
+				"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, false);
+			}
+
+			action(ref function) => {
+				"LIB_Graphics.COMPONENT.ACTION" _OUTER_CALL_ (component, function);
+			}
+
+			click() => {
+				"LIB_Graphics.COMPONENT.CLICK" _OUTER_CALL_ component;
+			}
+
+			getHash() => {
+				return hash component;
+			}
+
+			equals(ref o) => {
+				type this != type o then {
+					return false;
+				}
+				return component == o.component;
+			}
 		}
 	}
 }

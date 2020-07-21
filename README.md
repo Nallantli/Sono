@@ -1,4 +1,4 @@
-# Sono Beta 1.6.0
+# Sono Beta 1.6.1
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">

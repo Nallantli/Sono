@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import main.base.CommandManager;
+import main.phl.Hasher;
 import main.phl.Pair;
 import main.phl.Phone;
 import main.phl.PhoneManager;
@@ -52,6 +53,7 @@ public class Interpreter {
 	public final int PARENTHESES;
 	public final int ALL;
 	public final int BASE;
+	public final int FEATURES;
 
 	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console, final Output stdout,
 			final Output stderr, final Input stdin) {
@@ -83,6 +85,7 @@ public class Interpreter {
 		PARENTHESES = hashVariable("(");
 		ALL = hashVariable("_all");
 		BASE = hashVariable("_base");
+		FEATURES = hashVariable("_features");
 
 		if (this.pl != null) {
 			final List<Datum> data = new ArrayList<>();
@@ -93,13 +96,20 @@ public class Interpreter {
 			for (final Phone p : pl.getBasePhones()) {
 				dataBase.add(new Datum(p));
 			}
+			final List<Datum> dataFeatures = new ArrayList<>();
+			for (final int f : pl.getFeatureNames()) {
+				dataFeatures.add(new Datum(Hasher.deHash(f)));
+			}
 			final Datum d = new Datum(data.toArray(new Datum[0]));
 			d.setMutable(false);
 			final Datum db = new Datum(dataBase.toArray(new Datum[0]));
 			db.setMutable(false);
+			final Datum df = new Datum(dataFeatures.toArray(new Datum[0]));
+			df.setMutable(false);
 
 			main.setVariable(this, ALL, d, new ArrayList<>());
 			main.setVariable(this, BASE, db, new ArrayList<>());
+			main.setVariable(this, FEATURES, df, new ArrayList<>());
 		}
 	}
 
