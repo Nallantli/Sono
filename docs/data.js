@@ -2009,7 +2009,7 @@ const LIBRARIES = {
                 {
                     key: "nasalAssimilation",
                     desc: "<code>Rule</code> dictating the assimilation of the phone [n] to the place of the following consonant.",
-                    value: `S |> 'n' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null ~ [-|syl, +|cons, -|cont, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back]`
+                    value: `S |> 'n' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null .. [-|syl, +|cons, -|cont, -|str, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back]`
                 },
                 {
                     key: "deRhoticizationCons",

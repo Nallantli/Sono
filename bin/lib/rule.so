@@ -1,5 +1,5 @@
 # Benjamin Park
-# 19-07-2020
+# 22-07-2020
 
 static RuleSets class {
 	var vowelNasalization = S |> [+|syl] -> [+|nasal] // null .. [-|syl, +|nasal];
