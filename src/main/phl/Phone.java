@@ -33,12 +33,7 @@ public class Phone implements Comparable<Phone> {
 	}
 
 	public Matrix getMatrix() {
-		final Matrix map = new Matrix(pm);
-		for (final Pair p : features)
-			if (p.getQuality() != Hasher.ZERO)
-				map.put(p);
-
-		return map;
+		return new Matrix(pm, features);
 	}
 
 	private int[] getQualityArray(final PhoneManager pm) {

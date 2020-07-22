@@ -72,6 +72,7 @@ public class PhoneLoader {
 		try {
 			System.out.println("Reading file <" + baseFilename + ">...");
 			readFile(pm, null, baseFilename, "\t", false);
+			setSecondary();
 
 			System.out.println("Generating variants...");
 
@@ -116,9 +117,7 @@ public class PhoneLoader {
 		}
 	}
 
-	public PhoneLoader(final String baseFilename, final boolean force) throws IOException {
-		loadedPhones = new HashMap<>();
-		this.pm = new PhoneManager(this);
+	private void setSecondary() {
 		secondaryLibrary.put(Secondary.VOCALIC,
 				new SecondaryArticulation(pm, "̩", Hasher.hash("syl"), Hasher.TRUE, Collections.emptyList(),
 						List.of(new Matrix(pm, new Pair(Hasher.hash("cons"), Hasher.TRUE),
@@ -214,6 +213,11 @@ public class PhoneLoader {
 										new Pair(Hasher.hash("syl"), Hasher.FALSE)))));
 		secondaryLibrary.put(Secondary.LENGTH, new SecondaryArticulation(pm, "ː", Hasher.hash("long"), Hasher.TRUE,
 				Collections.emptyList(), List.of(new Matrix(pm, new Pair(Hasher.hash("long"), Hasher.FALSE)))));
+	}
+
+	public PhoneLoader(final String baseFilename, final boolean force) throws IOException {
+		loadedPhones = new HashMap<>();
+		this.pm = new PhoneManager(this);
 		if (force)
 			initCache(baseFilename);
 		else {
@@ -222,6 +226,7 @@ public class PhoneLoader {
 			System.out.println("Loading Cache for <" + baseFilename + ">...");
 			try {
 				readFile(pm, directory.getAbsolutePath(), cacheFilename + ".data", "\t", true);
+				setSecondary();
 				/*
 				 * System.out.println("Setting Phones..."); for (final Map.Entry<Matrix,
 				 * ArrayList<String>> e : loadedPhones.entrySet()) new Phone(pm,

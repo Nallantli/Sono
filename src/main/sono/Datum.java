@@ -574,7 +574,7 @@ public class Datum {
 			case FUNCTION:
 				return valueFunction.hashCode();
 			case MATRIX:
-				return valueMatrix.toString().hashCode();
+				return valueMatrix.hashCode();
 			case NUMBER:
 				return String.valueOf(valueNumber).hashCode();
 			case PAIR:

@@ -365,8 +365,10 @@ public abstract class Operator {
 				throw new SonoRuntimeException(
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			final Matrix matrix = new Matrix(interpreter.getManager());
-			for (final Operator o : operators)
-				matrix.put(o.evaluate(scope, trace).getPair(trace));
+			for (final Operator o : operators) {
+				final Pair p = o.evaluate(scope, trace).getPair(trace);
+				matrix.put(p.getFeature(), p.getQuality());
+			}
 			return new Datum(matrix);
 		}
 
@@ -1143,8 +1145,10 @@ public abstract class Operator {
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				final int listSize = datumA.getVectorLength(trace);
 				final Matrix m = new Matrix(interpreter.getManager());
-				for (int i = 0; i < listSize; i++)
-					m.put(datumA.indexVector(i).getPair(trace));
+				for (int i = 0; i < listSize; i++) {
+					final Pair p = datumA.indexVector(i).getPair(trace);
+					m.put(p.getFeature(), p.getQuality());
+				}
 				return new Datum(m);
 			} else if (datumA.getType() == Datum.Type.PHONE) {
 				return new Datum(datumA.getPhone(trace).getMatrix());

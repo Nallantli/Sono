@@ -7,84 +7,55 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class Matrix implements Iterable<Pair> {
-	private final List<Pair> holder;
 	private final PhoneManager pm;
-	private byte[] bytes;
+	private final int[] rawData;
 
 	public Matrix(final PhoneManager pm) {
-		holder = new ArrayList<>();
-		this.bytes = new byte[pm.getFeatureNames().size()];
+		this.rawData = new int[pm.getFeatureNames().size()];
 		this.pm = pm;
 	}
 
 	public Matrix(final PhoneManager pm, final Matrix m) {
 		this.pm = pm;
-		this.bytes = m.bytes;
-		holder = new ArrayList<>();
-		for (final Pair p : m.holder)
-			holder.add(new Pair(p.getFeature(), p.getQuality()));
+		this.rawData = new int[pm.getFeatureNames().size()];
+		for (final Pair p : m)
+			put(p.getFeature(), p.getQuality());
 	}
 
 	public Matrix(final PhoneManager pm, final Pair... entries) {
 		this.pm = pm;
-		holder = new ArrayList<>(List.of(entries));
+		this.rawData = new int[pm.getFeatureNames().size()];
+		for (final Pair p : entries)
+			put(p.getFeature(), p.getQuality());
 	}
 
-	private int getIndexOf(final int key) {
-		for (int i = 0; i < holder.size(); i++)
-			if (holder.get(i).getFeature() == key)
-				return i;
-		return -1;
-	}
-
-	public int getQuality(final int key) {
-		final int i = getIndexOf(key);
-		if (i >= 0)
-			return holder.get(i).getQuality();
-		return Hasher.ZERO;
-	}
-
-	public void put(Pair p) {
-		if (pm.getMajorClasses().containsKey(p.getFeature())
-				&& (p.getQuality() == Hasher.FALSE || p.getQuality() == Hasher.ANY)) {
-			for (final int f : pm.getMajorClasses().get(p.getFeature()))
-				put(f, Hasher.ZERO);
-		} else {
-			final int im = pm.inMajorClass(p.getFeature());
-			if (im != -1 && getQuality(im) == Hasher.ANY)
-				p = new Pair(p.getFeature(), Hasher.ZERO);
-		}
-
-		final int i = getIndexOf(p.getFeature());
-
-		if (p.getQuality() == Hasher.ZERO && i >= 0) {
-			holder.remove(i);
-			return;
-		} else if (p.getQuality() == Hasher.ZERO) {
-			return;
-		}
-
-		if (i >= 0)
-			holder.set(i, p);
-		else
-			holder.add(p);
-
-		bytes[pm.getFeatureNames().indexOf(p.getFeature())] = (byte) p.getQuality();
+	public int getQuality(final int f) {
+		return rawData[pm.getFeatureNames().indexOf(f)];
 	}
 
 	public void put(final int f, final int q) {
-		put(new Pair(f, q));
+		rawData[pm.getFeatureNames().indexOf(f)] = q;
+
+		if (pm.getMajorClasses().containsKey(f) && (q == Hasher.FALSE || q == Hasher.ANY)) {
+			for (final int fm : pm.getMajorClasses().get(f))
+				put(fm, Hasher.ZERO);
+		} else {
+			final int im = pm.inMajorClass(f);
+			if (im != -1 && getQuality(im) == Hasher.ANY) {
+				rawData[pm.getFeatureNames().indexOf(f)] = Hasher.ZERO;
+			}
+		}
 	}
 
 	public void putAll(final Matrix m) {
-		for (final Pair p : m.holder) {
+		for (final Pair p : m) {
 			if ((getQuality(p.getFeature()) == Hasher.TRUE && p.getQuality() == Hasher.FALSE)
 					|| (getQuality(p.getFeature()) == Hasher.FALSE && p.getQuality() == Hasher.TRUE))
-				put(new Pair(p.getFeature(), Hasher.ANY));
+				put(p.getFeature(), Hasher.ANY);
 			else if (getQuality(p.getFeature()) == Hasher.ANY || p.getQuality() == Hasher.ANY)
-				put(new Pair(p.getFeature(), Hasher.ANY));
+				put(p.getFeature(), Hasher.ANY);
 			else
-				put(p);
+				put(p.getFeature(), p.getQuality());
 		}
 	}
 
@@ -112,27 +83,36 @@ public class Matrix implements Iterable<Pair> {
 		return newFeatures;
 	}
 
+	private List<Pair> getList() {
+		final List<Pair> list = new ArrayList<>();
+		for (final int f : pm.getFeatureNames()) {
+			if (getQuality(f) != Hasher.ZERO)
+				list.add(new Pair(f, getQuality(f)));
+		}
+		return list;
+	}
+
 	public int size() {
-		return holder.size();
+		return getList().size();
 	}
 
 	@Override
 	public String toString() {
-		return holder.toString();
+		return getList().toString();
 	}
 
 	public boolean isEmpty() {
-		return holder.isEmpty();
+		return size() == 0;
 	}
 
 	@Override
 	public Iterator<Pair> iterator() {
-		return new MatrixIterator(this.holder);
+		return new MatrixIterator(getList());
 	}
 
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(bytes);
+		return Arrays.hashCode(rawData);
 	}
 
 	@Override
