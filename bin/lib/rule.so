@@ -11,7 +11,7 @@ static RuleSets class {
 	var medialVoicing = S |> [-|syl, -|voice, +|cons] -> [+|voice] // [+|syl, +|voice] .. [+|syl, +|voice];
 	var medialFrication = S |> [-|syl, +|cons, -|son, -|del] -> [+|del, +|cont, +|str] // [+|syl, +|voice] .. [+|syl, +|voice];
 	var hDropping = S |> 'h' -> null // "$" .. [+|syl];
-	var nasalAssimilation = S |> 'n' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null .. [-|syl, +|cons, -|cont, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back];
+	var nasalAssimilation = S |> 'n' -> [2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back] // null .. [-|syl, +|cons, -|cont, -|str, 2|LAB, 2|round, 2|ld, 2|COR, 2|ant, 2|dist, 2|DOR, 2|high, 2|low, 2|front, 2|back];
 	var deRhoticizationCons = Af |> [+|syl] -> [+|long] // null .. {[-|syl, +|son, -|nasal, -|LAB, -|LAT, -|DOR], "$", [-|syl]};
 	var deRhoticizationFinal = Af |> [+|syl] -> [+|long] // null .. {[-|syl, +|son, -|nasal, -|LAB, -|LAT, -|DOR], "#"};
 	var stopDeletion = S |> [-|son, -|del] -> null // null .. {"$", [-|son, -|del]};
