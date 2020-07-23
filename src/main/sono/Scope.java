@@ -57,7 +57,7 @@ public class Scope {
 			this.data.put(key, value);
 			return value;
 		} else {
-			Datum ret = new Datum();
+			final Datum ret = new Datum();
 			this.data.put(key, ret);
 			return ret;
 		}

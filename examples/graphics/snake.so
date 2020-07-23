@@ -4,25 +4,19 @@ load "system";
 var SIZE_X = 30;
 var SIZE_Y = 30;
 var SIZE_SQUARE = 15;
+var speed = 80;
+var direction;
+var newDir;
+var posX;
+var posY;
+var size;
+var LOST;
 
 var window = new Window("Snake Game", SIZE_X * SIZE_SQUARE, SIZE_Y * SIZE_SQUARE, exit);
 var graphics = window.getGraphics();
 
 var valueArray = alloc SIZE_X;
 var shapeArray = alloc SIZE_X;
-var direction = 0;
-var newDir = 0;
-var posX = 5;
-var posY = 5;
-var size = 1;
-var LOST = false;
-
-x in {0 until SIZE_X} do {
-	valueArray[x] = alloc SIZE_Y;
-	y in {0 until SIZE_Y} do {
-		valueArray[x][y] = 0;
-	}
-}
 
 x in {0 until SIZE_X} do {
 	shapeArray[x] = alloc SIZE_Y;
@@ -34,14 +28,42 @@ x in {0 until SIZE_X} do {
 }
 
 window.onKeyPress((event) => {
-	event.charStr == "W" && direction != 2 then {
-		newDir = 3;
-	} else event.charStr == "S" && direction != 3 then {
-		newDir = 2;
-	} else event.charStr == "A" && direction != 0 then {
-		newDir = 1;
-	} else event.charStr == "D" && direction != 1 then {
-		newDir = 0;
+	event.charStr switch {
+		"W" goto {
+			direction != 2 then {
+				newDir = 3;
+			}
+		}
+		"S" goto {
+			direction != 3 then {
+				newDir = 2;
+			}
+		}
+		"A" goto {
+			direction != 0 then {
+				newDir = 1;
+			}
+		}
+		"D" goto {
+			direction != 1 then {
+				newDir = 0;
+			}
+		}
+		"1" goto {
+			speed = 160;
+		}
+		"2" goto {
+			speed = 120;
+		}
+		"3" goto {
+			speed = 80;
+		}
+		"4" goto {
+			speed = 0;
+		}
+		"Space" goto {
+			reset();
+		}
 	}
 });
 
@@ -108,12 +130,28 @@ refresh() => {
 	window.repaint();
 }
 
-setApple();
+reset() => {
+	LOST = false;
+	direction = 0;
+	newDir = 0;
+	posX = 5;
+	posY = 5;
+	size = 1;
+	x in {0 until SIZE_X} do {
+		valueArray[x] = alloc SIZE_Y;
+		y in {0 until SIZE_Y} do {
+			valueArray[x][y] = 0;
+		}
+	}
+	setApple();
+}
+
+reset();
 
 var start = timeMS();
 true do {
 	var lapse = timeMS() - start;
-	lapse > 80 then {
+	lapse > speed then {
 		start = timeMS();
 		refresh();
 	}

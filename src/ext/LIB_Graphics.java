@@ -32,6 +32,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import main.SonoWrapper;
@@ -39,6 +43,7 @@ import main.base.Library;
 import main.sono.Datum;
 import main.sono.Function;
 import main.sono.Interpreter;
+import main.sono.err.SonoRuntimeException;
 
 abstract class Paintable {
 	protected Color fill;
@@ -406,6 +411,16 @@ class WindowFunctions extends JFrame {
 public class LIB_Graphics extends Library {
 	public LIB_Graphics() {
 		super();
+
+		if (!SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE")) {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+					| UnsupportedLookAndFeelException e) {
+				e.printStackTrace();
+			}
+		}
+
 		commands.put("LIB_Graphics.INIT",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					if (SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE"))
@@ -759,7 +774,7 @@ public class LIB_Graphics extends Library {
 					component.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(final ActionEvent e) {
-							function.execute(null, trace);
+							function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, trace);
 						}
 					});
 					return new Datum();
@@ -852,6 +867,34 @@ public class LIB_Graphics extends Library {
 					final JPanel component = new JPanel();
 					component.setLayout(new GridLayout((int) list[0].getNumber(trace), (int) list[1].getNumber(trace)));
 					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.PANEL.SPLIT.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					int orientation = JSplitPane.VERTICAL_SPLIT;
+					if (datum.getString(trace).equals("Horizontal"))
+						orientation = JSplitPane.HORIZONTAL_SPLIT;
+					else if (datum.getString(trace).equals("Vertical"))
+						orientation = JSplitPane.VERTICAL_SPLIT;
+					else
+						throw new SonoRuntimeException(
+								"Component.Panel.Split can only be initialized with \"Horizontal\" or \"Vertical\"",
+								trace);
+					final JSplitPane component = new JSplitPane(orientation);
+					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.TABPANE.INIT",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final JTabbedPane component = new JTabbedPane();
+					return new Datum((Object) component);
+				});
+		commands.put("LIB_Graphics.COMPONENT.TABPANE.ADD",
+				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(trace);
+					final JTabbedPane frame = ((JTabbedPane) list[0].getPointer(trace));
+					final JComponent child = (JComponent) list[1].getPointer(trace);
+					final String label = list[2].getString(trace);
+					frame.addTab(label, child);
+					return new Datum();
 				});
 	}
 }

@@ -230,6 +230,10 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.VarDec(this, ((Operator.Variable) a).getKey()));
 				}
+				if (token.equals("abstract")) {
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.AbstractDec(this, ((Operator.Variable) a).getKey()));
+				}
 				if (token.equals("struct")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.StructDec(this, ((Operator.Variable) a).getKey()));
@@ -306,6 +310,11 @@ public class Interpreter {
 					final Operator b = o.pollLast();
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Register(this, a, b));
+				}
+				if (token.equals("extends")) {
+					final Operator b = o.pollLast();
+					final Operator a = o.pollLast();
+					o.addLast(new Operator.Extends(this, a, b));
 				}
 				if (token.equals("=")) {
 					final Operator b = o.pollLast();

@@ -3,7 +3,7 @@ load "system";
 load "math";
 
 var SIZE_X = 60;
-var SIZE_Y = 40;
+var SIZE_Y = 60;
 
 var valueArray = alloc SIZE_X;
 var shapeArray = alloc SIZE_X;

@@ -1,5 +1,5 @@
 # Benjamin Park
-# 21-07-2020
+# 23-07-2020
 
 import "LIB_Graphics";
 
@@ -190,9 +190,49 @@ static Component class {
 	var RIGHT = 4;
 	var LEADING = 10;
 
-	struct Graphics class {
+	abstract Prototype class {
 		var component;
 
+		add(ref child) => {
+			"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+			refer child;
+		}
+
+		getHash() => {
+			return hash component;
+		}
+
+		equals(ref o) => {
+			type this != type o then {
+				return false;
+			}
+			return component == o.component;
+		}
+	}
+
+	abstract Actionable extends Prototype class {
+		var enabled;
+
+		enable() => {
+			this.enabled = true;
+			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, true);
+		}
+
+		disable() => {
+			this.enabled = false;
+			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, false);
+		}
+
+		action(ref function) => {
+			"LIB_Graphics.COMPONENT.ACTION" _OUTER_CALL_ (component, function);
+		}
+
+		click() => {
+			"LIB_Graphics.COMPONENT.CLICK" _OUTER_CALL_ component;
+		}
+	}
+
+	struct Graphics extends Prototype class {
 		init() => {
 			this.component = ("LIB_Graphics.GRAPHICS.INIT" _OUTER_CALL_ null);
 		}
@@ -210,21 +250,9 @@ static Component class {
 				throw "Shape does not exist in Graphics";
 			}
 		}
-
-		getHash() => {
-			return hash component;
-		}
-
-		equals(ref o) => {
-			type this != type o then {
-				return false;
-			}
-			return component == o.component;
-		}
 	}
 
-	struct Text class {
-		var component;
+	struct Text extends Prototype class {
 		var label;
 		var alignmentX;
 		var alignmentY;
@@ -232,11 +260,6 @@ static Component class {
 		init(final label) => {
 			this.label = label;
 			this.component = ("LIB_Graphics.COMPONENT.TEXT.INIT" _OUTER_CALL_ label);
-		}
-
-		add(ref child) => {
-			"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-			refer child;
 		}
 
 		align(final alignmentX, final alignmentY) => {
@@ -249,194 +272,56 @@ static Component class {
 			this.label = label;
 			"LIB_Graphics.COMPONENT.TEXT.SETTEXT" _OUTER_CALL_ (component, label);
 		}
-
-		getHash() => {
-			return hash component;
-		}
-
-		equals(ref o) => {
-			type this != type o then {
-				return false;
-			}
-			return component == o.component;
-		}
 	}
 
-	struct Button class {
-		var component;
+	struct Button extends Actionable class {
 		var label;
-		var enabled;
 
 		init(final label) => {
 			this.label = label;
 			this.component = ("LIB_Graphics.COMPONENT.BUTTON.INIT" _OUTER_CALL_ label);
 		}
 
-		add(ref child) => {
-			"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-			refer child;
-		}
-
-		enable() => {
-			this.enabled = true;
-			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, true);
-		}
-
-		disable() => {
-			this.enabled = false;
-			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, false);
-		}
-
-		action(ref function) => {
-			"LIB_Graphics.COMPONENT.ACTION" _OUTER_CALL_ (component, function);
-		}
-
-		click() => {
-			"LIB_Graphics.COMPONENT.CLICK" _OUTER_CALL_ component;
-		}
-
 		setText(final label) => {
 			this.label = label;
 			"LIB_Graphics.COMPONENT.BUTTON.SETTEXT" _OUTER_CALL_ (component, label);
 		}
-
-		getHash() => {
-			return hash component;
-		}
-
-		equals(ref o) => {
-			type this != type o then {
-				return false;
-			}
-			return component == o.component;
-		}
 	}
 
-	struct CheckBox class {
-		var component;
+	struct CheckBox extends Actionable class {
 		var label;
-		var enabled;
 
 		init(final label) => {
 			this.label = label;
 			this.component = ("LIB_Graphics.COMPONENT.CHECKBOX.INIT" _OUTER_CALL_ label);
 		}
 
-		add(ref child) => {
-			"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-			refer child;
-		}
-
-		enable() => {
-			this.enabled = true;
-			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, true);
-		}
-
-		disable() => {
-			this.enabled = false;
-			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, false);
-		}
-
-		action(ref function) => {
-			"LIB_Graphics.COMPONENT.ACTION" _OUTER_CALL_ (component, function);
-		}
-
-		click() => {
-			"LIB_Graphics.COMPONENT.CLICK" _OUTER_CALL_ component;
-		}
-
 		setText(final label) => {
 			this.label = label;
 			"LIB_Graphics.COMPONENT.CHECKBOX.SETTEXT" _OUTER_CALL_ (component, label);
 		}
-
-		getHash() => {
-			return hash component;
-		}
-
-		equals(ref o) => {
-			type this != type o then {
-				return false;
-			}
-			return component == o.component;
-		}
 	}
 
 	static Panel class {
-		struct Border class {
-			var component;
-
+		struct Border extends Prototype class {
 			init() => {
 				this.component = ("LIB_Graphics.COMPONENT.PANEL.BORDER.INIT" _OUTER_CALL_ null);
 			}
-
-			add(ref child, final position) => {
-				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component, position);
-				refer child;
-			}
-
-			getHash() => {
-				return hash component;
-			}
-
-			equals(ref o) => {
-				type this != type o then {
-					return false;
-				}
-				return component == o.component;
-			}
 		}
 
-		struct Block class {
-			var component;
-
+		struct Block extends Prototype class {
 			init() => {
 				this.component = ("LIB_Graphics.COMPONENT.PANEL.BLOCK.INIT" _OUTER_CALL_ null);
 			}
-
-			add(ref child) => {
-				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-				refer child;
-			}
-
-			getHash() => {
-				return hash component;
-			}
-
-			equals(ref o) => {
-				type this != type o then {
-					return false;
-				}
-				return component == o.component;
-			}
 		}
 
-		struct Inline class {
-			var component;
-
+		struct Inline extends Prototype class {
 			init() => {
 				this.component = ("LIB_Graphics.COMPONENT.PANEL.INLINE.INIT" _OUTER_CALL_ null);
 			}
-
-			add(ref child) => {
-				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-				refer child;
-			}
-
-			getHash() => {
-				return hash component;
-			}
-
-			equals(ref o) => {
-				type this != type o then {
-					return false;
-				}
-				return component == o.component;
-			}
 		}
 
-		struct Table class {
-			var component;
+		struct Table extends Prototype class {
 			var rows;
 			var cols;
 
@@ -445,118 +330,51 @@ static Component class {
 				this.cols = cols;
 				this.component = ("LIB_Graphics.COMPONENT.PANEL.TABLE.INIT" _OUTER_CALL_ (rows, cols));
 			}
+		}
 
-			add(ref child) => {
-				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-				refer child;
-			}
+		struct Split extends Prototype class {
+			var orientation;
 
-			getHash() => {
-				return hash component;
-			}
-
-			equals(ref o) => {
-				type this != type o then {
-					return false;
-				}
-				return component == o.component;
+			init(final orientation) => {
+				this.orientation = orientation;
+				this.component = ("LIB_Graphics.COMPONENT.PANEL.SPLIT.INIT" _OUTER_CALL_ orientation);
 			}
 		}
 	}
 
-	static Menu class {
-		struct Bar class {
-			var component;
+	struct TabPane extends Prototype class {
+		init() => {
+			this.component = ("LIB_Graphics.COMPONENT.TABPANE.INIT" _OUTER_CALL_ null);
+		}
 
+		add(final label, ref child) => {
+			"LIB_Graphics.COMPONENT.TABPANE.ADD" _OUTER_CALL_ (component, child.component, label);
+			refer child;
+		}
+	}
+
+	static Menu class {
+		struct Bar extends Prototype class {
 			init() => {
 				this.component = ("LIB_Graphics.COMPONENT.MENU.BAR.INIT" _OUTER_CALL_ null);
 			}
-
-			add(ref child) => {
-				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-				refer child;
-			}
-
-			getHash() => {
-				return hash component;
-			}
-
-			equals(ref o) => {
-				type this != type o then {
-					return false;
-				}
-				return component == o.component;
-			}
 		}
 
-		struct Item class {
-			var component;
+		struct Item extends Prototype class {
 			var label;
 
 			init(final label) => {
 				this.label = label;
 				this.component = ("LIB_Graphics.COMPONENT.MENU.ITEM.INIT" _OUTER_CALL_ label);
 			}
-
-			add(ref child) => {
-				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-				refer child;
-			}
-
-			getHash() => {
-				return hash component;
-			}
-
-			equals(ref o) => {
-				type this != type o then {
-					return false;
-				}
-				return component == o.component;
-			}
 		}
 
-		struct Label class {
-			var component;
+		struct Label extends Actionable class {
 			var label;
-			var enabled;
 
 			init(final label) => {
 				this.label = label;
 				this.component = ("LIB_Graphics.COMPONENT.MENU.LABEL.INIT" _OUTER_CALL_ label);
-			}
-
-			add(ref child) => {
-				"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
-				refer child;
-			}
-
-			enable() => {
-				this.enabled = true;
-				"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, true);
-			}
-
-			disable() => {
-				this.enabled = false;
-				"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, false);
-			}
-
-			action(ref function) => {
-				"LIB_Graphics.COMPONENT.ACTION" _OUTER_CALL_ (component, function);
-			}
-
-			click() => {
-				"LIB_Graphics.COMPONENT.CLICK" _OUTER_CALL_ component;
-			}
-
-			getHash() => {
-				return hash component;
-			}
-
-			equals(ref o) => {
-				type this != type o then {
-					return false;
-				}
-				return component == o.component;
 			}
 		}
 	}

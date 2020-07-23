@@ -67,7 +67,11 @@ reset.action(() => {
 
 exitLabel.action(exit);
 
-var features = window.add(new Component.Panel.Table(0, 4), Component.WEST);
+var tabs = window.add(new Component.TabPane(), Component.MIDDLE);
+var featurePad = tabs.add("First", new Component.Panel.Split("Horizontal"));
+var test = tabs.add("Second", new Component.Panel.Border());
+
+var features = featurePad.add(new Component.Panel.Table(0, 4));
 f in _features do {
 	var button1 = features.add(new Component.Button("-"));
 	var button2 = features.add(new Component.Button("~"));
@@ -101,7 +105,7 @@ f in _features do {
 	});
 }
 
-var panel = window.add(new Component.Panel.Table(0, 10), Component.MIDDLE);
+var panel = featurePad.add(new Component.Panel.Table(0, 10));
 p in _base do {
 	var button = panel.add(new Component.Button(str p));
 	phoneB[p] = button;

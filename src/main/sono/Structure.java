@@ -6,12 +6,16 @@ import java.util.List;
 import main.sono.err.SonoRuntimeException;
 
 public class Structure {
+	public enum Type {
+		STATIC, STRUCT, ABSTRACT
+	}
+
 	private static int HASHCODE = 0;
 
 	private final Scope parent;
 	private final Scope mainScope;
 	private final Operator main;
-	private final boolean stat;
+	private final Type type;
 	private final int key;
 	private final Interpreter interpreter;
 
@@ -20,10 +24,10 @@ public class Structure {
 	private final boolean instantiated;
 	private final int hash;
 
-	public Structure(final Structure parentStructure, final boolean stat, final Scope parent, final Operator main,
+	public Structure(final Structure parentStructure, final Type type, final Scope parent, final Operator main,
 			final int key, final Interpreter interpreter) {
 		this.parentStructure = parentStructure;
-		this.stat = stat;
+		this.type = type;
 		this.parent = parent;
 		this.main = main;
 		this.mainScope = new Scope(this, this.parent);
@@ -36,7 +40,7 @@ public class Structure {
 	public Structure(final Structure structure, final List<String> trace) {
 		this.parentStructure = structure.parentStructure;
 		this.interpreter = structure.interpreter;
-		this.stat = structure.stat;
+		this.type = structure.type;
 		this.parent = structure.parent;
 		this.main = structure.main;
 		this.mainScope = structure.mainScope.instantiate(this, interpreter.getManager(), trace);
@@ -54,7 +58,7 @@ public class Structure {
 	}
 
 	public Datum instantiate(final Datum[] params, final List<String> trace) {
-		if (stat)
+		if (type != Type.STRUCT)
 			throw new SonoRuntimeException("Cannot instantiate a static class.", trace);
 		final Structure structure = new Structure(this, trace);
 		structure.main.evaluate(structure.mainScope, trace);
@@ -70,7 +74,7 @@ public class Structure {
 
 	public String toStringTrace(final List<String> trace) {
 		if (!instantiated)
-			return (stat ? "STATIC-" : "STRUCT-") + getName();
+			return type.toString() + "-" + getName();
 		else {
 			if (this.mainScope.variableExists(interpreter.GET_STR))
 				return this.mainScope.getVariable(interpreter.GET_STR, interpreter, trace)
@@ -78,6 +82,12 @@ public class Structure {
 			else
 				return "STRUCT-" + getName();
 		}
+	}
+
+	public boolean perusable() {
+		if (type == Type.ABSTRACT)
+			return false;
+		return type == Type.STATIC || (type == Type.STRUCT && instantiated);
 	}
 
 	public int getHash() {
@@ -94,6 +104,10 @@ public class Structure {
 					.getFunction(Datum.Type.ANY, trace).execute(new Datum[] { new Datum(o) }, trace)
 					.getNumber(trace) != 0;
 		return this == o;
+	}
+
+	public Operator getMain() {
+		return main;
 	}
 
 	/**

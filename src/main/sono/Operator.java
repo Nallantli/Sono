@@ -1,11 +1,11 @@
 package main.sono;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import main.SonoWrapper;
 import main.phl.Matrix;
@@ -23,7 +23,7 @@ public abstract class Operator {
 		NUMBER_CONVERT, CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN,
 		JOIN_DEC, STR_DEC, FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONVERT, TYPE_DEC, STRUCT_DEC, STATIC_DEC,
 		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH, HASH,
-		P_EQUALS, P_NOT_EQUAL,
+		P_EQUALS, P_NOT_EQUAL, ABSTRACT_DEC, EXTENDS,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL, SWITCH_CASE
@@ -671,6 +671,26 @@ public abstract class Operator {
 		}
 	}
 
+	public static class AbstractDec extends Casting {
+		public AbstractDec(final Interpreter interpreter, final int varName) {
+			super(interpreter, Type.ABSTRACT_DEC, varName);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, List<String> trace) {
+			if (SonoWrapper.DEBUG) {
+				trace = new ArrayList<>(trace);
+				trace.add(this.toString());
+			}
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			return "abstract " + interpreter.deHash(varName);
+		}
+	}
+
 	public static class StaticDec extends Casting {
 		public StaticDec(final Interpreter interpreter, final int varName) {
 			super(interpreter, Type.STATIC_DEC, varName);
@@ -688,6 +708,26 @@ public abstract class Operator {
 		@Override
 		public String toString() {
 			return "static " + interpreter.deHash(varName);
+		}
+	}
+
+	public static class Extends extends Binary {
+		public Extends(final Interpreter interpreter, final Operator a, final Operator b) {
+			super(interpreter, Type.EXTENDS, a, b);
+		}
+
+		@Override
+		public Datum evaluate(final Scope scope, List<String> trace) {
+			if (SonoWrapper.DEBUG) {
+				trace = new ArrayList<>(trace);
+				trace.add(this.toString());
+			}
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			return a.toString() + " extends " + b.toString();
 		}
 	}
 
@@ -2122,7 +2162,10 @@ public abstract class Operator {
 				final Datum fHolder = b.evaluate(scope, trace);
 				return new Datum(object.getType(), fHolder.getFunction(object.getType(), trace));
 			} else {
-				return b.evaluate(object.getStructure(trace).getScope(), trace);
+				final Structure s = object.getStructure(trace);
+				if (s.perusable())
+					return b.evaluate(object.getStructure(trace).getScope(), trace);
+				throw new SonoRuntimeException("Class <" + s.getName() + "> is not perusable.", trace);
 			}
 		}
 
@@ -2164,12 +2207,25 @@ public abstract class Operator {
 				trace = new ArrayList<>(trace);
 				trace.add(this.toString());
 			}
-			boolean stat = false;
-			final int varName = ((Casting) a).getKey();
-			if (a.type == Type.STATIC_DEC)
-				stat = true;
-			final Structure structure = new Structure(scope.getStructure(), stat, scope, b, varName, interpreter);
-			if (stat)
+			Structure.Type stype = Structure.Type.STRUCT;
+			Operator objectOperator = null;
+			Structure extending = null;
+			if (a.type == Type.EXTENDS) {
+				objectOperator = ((Extends) a).getA();
+				extending = ((Extends) a).getB().evaluate(scope, trace).getStructure(trace);
+			} else {
+				objectOperator = a;
+			}
+			final int varName = ((Casting) objectOperator).getKey();
+			if (objectOperator.type == Type.STATIC_DEC)
+				stype = Structure.Type.STATIC;
+			else if (objectOperator.type == Type.ABSTRACT_DEC)
+				stype = Structure.Type.ABSTRACT;
+			Operator main = b;
+			if (extending != null)
+				main = new SoftList(interpreter, List.of(extending.getMain(), main));
+			final Structure structure = new Structure(scope.getStructure(), stype, scope, main, varName, interpreter);
+			if (stype == Structure.Type.STATIC)
 				b.evaluate(structure.getScope(), trace);
 			return scope.setVariable(interpreter, varName, new Datum(structure), trace);
 		}
