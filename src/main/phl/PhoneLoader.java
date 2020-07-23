@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import main.SonoWrapper;
-
 public class PhoneLoader {
 	public enum Secondary {
 		VOCALIC, RETRACTED, ADVANCED, PALATOALVEOLAR, DENTAL, DEVOICING, NASALIZATION, LABIALIZATION, PALATALIZATION,
@@ -95,7 +93,7 @@ public class PhoneLoader {
 				phones.add(new Phone(pm, shortest, e.getKey(), false));
 			}
 
-			final File directory = new File(SonoWrapper.getGlobalOption("PATH"), ".config/cache");
+			final File directory = new File(System.getProperty("user.home"), ".sono/cache");
 			if (!directory.exists())
 				directory.mkdir();
 
@@ -222,8 +220,8 @@ public class PhoneLoader {
 			initCache(baseFilename);
 		else {
 			final String cacheFilename = baseFilename.replaceFirst(".*[\\\\\\/]", "");
-			final File directory = new File(SonoWrapper.getGlobalOption("PATH"), ".config/cache");
-			System.out.println("Loading Cache for <" + baseFilename + ">...");
+			final File directory = new File(System.getProperty("user.home"), ".sono/cache");
+			//System.out.println("Loading Cache for <" + baseFilename + ">...");
 			try {
 				readFile(pm, directory.getAbsolutePath(), cacheFilename + ".data", "\t", true);
 				setSecondary();

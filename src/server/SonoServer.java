@@ -44,7 +44,6 @@ import server.io.StandardOutput;
 public class SonoServer extends WebSocketServer {
 
 	private static int TCP_PORT = 7777;
-	private static String path;
 	private static PhoneLoader pl;
 
 	private final Map<WebSocket, SonoWrapper> conns;
@@ -59,7 +58,7 @@ public class SonoServer extends WebSocketServer {
 		SonoWrapper.setGlobalOption("WRITE", "FALSE");
 		SonoWrapper.setGlobalOption("SOCKET", "FALSE");
 		SonoWrapper.setGlobalOption("GRAPHICS", "FALSE");
-		path = SonoServer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String path = SonoServer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
 		} catch (final UnsupportedEncodingException e1) {
@@ -69,7 +68,7 @@ public class SonoServer extends WebSocketServer {
 
 		SonoWrapper.setGlobalOption("PATH", path);
 
-		final File directory = new File(path, ".config");
+		final File directory = new File(System.getProperty("user.home"), ".sono");
 		if (!directory.exists()) {
 			System.err.println("Please initialize /config file with -d");
 			System.exit(1);

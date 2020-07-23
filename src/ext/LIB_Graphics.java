@@ -442,7 +442,7 @@ public class LIB_Graphics extends Library {
 						f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 					}
 					f.setIconImage(Toolkit.getDefaultToolkit()
-							.getImage(SonoWrapper.getGlobalOption("PATH") + "/res/icon.png"));
+							.getImage(SonoWrapper.getGlobalOption("PATH") + "/res/sono.png"));
 					f.setResizable(false);
 					f.getContentPane().setPreferredSize(new Dimension(width, height));
 					f.pack();

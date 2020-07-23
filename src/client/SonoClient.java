@@ -17,7 +17,7 @@ import client.io.StandardOutput;
 import main.SonoWrapper;
 import main.phl.PhoneLoader;
 import main.sono.Datum;
-import main.sono.err.SonoCompilationException;
+import main.sono.err.SonoException;
 
 public class SonoClient {
 	private static String getOption(final String option, final String[] args) {
@@ -33,6 +33,7 @@ public class SonoClient {
 	}
 
 	public static void main(final String[] args) {
+		final String configPath = System.getProperty("user.home");
 		String path = SonoClient.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
@@ -51,7 +52,7 @@ public class SonoClient {
 
 		if (getOption("-d", args) != null) {
 			force = true;
-			final File directory = new File(path, ".config");
+			final File directory = new File(configPath, ".sono");
 			if (!directory.exists())
 				directory.mkdir();
 			final File config = new File(directory, "config");
@@ -65,7 +66,7 @@ public class SonoClient {
 				System.exit(1);
 			}
 		} else {
-			final File directory = new File(path, ".config");
+			final File directory = new File(configPath, ".sono");
 			if (!directory.exists())
 				directory.mkdir();
 
@@ -124,7 +125,7 @@ public class SonoClient {
 			try {
 				center.run(".", "load \"system\"");
 				System.out.println("Loaded System Library");
-			} catch (final SonoCompilationException e) {
+			} catch (final SonoException e) {
 				System.out.println("Could not load System Library");
 			}
 
