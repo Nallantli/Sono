@@ -1,8 +1,6 @@
 package main.sono;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +43,15 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
-			return Arrays.asList(a);
+		public Operator[] getChildren() {
+			return new Operator[] { a };
 		}
 
 		@Override
 		public void condense() {
 			a.condense();
-			if (a.type == Type.SOFT_LIST && a.getChildren().size() == 1)
-				a = a.getChildren().get(0);
+			if (a.type == Type.SOFT_LIST && a.getChildren().length == 1)
+				a = a.getChildren()[0];
 		}
 	}
 
@@ -70,33 +68,33 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
-			return Arrays.asList(a, b);
+		public Operator[] getChildren() {
+			return new Operator[] { a, b };
 		}
 
 		@Override
 		public void condense() {
 			super.condense();
 			b.condense();
-			if (b.type == Type.SOFT_LIST && b.getChildren().size() == 1)
-				b = b.getChildren().get(0);
+			if (b.type == Type.SOFT_LIST && b.getChildren().length == 1)
+				b = b.getChildren()[0];
 		}
 	}
 
 	public abstract static class Sequence extends Operator {
-		protected List<Operator> operators;
+		protected Operator[] operators;
 
-		public Sequence(final Interpreter i, final Type type, final List<Operator> operators) {
+		public Sequence(final Interpreter i, final Type type, final Operator[] operators) {
 			super(i, type);
 			this.operators = operators;
 		}
 
-		public List<Operator> getVector() {
+		public Operator[] getVector() {
 			return operators;
 		}
 
 		@Override
-		public List<Operator> getChildren() {
+		public Operator[] getChildren() {
 			return getVector();
 		}
 
@@ -105,12 +103,12 @@ public abstract class Operator {
 			final List<Operator> newO = new ArrayList<>();
 			for (final Operator o : operators) {
 				o.condense();
-				if (o.type == Type.SOFT_LIST && o.getChildren().size() == 1)
-					newO.add(o.getChildren().get(0));
+				if (o.type == Type.SOFT_LIST && o.getChildren().length == 1)
+					newO.add(o.getChildren()[0]);
 				else
 					newO.add(o);
 			}
-			this.operators = newO;
+			this.operators = newO.toArray(new Operator[0]);
 		}
 	}
 
@@ -127,8 +125,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
-			return new ArrayList<>();
+		public Operator[] getChildren() {
+			return new Operator[0];
 		}
 
 		@Override
@@ -184,8 +182,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
-			return new ArrayList<>();
+		public Operator[] getChildren() {
+			return new Operator[0];
 		}
 
 		@Override
@@ -256,7 +254,7 @@ public abstract class Operator {
 	}
 
 	public static class SoftList extends Sequence {
-		public SoftList(final Interpreter interpreter, final List<Operator> operators) {
+		public SoftList(final Interpreter interpreter, final Operator[] operators) {
 			super(interpreter, Type.SOFT_LIST, operators);
 		}
 
@@ -283,7 +281,7 @@ public abstract class Operator {
 				}
 				data = list.toArray(new Datum[0]);
 			} else {
-				data = new Datum[operators.size()];
+				data = new Datum[operators.length];
 				int i = 0;
 				for (final Operator o : operators) {
 					final Datum d = o.evaluate(scope, trace);
@@ -301,12 +299,12 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return Interpreter.stringFromList(operators.toArray(), "(", ")");
+			return Interpreter.stringFromList(operators, "(", ")");
 		}
 	}
 
 	public static class HardList extends Sequence {
-		public HardList(final Interpreter interpreter, final List<Operator> operators) {
+		public HardList(final Interpreter interpreter, final Operator[] operators) {
 			super(interpreter, Type.HARD_LIST, operators);
 		}
 
@@ -332,7 +330,7 @@ public abstract class Operator {
 				}
 				data = list.toArray(new Datum[0]);
 			} else {
-				data = new Datum[operators.size()];
+				data = new Datum[operators.length];
 				int i = 0;
 				for (final Operator o : operators) {
 					final Datum d = o.evaluate(newScope, trace);
@@ -346,12 +344,12 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return Interpreter.stringFromList(operators.toArray(), "{", "}");
+			return Interpreter.stringFromList(operators, "{", "}");
 		}
 	}
 
 	public static class MatrixDec extends Sequence {
-		public MatrixDec(final Interpreter interpreter, final List<Operator> operators) {
+		public MatrixDec(final Interpreter interpreter, final Operator[] operators) {
 			super(interpreter, Type.MATRIX_DEC, operators);
 		}
 
@@ -374,7 +372,7 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return Interpreter.stringFromList(operators.toArray(), "[", "]");
+			return Interpreter.stringFromList(operators, "[", "]");
 		}
 	}
 
@@ -583,11 +581,11 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
+		public Operator[] getChildren() {
 			if (b == null)
-				return Arrays.asList(a);
+				return new Operator[] { a };
 			else
-				return Arrays.asList(a, b);
+				return new Operator[] { a, b };
 		}
 	}
 
@@ -812,7 +810,7 @@ public abstract class Operator {
 				throw new SonoRuntimeException(
 						"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.", trace);
 			while (a.type != Type.SLASH)
-				a = ((Sequence) a).operators.get(0);
+				a = ((Sequence) a).operators[0];
 			final Datum dSearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, trace);
 			final Datum rawTrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, trace);
 			final Datum rawInit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, trace);
@@ -1779,8 +1777,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
-			return new ArrayList<>();
+		public Operator[] getChildren() {
+			return new Operator[0];
 		}
 
 		@Override
@@ -1809,8 +1807,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
-			return new ArrayList<>();
+		public Operator[] getChildren() {
+			return new Operator[0];
 		}
 
 		@Override
@@ -1855,17 +1853,17 @@ public abstract class Operator {
 			super.condense();
 			if (c != null) {
 				c.condense();
-				if (c.type == Type.SOFT_LIST && c.getChildren().size() == 1)
-					c = c.getChildren().get(0);
+				if (c.type == Type.SOFT_LIST && c.getChildren().length == 1)
+					c = c.getChildren()[0];
 			}
 		}
 
 		@Override
-		public List<Operator> getChildren() {
+		public Operator[] getChildren() {
 			if (c == null)
-				return Arrays.asList(a, b);
+				return new Operator[] { a, b };
 			else
-				return Arrays.asList(a, b, c);
+				return new Operator[] { a, b, c };
 		}
 	}
 
@@ -1880,7 +1878,7 @@ public abstract class Operator {
 				trace = new ArrayList<>(trace);
 				trace.add(this.toString());
 			}
-			List<Operator> paramsRaw;
+			Operator[] paramsRaw;
 			int[] pNames = null;
 			boolean[] pRefs = null;
 			boolean[] pFins = null;
@@ -1888,9 +1886,9 @@ public abstract class Operator {
 			int i = 0;
 			if (a.type == Type.HARD_LIST) {
 				paramsRaw = ((Sequence) a).getVector();
-				pNames = new int[paramsRaw.size()];
-				pRefs = new boolean[paramsRaw.size()];
-				pFins = new boolean[paramsRaw.size()];
+				pNames = new int[paramsRaw.length];
+				pRefs = new boolean[paramsRaw.length];
+				pFins = new boolean[paramsRaw.length];
 				for (final Operator d : paramsRaw) {
 					switch (d.type) {
 						case REF_DEC:
@@ -1918,9 +1916,9 @@ public abstract class Operator {
 							+ "> cannot be used to designate an objective function.", trace);
 				fType = t.getType();
 				paramsRaw = ((Sequence) ((TypeDec) a).getB()).getVector();
-				pNames = new int[paramsRaw.size()];
-				pRefs = new boolean[paramsRaw.size()];
-				pFins = new boolean[paramsRaw.size()];
+				pNames = new int[paramsRaw.length];
+				pRefs = new boolean[paramsRaw.length];
+				pFins = new boolean[paramsRaw.length];
 				for (final Operator d : paramsRaw) {
 					switch (d.type) {
 						case REF_DEC:
@@ -1997,7 +1995,7 @@ public abstract class Operator {
 
 		@Override
 		public String toString() {
-			return a.toString() + Interpreter.stringFromList(((Sequence) b).getVector().toArray(), "(", ")");
+			return a.toString() + Interpreter.stringFromList(((Sequence) b).getVector(), "(", ")");
 		}
 	}
 
@@ -2223,7 +2221,7 @@ public abstract class Operator {
 				stype = Structure.Type.ABSTRACT;
 			Operator main = b;
 			if (extending != null)
-				main = new SoftList(interpreter, List.of(extending.getMain(), main));
+				main = new SoftList(interpreter, new Operator[] { extending.getMain(), main });
 			final Structure structure = new Structure(scope.getStructure(), stype, scope, main, varName, interpreter);
 			if (stype == Structure.Type.STATIC)
 				b.evaluate(structure.getScope(), trace);
@@ -2296,10 +2294,13 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
-			final List<Operator> ops = new ArrayList<>();
-			ops.add(a);
-			ops.addAll(map.values());
+		public Operator[] getChildren() {
+			final Operator[] mapValues = map.values().toArray(new Operator[0]);
+			final Operator[] ops = new Operator[mapValues.length + 1];
+			ops[0] = a;
+			for (int i = 0; i < mapValues.length; i++) {
+				ops[i + 1] = mapValues[i];
+			}
 			return ops;
 		}
 
@@ -2310,8 +2311,8 @@ public abstract class Operator {
 			for (final Map.Entry<Datum, Operator> entry : map.entrySet()) {
 				final Operator e = entry.getValue();
 				e.condense();
-				if (e.type == Type.SOFT_LIST && e.getChildren().size() == 1)
-					newMap.put(entry.getKey(), e.getChildren().get(0));
+				if (e.type == Type.SOFT_LIST && e.getChildren().length == 1)
+					newMap.put(entry.getKey(), e.getChildren()[0]);
 				else
 					newMap.put(entry.getKey(), e);
 			}
@@ -2319,8 +2320,8 @@ public abstract class Operator {
 			this.map.putAll(newMap);
 			if (c != null) {
 				c.condense();
-				if (c.type == Type.SOFT_LIST && c.getChildren().size() == 1)
-					c = c.getChildren().get(0);
+				if (c.type == Type.SOFT_LIST && c.getChildren().length == 1)
+					c = c.getChildren()[0];
 			}
 		}
 	}
@@ -2358,8 +2359,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public List<Operator> getChildren() {
-			return Collections.emptyList();
+		public Operator[] getChildren() {
+			return new Operator[0];
 		}
 
 		@Override
@@ -2373,7 +2374,7 @@ public abstract class Operator {
 		this.type = type;
 	}
 
-	public abstract List<Operator> getChildren();
+	public abstract Operator[] getChildren();
 
 	public abstract void condense();
 

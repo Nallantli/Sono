@@ -1,7 +1,6 @@
 package main.sono;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -519,7 +518,7 @@ public class Datum {
 
 	@Override
 	public String toString() {
-		return this.toStringTrace(new ArrayList<>());
+		return this.toStringTrace(Collections.emptyList());
 	}
 
 	public Pair getPair(final List<String> trace) {

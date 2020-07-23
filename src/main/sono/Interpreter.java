@@ -420,7 +420,7 @@ public class Interpreter {
 					o.addLast(new Operator.ClassDec(this, a, b));
 				}
 				if (token.equals(".index")) {
-					final Operator b = ((Operator.MatrixDec) o.pollLast()).operators.get(0);
+					final Operator b = ((Operator.MatrixDec) o.pollLast()).operators[0];
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Index(this, a, b));
 				}
@@ -601,7 +601,7 @@ public class Interpreter {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.MatrixDec(this, list));
+				o.addLast(new Operator.MatrixDec(this, list.toArray(new Operator[0])));
 			} else if (token.equals(")")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
@@ -610,7 +610,7 @@ public class Interpreter {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.SoftList(this, list));
+				o.addLast(new Operator.SoftList(this, list.toArray(new Operator[0])));
 			} else if (token.equals("}")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
@@ -619,7 +619,7 @@ public class Interpreter {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.HardList(this, list));
+				o.addLast(new Operator.HardList(this, list.toArray(new Operator[0])));
 			} else if (token.charAt(0) == '\'') {
 				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
 					throw new SonoCompilationException(
@@ -676,7 +676,7 @@ public class Interpreter {
 			}
 		}
 
-		final Operator m = new Operator.SoftList(this, Arrays.asList(o.toArray(new Operator[0])));
+		final Operator m = new Operator.SoftList(this, o.toArray(new Operator[0]));
 		m.condense();
 		return m;
 	}
@@ -692,8 +692,8 @@ public class Interpreter {
 		return s.toString();
 	}
 
-	public static <E> boolean containsInstance(final List<E> list, final Class<? extends E> clazz) {
-		return list.stream().anyMatch(clazz::isInstance);
+	public static <E> boolean containsInstance(final E[] list, final Class<? extends E> clazz) {
+		return Arrays.stream(list).anyMatch(clazz::isInstance);
 	}
 
 	public PhoneManager getManager() {
