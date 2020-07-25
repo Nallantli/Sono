@@ -1,8 +1,8 @@
 # Benjamin Park
-# 16-07-2020
+# 24-07-2020
 
-load "system";
-load "vector";
+load "system.so";
+load "vector.so";
 
 static Network class {
 	struct Basic class {

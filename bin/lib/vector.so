@@ -1,9 +1,9 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 10-07-2020
+# 24-07-2020
 
-load "math";
-load "system";
+load "math.so";
+load "system.so";
 
 Vector::pop(ref this) => {
 	var nl = {};

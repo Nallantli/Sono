@@ -1,4 +1,4 @@
-load "ling";
+load "ling.so";
 
 var phones = {'m', 'n', 'g'};
 

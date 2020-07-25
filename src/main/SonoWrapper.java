@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class SonoWrapper {
-	public static final String VERSION = "Beta 1.7.2";
+	public static final String VERSION = "Beta 1.7.3";
 	public static boolean DEBUG;
 
 	private Interpreter sono = null;
@@ -40,7 +41,18 @@ public class SonoWrapper {
 		return new Datum();
 	}
 
-	public SonoWrapper(final PhoneLoader pl, final String filename, final Output stdout, final Output stderr,
+	public static String escape(String s){
+		return s.replace("\\", "\\\\")
+				.replace("\t", "\\t")
+				.replace("\b", "\\b")
+				.replace("\n", "\\n")
+				.replace("\r", "\\r")
+				.replace("\f", "\\f")
+				.replace("\'", "\\'")
+				.replace("\"", "\\\"");
+	  }
+
+	public SonoWrapper(final PhoneLoader pl, final File filename, final Output stdout, final Output stderr,
 			final Input stdin) {
 		this.stderr = stderr;
 		final CommandManager command = new CommandManager();
@@ -51,7 +63,7 @@ public class SonoWrapper {
 		}
 
 		if (filename != null) {
-			sono.runCode(".", "load \"" + filename + "\"");
+			sono.runCode("", "load \"" + escape(filename.getAbsolutePath()) + "\"");
 		}
 	}
 }

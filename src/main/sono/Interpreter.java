@@ -176,25 +176,25 @@ public class Interpreter {
 			if (Tokenizer.operators.containsKey(token)) {
 				if (token.equals("load")) {
 					final String path = ((Operator.Container) o.pollLast()).getDatum().getString(new ArrayList<>());
-					final String[] split = (new StringBuilder(path)).reverse().toString().split("/", 2);
-					final String filename = (new StringBuilder(split[0])).reverse().toString() + ".so";
+					final String[] split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
+					final String filename = (new StringBuilder(split[0])).reverse().toString();
 					String fileDirectory = directory;
 					if (split.length > 1)
-						fileDirectory += "/" + (new StringBuilder(split[1])).reverse().toString();
-					if (!loadedFiles.contains(fileDirectory + "/" + filename)) {
-						loadedFiles.add(fileDirectory + "/" + filename);
+						fileDirectory += File.separator + (new StringBuilder(split[1])).reverse().toString();
+					if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
+						loadedFiles.add(fileDirectory + File.separator + filename);
 						o.addLast(parse(fileDirectory, loadFile(fileDirectory, filename)));
 					}
 				}
 				if (token.equals("import")) {
 					final String path = ((Operator.Container) o.pollLast()).getDatum().getString(new ArrayList<>());
-					final String[] split = (new StringBuilder(path)).reverse().toString().split("/", 2);
+					final String[] split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
 					final String filename = (new StringBuilder(split[0])).reverse().toString() + ".jar";
 					String fileDirectory = directory;
 					if (split.length > 1)
-						fileDirectory += "/" + (new StringBuilder(split[1])).reverse().toString();
-					if (!loadedFiles.contains(fileDirectory + "/" + filename)) {
-						loadedFiles.add(fileDirectory + "/" + filename);
+						fileDirectory += File.separator + (new StringBuilder(split[1])).reverse().toString();
+					if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
+						loadedFiles.add(fileDirectory + File.separator + filename);
 						console.importLibrary(fileDirectory, filename, "ext." + path);
 					}
 				}

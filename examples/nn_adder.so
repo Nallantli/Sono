@@ -1,6 +1,6 @@
-load "system";
-load "vector";
-load "neural";
+load "system.so";
+load "vector.so";
+load "neural.so";
 
 # Binary Adder - Neural Network
 # Adds two binary digits with a possible carry, formatted as {carry-alpha, a, b} => {c, carry-beta}

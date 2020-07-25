@@ -1,5 +1,5 @@
-load "graphics";
-load "system";
+load "graphics.so";
+load "system.so";
 
 var window = new Window("Rainbow", 600, 400, () => {
 	println("Rainbow!");

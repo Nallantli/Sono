@@ -1,4 +1,4 @@
-load "system";
+load "system.so";
 
 SOE(final MAX) => {
 	var a = alloc MAX;

@@ -1,7 +1,7 @@
 # Benjamin Park
-# 29-06-2020
+# 24-07-2020
 
-load "string";
+load "string.so";
 
 Feature::getPair(ref this) => {
 	var s = (str this).split("\\|");

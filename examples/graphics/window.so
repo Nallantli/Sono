@@ -1,8 +1,8 @@
-load "graphics";
-load "system";
-load "map";
-load "vector";
-load "feature";
+load "graphics.so";
+load "system.so";
+load "map.so";
+load "vector.so";
+load "feature.so";
 
 var window = new Window("Feature Pad", 800, 600, exit);
 

@@ -1,7 +1,7 @@
 # Benjamin Park
-# 18-07-2020
+# 24-07-2020
 
-load "system";
+load "system.so";
 
 struct Map class {
 	struct Node class {

@@ -1,4 +1,4 @@
-load "system";
+load "system.so";
 
 HiLo(final MAX) => {
 	println("██╗  ██╗██╗██╗      ██████╗ ");

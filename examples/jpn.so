@@ -1,5 +1,5 @@
-load "system";
-load "rule";
+load "system.so";
+load "rule.so";
 
 var ruleSet = {
 	# All consonants that are followed by another consonant (except nasals) are [+long]; /kk/ -> /kː/

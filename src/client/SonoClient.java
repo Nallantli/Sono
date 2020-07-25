@@ -107,9 +107,9 @@ public class SonoClient {
 			SonoWrapper.DEBUG = false;
 		}
 
-		String filename = null;
+		File filename = null;
 		if (args.length > 0 && args[0].charAt(0) != '-') {
-			filename = args[0];
+			filename = new File(args[0]);
 		}
 		final Scanner sc = new Scanner(System.in);
 		final SonoWrapper center = new SonoWrapper(pl, filename, new StandardOutput(), new ErrorOutput(),
@@ -123,7 +123,7 @@ public class SonoClient {
 				System.out.println("Phonological Operations Disabled");
 			}
 			try {
-				center.run(".", "load \"system\"");
+				center.run(".", "load \"system.so\"");
 				System.out.println("Loaded System Library");
 			} catch (final SonoException e) {
 				System.out.println("Could not load System Library");

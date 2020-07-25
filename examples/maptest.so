@@ -1,5 +1,5 @@
-load "map";
-load "system";
+load "map.so";
+load "system.so";
 
 var m = new Map();
 

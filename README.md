@@ -1,4 +1,4 @@
-# Sono Beta 1.7.2
+# Sono Beta 1.7.3
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -35,10 +35,10 @@ During the initial run, `-d` will be required to develop a cache for the phonolo
 Example usages:
 
 ```sh
-sono "filename"
+sono "filename.so"
 sono -d "pathToData.tsv"
-sono "filename" -l
-sono "filename" -d "pathToData.tsv"
+sono "filename.so" -l
+sono "filename.so" -d "pathToData.tsv"
 ```
 
 ## Data Types

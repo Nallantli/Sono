@@ -1,11 +1,11 @@
 # Benjamin Park
-# 09-07-2020
+# 24-07-2020
 
-load "feature";
-load "vector";
-load "string";
-load "map";
-load "rule";
+load "feature.so";
+load "vector.so";
+load "string.so";
+load "map.so";
+load "rule.so";
 
 static Phonology class {
 	getNaturalSet(ref phones, ref set) => {

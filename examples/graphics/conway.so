@@ -1,6 +1,6 @@
-load "graphics";
-load "system";
-load "math";
+load "graphics.so";
+load "system.so";
+load "math.so";
 
 var SIZE_X = 60;
 var SIZE_Y = 60;

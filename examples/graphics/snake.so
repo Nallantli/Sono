@@ -1,5 +1,5 @@
-load "graphics";
-load "system";
+load "graphics.so";
+load "system.so";
 
 var SIZE_X = 30;
 var SIZE_Y = 30;

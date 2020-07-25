@@ -1,12 +1,12 @@
 # Benjamin Park
-# 30-06-2020
+# 24-07-2020
 
-load "file";
-load "map";
-load "string";
-load "vector";
-load "system";
-load "rule";
+load "file.so";
+load "map.so";
+load "string.so";
+load "vector.so";
+load "system.so";
+load "rule.so";
 
 struct DataSet class {
 	var categories;

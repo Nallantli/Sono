@@ -1,6 +1,6 @@
-load "ling";
-load "vector";
-load "html";
+load "ling.so";
+load "vector.so";
+load "html.so";
 
 var phones = {'m', 'p', 'b', 'g', 'ŋ', 'ɲ', 'ɴ', 'ɱ'};
 

@@ -1,5 +1,5 @@
-load "system";
-load "rule";
+load "system.so";
+load "rule.so";
 
 # German devoicing of final consonant, just a silly example to demonstrate using "#"
 var rule = S |> [-|syl, +|cons, +|voice, -|nasal] -> [-|voice] // null .. "#";

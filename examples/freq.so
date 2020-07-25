@@ -1,8 +1,8 @@
-load "data";
-load "file";
-load "map";
-load "system";
-load "vector";
+load "data.so";
+load "file.so";
+load "map.so";
+load "system.so";
+load "vector.so";
 
 var file = new File("README.md");
 var reader = file.getReader();

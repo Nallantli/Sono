@@ -1,8 +1,8 @@
 # Benjamin Park
-# 10-07-2020
+# 24-07-2020
 
-load "system";
-load "graphics";
+load "system.so";
+load "graphics.so";
 
 static Data class {
 	struct Tuple class {

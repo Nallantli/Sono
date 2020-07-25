@@ -680,9 +680,9 @@ static Color class {
 		r *= 256;
 		g *= 256;
 		b *= 256;
-		r > 255 then { r = 255 };
-		g > 255 then { g = 255 };
-		b > 255 then { b = 255 };
+		r = (r > 255 then 255 else r);
+		g = (g > 255 then 255 else g);
+		b = (b > 255 then 255 else b);
 		return new RGB(r, g, b, a);
 	}
 

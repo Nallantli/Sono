@@ -1,6 +1,6 @@
-load "system";
-load "vector";
-load "socket";
+load "system.so";
+load "vector.so";
+load "socket.so";
 
 var server = new Server(5000);
 

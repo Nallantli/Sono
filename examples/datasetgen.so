@@ -1,9 +1,9 @@
-load "dataset";
-load "rule";
-load "vector";
-load "system";
-load "string";
-load "html";
+load "dataset.so";
+load "rule.so";
+load "vector.so";
+load "system.so";
+load "string.so";
+load "html.so";
 
 var dataset = new DataSet();
 
