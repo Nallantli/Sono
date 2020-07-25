@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: "Iosevka SS05", monospace;
+    font-family: "Inconsolata", monospace;
     font-size: 14px;
     background: black;
 }
@@ -97,7 +97,7 @@ h1 {
     color: #66aaff;
     font-size: 16px;
     font-weight: normal;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Encode Sans", sans-serif;
 }
 
 #codecont {
@@ -236,7 +236,7 @@ h1 {
     text-align: left;
     border: none;
     transition: all 0.25s ease-in-out;
-    font-family: "Iosevka SS05", monospace;
+    font-family: "Inconsolata", monospace;
 }
 
 .file:hover {
@@ -332,7 +332,7 @@ summary:hover {
 }
 
 #input {
-    font-family: "Iosevka SS05", monospace;
+    font-family: "Inconsolata", monospace;
     display: inline-block;
     border: none;
     min-width: 20px;

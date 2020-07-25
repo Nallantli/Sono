@@ -666,9 +666,9 @@ public class Interpreter {
 			} else if (token.equals("Word")) {
 				o.addLast(new Operator.Container(this, new Datum(Datum.Type.WORD)));
 			} else if (token.equals("true")) {
-				o.addLast(new Operator.Container(this, new Datum(1)));
+				o.addLast(new Operator.Container(this, new Datum(true)));
 			} else if (token.equals("false")) {
-				o.addLast(new Operator.Container(this, new Datum(0)));
+				o.addLast(new Operator.Container(this, new Datum(false)));
 			} else if (token.equals("break")) {
 				o.addLast(new Operator.Break(this));
 			} else {

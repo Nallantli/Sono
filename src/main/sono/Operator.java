@@ -774,7 +774,7 @@ public abstract class Operator {
 						return result;
 				}
 			} else {
-				while (a.evaluate(scope, trace).getNumber(trace) != 0) {
+				while (a.evaluate(scope, trace).getBool(trace)) {
 					final Scope loopScope = new Scope(scope.getStructure(), scope);
 					final Datum result = b.evaluate(loopScope, trace);
 					if (result.getType() == Datum.Type.I_BREAK)
@@ -1626,7 +1626,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqual(datumB, trace) ? 1 : 0);
+			return new Datum(datumA.isEqual(datumB, trace));
 		}
 
 		@Override
@@ -1648,7 +1648,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqualPure(datumB, trace) ? 1 : 0);
+			return new Datum(datumA.isEqualPure(datumB, trace));
 		}
 
 		@Override
@@ -1670,7 +1670,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqual(datumB, trace) ? 0 : 1);
+			return new Datum(!datumA.isEqual(datumB, trace));
 		}
 
 		@Override
@@ -1692,7 +1692,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqualPure(datumB, trace) ? 0 : 1);
+			return new Datum(!datumA.isEqualPure(datumB, trace));
 		}
 
 		@Override
@@ -1836,7 +1836,7 @@ public abstract class Operator {
 				trace.add(this.toString());
 			}
 			final Datum condition = a.evaluate(scope, trace);
-			if (condition.getNumber(trace) != 0)
+			if (condition.getBool(trace))
 				return b.evaluate(scope, trace);
 			else if (c != null)
 				return c.evaluate(scope, trace);
@@ -2012,7 +2012,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) < datumB.getNumber(trace) ? 1 : 0);
+			return new Datum(datumA.getNumber(trace) < datumB.getNumber(trace));
 		}
 
 		@Override
@@ -2034,7 +2034,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) > datumB.getNumber(trace) ? 1 : 0);
+			return new Datum(datumA.getNumber(trace) > datumB.getNumber(trace));
 		}
 
 		@Override
@@ -2056,7 +2056,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) <= datumB.getNumber(trace) ? 1 : 0);
+			return new Datum(datumA.getNumber(trace) <= datumB.getNumber(trace));
 		}
 
 		@Override
@@ -2078,7 +2078,7 @@ public abstract class Operator {
 			}
 			final Datum datumA = a.evaluate(scope, trace);
 			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) >= datumB.getNumber(trace) ? 1 : 0);
+			return new Datum(datumA.getNumber(trace) >= datumB.getNumber(trace));
 		}
 
 		@Override
@@ -2099,12 +2099,12 @@ public abstract class Operator {
 				trace.add(this.toString());
 			}
 			final Datum datumA = a.evaluate(scope, trace);
-			if (datumA.getNumber(trace) != 0) {
+			if (datumA.getBool(trace)) {
 				final Datum datumB = b.evaluate(scope, trace);
-				if (datumB.getNumber(trace) != 0)
-					return new Datum(1);
+				if (datumB.getBool(trace))
+					return new Datum(true);
 			}
-			return new Datum(0);
+			return new Datum(false);
 		}
 
 		@Override
@@ -2125,14 +2125,14 @@ public abstract class Operator {
 				trace.add(this.toString());
 			}
 			final Datum datumA = a.evaluate(scope, trace);
-			if (datumA.getNumber(trace) != 0) {
-				return new Datum(1);
+			if (datumA.getBool(trace)) {
+				return new Datum(true);
 			} else {
 				final Datum datumB = b.evaluate(scope, trace);
-				if (datumB.getNumber(trace) != 0)
-					return new Datum(1);
+				if (datumB.getBool(trace))
+					return new Datum(true);
 			}
-			return new Datum(0);
+			return new Datum(false);
 		}
 
 		@Override

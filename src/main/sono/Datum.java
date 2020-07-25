@@ -84,6 +84,12 @@ public class Datum {
 				return "Pointer";
 			}
 		},
+		BOOL {
+			@Override
+			public String toString() {
+				return "Boolean";
+			}
+		},
 
 		// INTERPRETER USE
 		I_BREAK, ANY
@@ -96,6 +102,7 @@ public class Datum {
 	private Matrix valueMatrix = null;
 	private Rule valueRule = null;
 	private double valueNumber = 0;
+	private boolean valueBool = false;
 	private Map<Type, Function> valueFunction = null;
 	private Word valueWord = null;
 	private Structure valueStructure = null;
@@ -163,6 +170,11 @@ public class Datum {
 	public Datum(final double valueNumber) {
 		this.type = Type.NUMBER;
 		this.valueNumber = valueNumber;
+	}
+
+	public Datum(final boolean valueBool) {
+		this.type = Type.BOOL;
+		this.valueBool = valueBool;
 	}
 
 	public Datum(final Type fType, final Function valueFunction) {
@@ -254,6 +266,12 @@ public class Datum {
 		return this.valueWord;
 	}
 
+	public boolean getBool(final List<String> trace) {
+		if (type != Type.BOOL)
+			throw new SonoRuntimeException("Value <" + this.toStringTrace(trace) + "> is not a Boolean.", trace);
+		return this.valueBool;
+	}
+
 	public void setMutable(final boolean mutable) {
 		this.mutable = mutable;
 	}
@@ -273,7 +291,6 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -293,7 +310,6 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -309,7 +325,6 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -324,7 +339,6 @@ public class Datum {
 				this.valuePair = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -338,7 +352,6 @@ public class Datum {
 				this.valuePair = null;
 				this.valuePhone = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -352,7 +365,6 @@ public class Datum {
 				this.valuePair = null;
 				this.valuePhone = null;
 				this.valueRule = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -374,6 +386,20 @@ public class Datum {
 
 				this.valueNumber = datum.getNumber(trace);
 				break;
+			case BOOL:
+				this.valueVector = null;
+				this.valueMatrix = null;
+				this.valuePair = null;
+				this.valuePhone = null;
+				this.valueRule = null;
+				this.valueString = null;
+				this.valueFunction = null;
+				this.valueWord = null;
+				this.valueStructure = null;
+				this.valuePointer = null;
+
+				this.valueBool = datum.getBool(trace);
+				break;
 			case FUNCTION:
 				this.valueVector = null;
 				this.valueMatrix = null;
@@ -381,7 +407,6 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
@@ -397,7 +422,6 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
@@ -411,7 +435,6 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valuePointer = null;
@@ -425,7 +448,6 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -439,7 +461,6 @@ public class Datum {
 				this.valuePhone = null;
 				this.valueRule = null;
 				this.valueString = null;
-				this.valueNumber = 0;
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
@@ -470,6 +491,8 @@ public class Datum {
 				return "\"" + valueString + "\"";
 			case NUMBER:
 				return BigDecimal.valueOf(valueNumber).stripTrailingZeros().toPlainString();
+			case BOOL:
+				return valueBool ? "true" : "false";
 			case FUNCTION:
 				return valueFunction.toString();
 			case WORD:
@@ -503,6 +526,8 @@ public class Datum {
 				return valueString;
 			case NUMBER:
 				return BigDecimal.valueOf(valueNumber).stripTrailingZeros().toPlainString();
+			case BOOL:
+				return valueBool ? "true" : "false";
 			case FUNCTION:
 				return valueFunction.toString();
 			case WORD:
@@ -576,6 +601,8 @@ public class Datum {
 				return valueMatrix.hashCode();
 			case NUMBER:
 				return String.valueOf(valueNumber).hashCode();
+			case BOOL:
+				return Boolean.hashCode(valueBool);
 			case PAIR:
 				return valuePair.toString().hashCode();
 			case PHONE:
@@ -617,6 +644,8 @@ public class Datum {
 				return d.getType() == Type.NULL;
 			case NUMBER:
 				return valueNumber == d.valueNumber;
+			case BOOL:
+				return valueBool == d.valueBool;
 			case PAIR:
 				return valuePair.equals(d.valuePair);
 			case PHONE:

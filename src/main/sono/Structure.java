@@ -102,7 +102,7 @@ public class Structure {
 		if (instantiated && this.mainScope.variableExists(interpreter.ISEQUALS))
 			return this.mainScope.getVariable(interpreter.ISEQUALS, interpreter, trace)
 					.getFunction(Datum.Type.ANY, trace).execute(new Datum[] { new Datum(o) }, trace)
-					.getNumber(trace) != 0;
+					.getBool(trace);
 		return this == o;
 	}
 

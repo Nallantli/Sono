@@ -27,9 +27,9 @@ public class LIB_FileIO extends Library {
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
 					final File file = (File) datum.getPointer(trace);
 					if (file.exists())
-						return new Datum(1);
+						return new Datum(true);
 					else
-						return new Datum(0);
+						return new Datum(false);
 				});
 		commands.put("LIB_FileIO.CREATE",
 				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
@@ -38,9 +38,9 @@ public class LIB_FileIO extends Library {
 					final File file = (File) datum.getPointer(trace);
 					try {
 						if (file.createNewFile())
-							return new Datum(1);
+							return new Datum(true);
 						else
-							return new Datum(0);
+							return new Datum(false);
 					} catch (final IOException e) {
 						throw error("Cannot create file <" + file.toString() + ">", trace);
 					}

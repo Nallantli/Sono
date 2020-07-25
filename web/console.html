@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title> Sono Interface </title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="banner">
+        <div id="loader"></div>
+        <img src="Sono.svg" id="logo" alt="Sono Logo">
+    </div>
+    <div id="examples" style="display: none;">
+        <h1>Examples</h1>
+    </div>
+    <div id="docs" style="display: none;">
+        <iframe title="Sono Docs" src="https://nallantli.github.io/Sono/"></iframe>
+    </div>
+    <div id="nav">
+        <button id="runbutton" class="navbuttons" onclick="runCode()"><i class="far fa-play-circle"></i></button>
+        <button class="navbuttons" onclick="toggleElement('examples')"><i class="fas fa-th-list"></i></button>
+        <button class="navbuttons" onclick="toggleElement('docs')"><i class="fas fa-book"></i></button>
+        <a class="navbuttons" id="github" target="_blank" href="https://github.com/Nallantli/Sono" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+    </div>
+    <div id="codecont">
+        <div id="upperbar">
+            <ul id="tabs">
+                <li class="tablinks selectedtab" id="untitled.so"><button class="opentab" onclick="openTab('untitled.so')"><i class="fas fa-file-code"></i>untitled.so</button><button class="closetab" onclick="closeTab('untitled.so')"><i class="fas fa-times-circle"></i></button></li>
+            </ul>
+            <div id="addcont">
+                <button id="newtab" onclick="newTab()"><i class="fas fa-plus-circle"></i></button>
+            </div>
+        </div>
+        <div id="editor"></div>
+    </div>
+    <div id="output" onclick="focusMethod()"><pre contenteditable="true" id="input" onkeydown="sendInput(this)"></pre></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/twilight");
+        editor.setShowPrintMargin(false);
+        editor.setOption("fontFamily", "Inconsolata, monospace");
+        editor.setOption("fontSize", "14px");
+    </script>
+    <script type="text/javascript" src="interface.js">
+    </script>
+    <script type="text/javascript" src="files.js">
+    </script>
+</body>
+
+</html>

@@ -745,7 +745,7 @@ const LIBRARIES = {
                     template: undefined,
                     params: [],
                     desc: "Returns whether the amount of elements in the <code>Map</code> is equal to zero.",
-                    return: "Number",
+                    return: "Boolean",
                     see: []
                 },
                 {
@@ -773,7 +773,7 @@ const LIBRARIES = {
                         ]
                     }],
                     desc: "Removes the element of a given key value. Returns <code>true</code> if successful.",
-                    return: "Number",
+                    return: "Boolean",
                     see: ["system.abs"]
                 },
                 {
@@ -787,7 +787,7 @@ const LIBRARIES = {
                         ]
                     }],
                     desc: "Returns whether the <code>Map</code> contains an element assigned to the given key value.",
-                    return: "Number",
+                    return: "Boolean",
                     see: ["system.abs"]
                 },
                 {
@@ -1176,7 +1176,7 @@ const LIBRARIES = {
                     ]
                 }],
                 desc: "Returns <code>true</code> if the given <code>Vector</code> contains no elements.",
-                return: "Number",
+                return: "Boolean",
                 see: []
             },
             {
@@ -1198,7 +1198,7 @@ const LIBRARIES = {
                     }
                 ],
                 desc: "Returns <code>true</code> if the given <code>Vector</code> contains the an element equivalent to <code>value</code>.",
-                return: "Number",
+                return: "Boolean",
                 see: []
             },
             {
@@ -1624,7 +1624,7 @@ const LIBRARIES = {
                     ]
                 }],
                 desc: "Returns <code>true</code> if the given <code>String</code> contains no characters.",
-                return: "Number",
+                return: "Boolean",
                 see: []
             },
             {
@@ -1690,7 +1690,7 @@ const LIBRARIES = {
                     }
                 ],
                 desc: "Returns <code>true</code> if the given <code>String</code> has contents that match the REGEX value of <code>pattern</code>.",
-                return: "Number",
+                return: "Boolean",
                 see: ["system.match"]
             },
             {

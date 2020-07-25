@@ -1,54 +1,84 @@
 <!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <title> Sono Interface </title>
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Sono</title>
+    <link rel="stylesheet" href="styles/index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div id="banner">
-        <div id="loader"></div>
-        <img src="Sono.svg" id="logo" alt="Sono Logo">
+        <h1>SONO</h1>
+        <img id="logo" src="Sono.svg" alt="Sono.svg">
+        <a id="console-link" href="console.html">Try Online</a>
     </div>
-    <div id="examples" style="display: none;">
-        <h1>Examples</h1>
-    </div>
-    <div id="docs" style="display: none;">
-        <iframe title="Sono Docs" src="https://nallantli.github.io/Sono/"></iframe>
-    </div>
-    <div id="nav">
-        <button id="runbutton" class="navbuttons" onclick="runCode()"><i class="far fa-play-circle"></i></button>
-        <button class="navbuttons" onclick="toggleElement('examples')"><i class="fas fa-th-list"></i></button>
-        <button class="navbuttons" onclick="toggleElement('docs')"><i class="fas fa-book"></i></button>
-        <a class="navbuttons" id="github" target="_blank" href="https://github.com/Nallantli/Sono" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
-    </div>
-    <div id="codecont">
-        <div id="upperbar">
-            <ul id="tabs">
-                <li class="tablinks selectedtab" id="untitled.so"><button class="opentab" onclick="openTab('untitled.so')"><i class="fas fa-file-code"></i>untitled.so</button><button class="closetab" onclick="closeTab('untitled.so')"><i class="fas fa-times-circle"></i></button></li>
-            </ul>
-            <div id="addcont">
-                <button id="newtab" onclick="newTab()"><i class="fas fa-plus-circle"></i></button>
-            </div>
+    <div id="content">
+        <div class="content-block" style="text-align: center; margin-top: 30px">
+            <a href="https://nallantli.github.io/Sono/">https://nallantli.github.io/Sono/</a>
         </div>
-        <div id="editor"></div>
+        <div class="content-block">
+            <h2>About</h2>
+            <p>Sono is a high-level object-oriented and procedural scripting language developed with linguistic capabilities in mind. For that it supports multiple operators revolving around phonological analysis based upon distinctive features.</p>
+            <p>The language is capable of functioning moreover as a general scripting language, with a growing number of libraries and the capacity to interface with Java files. The language is small right now and has very little following, if any at all,
+                but it is a language made to fill a niche that has not yet been assessed. Every day, the gap between the sciences and programming becomes smaller and smaller, and the sadly neglected science of Linguistics is equally deserving of its time
+                in the world of programming. If not by this language does it become widepsread, than at least may it be that this language inspire another to take up that mantle.</p>
+        </div>
+        <div class="content-block">
+            <h2>Installation</h2>
+            <p>There are no binary releases at the moment, but one can compile the source directly from the Github repo:</p>
+            <pre>
+$ git clone https://github.com/Nallantli/Sono
+$ cd Sono</pre>
+            <p>For Windows:</p>
+            <pre>
+$ ./build-jar
+$ ./build-lib</pre>
+            <p>For OSX/Linux:</p>
+            <pre>
+$ sh build-jar.sh
+$ sh build-lib.sh</pre>
+            <p>These commands will place all necessary files into their locations in <code>/bin</code>, which can be then added to the system path.</p>
+            <p>Once the system path is updated, all one needs to do is offer the interpreter a dataset consisting of base segmental values. The repo includes a slightly adjusted version of Bruce Hayes' feature chart under <code>assets/</code>:</p>
+            <pre>
+$ sono -d assets/hayes.tsv</pre>
+            <p>This will generate the cache, stored in your home directory under <code>.sono/</code>. Now you can entire the console or run a file!</p>
+            <pre>
+$ sono
+Sono {VERSION}
+Phonological Data Loaded From <{DATA}>
+Loaded System Library
+></pre>
+            <pre>
+$ sono examples/hello.so
+Hello World!</pre>
+        </div>
+        <div class="content-block">
+            <h2>Hello World</h2>
+            <p>Below is the classic "hello, world!" script; with two lines the task is done: the first being the loading of the <code>system.so</code> library for output capabilities, and the second the calling of the method by which the output is generated.</p>
+            <pre>
+<span class="_keyword">load</span> <span class="_string">"system.so"</span>;
+
+<span class="_function">println</span>(<span class="_string">"Hello World!"</span>);</pre>
+        </div>
+        <div class="content-block">
+            <h2>Phonology</h2>
+            <p>There are multiple examples to be seen in the repo, but a few minor demonstrations can never be so bad.</p>
+            <pre>
+<span class="_keyword">var</span> rule = <span class="_rule">S |></span> [<span class="_feature">-|syl</span>, <span class="_feature">+|cons</span>, <span class="_feature">+|voice</span>, <span class="_feature">-|nasal</span>] -> [<span class="_feature">-|voice</span>] // <span class="_const">null</span> .. <span class="_string">"#"</span>;</pre>
+            <p>That value above is a Rule, a phonological transformation rule. When applied to a Word, it transforms that value accordingly. The rule above is a final-consonant devoicing rule, so any consonant at the end of a Word that is not a nasal will
+                become [-voice].</p>
+            <pre>
+<span class="_function">println</span>(<span class="_string">`taːg`</span> >> rule);
+<span class="_function">println</span>(<span class="_string">`taːgə`</span> >> rule);</pre>
+            <p>Output:</p>
+            <pre>
+taːk
+taːgə</pre>
+            <p>Note that the second Word is unaffected - it does not end with a consonant. Rules can be much more powerful and versatile using a variety of tokens and parameters further explained in the repo (but soon to be transported here).</p>
+        </div>
     </div>
-    <div id="output" onclick="focusMethod()"><pre contenteditable="true" id="input" onkeydown="sendInput(this)"></pre></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script>
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/twilight");
-        editor.setShowPrintMargin(false);
-        editor.setOption("fontFamily", "Iosevka SS05, monospace");
-        editor.setOption("fontSize", "14px");
-    </script>
-    <script type="text/javascript" src="interface.js">
-    </script>
-    <script type="text/javascript" src="files.js">
-    </script>
 </body>
 
 </html>
