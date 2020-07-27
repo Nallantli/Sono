@@ -54,7 +54,6 @@ public class SonoServer extends WebSocketServer {
 	private final Map<WebSocket, Boolean> WAIT;
 
 	public static void main(final String[] args) {
-		SonoWrapper.setGlobalOption("LING", "TRUE");
 		SonoWrapper.setGlobalOption("WRITE", "FALSE");
 		SonoWrapper.setGlobalOption("SOCKET", "FALSE");
 		SonoWrapper.setGlobalOption("GRAPHICS", "FALSE");

@@ -558,6 +558,11 @@ public class Datum {
 		return valueVector;
 	}
 
+	public void setVector(final Datum[] valueVector) {
+		this.type = Type.VECTOR;
+		this.valueVector = valueVector;
+	}
+
 	public Datum indexVector(final int i) {
 		return valueVector[i];
 	}

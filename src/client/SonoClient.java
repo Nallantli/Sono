@@ -90,15 +90,10 @@ public class SonoClient {
 
 		PhoneLoader pl = null;
 
-		if (getOption("-l", args) != null) {
-			SonoWrapper.setGlobalOption("LING", "FALSE");
-		} else {
-			try {
-				pl = new PhoneLoader(SonoWrapper.getGlobalOption("DATA"), force);
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-			SonoWrapper.setGlobalOption("LING", "TRUE");
+		try {
+			pl = new PhoneLoader(SonoWrapper.getGlobalOption("DATA"), force);
+		} catch (final IOException e) {
+			e.printStackTrace();
 		}
 
 		if (getOption("-g", args) != null) {
@@ -117,11 +112,6 @@ public class SonoClient {
 
 		if (filename == null) {
 			System.out.println("Sono " + SonoWrapper.VERSION);
-			if (SonoWrapper.getGlobalOption("LING").equals("TRUE")) {
-				System.out.println("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">");
-			} else {
-				System.out.println("Phonological Operations Disabled");
-			}
 			try {
 				center.run(".", "load \"system.so\"");
 				System.out.println("Loaded System Library");

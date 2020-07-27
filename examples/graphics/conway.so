@@ -5,15 +5,14 @@ load "math.so";
 var SIZE_X = 60;
 var SIZE_Y = 60;
 
-var valueArray = alloc SIZE_X;
-var shapeArray = alloc SIZE_X;
+var valueArray = alloc {SIZE_X, SIZE_Y};
+var shapeArray = alloc {SIZE_X, SIZE_Y};
 
 var paused = true;
 
 x in {0 until SIZE_X} do {
-	valueArray[x] = alloc SIZE_Y;
 	y in {0 until SIZE_Y} do {
-		valueArray[x][y] = Random.float().round();
+		valueArray[x][y] = Random.float() >= 0.5;
 	}
 }
 
@@ -25,48 +24,45 @@ var graphics = window.getGraphics();
 
 window.onKeyRelease((event) => {
 	event.charStr == "Space" then {
-		paused = paused == false;
+		paused = !paused;
 	}
 });
 
 window.onMousePress((event) => {
 	paused then {
-		valueArray[(event.x / 10).floor()][(event.y / 10).floor()] = 1;
+		valueArray[(event.x / 10).floor()][(event.y / 10).floor()] = true;
 	}
 });
 
 window.onMouseDrag((event) => {
 	paused then {
-		valueArray[(event.x / 10).floor()][(event.y / 10).floor()] = 1;
+		valueArray[(event.x / 10).floor()][(event.y / 10).floor()] = true;
 	}
 });
 
 x in {0 until SIZE_X} do {
-	shapeArray[x] = alloc SIZE_Y;
 	y in {0 until SIZE_Y} do {
-		var shape = new Shape.Rectangle(Color.WHITE, null, x * 10, y * 10, 10, 10);
-		shapeArray[x][y] = shape;
-		graphics.add(shape);
+		shapeArray[x][y] = graphics.add(new Shape.Rectangle(Color.WHITE, null, x * 10, y * 10, 10, 10));
 	}
 }
 
 neighborCount(final x, final y) => {
 	var c = 0;
-	c += valueArray[(x + SIZE_X + 1) % SIZE_X][y] == 1;
-	c += valueArray[(x + SIZE_X - 1) % SIZE_X][y] == 1;
-	c += valueArray[x][(y + SIZE_Y + 1) % SIZE_Y] == 1;
-	c += valueArray[x][(y + SIZE_Y - 1) % SIZE_Y] == 1;
-	c += valueArray[(x + SIZE_X + 1) % SIZE_X][(y + SIZE_Y + 1) % SIZE_Y] == 1;
-	c += valueArray[(x + SIZE_X + 1) % SIZE_X][(y + SIZE_Y - 1) % SIZE_Y] == 1;
-	c += valueArray[(x + SIZE_X - 1) % SIZE_X][(y + SIZE_Y + 1) % SIZE_Y] == 1;
-	c += valueArray[(x + SIZE_X - 1) % SIZE_X][(y + SIZE_Y - 1) % SIZE_Y] == 1;
+	valueArray[(x + SIZE_X + 1) % SIZE_X][y] then c += 1;
+	valueArray[(x + SIZE_X - 1) % SIZE_X][y] then c += 1;
+	valueArray[x][(y + SIZE_Y + 1) % SIZE_Y] then c += 1;
+	valueArray[x][(y + SIZE_Y - 1) % SIZE_Y] then c += 1;
+	valueArray[(x + SIZE_X + 1) % SIZE_X][(y + SIZE_Y + 1) % SIZE_Y] then c += 1;
+	valueArray[(x + SIZE_X + 1) % SIZE_X][(y + SIZE_Y - 1) % SIZE_Y] then c += 1;
+	valueArray[(x + SIZE_X - 1) % SIZE_X][(y + SIZE_Y + 1) % SIZE_Y] then c += 1;
+	valueArray[(x + SIZE_X - 1) % SIZE_X][(y + SIZE_Y - 1) % SIZE_Y] then c += 1;
 	return c;
 }
 
 refresh() => {
 	x in {0 until SIZE_X} do {
 		y in {0 until SIZE_Y} do {
-			valueArray[x][y] == 1 then {
+			valueArray[x][y] then {
 				shapeArray[x][y].setFill(Color.BLACK);
 			} else {
 				shapeArray[x][y].setFill(Color.WHITE);
@@ -74,9 +70,8 @@ refresh() => {
 		}
 	}
 	paused == false then {
-		var newValueArray = alloc SIZE_X;
+		var newValueArray = alloc {SIZE_X, SIZE_Y};
 		x in {0 until SIZE_X} do {
-			newValueArray[x] = alloc SIZE_Y;
 			y in {0 until SIZE_Y} do {
 				var c = neighborCount(x, y);
 				valueArray[x][y] then {

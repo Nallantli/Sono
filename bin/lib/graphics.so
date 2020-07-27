@@ -1,5 +1,5 @@
 # Benjamin Park
-# 23-07-2020
+# 26-07-2020
 
 import "LIB_Graphics";
 
@@ -242,6 +242,7 @@ static Component class {
 			success == false then {
 				throw "Shape already exists in Graphics";
 			}
+			refer shape;
 		}
 
 		remove(ref shape) => {

@@ -1,4 +1,5 @@
 load "graphics.so";
+load "vector.so";
 load "system.so";
 
 var SIZE_X = 30;
@@ -15,15 +16,12 @@ var LOST;
 var window = new Window("Snake Game", SIZE_X * SIZE_SQUARE, SIZE_Y * SIZE_SQUARE, exit);
 var graphics = window.getGraphics();
 
-var valueArray = alloc SIZE_X;
-var shapeArray = alloc SIZE_X;
+var valueArray = alloc {SIZE_X, SIZE_Y};
+var shapeArray = alloc {SIZE_X, SIZE_Y};
 
 x in {0 until SIZE_X} do {
-	shapeArray[x] = alloc SIZE_Y;
 	y in {0 until SIZE_Y} do {
-		var shape = new Shape.Rectangle(Color.WHITE, null, x * SIZE_SQUARE, y * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE);
-		shapeArray[x][y] = shape;
-		graphics.add(shape);
+		shapeArray[x][y] = graphics.add(new Shape.Rectangle(Color.BLACK, null, x * SIZE_SQUARE, y * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE));
 	}
 }
 
@@ -49,30 +47,21 @@ window.onKeyPress((event) => {
 				newDir = 0;
 			}
 		}
-		"1" goto {
-			speed = 160;
-		}
-		"2" goto {
-			speed = 120;
-		}
-		"3" goto {
-			speed = 80;
-		}
-		"4" goto {
-			speed = 0;
-		}
-		"Space" goto {
-			reset();
-		}
+		"1" goto speed = 160;
+		"2" goto speed = 120;
+		"3" goto speed = 80;
+		"4" goto speed = 0;
+		"Space" goto reset();
 	}
 });
 
 setApple() => {
-	var x = Random.int(0, SIZE_X);
-	var y = Random.int(0, SIZE_Y);
-	valueArray[x][y] != 0 do {
+	var x;
+	var y;
+	true do {
 		x = Random.int(0, SIZE_X);
 		y = Random.int(0, SIZE_Y);
+		valueArray[x][y] == 0 then break;
 	}
 	valueArray[x][y] = -1;
 }
@@ -82,18 +71,10 @@ refresh() => {
 		direction = newDir;
 
 		direction switch {
-			0 goto {
-				posX = (posX + 1 + SIZE_X) % SIZE_X;
-			}
-			1 goto {
-				posX = (posX - 1 + SIZE_X) % SIZE_X;
-			}
-			2 goto {
-				posY = (posY + 1 + SIZE_Y) % SIZE_Y;
-			}
-			3 goto {
-				posY = (posY - 1 + SIZE_Y) % SIZE_Y;
-			}
+			0 goto posX = (posX + 1 + SIZE_X) % SIZE_X;
+			1 goto posX = (posX - 1 + SIZE_X) % SIZE_X;
+			2 goto posY = (posY + 1 + SIZE_Y) % SIZE_Y;
+			3 goto posY = (posY - 1 + SIZE_Y) % SIZE_Y;
 		}
 
 		valueArray[posX][posY] == -1 then {
@@ -137,12 +118,7 @@ reset() => {
 	posX = 5;
 	posY = 5;
 	size = 1;
-	x in {0 until SIZE_X} do {
-		valueArray[x] = alloc SIZE_Y;
-		y in {0 until SIZE_Y} do {
-			valueArray[x][y] = 0;
-		}
-	}
+	valueArray.set(0);
 	setApple();
 }
 

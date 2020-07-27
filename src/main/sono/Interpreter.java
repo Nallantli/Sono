@@ -200,7 +200,7 @@ public class Interpreter {
 				}
 				if (token.equals("!")) {
 					final Operator a = o.pollLast();
-					o.addLast(new Operator.NEqual(this, new Operator.Container(this, new Datum(1)), a));
+					o.addLast(new Operator.NEqual(this, new Operator.Container(this, new Datum(true)), a));
 				}
 				if (token.equals(".negative")) {
 					final Operator a = o.pollLast();
@@ -621,21 +621,12 @@ public class Interpreter {
 				}
 				o.addLast(new Operator.HardList(this, list.toArray(new Operator[0])));
 			} else if (token.charAt(0) == '\'') {
-				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
-					throw new SonoCompilationException(
-							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Phone p = pl.interpretSegment(token.substring(1));
 				o.addLast(new Operator.Container(this, new Datum(p)));
 			} else if (token.charAt(0) == '@') {
-				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
-					throw new SonoCompilationException(
-							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Pair p = pl.interpretFeature(token.substring(1));
 				o.addLast(new Operator.Container(this, new Datum(p)));
 			} else if (token.charAt(0) == '`') {
-				if (SonoWrapper.getGlobalOption("LING").equals("FALSE"))
-					throw new SonoCompilationException(
-							"Cannot conduct phonological-based operations, the modifier `-l` has disabled these.");
 				final Word p = pl.interpretSequence(token.substring(1));
 				o.addLast(new Operator.Container(this, new Datum(p)));
 			} else if (token.charAt(0) == '\"') {
