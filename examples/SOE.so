@@ -1,7 +1,7 @@
 load "system.so";
 
 SOE(final MAX) => {
-	var a = alloc MAX;
+	var a = alloc(MAX);
 	e in a do {
 		e = true;
 	}
@@ -20,7 +20,7 @@ SOE(final MAX) => {
 		}
 	}
 
-	var b = alloc c;
+	var b = alloc(c);
 	var j = 0;
 	i in {2 until MAX} do {
 		a[i] then {
