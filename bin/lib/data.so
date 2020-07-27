@@ -1,5 +1,5 @@
 # Benjamin Park
-# 24-07-2020
+# 27-07-2020
 
 load "system.so";
 load "graphics.so";
@@ -83,7 +83,7 @@ static Graph class {
 			this.window = new Window(title, width, height, function);
 			this.graphics = this.window.getGraphics();
 			e in data.getTuples() do {
-				type e.a != "Number" then {
+				type(e.a) != "Number" then {
 					labels = true;
 					this.maxX = len data;
 					this.minX = 0;

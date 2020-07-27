@@ -16,8 +16,8 @@ var LOST;
 var window = new Window("Snake Game", SIZE_X * SIZE_SQUARE, SIZE_Y * SIZE_SQUARE, exit);
 var graphics = window.getGraphics();
 
-var valueArray = alloc {SIZE_X, SIZE_Y};
-var shapeArray = alloc {SIZE_X, SIZE_Y};
+var valueArray = alloc(SIZE_X, SIZE_Y);
+var shapeArray = alloc(SIZE_X, SIZE_Y);
 
 x in {0 until SIZE_X} do {
 	y in {0 until SIZE_Y} do {

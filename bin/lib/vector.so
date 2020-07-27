@@ -1,6 +1,6 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 26-07-2020
+# 27-07-2020
 
 load "math.so";
 load "system.so";
@@ -78,7 +78,7 @@ Vector::reverse(final this) => {
 
 Vector::set(ref this, final value) => {
 	e in this do {
-		type e == "Vector" then {
+		type(e) == "Vector" then {
 			e.set(value);
 		} else {
 			e = value;
@@ -183,7 +183,7 @@ Vector::nGram(ref this, final n) => {
 Vector::sort(ref this, comp) => {
 	comp == null then {
 		comp = (a, b) => { return a < b; };
-	} else type comp != "Function" then {
+	} else type(comp) != "Function" then {
 		throw "Parameter <comp> of Vector::sort() must be of type Function";
 	}
 	Vector::merge_sort(final this) => {

@@ -1,5 +1,5 @@
 # Benjamin Park
-# 22-07-2020
+# 27-07-2020
 
 static RuleSets class {
 	var vowelNasalization = S |> [+|syl] -> [+|nasal] // null .. [-|syl, +|nasal];
@@ -36,7 +36,7 @@ static RuleSets class {
 Vector::apply(ref this, ref ruleset) => {
 	var applied = {};
 	e in this do {
-		type ruleset == "Vector" then {
+		type(ruleset) == "Vector" then {
 			var temp = e;
 			r in ruleset do {
 				temp >>= r;
@@ -51,7 +51,7 @@ Vector::apply(ref this, ref ruleset) => {
 
 Word::apply(ref this, ref ruleset) => {
 	var applied = this;
-	type ruleset == "Vector" then {
+	type(ruleset) == "Vector" then {
 		r in ruleset do {
 			applied >>= r;
 		}

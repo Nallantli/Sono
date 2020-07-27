@@ -1,5 +1,5 @@
 # Benjamin Park
-# 18-07-2020
+# 27-07-2020
 
 import "LIB_Console";
 
@@ -87,11 +87,15 @@ getMat(ref x) => {
 }
 
 getCom(ref x) => {
-	return com x;
+	return com(x);
 }
 
 getHash(ref x) => {
 	return hash x;
+}
+
+getType(ref x) => {
+	return type(x);
 }
 
 static Random class {

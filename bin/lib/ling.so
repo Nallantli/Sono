@@ -1,5 +1,5 @@
 # Benjamin Park
-# 24-07-2020
+# 27-07-2020
 
 load "feature.so";
 load "vector.so";
@@ -61,7 +61,7 @@ static Phonology class {
 				refer list;
 			}
 		}
-		return natural(phones, com getNaturalSet(phones, set))[0];
+		return natural(phones, com(getNaturalSet(phones, set)))[0];
 	}
 }
 

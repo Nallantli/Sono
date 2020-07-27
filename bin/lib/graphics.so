@@ -1,5 +1,5 @@
 # Benjamin Park
-# 26-07-2020
+# 27-07-2020
 
 import "LIB_Graphics";
 
@@ -129,7 +129,7 @@ struct Window class {
 	}
 
 	equals(ref o) => {
-		type this != type o then {
+		type(this) != type(o) then {
 			return false;
 		}
 		return window == o.window;
@@ -203,7 +203,7 @@ static Component class {
 		}
 
 		equals(ref o) => {
-			type this != type o then {
+			type(this) != type(o) then {
 				return false;
 			}
 			return component == o.component;
@@ -639,7 +639,7 @@ static Color class {
 		}
 
 		equals(ref o) => {
-			type o != type this then {
+			type(o) != type(this) then {
 				return false;
 			}
 			return r == o.r && g == o.g && b == o.b && a == o.a;

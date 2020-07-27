@@ -5,8 +5,8 @@ load "math.so";
 var SIZE_X = 60;
 var SIZE_Y = 60;
 
-var valueArray = alloc {SIZE_X, SIZE_Y};
-var shapeArray = alloc {SIZE_X, SIZE_Y};
+var valueArray = alloc(SIZE_X, SIZE_Y);
+var shapeArray = alloc(SIZE_X, SIZE_Y);
 
 var paused = true;
 
@@ -70,7 +70,7 @@ refresh() => {
 		}
 	}
 	paused == false then {
-		var newValueArray = alloc {SIZE_X, SIZE_Y};
+		var newValueArray = alloc(SIZE_X, SIZE_Y);
 		x in {0 until SIZE_X} do {
 			y in {0 until SIZE_Y} do {
 				var c = neighborCount(x, y);

@@ -1,5 +1,5 @@
 # Benjamin Park
-# 24-07-2020
+# 27-07-2020
 
 load "system.so";
 
@@ -35,7 +35,7 @@ struct Map class {
 		}
 
 		equals(ref o) => {
-			type o != type this then {
+			type(o) != type(this) then {
 				return false;
 			}
 			return o.key == key && o.value == value;

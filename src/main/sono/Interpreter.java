@@ -294,10 +294,10 @@ public class Interpreter {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.FeatDec(this, a));
 				}
-				if (token.equals("alloc")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Allocate(this, a));
-				}
+				/*
+				 * if (token.equals("alloc")) { final Operator a = o.pollLast(); o.addLast(new
+				 * Operator.Allocate(this, a)); }
+				 */
 				if (token.equals("throw")) {
 					final Operator a = o.pollLast();
 					o.addLast(new Operator.Throw(this, a));
@@ -538,8 +538,27 @@ public class Interpreter {
 				if (token.equals(".exec")) {
 					Operator b = o.pollLast();
 					final Operator a = o.pollLast();
-					b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
-					o.addLast(new Operator.Execute(this, a, b));
+					if (a.type == Operator.Type.VARIABLE) {
+						String key = deHash(((Operator.Variable) a).getKey());
+						switch (key) {
+							case "alloc":
+								o.addLast(new Operator.Allocate(this, b));
+								break;
+							case "com":
+								o.addLast(new Operator.Common(this, b));
+								break;
+							case "type":
+								o.addLast(new Operator.TypeConvert(this, b));
+								break;
+							default:
+								b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
+								o.addLast(new Operator.Execute(this, a, b));
+								break;
+						}
+					} else {
+						b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
+						o.addLast(new Operator.Execute(this, a, b));
+					}
 				}
 				if (token.equals("goto")) {
 					final Operator b = o.pollLast();
