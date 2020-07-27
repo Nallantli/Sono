@@ -49,7 +49,7 @@ struct Map class {
 	init(ref initVector) => {
 		this.size = 0;
 		this.rawSize = 16;
-		this.buckets = alloc this.rawSize;
+		this.buckets = alloc(this.rawSize);
 		initVector != null then {
 			e in initVector do {
 				getIndex(e[0]) = e[1];
@@ -131,7 +131,7 @@ struct Map class {
 			}
 		}
 		rawSize *= 2;
-		buckets = alloc rawSize;
+		buckets = alloc(rawSize);
 		e in vector do {
 			getIndex(e[0]) = e[1];
 		}

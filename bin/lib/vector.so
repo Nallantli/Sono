@@ -100,7 +100,7 @@ Vector::distArray(ref this, ref vector, costDel, costIns, costRep) => {
 
 	var m = len this;
 	var n = len vector;
-	var array = (alloc {m + 1, n + 1}).set(0);
+	var array = alloc(m + 1, n + 1).set(0);
 
 	i in {1 until (m + 1)} do {
 		array[i][0] = i;
@@ -212,7 +212,7 @@ Vector::setAll(ref this, ref value) => {
 }
 
 Vector::map(ref this, ref function) => {
-	var nl = alloc len this;
+	var nl = alloc(len this);
 	i in {0 until len this} do {
 		nl[i] = function(this[i]);
 	}
