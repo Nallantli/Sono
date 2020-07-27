@@ -80,7 +80,7 @@ static Network class {
 			var nodes;
 
 			init(ref input, final size) => {
-				nodes = alloc size;
+				nodes = alloc(size);
 				input != null then {
 					i in {0 until size} do {
 						nodes[i] = new Neuron(input.nodes);
@@ -105,7 +105,7 @@ static Network class {
 			}
 
 			get() => {
-				var values = alloc len nodes;
+				var values = alloc(len nodes);
 				i in {0 until len nodes} do {
 					values[i] = nodes[i].value;
 				}
@@ -126,7 +126,7 @@ static Network class {
 					this.inputs = inputs;
 					this.value = -1;
 					inputs != null then {
-						this.weights = alloc (len inputs + 1);
+						this.weights = alloc(len inputs + 1);
 						w in this.weights do {
 							w = Random.float() - 1;
 						}
