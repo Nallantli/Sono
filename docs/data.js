@@ -1260,6 +1260,28 @@ const LIBRARIES = {
                 see: []
             },
             {
+                name: "set",
+                template: "Vector",
+                params: [{
+                        modifier: "ref",
+                        key: "this",
+                        type: [
+                            "Vector"
+                        ]
+                    },
+                    {
+                        modifier: "ref",
+                        key: "value",
+                        type: [
+                            "Any"
+                        ]
+                    }
+                ],
+                desc: "Sets all end-node values of the <code>Vector</code> to a given value. Conducts a deep search of the <code>Vector</code>.",
+                return: "Vector",
+                see: []
+            },
+            {
                 name: "reverse",
                 template: "Vector",
                 params: [{
