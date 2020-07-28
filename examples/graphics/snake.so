@@ -1,6 +1,5 @@
 load "graphics.so";
 load "vector.so";
-load "system.so";
 
 var SIZE_X = 30;
 var SIZE_Y = 30;

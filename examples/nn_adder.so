@@ -1,4 +1,3 @@
-load "system.so";
 load "vector.so";
 load "neural.so";
 

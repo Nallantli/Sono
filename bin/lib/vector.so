@@ -3,7 +3,6 @@
 # 27-07-2020
 
 load "math.so";
-load "system.so";
 
 Vector::pop(ref this) => {
 	var nl = alloc(len this - 1);

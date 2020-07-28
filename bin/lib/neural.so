@@ -1,7 +1,6 @@
 # Benjamin Park
 # 24-07-2020
 
-load "system.so";
 load "vector.so";
 
 static Network class {

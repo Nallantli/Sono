@@ -1,5 +1,4 @@
 load "graphics.so";
-load "system.so";
 
 var window = new Window("Mouse Test", 500, 500, exit);
 var graphics = window.getGraphics();

@@ -1,4 +1,3 @@
-load "system.so";
 load "rule.so";
 
 # German devoicing of final consonant, just a silly example to demonstrate using "#"

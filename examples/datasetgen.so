@@ -1,7 +1,6 @@
 load "dataset.so";
 load "rule.so";
 load "vector.so";
-load "system.so";
 load "string.so";
 load "html.so";
 

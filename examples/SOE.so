@@ -1,5 +1,3 @@
-load "system.so";
-
 SOE(final MAX) => {
 	var a = alloc(MAX);
 	e in a do {

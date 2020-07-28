@@ -5,7 +5,6 @@ load "file.so";
 load "map.so";
 load "string.so";
 load "vector.so";
-load "system.so";
 load "rule.so";
 
 struct DataSet class {

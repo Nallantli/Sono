@@ -1,4 +1,3 @@
-load "system.so";
 load "socket.so";
 
 var client = new Socket("127.0.0.1", 5000);

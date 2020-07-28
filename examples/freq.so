@@ -1,7 +1,6 @@
 load "data.so";
 load "file.so";
 load "map.so";
-load "system.so";
 load "vector.so";
 
 var file = new File("README.md");

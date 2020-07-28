@@ -1,7 +1,7 @@
 @echo off
 echo Compiling class files...
-javac -cp bin/external/* -sourcepath src src/server/SonoServer.java -encoding utf8 -d bin/temp
-cd bin/temp
+javac -cp bin-server/external/* -sourcepath src src/server/SonoServer.java -encoding utf8 -d bin-server/temp
+cd bin-server/temp
 echo Creating SonoServer.jar...
 jar cfe ../res/SonoServer.jar server.SonoServer .
 cd ..

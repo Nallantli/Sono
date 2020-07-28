@@ -9,6 +9,7 @@ import main.phl.PhoneLoader;
 import main.sono.Datum;
 import main.sono.Interpreter;
 import main.sono.Scope;
+import main.sono.err.SonoException;
 import main.sono.io.Input;
 import main.sono.io.Output;
 
@@ -41,7 +42,7 @@ public class SonoWrapper {
 		return new Datum();
 	}
 
-	public static String escape(String s) {
+	public static String escape(final String s) {
 		return s.replace("\\", "\\\\").replace("\t", "\\t").replace("\b", "\\b").replace("\n", "\\n")
 				.replace("\r", "\\r").replace("\f", "\\f").replace("\'", "\\'").replace("\"", "\\\"");
 	}
@@ -54,6 +55,14 @@ public class SonoWrapper {
 			sono = new Interpreter(new Scope(null, null), null, command, stdout, stderr, stdin);
 		} else {
 			sono = new Interpreter(new Scope(null, null), pl.getManager(), command, stdout, stderr, stdin);
+		}
+
+		try {
+			sono.runCode("", "load \"system.so\"");
+		} catch (final SonoException e) {
+			stderr.println(
+					"Failure to load system library, cannot initiate interpreter. Please check /bin directory for 'system.so'.");
+			System.exit(1);
 		}
 
 		if (filename != null) {

@@ -1,7 +1,19 @@
 # Benjamin Park
-# 27-07-2020
+# 28-07-2020
 
 import "LIB_Console";
+
+var type = (ref x) => {
+	return type(x);
+}
+
+var com = (ref x) => {
+	return com(x);
+}
+
+var alloc = (ref x) => {
+	return alloc(x);
+}
 
 print(ref message) => {
 	"LIB_Console.PRINT" _OUTER_CALL_ (str message);
@@ -86,16 +98,8 @@ getMat(ref x) => {
 	return mat x;
 }
 
-getCom(ref x) => {
-	return com(x);
-}
-
 getHash(ref x) => {
 	return hash x;
-}
-
-getType(ref x) => {
-	return type(x);
 }
 
 static Random class {

@@ -1,5 +1,4 @@
 load "graphics.so";
-load "system.so";
 load "map.so";
 load "vector.so";
 load "feature.so";

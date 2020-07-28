@@ -1,4 +1,3 @@
-load "system.so";
 load "rule.so";
 
 # I can't think of a language that does this but I'd still like to give it as an example

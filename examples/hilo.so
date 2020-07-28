@@ -1,5 +1,3 @@
-load "system.so";
-
 HiLo(final MAX) => {
 	println("██╗  ██╗██╗██╗      ██████╗ ");
 	println("██║  ██║██║██║     ██╔═══██╗");

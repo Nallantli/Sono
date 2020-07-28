@@ -17,7 +17,6 @@ import client.io.StandardOutput;
 import main.SonoWrapper;
 import main.phl.PhoneLoader;
 import main.sono.Datum;
-import main.sono.err.SonoException;
 
 public class SonoClient {
 	private static String getOption(final String option, final String[] args) {
@@ -112,12 +111,7 @@ public class SonoClient {
 
 		if (filename == null) {
 			System.out.println("Sono " + SonoWrapper.VERSION);
-			try {
-				center.run(".", "load \"system.so\"");
-				System.out.println("Loaded System Library");
-			} catch (final SonoException e) {
-				System.out.println("Could not load System Library");
-			}
+			System.out.println("Phonological Data Loaded From <" + SonoWrapper.getGlobalOption("DATA") + ">");
 
 			while (true) {
 				System.out.print("> ");
