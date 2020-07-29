@@ -69,6 +69,7 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$SLASH, 6),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$AND, 5),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$OR, 5),
+			new SimpleImmutableEntry<String, Integer>(Interpreter.$XOR, 5),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$RULE, 5),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$UNTIL, 4),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$ADD_SET, -4),

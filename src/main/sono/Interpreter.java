@@ -24,6 +24,8 @@ import main.sono.err.SonoException;
 import main.sono.io.Input;
 import main.sono.io.Output;
 
+import main.sono.ops.*;
+
 public class Interpreter {
 	protected static final String $_OUTER_CALL_ = "_OUTER_CALL_";
 	protected static final String $ABSTRACT = "abstract";
@@ -102,6 +104,7 @@ public class Interpreter {
 	protected static final String $VAR = "var";
 	protected static final String $VEC = "vec";
 	protected static final String $WORD = "word";
+	protected static final String $XOR = "^";
 
 	private final Scope main;
 	private final PhoneManager pl;
@@ -252,7 +255,7 @@ public class Interpreter {
 		Operator b;
 
 		for (int i = 0; i < tokens.size(); i++) {
-			Token line = tokens.get(i);
+			final Token line = tokens.get(i);
 			String token = line.getKey();
 
 			if (token.equals(";") || token.equals(","))
@@ -260,7 +263,7 @@ public class Interpreter {
 			if (Tokenizer.operators.containsKey(token)) {
 				switch (token) {
 					case $LOAD:
-						path = ((Operator.Container) o.pollLast()).getDatum().getString(null);
+						path = ((Container) o.pollLast()).getDatum().getString(null);
 						split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
 						filename = (new StringBuilder(split[0])).reverse().toString();
 						fileDirectory = new StringBuilder(directory);
@@ -272,7 +275,7 @@ public class Interpreter {
 						}
 						break;
 					case $IMPORT:
-						path = ((Operator.Container) o.pollLast()).getDatum().getString(null);
+						path = ((Container) o.pollLast()).getDatum().getString(null);
 						split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
 						filename = (new StringBuilder(split[0])).reverse().toString() + ".jar";
 						fileDirectory = new StringBuilder(directory);
@@ -285,406 +288,405 @@ public class Interpreter {
 						break;
 					case $UNARY_NOT:
 						a = o.pollLast();
-						o.addLast(new Operator.NEqual(this, line, new Operator.Container(this, line, new Datum(true)),
-								a));
+						o.addLast(new NotEquals(this, line, new Container(this, line, new Datum(true)), a));
 						break;
 					case $NEGATIVE:
 						a = o.pollLast();
-						o.addLast(new Operator.Sub(this, line, new Operator.Container(this, line, new Datum(0)), a));
+						o.addLast(new Sub(this, line, new Container(this, line, new Datum(0)), a));
 						break;
 					case $POSITIVE:
 						a = o.pollLast();
-						o.addLast(new Operator.Add(this, line, new Operator.Container(this, line, new Datum(0)), a));
+						o.addLast(new Add(this, line, new Container(this, line, new Datum(0)), a));
 						break;
 					case $NEW:
 						a = o.pollLast();
-						o.addLast(new Operator.NewDec(this, line, a));
+						o.addLast(new DecNew(this, line, a));
 						break;
 					case $LEN:
 						a = o.pollLast();
-						o.addLast(new Operator.Length(this, line, a));
+						o.addLast(new Length(this, line, a));
 						break;
 					case $RETURN:
 						a = o.pollLast();
-						o.addLast(new Operator.Return(this, line, a));
+						o.addLast(new Return(this, line, a));
 						break;
 					case $REFER:
 						a = o.pollLast();
-						o.addLast(new Operator.Refer(this, line, a));
+						o.addLast(new Refer(this, line, a));
 						break;
 					case $VAR:
 						a = o.pollLast();
-						o.addLast(new Operator.VarDec(this, line, ((Operator.Variable) a).getKey()));
+						o.addLast(new DecVariable(this, line, ((Variable) a).getKey()));
 						break;
 					case $ABSTRACT:
 						a = o.pollLast();
-						o.addLast(new Operator.AbstractDec(this, line, ((Operator.Variable) a).getKey()));
+						o.addLast(new CastAbstract(this, line, ((Variable) a).getKey()));
 						break;
 					case $STRUCT:
 						a = o.pollLast();
-						o.addLast(new Operator.StructDec(this, line, ((Operator.Variable) a).getKey()));
+						o.addLast(new CastStruct(this, line, ((Variable) a).getKey()));
 						break;
 					case $STATIC:
 						a = o.pollLast();
-						o.addLast(new Operator.StaticDec(this, line, ((Operator.Variable) a).getKey()));
+						o.addLast(new CastStatic(this, line, ((Variable) a).getKey()));
 						break;
 					case $REF:
 						a = o.pollLast();
-						o.addLast(new Operator.Ref(this, line, ((Operator.Variable) a).getKey()));
+						o.addLast(new CastReference(this, line, ((Variable) a).getKey()));
 						break;
 					case $FINAL:
 						a = o.pollLast();
-						o.addLast(new Operator.Final(this, line, ((Operator.Variable) a).getKey()));
+						o.addLast(new CastFinal(this, line, ((Variable) a).getKey()));
 						break;
 					case $WORD:
 						a = o.pollLast();
-						o.addLast(new Operator.SeqDec(this, line, a));
+						o.addLast(new ToWord(this, line, a));
 						break;
 					case $VEC:
 						a = o.pollLast();
-						o.addLast(new Operator.ListDec(this, line, a));
+						o.addLast(new ToVector(this, line, a));
 						break;
 					case $MAT:
 						a = o.pollLast();
-						o.addLast(new Operator.MatConvert(this, line, a));
+						o.addLast(new ToMatrix(this, line, a));
 						break;
 					case $NUM:
 						a = o.pollLast();
-						o.addLast(new Operator.NumConvert(this, line, a));
+						o.addLast(new ToNumber(this, line, a));
 						break;
 					case $HASH:
 						a = o.pollLast();
-						o.addLast(new Operator.Hash(this, line, a));
+						o.addLast(new ToHash(this, line, a));
 						break;
 					case $STR:
 						a = o.pollLast();
-						o.addLast(new Operator.StringDec(this, line, a));
+						o.addLast(new ToString(this, line, a));
 						break;
 					case $CHAR:
 						a = o.pollLast();
-						o.addLast(new Operator.Char(this, line, a));
+						o.addLast(new ToChar(this, line, a));
 						break;
 					case $CODE:
 						a = o.pollLast();
-						o.addLast(new Operator.Code(this, line, a));
+						o.addLast(new ToCharCode(this, line, a));
 						break;
 					case $FEAT:
 						a = o.pollLast();
-						o.addLast(new Operator.FeatDec(this, line, a));
+						o.addLast(new ToFeature(this, line, a));
 						break;
 					case $THROW:
 						a = o.pollLast();
-						o.addLast(new Operator.Throw(this, line, a));
+						o.addLast(new Throw(this, line, a));
 						break;
 					case $TRY:
 						a = o.pollLast();
-						o.addLast(new Operator.TryCatch(this, line, a));
+						o.addLast(new TryCatch(this, line, a));
 						break;
 					case $REGISTER:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Register(this, line, a, b));
+						o.addLast(new Register(this, line, a, b));
 						break;
 					case $EXTENDS:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Extends(this, line, a, b));
+						o.addLast(new CastExtends(this, line, a, b));
 						break;
 					case $SET:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Set(this, line, a, b));
+						o.addLast(new Set(this, line, a, b));
 						break;
 					case $OBJECTIVE:
 						b = o.pollLast();
 						a = o.pollLast();
 						if (b.type == Operator.Type.SOFT_LIST)
-							b = new Operator.HardList(this, line, ((Operator.Sequence) b).getVector());
-						o.addLast(new Operator.TypeDec(this, line, a, b));
+							b = new HardList(this, line, ((Sequence) b).getVector());
+						o.addLast(new CastType(this, line, a, b));
 						break;
 					case $ARROW:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Arrow(this, line, a, b));
+						o.addLast(new Arrow(this, line, a, b));
 						break;
 					case $UNDERSCORE:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Underscore(this, line, a, b));
+						o.addLast(new Underscore(this, line, a, b));
 						break;
 					case $SLASH:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Slash(this, line, a, b));
+						o.addLast(new Slash(this, line, a, b));
 						break;
 					case $TRANSFORM:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Transform(this, line, a, b));
+						o.addLast(new Transform(this, line, a, b));
 						break;
 					case $TRANSFORM_SET:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Set(this, line, a, new Operator.Transform(this, line, a, b)));
+						o.addLast(new Set(this, line, a, new Transform(this, line, a, b)));
 						break;
 					case $ADD:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Add(this, line, a, b));
+						o.addLast(new Add(this, line, a, b));
 						break;
 					case $ADD_SET:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Set(this, line, a, new Operator.Add(this, line, a, b)));
+						o.addLast(new Set(this, line, a, new Add(this, line, a, b)));
 						break;
 					case $SUB:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Sub(this, line, a, b));
+						o.addLast(new Sub(this, line, a, b));
 						break;
 					case $SUB_SET:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Set(this, line, a, new Operator.Sub(this, line, a, b)));
+						o.addLast(new Set(this, line, a, new Sub(this, line, a, b)));
 						break;
 					case $MUL:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Mul(this, line, a, b));
+						o.addLast(new Mul(this, line, a, b));
 						break;
 					case $MUL_SET:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Set(this, line, a, new Operator.Mul(this, line, a, b)));
+						o.addLast(new Set(this, line, a, new Mul(this, line, a, b)));
 						break;
 					case $DIV:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Div(this, line, a, b));
+						o.addLast(new Div(this, line, a, b));
 						break;
 					case $DIV_SET:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Set(this, line, a, new Operator.Div(this, line, a, b)));
+						o.addLast(new Set(this, line, a, new Div(this, line, a, b)));
 						break;
 					case $MOD:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Mod(this, line, a, b));
+						o.addLast(new Mod(this, line, a, b));
 						break;
 					case $MOD_SET:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Set(this, line, a, new Operator.Mod(this, line, a, b)));
+						o.addLast(new Set(this, line, a, new Mod(this, line, a, b)));
 						break;
 					case $POW:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Pow(this, line, a, b));
+						o.addLast(new Pow(this, line, a, b));
 						break;
 					case $POW_SET:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Set(this, line, a, new Operator.Pow(this, line, a, b)));
+						o.addLast(new Set(this, line, a, new Pow(this, line, a, b)));
 						break;
 					case $CLASS:
 						b = o.pollLast();
 						a = o.pollLast();
-						b = new Operator.SoftList(this, line, ((Operator.Sequence) b).getVector());
-						o.addLast(new Operator.ClassDec(this, line, a, b));
+						b = new SoftList(this, line, ((Sequence) b).getVector());
+						o.addLast(new DecClass(this, line, a, b));
 						break;
 					case $INDEX:
-						b = ((Operator.MatrixDec) o.pollLast()).operators[0];
+						b = ((DecMatrix) o.pollLast()).getChildren()[0];
 						a = o.pollLast();
-						o.addLast(new Operator.Index(this, line, a, b));
+						o.addLast(new Index(this, line, a, b));
 						break;
 					case $CONTRAST:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Contrast(this, line, a, b));
+						o.addLast(new Contrast(this, line, a, b));
 						break;
 					case $EQUALS:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Equal(this, line, a, b));
+						o.addLast(new Equals(this, line, a, b));
 						break;
 					case $PURE_EQUALS:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.PureEqual(this, line, a, b));
+						o.addLast(new EqualsPure(this, line, a, b));
 						break;
 					case $N_EQUALS:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.NEqual(this, line, a, b));
+						o.addLast(new NotEquals(this, line, a, b));
 						break;
 					case $PURE_N_EQUALS:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.PureNEqual(this, line, a, b));
+						o.addLast(new NotEqualsPure(this, line, a, b));
 						break;
 					case $LESS:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Less(this, line, a, b));
+						o.addLast(new Less(this, line, a, b));
 						break;
 					case $MORE:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.More(this, line, a, b));
+						o.addLast(new More(this, line, a, b));
 						break;
 					case $E_LESS:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.ELess(this, line, a, b));
+						o.addLast(new ELess(this, line, a, b));
 						break;
 					case $E_MORE:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.EMore(this, line, a, b));
+						o.addLast(new EMore(this, line, a, b));
 						break;
 					case $AND:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.And(this, line, a, b));
+						o.addLast(new And(this, line, a, b));
 						break;
 					case $OR:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Or(this, line, a, b));
+						o.addLast(new Or(this, line, a, b));
+						break;
+					case $XOR:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new XOr(this, line, a, b));
 						break;
 					case $INNER:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Inner(this, line, a, b));
+						o.addLast(new Inner(this, line, a, b));
 						break;
 					case $FROM:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Find(this, line, a, b));
+						o.addLast(new Find(this, line, a, b));
 						break;
 					case $IN:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.Iterator(this, line, a, b));
+						o.addLast(new Iterator(this, line, a, b));
 						break;
 					case $UNTIL:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.RangeUntil(this, line, a, b));
+						o.addLast(new RangeUntil(this, line, a, b));
 						break;
 					case $DO:
 						b = o.pollLast();
 						if (b.type == Operator.Type.HARD_LIST)
-							b = new Operator.SoftList(this, line, b.getChildren());
+							b = new SoftList(this, line, b.getChildren());
 						a = o.pollLast();
-						o.addLast(new Operator.Loop(this, line, a, b));
+						o.addLast(new Loop(this, line, a, b));
 						break;
 					case $LAMBDA:
 						b = o.pollLast();
 						if (b.type == Operator.Type.HARD_LIST)
-							b = new Operator.SoftList(this, line, b.getChildren());
+							b = new SoftList(this, line, b.getChildren());
 						a = o.pollLast();
 						if (a.type == Operator.Type.EXECUTE) {
-							final Operator name = ((Operator.Execute) a).getA();
+							final Operator name = ((Execute) a).getA();
 							if (name.type == Operator.Type.TYPE_DEC) {
-								final Operator typeDec = ((Operator.TypeDec) name).getA();
-								final Operator fName = ((Operator.TypeDec) name).getB();
-								a = new Operator.HardList(this, line,
-										((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
-								o.addLast(new Operator.Set(this, line,
-										new Operator.VarDec(this, line, ((Operator.Variable) fName).getKey()),
-										new Operator.Lambda(this, line, new Operator.TypeDec(this, line, typeDec, a),
-												b)));
+								final Operator typeDec = ((CastType) name).getA();
+								final Operator fName = ((CastType) name).getB();
+								a = new HardList(this, line, ((Sequence) ((Execute) a).getB()).getVector());
+								o.addLast(new Set(this, line, new DecVariable(this, line, ((Variable) fName).getKey()),
+										new DecLambda(this, line, new CastType(this, line, typeDec, a), b)));
 							} else {
-								a = new Operator.HardList(this, line,
-										((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
-								o.addLast(new Operator.Set(this, line,
-										new Operator.VarDec(this, line, ((Operator.Variable) name).getKey()),
-										new Operator.Lambda(this, line, a, b)));
+								a = new HardList(this, line, ((Sequence) ((Execute) a).getB()).getVector());
+								o.addLast(new Set(this, line, new DecVariable(this, line, ((Variable) name).getKey()),
+										new DecLambda(this, line, a, b)));
 							}
 						} else {
 							if (a.type != Operator.Type.TYPE_DEC)
-								a = new Operator.HardList(this, line, ((Operator.Sequence) a).getVector());
-							o.addLast(new Operator.Lambda(this, line, a, b));
+								a = new HardList(this, line, ((Sequence) a).getVector());
+							o.addLast(new DecLambda(this, line, a, b));
 						}
 						break;
 					case $EXEC:
 						b = o.pollLast();
 						a = o.pollLast();
 						if (a.type == Operator.Type.VARIABLE) {
-							final String key = deHash(((Operator.Variable) a).getKey());
+							final String key = deHash(((Variable) a).getKey());
 							switch (key) {
 								case $ALLOC:
-									o.addLast(new Operator.Allocate(this, line, b));
+									o.addLast(new Allocate(this, line, b));
 									break;
 								case $COM:
-									o.addLast(new Operator.Common(this, line, b));
+									o.addLast(new Common(this, line, b));
 									break;
 								case $TYPE:
-									o.addLast(new Operator.TypeConvert(this, line, b));
+									o.addLast(new ToTypeString(this, line, b));
 									break;
 								default:
-									b = new Operator.HardList(this, line, ((Operator.Sequence) b).getVector());
-									o.addLast(new Operator.Execute(this, line, a, b));
+									b = new HardList(this, line, ((Sequence) b).getVector());
+									o.addLast(new Execute(this, line, a, b));
 									break;
 							}
 						} else {
-							b = new Operator.HardList(this, line, ((Operator.Sequence) b).getVector());
-							o.addLast(new Operator.Execute(this, line, a, b));
+							b = new HardList(this, line, ((Sequence) b).getVector());
+							o.addLast(new Execute(this, line, a, b));
 						}
 						break;
 					case $GOTO:
 						b = o.pollLast();
 						final Datum datumA = o.pollLast().evaluate(null);
-						o.addLast(new Operator.SwitchCase(this, line, datumA, b));
+						o.addLast(new SwitchCase(this, line, datumA, b));
 						break;
 					case $SWITCH:
 						b = o.pollLast();
 						a = o.pollLast();
 						final Map<Datum, Operator> ops = new HashMap<>();
 						for (final Operator r : b.getChildren()) {
-							final Operator.SwitchCase c = (Operator.SwitchCase) r;
+							final SwitchCase c = (SwitchCase) r;
 							ops.put(c.getKey(), c.getOperator());
 						}
-						o.addLast(new Operator.Switch(this, line, a, ops));
+						o.addLast(new Switch(this, line, a, ops));
 						break;
 					case $THEN:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.IfElse(this, line, a, b));
+						o.addLast(new IfElse(this, line, a, b));
 						break;
 					case $ELSE:
 						b = o.pollLast();
 						a = o.pollLast();
 						if (a.type == Operator.Type.IF_ELSE)
-							((Operator.IfElse) a).setElse(b);
+							((IfElse) a).setElse(b);
 						else if (a.type == Operator.Type.SWITCH)
-							((Operator.Switch) a).setElse(b);
+							((Switch) a).setElse(b);
 						o.addLast(a);
 						break;
 					case $CATCH:
 						b = o.pollLast();
 						a = o.pollLast();
-						((Operator.TryCatch) a).setCatch(b);
+						((TryCatch) a).setCatch(b);
 						o.addLast(a);
 						break;
 					case $_OUTER_CALL_:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new Operator.OuterCall(this, line, a, b));
+						o.addLast(new OuterCall(this, line, a, b));
 						break;
 					case $RULE:
 						Rule.Type rType = null;
 						b = o.pollLast();
-						final int r = ((Operator.Variable) o.pollLast()).getKey();
+						final int r = ((Variable) o.pollLast()).getKey();
 						if (r == S_RULE)
 							rType = Rule.Type.SIMPLE;
 						if (r == AF_RULE)
 							rType = Rule.Type.A_FORWARD;
 						if (r == AB_RULE)
 							rType = Rule.Type.A_BACKWARD;
-						o.addLast(new Operator.RuleDec(this, line, rType, b));
+						o.addLast(new DecRule(this, line, rType, b));
 						break;
 					default:
 						throw new SonoCompilationException("Unknown operator: " + token);
@@ -692,78 +694,75 @@ public class Interpreter {
 			} else if (token.equals("]")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
-				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == this.SQUARE_BRACKET)) {
+				while (!(curr.type == Operator.Type.VARIABLE && ((Variable) curr).getKey() == this.SQUARE_BRACKET)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.MatrixDec(this, line, list.toArray(new Operator[0])));
+				o.addLast(new DecMatrix(this, line, list.toArray(new Operator[0])));
 			} else if (token.equals(")")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
-				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == this.PARENTHESES)) {
+				while (!(curr.type == Operator.Type.VARIABLE && ((Variable) curr).getKey() == this.PARENTHESES)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.SoftList(this, line, list.toArray(new Operator[0])));
+				o.addLast(new SoftList(this, line, list.toArray(new Operator[0])));
 			} else if (token.equals("}")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
-				while (!(curr.type == Operator.Type.VARIABLE
-						&& ((Operator.Variable) curr).getKey() == this.CURLY_BRACKET)) {
+				while (!(curr.type == Operator.Type.VARIABLE && ((Variable) curr).getKey() == this.CURLY_BRACKET)) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.HardList(this, line, list.toArray(new Operator[0])));
+				o.addLast(new HardList(this, line, list.toArray(new Operator[0])));
 			} else if (token.charAt(0) == '\'') {
 				final Phone p = pl.interpretSegment(token.substring(1));
-				o.addLast(new Operator.Container(this, line, new Datum(p)));
+				o.addLast(new Container(this, line, new Datum(p)));
 			} else if (token.charAt(0) == '@') {
 				final Feature p = pl.interpretFeature(token.substring(1));
-				o.addLast(new Operator.Container(this, line, new Datum(p)));
+				o.addLast(new Container(this, line, new Datum(p)));
 			} else if (token.charAt(0) == '`') {
 				final Word p = pl.interpretSequence(token.substring(1));
-				o.addLast(new Operator.Container(this, line, new Datum(p)));
+				o.addLast(new Container(this, line, new Datum(p)));
 			} else if (token.charAt(0) == '\"') {
 				final String s = token.substring(1);
-				o.addLast(new Operator.Container(this, line, new Datum(s)));
+				o.addLast(new Container(this, line, new Datum(s)));
 			} else if (Character.isDigit(token.charAt(0))) {
 				if (token.charAt(token.length() - 1) == 'D')
 					token = token.substring(0, token.length() - 1);
-				o.addLast(new Operator.Container(this, line, new Datum((double) Double.valueOf(token))));
+				o.addLast(new Container(this, line, new Datum((double) Double.valueOf(token))));
 			} else if (token.equals("null")) {
-				o.addLast(new Operator.Container(this, line, new Datum()));
+				o.addLast(new Container(this, line, new Datum()));
 			} else if (token.equals("Vector")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.VECTOR)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.VECTOR)));
 			} else if (token.equals("Number")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.NUMBER)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.NUMBER)));
 			} else if (token.equals("Function")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.FUNCTION)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.FUNCTION)));
 			} else if (token.equals("String")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.STRING)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.STRING)));
 			} else if (token.equals("Phone")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.PHONE)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.PHONE)));
 			} else if (token.equals("Feature")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.FEATURE)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.FEATURE)));
 			} else if (token.equals("Matrix")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.MATRIX)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.MATRIX)));
 			} else if (token.equals("Rule")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.RULE)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.RULE)));
 			} else if (token.equals("Word")) {
-				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.WORD)));
+				o.addLast(new Container(this, line, new Datum(Datum.Type.WORD)));
 			} else if (token.equals("true")) {
-				o.addLast(new Operator.Container(this, line, new Datum(true)));
+				o.addLast(new Container(this, line, new Datum(true)));
 			} else if (token.equals("false")) {
-				o.addLast(new Operator.Container(this, line, new Datum(false)));
+				o.addLast(new Container(this, line, new Datum(false)));
 			} else if (token.equals("break")) {
-				o.addLast(new Operator.Break(this, line));
+				o.addLast(new Break(this, line));
 			} else {
-				o.addLast(new Operator.Variable(this, line, hashVariable(token)));
+				o.addLast(new Variable(this, line, hashVariable(token)));
 			}
 		}
 
-		final Operator m = new Operator.SoftList(this, null, o.toArray(new Operator[0]));
+		final Operator m = new SoftList(this, null, o.toArray(new Operator[0]));
 		m.condense();
 		return m;
 	}

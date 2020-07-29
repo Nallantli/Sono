@@ -5,7 +5,12 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 
-import main.phl.*;
+import main.phl.Feature;
+import main.phl.Matrix;
+import main.phl.Phone;
+import main.phl.PhoneManager;
+import main.phl.Rule;
+import main.phl.Word;
 import main.sono.err.SonoRuntimeException;
 
 public class Datum {
@@ -486,7 +491,11 @@ public class Datum {
 			case STRING:
 				return "\"" + valueString + "\"";
 			case NUMBER:
-				return BigDecimal.valueOf(valueNumber).stripTrailingZeros().toPlainString();
+				try {
+					return BigDecimal.valueOf(valueNumber).stripTrailingZeros().toPlainString();
+				} catch (final Exception e) {
+					return String.valueOf(valueNumber);
+				}
 			case BOOL:
 				return valueBool ? "true" : "false";
 			case FUNCTION:
@@ -521,7 +530,11 @@ public class Datum {
 			case STRING:
 				return valueString;
 			case NUMBER:
-				return BigDecimal.valueOf(valueNumber).stripTrailingZeros().toPlainString();
+				try {
+					return BigDecimal.valueOf(valueNumber).stripTrailingZeros().toPlainString();
+				} catch (final Exception e) {
+					return String.valueOf(valueNumber);
+				}
 			case BOOL:
 				return valueBool ? "true" : "false";
 			case FUNCTION:

@@ -22,9 +22,9 @@ public class Function {
 		final Scope scope = new Scope(parent.getStructure(), parent);
 		for (int i = 0; i < paramKeys.length; i++) {
 			if (pValues != null && i < pValues.length) {
-				if (Boolean.TRUE.equals(paramRefs[i])) {
+				if (paramRefs[i]) {
 					scope.setVariable(interpreter, paramKeys[i], pValues[i], line);
-				} else if (Boolean.TRUE.equals(paramFins[i])) {
+				} else if (paramFins[i]) {
 					final Datum d = new Datum();
 					d.set(interpreter.getManager(), pValues[i], line);
 					d.setMutable(false);
