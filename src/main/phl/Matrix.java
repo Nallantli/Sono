@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class Matrix implements Iterable<Pair> {
+public class Matrix implements Iterable<Feature> {
 	private final PhoneManager pm;
 	private final int[] rawData;
 
@@ -18,15 +18,15 @@ public class Matrix implements Iterable<Pair> {
 	public Matrix(final PhoneManager pm, final Matrix m) {
 		this.pm = pm;
 		this.rawData = new int[pm.getFeatureNames().size()];
-		for (final Pair p : m)
-			put(p.getFeature(), p.getQuality());
+		for (final Feature p : m)
+			put(p.getKey(), p.getQuality());
 	}
 
-	public Matrix(final PhoneManager pm, final Pair... entries) {
+	public Matrix(final PhoneManager pm, final Feature... entries) {
 		this.pm = pm;
 		this.rawData = new int[pm.getFeatureNames().size()];
-		for (final Pair p : entries)
-			put(p.getFeature(), p.getQuality());
+		for (final Feature p : entries)
+			put(p.getKey(), p.getQuality());
 	}
 
 	public int getQuality(final int f) {
@@ -48,34 +48,34 @@ public class Matrix implements Iterable<Pair> {
 	}
 
 	public void putAll(final Matrix m) {
-		for (final Pair p : m) {
-			if ((getQuality(p.getFeature()) == Hasher.TRUE && p.getQuality() == Hasher.FALSE)
-					|| (getQuality(p.getFeature()) == Hasher.FALSE && p.getQuality() == Hasher.TRUE))
-				put(p.getFeature(), Hasher.ANY);
-			else if (getQuality(p.getFeature()) == Hasher.ANY || p.getQuality() == Hasher.ANY)
-				put(p.getFeature(), Hasher.ANY);
+		for (final Feature p : m) {
+			if ((getQuality(p.getKey()) == Hasher.TRUE && p.getQuality() == Hasher.FALSE)
+					|| (getQuality(p.getKey()) == Hasher.FALSE && p.getQuality() == Hasher.TRUE))
+				put(p.getKey(), Hasher.ANY);
+			else if (getQuality(p.getKey()) == Hasher.ANY || p.getQuality() == Hasher.ANY)
+				put(p.getKey(), Hasher.ANY);
 			else
-				put(p.getFeature(), p.getQuality());
+				put(p.getKey(), p.getQuality());
 		}
 	}
 
 	public Matrix transform(final Matrix matrix) {
 		final Matrix newFeatures = new Matrix(pm, this);
 
-		for (final Pair e : matrix) {
-			newFeatures.put(e.getFeature(), e.getQuality());
-			final int im = pm.inMajorClass(e.getFeature());
+		for (final Feature e : matrix) {
+			newFeatures.put(e.getKey(), e.getQuality());
+			final int im = pm.inMajorClass(e.getKey());
 			if (im != -1 && e.getQuality() != Hasher.ZERO) {
 				newFeatures.put(im, Hasher.TRUE);
 				for (final int f : pm.getMajorClasses().get(im))
 					if (newFeatures.getQuality(f) == Hasher.ZERO)
 						newFeatures.put(f, Hasher.FALSE);
-			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.TRUE) {
-				for (final int f : pm.getMajorClasses().get(e.getFeature()))
+			} else if (pm.getMajorClasses().containsKey(e.getKey()) && e.getQuality() == Hasher.TRUE) {
+				for (final int f : pm.getMajorClasses().get(e.getKey()))
 					if (newFeatures.getQuality(f) == Hasher.ZERO)
 						newFeatures.put(f, Hasher.FALSE);
-			} else if (pm.getMajorClasses().containsKey(e.getFeature()) && e.getQuality() == Hasher.FALSE) {
-				for (final int f : pm.getMajorClasses().get(e.getFeature()))
+			} else if (pm.getMajorClasses().containsKey(e.getKey()) && e.getQuality() == Hasher.FALSE) {
+				for (final int f : pm.getMajorClasses().get(e.getKey()))
 					newFeatures.put(f, Hasher.ZERO);
 			}
 		}
@@ -83,11 +83,11 @@ public class Matrix implements Iterable<Pair> {
 		return newFeatures;
 	}
 
-	private List<Pair> getList() {
-		final List<Pair> list = new ArrayList<>();
+	private List<Feature> getList() {
+		final List<Feature> list = new ArrayList<>();
 		for (final int f : pm.getFeatureNames()) {
 			if (getQuality(f) != Hasher.ZERO)
-				list.add(new Pair(f, getQuality(f)));
+				list.add(new Feature(f, getQuality(f)));
 		}
 		return list;
 	}
@@ -106,7 +106,7 @@ public class Matrix implements Iterable<Pair> {
 	}
 
 	@Override
-	public Iterator<Pair> iterator() {
+	public Iterator<Feature> iterator() {
 		return new MatrixIterator(getList());
 	}
 
@@ -132,11 +132,11 @@ public class Matrix implements Iterable<Pair> {
 	}
 }
 
-class MatrixIterator implements Iterator<Pair> {
-	private final List<Pair> holder;
+class MatrixIterator implements Iterator<Feature> {
+	private final List<Feature> holder;
 	private int i;
 
-	MatrixIterator(final List<Pair> holder) {
+	MatrixIterator(final List<Feature> holder) {
 		this.holder = holder;
 		i = 0;
 	}
@@ -147,7 +147,7 @@ class MatrixIterator implements Iterator<Pair> {
 	}
 
 	@Override
-	public Pair next() {
+	public Feature next() {
 		if (i >= holder.size())
 			throw new NoSuchElementException("Matrix iterator out of bounds: " + i);
 		return holder.get(i++);

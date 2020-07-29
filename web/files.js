@@ -2,6 +2,7 @@ let files = [
     "datasetgen.so",
     "deu.so",
     "epenthesis.so",
+    "fibonacci.so",
     "findnatural.so",
     "hello.so",
     "hilo.so",

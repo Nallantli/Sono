@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import client.io.ErrorOutput;
@@ -95,12 +94,6 @@ public class SonoClient {
 			e.printStackTrace();
 		}
 
-		if (getOption("-g", args) != null) {
-			SonoWrapper.DEBUG = true;
-		} else {
-			SonoWrapper.DEBUG = false;
-		}
-
 		File filename = null;
 		if (args.length > 0 && args[0].charAt(0) != '-') {
 			filename = new File(args[0]);
@@ -120,10 +113,10 @@ public class SonoClient {
 					final Datum result = center.run(".", line);
 					if (result.getType() == Datum.Type.VECTOR) {
 						int i = 0;
-						for (final Datum d : result.getVector(new ArrayList<>()))
-							System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(new ArrayList<>()));
+						for (final Datum d : result.getVector(null))
+							System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(null));
 					} else {
-						System.out.println("\t" + result.toStringTrace(new ArrayList<>()));
+						System.out.println("\t" + result.toStringTrace(null));
 					}
 				} catch (final Exception e) {
 					e.printStackTrace();

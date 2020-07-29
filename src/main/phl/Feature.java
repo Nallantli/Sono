@@ -1,16 +1,16 @@
 package main.phl;
 
-public class Pair {
-	private final int feature;
+public class Feature {
+	private final int key;
 	private final int quality;
 
-	public Pair(final int feature, final int quality) {
-		this.feature = feature;
+	public Feature(final int key, final int quality) {
+		this.key = key;
 		this.quality = quality;
 	}
 
-	public int getFeature() {
-		return this.feature;
+	public int getKey() {
+		return this.key;
 	}
 
 	public int getQuality() {
@@ -19,7 +19,7 @@ public class Pair {
 
 	@Override
 	public String toString() {
-		return Hasher.deHash(quality) + "|" + Hasher.deHash(feature);
+		return Hasher.deHash(quality) + "|" + Hasher.deHash(key);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class Pair {
 			return false;
 		if (o.getClass() != this.getClass())
 			return false;
-		final Pair p = (Pair) o;
-		return feature == p.getFeature() && quality == p.getQuality();
+		final Feature p = (Feature) o;
+		return key == p.getKey() && quality == p.getQuality();
 	}
 }

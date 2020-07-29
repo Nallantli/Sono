@@ -1,7 +1,5 @@
 package server;
 
-import java.util.ArrayList;
-
 import org.java_websocket.WebSocket;
 
 import main.SonoWrapper;
@@ -37,11 +35,11 @@ public class ThreadWrapper extends Thread {
 			sb.append("<summary>Raw Output Vector (" + output.getVectorLength(null)
 					+ " <i class=\"fab fa-buffer\"></i>)</summary>");
 			for (int i = 0; i < output.getVectorLength(null); i++)
-				sb.append("\t" + i + ":\t" + SonoServer.validate(output.indexVector(i).toStringTrace(new ArrayList<>())) + "\n");
+				sb.append("\t" + i + ":\t" + SonoServer.validate(output.indexVector(i).toStringTrace(null)) + "\n");
 			sb.append("</details>");
 		} else {
 			sb.append("\n<span class=\"blue\">");
-			sb.append("\t" + SonoServer.validate(output.toStringTrace(new ArrayList<>())) + "\n");
+			sb.append("\t" + SonoServer.validate(output.toStringTrace(null)) + "\n");
 			sb.append("</span>");
 		}
 		stdout.printHeader("OUT", sb.toString() + "\n");

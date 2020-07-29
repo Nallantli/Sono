@@ -1,10 +1,10 @@
 package main.base;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import main.base.CommandManager.Command;
+import main.sono.Token;
 import main.sono.err.SonoRuntimeException;
 
 public class Library {
@@ -18,7 +18,7 @@ public class Library {
 		return commands;
 	}
 
-	protected SonoRuntimeException error(final String message, final List<String> trace) {
-		return new SonoRuntimeException(message, trace);
+	protected SonoRuntimeException error(final String message, final Token line) {
+		return new SonoRuntimeException(message, line);
 	}
 }

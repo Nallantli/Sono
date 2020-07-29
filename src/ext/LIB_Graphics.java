@@ -43,6 +43,7 @@ import main.base.Library;
 import main.sono.Datum;
 import main.sono.Function;
 import main.sono.Interpreter;
+import main.sono.Token;
 import main.sono.err.SonoRuntimeException;
 
 abstract class Paintable {
@@ -272,7 +273,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseReleased.execute(params, new ArrayList<>());
+					onMouseReleased.execute(params, null);
 				}
 			}
 
@@ -282,7 +283,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMousePressed.execute(params, new ArrayList<>());
+					onMousePressed.execute(params, null);
 				}
 			}
 
@@ -292,7 +293,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseExited.execute(params, new ArrayList<>());
+					onMouseExited.execute(params, null);
 				}
 			}
 
@@ -302,7 +303,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseEntered.execute(params, new ArrayList<>());
+					onMouseEntered.execute(params, null);
 				}
 			}
 
@@ -312,7 +313,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseClicked.execute(params, new ArrayList<>());
+					onMouseClicked.execute(params, null);
 				}
 			}
 		});
@@ -323,7 +324,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseMoved.execute(params, new ArrayList<>());
+					onMouseMoved.execute(params, null);
 				}
 			}
 
@@ -333,7 +334,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseDragged.execute(params, new ArrayList<>());
+					onMouseDragged.execute(params, null);
 				}
 			}
 		});
@@ -343,7 +344,7 @@ class WindowFunctions extends JFrame {
 				if (onKeyTyped != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyTyped.execute(params, new ArrayList<>());
+					onKeyTyped.execute(params, null);
 				}
 			}
 
@@ -352,7 +353,7 @@ class WindowFunctions extends JFrame {
 				if (onKeyPressed != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyPressed.execute(params, new ArrayList<>());
+					onKeyPressed.execute(params, null);
 				}
 			}
 
@@ -361,7 +362,7 @@ class WindowFunctions extends JFrame {
 				if (onKeyReleased != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyReleased.execute(params, new ArrayList<>());
+					onKeyReleased.execute(params, null);
 				}
 			}
 		});
@@ -421,52 +422,48 @@ public class LIB_Graphics extends Library {
 			}
 		}
 
-		commands.put("LIB_Graphics.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					if (SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE"))
-						throw error("Graphics permissions are disabled for this interpreter.", trace);
-					final Datum[] list = datum.getVector(trace);
-					final String title = list[0].getString(trace);
-					final int width = (int) list[1].getNumber(trace);
-					final int height = (int) list[2].getNumber(trace);
-					final WindowFunctions f = new WindowFunctions(title);
-					if (list[3].getType() == Datum.Type.FUNCTION) {
-						final Function close = list[3].getFunction(Datum.Type.ANY, trace);
-						f.addWindowListener(new WindowAdapter() {
-							@Override
-							public void windowClosing(final WindowEvent e) {
-								close.execute(null, trace);
-							}
-						});
-					} else {
-						f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		commands.put("LIB_Graphics.INIT", (final Datum datum, final Token line, final Interpreter interpreter) -> {
+			if (SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE"))
+				throw error("Graphics permissions are disabled for this interpreter.", line);
+			final Datum[] list = datum.getVector(line);
+			final String title = list[0].getString(line);
+			final int width = (int) list[1].getNumber(line);
+			final int height = (int) list[2].getNumber(line);
+			final WindowFunctions f = new WindowFunctions(title);
+			if (list[3].getType() == Datum.Type.FUNCTION) {
+				final Function close = list[3].getFunction(Datum.Type.ANY, line);
+				f.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(final WindowEvent e) {
+						close.execute(null, line);
 					}
-					f.setIconImage(Toolkit.getDefaultToolkit()
-							.getImage(SonoWrapper.getGlobalOption("PATH") + "/res/sono.png"));
-					f.setResizable(false);
-					f.getContentPane().setPreferredSize(new Dimension(width, height));
-					f.pack();
-					f.setVisible(true);
-					return new Datum(new Datum[] { new Datum((Object) f), new Datum((Object) f.getContentPane()) });
 				});
-		commands.put("LIB_Graphics.SHOW",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
-					f.setVisible(true);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.HIDE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
-					f.setVisible(false);
-					return new Datum();
-				});
+			} else {
+				f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			}
+			f.setIconImage(Toolkit.getDefaultToolkit().getImage(SonoWrapper.getGlobalOption("PATH") + "/res/sono.png"));
+			f.setResizable(false);
+			f.getContentPane().setPreferredSize(new Dimension(width, height));
+			f.pack();
+			f.setVisible(true);
+			return new Datum(new Datum[] { new Datum((Object) f), new Datum((Object) f.getContentPane()) });
+		});
+		commands.put("LIB_Graphics.SHOW", (final Datum datum, final Token line, final Interpreter interpreter) -> {
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(line);
+			f.setVisible(true);
+			return new Datum();
+		});
+		commands.put("LIB_Graphics.HIDE", (final Datum datum, final Token line, final Interpreter interpreter) -> {
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(line);
+			f.setVisible(false);
+			return new Datum();
+		});
 		commands.put("LIB_Graphics.FONT.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final String fontName = list[0].getString(trace);
-					final String styleRaw = list[1].getString(trace);
-					final int size = (int) list[2].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final String fontName = list[0].getString(line);
+					final String styleRaw = list[1].getString(line);
+					final int size = (int) list[2].getNumber(line);
 					final String[] split = styleRaw.split("\\s");
 					int style = Font.PLAIN;
 					for (final String s : split) {
@@ -488,11 +485,11 @@ public class LIB_Graphics extends Library {
 					return new Datum((Object) font);
 				});
 		commands.put("LIB_Graphics.ADDMOUSELISTENER",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final WindowFunctions f = (WindowFunctions) list[0].getPointer(trace);
-					final int id = (int) list[1].getNumber(trace);
-					final Function function = list[2].getFunction(Datum.Type.ANY, trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final WindowFunctions f = (WindowFunctions) list[0].getPointer(line);
+					final int id = (int) list[1].getNumber(line);
+					final Function function = list[2].getFunction(Datum.Type.ANY, line);
 					switch (id) {
 						case 0:
 							f.setOnMouseMoved(function);
@@ -516,16 +513,16 @@ public class LIB_Graphics extends Library {
 							f.setOnMouseClicked(function);
 							break;
 						default:
-							throw error("Unknown mouse event ID <" + id + ">", trace);
+							throw error("Unknown mouse event ID <" + id + ">", line);
 					}
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.ADDKEYLISTENER",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final WindowFunctions f = (WindowFunctions) list[0].getPointer(trace);
-					final int id = (int) list[1].getNumber(trace);
-					final Function function = list[2].getFunction(Datum.Type.ANY, trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final WindowFunctions f = (WindowFunctions) list[0].getPointer(line);
+					final int id = (int) list[1].getNumber(line);
+					final Function function = list[2].getFunction(Datum.Type.ANY, line);
 					switch (id) {
 						case 0:
 							f.setOnKeyPressed(function);
@@ -537,362 +534,359 @@ public class LIB_Graphics extends Library {
 							f.setOnKeyTyped(function);
 							break;
 						default:
-							throw error("Unknown key event ID <" + id + ">", trace);
+							throw error("Unknown key event ID <" + id + ">", line);
 					}
 					return new Datum();
 				});
-		commands.put("LIB_Graphics.SETSIZE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final WindowFunctions f = (WindowFunctions) list[0].getPointer(trace);
-					final int width = (int) list[1].getNumber(trace);
-					final int height = (int) list[2].getNumber(trace);
-					f.getContentPane().setPreferredSize(new Dimension(width, height));
-					f.pack();
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.CLOSE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
-					f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
-					return new Datum();
-				});
+		commands.put("LIB_Graphics.SETSIZE", (final Datum datum, final Token line, final Interpreter interpreter) -> {
+			final Datum[] list = datum.getVector(line);
+			final WindowFunctions f = (WindowFunctions) list[0].getPointer(line);
+			final int width = (int) list[1].getNumber(line);
+			final int height = (int) list[2].getNumber(line);
+			f.getContentPane().setPreferredSize(new Dimension(width, height));
+			f.pack();
+			return new Datum();
+		});
+		commands.put("LIB_Graphics.CLOSE", (final Datum datum, final Token line, final Interpreter interpreter) -> {
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(line);
+			f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
+			return new Datum();
+		});
 		commands.put("LIB_Graphics.GRAPHICS.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
 					final GraphicsPanel gp = new GraphicsPanel();
 					return new Datum((Object) gp);
 				});
-		commands.put("LIB_Graphics.REPAINT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final WindowFunctions f = (WindowFunctions) datum.getPointer(trace);
-					f.revalidate();
-					f.repaint();
-					return new Datum();
-				});
+		commands.put("LIB_Graphics.REPAINT", (final Datum datum, final Token line, final Interpreter interpreter) -> {
+			final WindowFunctions f = (WindowFunctions) datum.getPointer(line);
+			f.revalidate();
+			f.repaint();
+			return new Datum();
+		});
 		commands.put("LIB_Graphics.GRAPHICS.ADD",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final GraphicsPanel gp = (GraphicsPanel) list[0].getPointer(trace);
-					final Paintable paintable = (Paintable) list[1].getPointer(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final GraphicsPanel gp = (GraphicsPanel) list[0].getPointer(line);
+					final Paintable paintable = (Paintable) list[1].getPointer(line);
 					final boolean success = gp.addBuffer(paintable);
 					return new Datum(success ? 1 : 0);
 				});
 		commands.put("LIB_Graphics.GRAPHICS.REMOVE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final GraphicsPanel gp = (GraphicsPanel) list[0].getPointer(trace);
-					final Paintable paintable = (Paintable) list[1].getPointer(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final GraphicsPanel gp = (GraphicsPanel) list[0].getPointer(line);
+					final Paintable paintable = (Paintable) list[1].getPointer(line);
 					final boolean success = gp.removeBuffer(paintable);
 					return new Datum(success ? 1 : 0);
 				});
 		commands.put("LIB_Graphics.COLOR.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final int r = (int) list[0].getNumber(trace);
-					final int g = (int) list[1].getNumber(trace);
-					final int b = (int) list[2].getNumber(trace);
-					final int a = (int) list[3].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final int r = (int) list[0].getNumber(line);
+					final int g = (int) list[1].getNumber(line);
+					final int b = (int) list[2].getNumber(line);
+					final int a = (int) list[3].getNumber(line);
 					final Color c = new Color(r, g, b, a);
 					return new Datum((Object) c);
 				});
 		commands.put("LIB_Graphics.SHAPE.SETFILL",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable paintable = (Paintable) list[0].getPointer(trace);
-					final Color color = (Color) list[1].getPointer(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable paintable = (Paintable) list[0].getPointer(line);
+					final Color color = (Color) list[1].getPointer(line);
 					paintable.setFill(color);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.SETOUTLINE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable paintable = (Paintable) list[0].getPointer(trace);
-					final Color color = (Color) list[1].getPointer(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable paintable = (Paintable) list[0].getPointer(line);
+					final Color color = (Color) list[1].getPointer(line);
 					paintable.setOutline(color);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.RECTANGLE.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
 					Color fill = null;
 					Color outline = null;
 					if (list[0].getType() != Datum.Type.NULL) {
-						fill = (Color) list[0].getPointer(trace);
+						fill = (Color) list[0].getPointer(line);
 					}
 					if (list[1].getType() != Datum.Type.NULL) {
-						outline = (Color) list[1].getPointer(trace);
+						outline = (Color) list[1].getPointer(line);
 					}
-					final int x = (int) list[2].getNumber(trace);
-					final int y = (int) list[3].getNumber(trace);
-					final int width = (int) list[4].getNumber(trace);
-					final int height = (int) list[5].getNumber(trace);
+					final int x = (int) list[2].getNumber(line);
+					final int y = (int) list[3].getNumber(line);
+					final int width = (int) list[4].getNumber(line);
+					final int height = (int) list[5].getNumber(line);
 					final Paintable.Rectangle rectangle = new Paintable.Rectangle(fill, outline, x, y, width, height);
 					return new Datum((Object) rectangle);
 				});
 		commands.put("LIB_Graphics.SHAPE.RECTANGLE.MOVE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable.Rectangle rectangle = (Paintable.Rectangle) list[0].getPointer(trace);
-					final int x = (int) list[1].getNumber(trace);
-					final int y = (int) list[2].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable.Rectangle rectangle = (Paintable.Rectangle) list[0].getPointer(line);
+					final int x = (int) list[1].getNumber(line);
+					final int y = (int) list[2].getNumber(line);
 					rectangle.setOrigin(x, y);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.RECTANGLE.SIZE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable.Rectangle rectangle = (Paintable.Rectangle) list[0].getPointer(trace);
-					final int width = (int) list[1].getNumber(trace);
-					final int height = (int) list[2].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable.Rectangle rectangle = (Paintable.Rectangle) list[0].getPointer(line);
+					final int width = (int) list[1].getNumber(line);
+					final int height = (int) list[2].getNumber(line);
 					rectangle.setSize(width, height);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.LINE.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Color fill = (Color) list[0].getPointer(trace);
-					final int x1 = (int) list[1].getNumber(trace);
-					final int y1 = (int) list[2].getNumber(trace);
-					final int x2 = (int) list[3].getNumber(trace);
-					final int y2 = (int) list[4].getNumber(trace);
-					final Paintable.Line line = new Paintable.Line(fill, x1, y1, x2, y2);
-					return new Datum((Object) line);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Color fill = (Color) list[0].getPointer(line);
+					final int x1 = (int) list[1].getNumber(line);
+					final int y1 = (int) list[2].getNumber(line);
+					final int x2 = (int) list[3].getNumber(line);
+					final int y2 = (int) list[4].getNumber(line);
+					final Paintable.Line lineshape = new Paintable.Line(fill, x1, y1, x2, y2);
+					return new Datum((Object) lineshape);
 				});
 		commands.put("LIB_Graphics.SHAPE.LINE.MOVE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable.Line line = (Paintable.Line) list[0].getPointer(trace);
-					final int x1 = (int) list[1].getNumber(trace);
-					final int y1 = (int) list[2].getNumber(trace);
-					final int x2 = (int) list[3].getNumber(trace);
-					final int y2 = (int) list[4].getNumber(trace);
-					line.setPoints(x1, y1, x2, y2);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable.Line lineshape = (Paintable.Line) list[0].getPointer(line);
+					final int x1 = (int) list[1].getNumber(line);
+					final int y1 = (int) list[2].getNumber(line);
+					final int x2 = (int) list[3].getNumber(line);
+					final int y2 = (int) list[4].getNumber(line);
+					lineshape.setPoints(x1, y1, x2, y2);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.OVAL.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
 					Color fill = null;
 					Color outline = null;
 					if (list[0].getType() != Datum.Type.NULL) {
-						fill = (Color) list[0].getPointer(trace);
+						fill = (Color) list[0].getPointer(line);
 					}
 					if (list[1].getType() != Datum.Type.NULL) {
-						outline = (Color) list[1].getPointer(trace);
+						outline = (Color) list[1].getPointer(line);
 					}
-					final int x = (int) list[2].getNumber(trace);
-					final int y = (int) list[3].getNumber(trace);
-					final int width = (int) list[4].getNumber(trace);
-					final int height = (int) list[5].getNumber(trace);
+					final int x = (int) list[2].getNumber(line);
+					final int y = (int) list[3].getNumber(line);
+					final int width = (int) list[4].getNumber(line);
+					final int height = (int) list[5].getNumber(line);
 					final Paintable.Oval oval = new Paintable.Oval(fill, outline, x, y, width, height);
 					return new Datum((Object) oval);
 				});
 		commands.put("LIB_Graphics.SHAPE.OVAL.MOVE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable.Oval oval = (Paintable.Oval) list[0].getPointer(trace);
-					final int x = (int) list[1].getNumber(trace);
-					final int y = (int) list[2].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable.Oval oval = (Paintable.Oval) list[0].getPointer(line);
+					final int x = (int) list[1].getNumber(line);
+					final int y = (int) list[2].getNumber(line);
 					oval.setOrigin(x, y);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.OVAL.SIZE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable.Oval oval = (Paintable.Oval) list[0].getPointer(trace);
-					final int width = (int) list[1].getNumber(trace);
-					final int height = (int) list[2].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable.Oval oval = (Paintable.Oval) list[0].getPointer(line);
+					final int width = (int) list[1].getNumber(line);
+					final int height = (int) list[2].getNumber(line);
 					oval.setSize(width, height);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.TEXT.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Color fill = (Color) list[0].getPointer(trace);
-					final int x = (int) list[1].getNumber(trace);
-					final int y = (int) list[2].getNumber(trace);
-					final String string = list[3].getString(trace);
-					final int align = (int) list[4].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Color fill = (Color) list[0].getPointer(line);
+					final int x = (int) list[1].getNumber(line);
+					final int y = (int) list[2].getNumber(line);
+					final String string = list[3].getString(line);
+					final int align = (int) list[4].getNumber(line);
 					final Paintable.Text text = new Paintable.Text(fill, x, y, string, align);
 					return new Datum((Object) text);
 				});
 		commands.put("LIB_Graphics.SHAPE.TEXT.SETFONT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable.Text text = (Paintable.Text) list[0].getPointer(trace);
-					final Font font = (Font) list[1].getPointer(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable.Text text = (Paintable.Text) list[0].getPointer(line);
+					final Font font = (Font) list[1].getPointer(line);
 					text.setFont(font);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.TEXT.SETSTRING",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable.Text text = (Paintable.Text) list[0].getPointer(trace);
-					final String string = list[1].getString(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable.Text text = (Paintable.Text) list[0].getPointer(line);
+					final String string = list[1].getString(line);
 					text.setText(string);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.SHAPE.TEXT.MOVE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final Paintable.Text text = (Paintable.Text) list[0].getPointer(trace);
-					final int x = (int) list[1].getNumber(trace);
-					final int y = (int) list[2].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final Paintable.Text text = (Paintable.Text) list[0].getPointer(line);
+					final int x = (int) list[1].getNumber(line);
+					final int y = (int) list[2].getNumber(line);
 					text.setOrigin(x, y);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.ADD",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final JComponent frame = ((JComponent) list[0].getPointer(trace));
-					final JComponent child = (JComponent) list[1].getPointer(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final JComponent frame = ((JComponent) list[0].getPointer(line));
+					final JComponent child = (JComponent) list[1].getPointer(line);
 					if (list.length > 2)
-						frame.add(child, list[2].getString(trace));
+						frame.add(child, list[2].getString(line));
 					else
 						frame.add(child);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.SETENABLE",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final AbstractButton component = (AbstractButton) list[0].getPointer(trace);
-					final boolean enabled = list[1].getNumber(trace) != 0;
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final AbstractButton component = (AbstractButton) list[0].getPointer(line);
+					final boolean enabled = list[1].getNumber(line) != 0;
 					component.setEnabled(enabled);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.CLICK",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final AbstractButton component = (AbstractButton) datum.getPointer(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final AbstractButton component = (AbstractButton) datum.getPointer(line);
 					component.doClick();
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.ACTION",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final AbstractButton component = ((AbstractButton) list[0].getPointer(trace));
-					final Function function = list[1].getFunction(Datum.Type.ANY, trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final AbstractButton component = ((AbstractButton) list[0].getPointer(line));
+					final Function function = list[1].getFunction(Datum.Type.ANY, line);
 					component.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(final ActionEvent e) {
-							function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, trace);
+							function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, line);
 						}
 					});
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.MENU.BAR.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
 					final JMenuBar mb = new JMenuBar();
 					return new Datum((Object) mb);
 				});
 		commands.put("LIB_Graphics.COMPONENT.MENU.ITEM.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final JMenu menu = new JMenu(datum.getString(trace));
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final JMenu menu = new JMenu(datum.getString(line));
 					return new Datum((Object) menu);
 				});
 		commands.put("LIB_Graphics.COMPONENT.MENU.LABEL.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final JMenuItem item = new JMenuItem(datum.getString(trace));
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final JMenuItem item = new JMenuItem(datum.getString(line));
 					return new Datum((Object) item);
 				});
 		commands.put("LIB_Graphics.COMPONENT.TEXT.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final JLabel component = new JLabel(datum.getString(trace));
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final JLabel component = new JLabel(datum.getString(line));
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.TEXT.ALIGN",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final JLabel component = (JLabel) list[0].getPointer(trace);
-					final int alignmentX = (int) list[1].getNumber(trace);
-					final int alignmentY = (int) list[2].getNumber(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final JLabel component = (JLabel) list[0].getPointer(line);
+					final int alignmentX = (int) list[1].getNumber(line);
+					final int alignmentY = (int) list[2].getNumber(line);
 					component.setHorizontalAlignment(alignmentX);
 					component.setVerticalAlignment(alignmentY);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.TEXT.SETTEXT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final JLabel component = (JLabel) list[0].getPointer(trace);
-					final String label = list[1].getString(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final JLabel component = (JLabel) list[0].getPointer(line);
+					final String label = list[1].getString(line);
 					component.setText(label);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.BUTTON.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final JButton component = new JButton(datum.getString(trace));
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final JButton component = new JButton(datum.getString(line));
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.BUTTON.SETTEXT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final JButton component = (JButton) list[0].getPointer(trace);
-					final String label = list[1].getString(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final JButton component = (JButton) list[0].getPointer(line);
+					final String label = list[1].getString(line);
 					component.setText(label);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.CHECKBOX.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final JCheckBox component = new JCheckBox(datum.getString(trace));
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final JCheckBox component = new JCheckBox(datum.getString(line));
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.CHECKBOX.SETTEXT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final JCheckBox component = (JCheckBox) list[0].getPointer(trace);
-					final String label = list[1].getString(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final JCheckBox component = (JCheckBox) list[0].getPointer(line);
+					final String label = list[1].getString(line);
 					component.setText(label);
 					return new Datum();
 				});
 		commands.put("LIB_Graphics.COMPONENT.PANEL.BORDER.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
 					final JPanel component = new JPanel();
 					component.setLayout(new BorderLayout());
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.PANEL.BLOCK.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
 					final JPanel component = new JPanel();
 					component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.PANEL.INLINE.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
 					final JPanel component = new JPanel();
 					component.setLayout(new FlowLayout());
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.PANEL.TABLE.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
 					final JPanel component = new JPanel();
-					component.setLayout(new GridLayout((int) list[0].getNumber(trace), (int) list[1].getNumber(trace)));
+					component.setLayout(new GridLayout((int) list[0].getNumber(line), (int) list[1].getNumber(line)));
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.PANEL.SPLIT.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
 					int orientation = JSplitPane.VERTICAL_SPLIT;
-					if (datum.getString(trace).equals("Horizontal"))
+					if (datum.getString(line).equals("Horizontal"))
 						orientation = JSplitPane.HORIZONTAL_SPLIT;
-					else if (datum.getString(trace).equals("Vertical"))
+					else if (datum.getString(line).equals("Vertical"))
 						orientation = JSplitPane.VERTICAL_SPLIT;
 					else
 						throw new SonoRuntimeException(
 								"Component.Panel.Split can only be initialized with \"Horizontal\" or \"Vertical\"",
-								trace);
+								line);
 					final JSplitPane component = new JSplitPane(orientation);
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.TABPANE.INIT",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
 					final JTabbedPane component = new JTabbedPane();
 					return new Datum((Object) component);
 				});
 		commands.put("LIB_Graphics.COMPONENT.TABPANE.ADD",
-				(final Datum datum, final List<String> trace, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(trace);
-					final JTabbedPane frame = ((JTabbedPane) list[0].getPointer(trace));
-					final JComponent child = (JComponent) list[1].getPointer(trace);
-					final String label = list[2].getString(trace);
+				(final Datum datum, final Token line, final Interpreter interpreter) -> {
+					final Datum[] list = datum.getVector(line);
+					final JTabbedPane frame = ((JTabbedPane) list[0].getPointer(line));
+					final JComponent child = (JComponent) list[1].getPointer(line);
+					final String label = list[2].getString(line);
 					frame.addTab(label, child);
 					return new Datum();
 				});

@@ -106,12 +106,11 @@ public class Rule {
 			if (search != null && search.getClass() == Matrix.class) {
 				tempSearch = new Matrix(pm);
 				((Matrix) tempSearch).putAll((Matrix) search);
-				for (final Pair se : (Matrix) tempSearch) {
+				for (final Feature se : (Matrix) tempSearch) {
 					if (Hasher.deHash(se.getQuality()).equals(String.valueOf(currentIndex))) {
 						if (assimilationMaps.get(currentIndex) == null)
 							assimilationMaps.put(currentIndex, new Matrix(pm));
-						assimilationMaps.get(currentIndex).put(se.getFeature(),
-								phone.getFeatureQuality(se.getFeature()));
+						assimilationMaps.get(currentIndex).put(se.getKey(), phone.getFeatureQuality(se.getKey()));
 					}
 				}
 			}
@@ -123,12 +122,11 @@ public class Rule {
 					final Matrix temp = new Matrix(pm);
 					temp.putAll((Matrix) e);
 					tempInit.add(0, temp);
-					for (final Pair ie : temp) {
+					for (final Feature ie : temp) {
 						if (Hasher.deHash(ie.getQuality()).equals(String.valueOf(currentIndex))) {
 							if (assimilationMaps.get(currentIndex) == null)
 								assimilationMaps.put(currentIndex, new Matrix(pm));
-							assimilationMaps.get(currentIndex).put(ie.getFeature(),
-									target.getFeatureQuality(ie.getFeature()));
+							assimilationMaps.get(currentIndex).put(ie.getKey(), target.getFeatureQuality(ie.getKey()));
 						}
 					}
 					currentIndex++;
@@ -146,12 +144,11 @@ public class Rule {
 					final Matrix temp = new Matrix(pm);
 					temp.putAll((Matrix) e);
 					tempFin.add(temp);
-					for (final Pair fe : temp) {
+					for (final Feature fe : temp) {
 						if (Hasher.deHash(fe.getQuality()).equals(String.valueOf(currentIndex))) {
 							if (assimilationMaps.get(currentIndex) == null)
 								assimilationMaps.put(currentIndex, new Matrix(pm));
-							assimilationMaps.get(currentIndex).put(fe.getFeature(),
-									target.getFeatureQuality(fe.getFeature()));
+							assimilationMaps.get(currentIndex).put(fe.getKey(), target.getFeatureQuality(fe.getKey()));
 						}
 					}
 					currentIndex++;
@@ -175,28 +172,28 @@ public class Rule {
 
 			for (final Map.Entry<Integer, Matrix> e : assimilationMaps.entrySet()) {
 				if (tempSearch != null && tempSearch.getClass() == Matrix.class)
-					for (final Pair feature : e.getValue())
-						if (Hasher.deHash(((Matrix) tempSearch).getQuality(feature.getFeature()))
+					for (final Feature feature : e.getValue())
+						if (Hasher.deHash(((Matrix) tempSearch).getQuality(feature.getKey()))
 								.equals(String.valueOf(e.getKey())))
-							((Matrix) tempSearch).put(feature.getFeature(), feature.getQuality());
+							((Matrix) tempSearch).put(feature.getKey(), feature.getQuality());
 				for (final Object m : tempInit)
 					if (m.getClass() == Matrix.class)
-						for (final Pair feature : e.getValue())
-							if (Hasher.deHash(((Matrix) m).getQuality(feature.getFeature()))
+						for (final Feature feature : e.getValue())
+							if (Hasher.deHash(((Matrix) m).getQuality(feature.getKey()))
 									.equals(String.valueOf(e.getKey())))
-								((Matrix) m).put(feature.getFeature(), feature.getQuality());
+								((Matrix) m).put(feature.getKey(), feature.getQuality());
 				for (final Object m : tempFin)
 					if (m.getClass() == Matrix.class)
-						for (final Pair feature : e.getValue())
-							if (Hasher.deHash(((Matrix) m).getQuality(feature.getFeature()))
+						for (final Feature feature : e.getValue())
+							if (Hasher.deHash(((Matrix) m).getQuality(feature.getKey()))
 									.equals(String.valueOf(e.getKey())))
-								((Matrix) m).put(feature.getFeature(), feature.getQuality());
+								((Matrix) m).put(feature.getKey(), feature.getQuality());
 				for (final Object m : tempTrans)
 					if (m.getClass() == Matrix.class)
-						for (final Pair feature : e.getValue())
-							if (Hasher.deHash(((Matrix) m).getQuality(feature.getFeature()))
+						for (final Feature feature : e.getValue())
+							if (Hasher.deHash(((Matrix) m).getQuality(feature.getKey()))
 									.equals(String.valueOf(e.getKey())))
-								((Matrix) m).put(feature.getFeature(), feature.getQuality());
+								((Matrix) m).put(feature.getKey(), feature.getQuality());
 			}
 
 			boolean flag = false;

@@ -13,7 +13,7 @@ import java.util.Map;
 
 import main.base.CommandManager;
 import main.phl.Hasher;
-import main.phl.Pair;
+import main.phl.Feature;
 import main.phl.Phone;
 import main.phl.PhoneManager;
 import main.phl.Rule;
@@ -25,6 +25,84 @@ import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class Interpreter {
+	protected static final String $_OUTER_CALL_ = "_OUTER_CALL_";
+	protected static final String $ABSTRACT = "abstract";
+	protected static final String $ADD = "+";
+	protected static final String $ADD_SET = "+=";
+	protected static final String $ALLOC = "alloc";
+	protected static final String $AND = "&&";
+	protected static final String $ARROW = "->";
+	protected static final String $CATCH = "catch";
+	protected static final String $CHAR = "char";
+	protected static final String $CLASS = "class";
+	protected static final String $CODE = "code";
+	protected static final String $COM = "com";
+	protected static final String $CONTRAST = "?>";
+	protected static final String $DIV = "/";
+	protected static final String $DIV_SET = "/=";
+	protected static final String $DO = "do";
+	protected static final String $E_LESS = "<=";
+	protected static final String $E_MORE = ">=";
+	protected static final String $ELSE = "else";
+	protected static final String $EQUALS = "==";
+	protected static final String $EXEC = ".exec";
+	protected static final String $EXTENDS = "extends";
+	protected static final String $FEAT = "feat";
+	protected static final String $FINAL = "final";
+	protected static final String $FROM = "from";
+	protected static final String $GOTO = "goto";
+	protected static final String $HASH = "hash";
+	protected static final String $IMPORT = "import";
+	protected static final String $IN = "in";
+	protected static final String $INDEX = ".index";
+	protected static final String $INNER = ".";
+	protected static final String $LAMBDA = "=>";
+	protected static final String $LEN = "len";
+	protected static final String $LESS = "<";
+	protected static final String $LOAD = "load";
+	protected static final String $MAT = "mat";
+	protected static final String $MOD = "%";
+	protected static final String $MOD_SET = "%=";
+	protected static final String $MORE = ">";
+	protected static final String $MUL = "*";
+	protected static final String $MUL_SET = "*=";
+	protected static final String $N_EQUALS = "!=";
+	protected static final String $NEGATIVE = ".negative";
+	protected static final String $NEW = "new";
+	protected static final String $NUM = "num";
+	protected static final String $OBJECTIVE = "::";
+	protected static final String $OR = "||";
+	protected static final String $POSITIVE = ".positive";
+	protected static final String $POW = "**";
+	protected static final String $POW_SET = "**=";
+	protected static final String $PURE_EQUALS = "===";
+	protected static final String $PURE_N_EQUALS = "!==";
+	protected static final String $REF = "ref";
+	protected static final String $REFER = "refer";
+	protected static final String $REGISTER = "register";
+	protected static final String $RETURN = "return";
+	protected static final String $RULE = "|>";
+	protected static final String $SET = "=";
+	protected static final String $SLASH = "//";
+	protected static final String $STATIC = "static";
+	protected static final String $STR = "str";
+	protected static final String $STRUCT = "struct";
+	protected static final String $SUB = "-";
+	protected static final String $SUB_SET = "-=";
+	protected static final String $SWITCH = "switch";
+	protected static final String $THEN = "then";
+	protected static final String $THROW = "throw";
+	protected static final String $TRANSFORM = ">>";
+	protected static final String $TRANSFORM_SET = ">>=";
+	protected static final String $TRY = "try";
+	protected static final String $TYPE = "type";
+	protected static final String $UNARY_NOT = "!";
+	protected static final String $UNDERSCORE = "..";
+	protected static final String $UNTIL = "until";
+	protected static final String $VAR = "var";
+	protected static final String $VEC = "vec";
+	protected static final String $WORD = "word";
+
 	private final Scope main;
 	private final PhoneManager pl;
 	private final CommandManager console;
@@ -44,7 +122,6 @@ public class Interpreter {
 	public final int ISEQUALS;
 	public final int GET_HASH;
 	public final int ERROR;
-	public final int TRACE;
 	public final int S_RULE;
 	public final int AF_RULE;
 	public final int AB_RULE;
@@ -76,7 +153,6 @@ public class Interpreter {
 		ISEQUALS = hashVariable("equals");
 		GET_HASH = hashVariable("getHash");
 		ERROR = hashVariable("_e");
-		TRACE = hashVariable("_trace");
 		S_RULE = hashVariable("S");
 		AF_RULE = hashVariable("Af");
 		AB_RULE = hashVariable("Ab");
@@ -107,9 +183,9 @@ public class Interpreter {
 			final Datum df = new Datum(dataFeatures.toArray(new Datum[0]));
 			df.setMutable(false);
 
-			main.setVariable(this, ALL, d, new ArrayList<>());
-			main.setVariable(this, BASE, db, new ArrayList<>());
-			main.setVariable(this, FEATURES, df, new ArrayList<>());
+			main.setVariable(this, ALL, d, null);
+			main.setVariable(this, BASE, db, null);
+			main.setVariable(this, FEATURES, df, null);
 		}
 	}
 
@@ -133,22 +209,22 @@ public class Interpreter {
 
 	public Datum evaluate(final Operator o) {
 		try {
-			return o.evaluate(main, new ArrayList<>());
+			return o.evaluate(main);
 		} catch (final SonoException e) {
 			stderr.println(e.getMessage());
-			stderr.print(e.getStackString());
+			stderr.print(e.getLine());
 			return new Datum();
 		}
 	}
 
-	private List<String> tokenize(final String code) {
-		List<String> tokens = null;
+	private List<Token> tokenize(final String code) {
+		List<Token> tokens = null;
 		tokens = Tokenizer.tokenize(code);
 		tokens = Tokenizer.infixToPostfix(tokens);
 		return tokens;
 	}
 
-	public List<String> loadFile(final String directory, final String filename) {
+	public List<Token> loadFile(final String directory, final String filename) {
 		final StringBuilder contents = new StringBuilder();
 		File file = new File(directory, filename);
 		try {
@@ -166,451 +242,452 @@ public class Interpreter {
 		return tokenize(contents.toString());
 	}
 
-	public Operator parse(final String directory, final List<String> tokens) {
+	public Operator parse(final String directory, final List<Token> tokens) {
 		final Deque<Operator> o = new ArrayDeque<>();
+		String path;
+		String[] split;
+		String filename;
+		StringBuilder fileDirectory;
+		Operator a;
+		Operator b;
 
 		for (int i = 0; i < tokens.size(); i++) {
-			String token = tokens.get(i);
+			Token line = tokens.get(i);
+			String token = line.getKey();
+
 			if (token.equals(";") || token.equals(","))
 				continue;
 			if (Tokenizer.operators.containsKey(token)) {
-				if (token.equals("load")) {
-					final String path = ((Operator.Container) o.pollLast()).getDatum().getString(new ArrayList<>());
-					final String[] split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
-					final String filename = (new StringBuilder(split[0])).reverse().toString();
-					String fileDirectory = directory;
-					if (split.length > 1)
-						fileDirectory += File.separator + (new StringBuilder(split[1])).reverse().toString();
-					if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
-						loadedFiles.add(fileDirectory + File.separator + filename);
-						o.addLast(parse(fileDirectory, loadFile(fileDirectory, filename)));
-					}
-				}
-				if (token.equals("import")) {
-					final String path = ((Operator.Container) o.pollLast()).getDatum().getString(new ArrayList<>());
-					final String[] split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
-					final String filename = (new StringBuilder(split[0])).reverse().toString() + ".jar";
-					String fileDirectory = directory;
-					if (split.length > 1)
-						fileDirectory += File.separator + (new StringBuilder(split[1])).reverse().toString();
-					if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
-						loadedFiles.add(fileDirectory + File.separator + filename);
-						console.importLibrary(fileDirectory, filename, "ext." + path);
-					}
-				}
-				if (token.equals("!")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.NEqual(this, new Operator.Container(this, new Datum(true)), a));
-				}
-				if (token.equals(".negative")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Sub(this, new Operator.Container(this, new Datum(0)), a));
-				}
-				if (token.equals(".positive")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Add(this, new Operator.Container(this, new Datum(0)), a));
-				}
-				if (token.equals("new")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.NewDec(this, a));
-				}
-				if (token.equals("len")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Length(this, a));
-				}
-				if (token.equals("return")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Return(this, a));
-				}
-				if (token.equals("refer")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Refer(this, a));
-				}
-				if (token.equals("var")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.VarDec(this, ((Operator.Variable) a).getKey()));
-				}
-				if (token.equals("abstract")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.AbstractDec(this, ((Operator.Variable) a).getKey()));
-				}
-				if (token.equals("struct")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.StructDec(this, ((Operator.Variable) a).getKey()));
-				}
-				if (token.equals("static")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.StaticDec(this, ((Operator.Variable) a).getKey()));
-				}
-				if (token.equals("ref")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Ref(this, ((Operator.Variable) a).getKey()));
-				}
-				if (token.equals("final")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Final(this, ((Operator.Variable) a).getKey()));
-				}
-				if (token.equals("com")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Common(this, a));
-				}
-				if (token.equals("word")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.SeqDec(this, a));
-				}
-				if (token.equals("type")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.TypeConvert(this, a));
-				}
-				if (token.equals("vec")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.ListDec(this, a));
-				}
-				if (token.equals("mat")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.MatConvert(this, a));
-				}
-				if (token.equals("num")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.NumConvert(this, a));
-				}
-				if (token.equals("hash")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Hash(this, a));
-				}
-				if (token.equals("str")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.StringDec(this, a));
-				}
-				if (token.equals("char")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Char(this, a));
-				}
-				if (token.equals("code")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Code(this, a));
-				}
-				if (token.equals("feat")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.FeatDec(this, a));
-				}
-				/*
-				 * if (token.equals("alloc")) { final Operator a = o.pollLast(); o.addLast(new
-				 * Operator.Allocate(this, a)); }
-				 */
-				if (token.equals("throw")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Throw(this, a));
-				}
-				if (token.equals("try")) {
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.TryCatch(this, a));
-				}
-				if (token.equals("register")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Register(this, a, b));
-				}
-				if (token.equals("extends")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Extends(this, a, b));
-				}
-				if (token.equals("=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(this, a, b));
-				}
-				if (token.equals("::")) {
-					Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					if (b.type == Operator.Type.SOFT_LIST)
-						b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
-					o.addLast(new Operator.TypeDec(this, a, b));
-				}
-				if (token.equals("->")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Arrow(this, a, b));
-				}
-				if (token.equals("..")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Underscore(this, a, b));
-				}
-				if (token.equals("//")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Slash(this, a, b));
-				}
-				if (token.equals(">>")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Transform(this, a, b));
-				}
-				if (token.equals(">>=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(this, a, new Operator.Transform(this, a, b)));
-				}
-				if (token.equals("+")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Add(this, a, b));
-				}
-				if (token.equals("+=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(this, a, new Operator.Add(this, a, b)));
-				}
-				if (token.equals("-")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Sub(this, a, b));
-				}
-				if (token.equals("-=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(this, a, new Operator.Sub(this, a, b)));
-				}
-				if (token.equals("*")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Mul(this, a, b));
-				}
-				if (token.equals("*=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(this, a, new Operator.Mul(this, a, b)));
-				}
-				if (token.equals("/")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Div(this, a, b));
-				}
-				if (token.equals("/=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(this, a, new Operator.Div(this, a, b)));
-				}
-				if (token.equals("%")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Mod(this, a, b));
-				}
-				if (token.equals("%=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(this, a, new Operator.Mod(this, a, b)));
-				}
-				if (token.equals("**")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Pow(this, a, b));
-				}
-				if (token.equals("**=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Set(this, a, new Operator.Pow(this, a, b)));
-				}
-				if (token.equals("class")) {
-					Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					b = new Operator.SoftList(this, ((Operator.Sequence) b).getVector());
-					o.addLast(new Operator.ClassDec(this, a, b));
-				}
-				if (token.equals(".index")) {
-					final Operator b = ((Operator.MatrixDec) o.pollLast()).operators[0];
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Index(this, a, b));
-				}
-				if (token.equals("?>")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Contrast(this, a, b));
-				}
-				if (token.equals("==")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Equal(this, a, b));
-				}
-				if (token.equals("===")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.PureEqual(this, a, b));
-				}
-				if (token.equals("!=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.NEqual(this, a, b));
-				}
-				if (token.equals("!==")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.PureNEqual(this, a, b));
-				}
-				if (token.equals("<")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Less(this, a, b));
-				}
-				if (token.equals(">")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.More(this, a, b));
-				}
-				if (token.equals("<=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.ELess(this, a, b));
-				}
-				if (token.equals(">=")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.EMore(this, a, b));
-				}
-				if (token.equals("&&")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.And(this, a, b));
-				}
-				if (token.equals("||")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Or(this, a, b));
-				}
-				if (token.equals(".")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Inner(this, a, b));
-				}
-				if (token.equals("from")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Find(this, a, b));
-				}
-				if (token.equals("in")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Iterator(this, a, b));
-				}
-				if (token.equals("until")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.RangeUntil(this, a, b));
-				}
-				if (token.equals("do")) {
-					Operator b = o.pollLast();
-					if (b.type == Operator.Type.HARD_LIST)
-						b = new Operator.SoftList(this, b.getChildren());
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.Loop(this, a, b));
-				}
-				if (token.equals("=>")) {
-					// (((VAR) :: (pop)) .exec (params)) => {}
-					Operator b = o.pollLast();
-					if (b.type == Operator.Type.HARD_LIST)
-						b = new Operator.SoftList(this, b.getChildren());
-					Operator a = o.pollLast();
-					if (a.type == Operator.Type.EXECUTE) {
-						final Operator name = ((Operator.Execute) a).getA();
-						if (name.type == Operator.Type.TYPE_DEC) {
-							final Operator typeDec = ((Operator.TypeDec) name).getA();
-							final Operator fName = ((Operator.TypeDec) name).getB();
-							a = new Operator.HardList(this,
-									((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
-							o.addLast(new Operator.Set(this,
-									new Operator.VarDec(this, ((Operator.Variable) fName).getKey()),
-									new Operator.Lambda(this, new Operator.TypeDec(this, typeDec, a), b)));
+				switch (token) {
+					case $LOAD:
+						path = ((Operator.Container) o.pollLast()).getDatum().getString(null);
+						split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
+						filename = (new StringBuilder(split[0])).reverse().toString();
+						fileDirectory = new StringBuilder(directory);
+						if (split.length > 1)
+							fileDirectory.append(File.separator + (new StringBuilder(split[1])).reverse().toString());
+						if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
+							loadedFiles.add(fileDirectory + File.separator + filename);
+							o.addLast(parse(fileDirectory.toString(), loadFile(fileDirectory.toString(), filename)));
+						}
+						break;
+					case $IMPORT:
+						path = ((Operator.Container) o.pollLast()).getDatum().getString(null);
+						split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
+						filename = (new StringBuilder(split[0])).reverse().toString() + ".jar";
+						fileDirectory = new StringBuilder(directory);
+						if (split.length > 1)
+							fileDirectory.append(File.separator + (new StringBuilder(split[1])).reverse().toString());
+						if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
+							loadedFiles.add(fileDirectory + File.separator + filename);
+							console.importLibrary(fileDirectory.toString(), filename, "ext." + path);
+						}
+						break;
+					case $UNARY_NOT:
+						a = o.pollLast();
+						o.addLast(new Operator.NEqual(this, line, new Operator.Container(this, line, new Datum(true)),
+								a));
+						break;
+					case $NEGATIVE:
+						a = o.pollLast();
+						o.addLast(new Operator.Sub(this, line, new Operator.Container(this, line, new Datum(0)), a));
+						break;
+					case $POSITIVE:
+						a = o.pollLast();
+						o.addLast(new Operator.Add(this, line, new Operator.Container(this, line, new Datum(0)), a));
+						break;
+					case $NEW:
+						a = o.pollLast();
+						o.addLast(new Operator.NewDec(this, line, a));
+						break;
+					case $LEN:
+						a = o.pollLast();
+						o.addLast(new Operator.Length(this, line, a));
+						break;
+					case $RETURN:
+						a = o.pollLast();
+						o.addLast(new Operator.Return(this, line, a));
+						break;
+					case $REFER:
+						a = o.pollLast();
+						o.addLast(new Operator.Refer(this, line, a));
+						break;
+					case $VAR:
+						a = o.pollLast();
+						o.addLast(new Operator.VarDec(this, line, ((Operator.Variable) a).getKey()));
+						break;
+					case $ABSTRACT:
+						a = o.pollLast();
+						o.addLast(new Operator.AbstractDec(this, line, ((Operator.Variable) a).getKey()));
+						break;
+					case $STRUCT:
+						a = o.pollLast();
+						o.addLast(new Operator.StructDec(this, line, ((Operator.Variable) a).getKey()));
+						break;
+					case $STATIC:
+						a = o.pollLast();
+						o.addLast(new Operator.StaticDec(this, line, ((Operator.Variable) a).getKey()));
+						break;
+					case $REF:
+						a = o.pollLast();
+						o.addLast(new Operator.Ref(this, line, ((Operator.Variable) a).getKey()));
+						break;
+					case $FINAL:
+						a = o.pollLast();
+						o.addLast(new Operator.Final(this, line, ((Operator.Variable) a).getKey()));
+						break;
+					case $WORD:
+						a = o.pollLast();
+						o.addLast(new Operator.SeqDec(this, line, a));
+						break;
+					case $VEC:
+						a = o.pollLast();
+						o.addLast(new Operator.ListDec(this, line, a));
+						break;
+					case $MAT:
+						a = o.pollLast();
+						o.addLast(new Operator.MatConvert(this, line, a));
+						break;
+					case $NUM:
+						a = o.pollLast();
+						o.addLast(new Operator.NumConvert(this, line, a));
+						break;
+					case $HASH:
+						a = o.pollLast();
+						o.addLast(new Operator.Hash(this, line, a));
+						break;
+					case $STR:
+						a = o.pollLast();
+						o.addLast(new Operator.StringDec(this, line, a));
+						break;
+					case $CHAR:
+						a = o.pollLast();
+						o.addLast(new Operator.Char(this, line, a));
+						break;
+					case $CODE:
+						a = o.pollLast();
+						o.addLast(new Operator.Code(this, line, a));
+						break;
+					case $FEAT:
+						a = o.pollLast();
+						o.addLast(new Operator.FeatDec(this, line, a));
+						break;
+					case $THROW:
+						a = o.pollLast();
+						o.addLast(new Operator.Throw(this, line, a));
+						break;
+					case $TRY:
+						a = o.pollLast();
+						o.addLast(new Operator.TryCatch(this, line, a));
+						break;
+					case $REGISTER:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Register(this, line, a, b));
+						break;
+					case $EXTENDS:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Extends(this, line, a, b));
+						break;
+					case $SET:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Set(this, line, a, b));
+						break;
+					case $OBJECTIVE:
+						b = o.pollLast();
+						a = o.pollLast();
+						if (b.type == Operator.Type.SOFT_LIST)
+							b = new Operator.HardList(this, line, ((Operator.Sequence) b).getVector());
+						o.addLast(new Operator.TypeDec(this, line, a, b));
+						break;
+					case $ARROW:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Arrow(this, line, a, b));
+						break;
+					case $UNDERSCORE:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Underscore(this, line, a, b));
+						break;
+					case $SLASH:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Slash(this, line, a, b));
+						break;
+					case $TRANSFORM:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Transform(this, line, a, b));
+						break;
+					case $TRANSFORM_SET:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Set(this, line, a, new Operator.Transform(this, line, a, b)));
+						break;
+					case $ADD:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Add(this, line, a, b));
+						break;
+					case $ADD_SET:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Set(this, line, a, new Operator.Add(this, line, a, b)));
+						break;
+					case $SUB:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Sub(this, line, a, b));
+						break;
+					case $SUB_SET:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Set(this, line, a, new Operator.Sub(this, line, a, b)));
+						break;
+					case $MUL:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Mul(this, line, a, b));
+						break;
+					case $MUL_SET:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Set(this, line, a, new Operator.Mul(this, line, a, b)));
+						break;
+					case $DIV:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Div(this, line, a, b));
+						break;
+					case $DIV_SET:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Set(this, line, a, new Operator.Div(this, line, a, b)));
+						break;
+					case $MOD:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Mod(this, line, a, b));
+						break;
+					case $MOD_SET:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Set(this, line, a, new Operator.Mod(this, line, a, b)));
+						break;
+					case $POW:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Pow(this, line, a, b));
+						break;
+					case $POW_SET:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Set(this, line, a, new Operator.Pow(this, line, a, b)));
+						break;
+					case $CLASS:
+						b = o.pollLast();
+						a = o.pollLast();
+						b = new Operator.SoftList(this, line, ((Operator.Sequence) b).getVector());
+						o.addLast(new Operator.ClassDec(this, line, a, b));
+						break;
+					case $INDEX:
+						b = ((Operator.MatrixDec) o.pollLast()).operators[0];
+						a = o.pollLast();
+						o.addLast(new Operator.Index(this, line, a, b));
+						break;
+					case $CONTRAST:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Contrast(this, line, a, b));
+						break;
+					case $EQUALS:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Equal(this, line, a, b));
+						break;
+					case $PURE_EQUALS:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.PureEqual(this, line, a, b));
+						break;
+					case $N_EQUALS:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.NEqual(this, line, a, b));
+						break;
+					case $PURE_N_EQUALS:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.PureNEqual(this, line, a, b));
+						break;
+					case $LESS:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Less(this, line, a, b));
+						break;
+					case $MORE:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.More(this, line, a, b));
+						break;
+					case $E_LESS:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.ELess(this, line, a, b));
+						break;
+					case $E_MORE:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.EMore(this, line, a, b));
+						break;
+					case $AND:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.And(this, line, a, b));
+						break;
+					case $OR:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Or(this, line, a, b));
+						break;
+					case $INNER:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Inner(this, line, a, b));
+						break;
+					case $FROM:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Find(this, line, a, b));
+						break;
+					case $IN:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.Iterator(this, line, a, b));
+						break;
+					case $UNTIL:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.RangeUntil(this, line, a, b));
+						break;
+					case $DO:
+						b = o.pollLast();
+						if (b.type == Operator.Type.HARD_LIST)
+							b = new Operator.SoftList(this, line, b.getChildren());
+						a = o.pollLast();
+						o.addLast(new Operator.Loop(this, line, a, b));
+						break;
+					case $LAMBDA:
+						b = o.pollLast();
+						if (b.type == Operator.Type.HARD_LIST)
+							b = new Operator.SoftList(this, line, b.getChildren());
+						a = o.pollLast();
+						if (a.type == Operator.Type.EXECUTE) {
+							final Operator name = ((Operator.Execute) a).getA();
+							if (name.type == Operator.Type.TYPE_DEC) {
+								final Operator typeDec = ((Operator.TypeDec) name).getA();
+								final Operator fName = ((Operator.TypeDec) name).getB();
+								a = new Operator.HardList(this, line,
+										((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
+								o.addLast(new Operator.Set(this, line,
+										new Operator.VarDec(this, line, ((Operator.Variable) fName).getKey()),
+										new Operator.Lambda(this, line, new Operator.TypeDec(this, line, typeDec, a),
+												b)));
+							} else {
+								a = new Operator.HardList(this, line,
+										((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
+								o.addLast(new Operator.Set(this, line,
+										new Operator.VarDec(this, line, ((Operator.Variable) name).getKey()),
+										new Operator.Lambda(this, line, a, b)));
+							}
 						} else {
-							a = new Operator.HardList(this,
-									((Operator.Sequence) ((Operator.Execute) a).getB()).getVector());
-							o.addLast(new Operator.Set(this,
-									new Operator.VarDec(this, ((Operator.Variable) name).getKey()),
-									new Operator.Lambda(this, a, b)));
+							if (a.type != Operator.Type.TYPE_DEC)
+								a = new Operator.HardList(this, line, ((Operator.Sequence) a).getVector());
+							o.addLast(new Operator.Lambda(this, line, a, b));
 						}
-					} else {
-						if (a.type != Operator.Type.TYPE_DEC)
-							a = new Operator.HardList(this, ((Operator.Sequence) a).getVector());
-						o.addLast(new Operator.Lambda(this, a, b));
-					}
-				}
-				if (token.equals(".exec")) {
-					Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					if (a.type == Operator.Type.VARIABLE) {
-						String key = deHash(((Operator.Variable) a).getKey());
-						switch (key) {
-							case "alloc":
-								o.addLast(new Operator.Allocate(this, b));
-								break;
-							case "com":
-								o.addLast(new Operator.Common(this, b));
-								break;
-							case "type":
-								o.addLast(new Operator.TypeConvert(this, b));
-								break;
-							default:
-								b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
-								o.addLast(new Operator.Execute(this, a, b));
-								break;
+						break;
+					case $EXEC:
+						b = o.pollLast();
+						a = o.pollLast();
+						if (a.type == Operator.Type.VARIABLE) {
+							final String key = deHash(((Operator.Variable) a).getKey());
+							switch (key) {
+								case $ALLOC:
+									o.addLast(new Operator.Allocate(this, line, b));
+									break;
+								case $COM:
+									o.addLast(new Operator.Common(this, line, b));
+									break;
+								case $TYPE:
+									o.addLast(new Operator.TypeConvert(this, line, b));
+									break;
+								default:
+									b = new Operator.HardList(this, line, ((Operator.Sequence) b).getVector());
+									o.addLast(new Operator.Execute(this, line, a, b));
+									break;
+							}
+						} else {
+							b = new Operator.HardList(this, line, ((Operator.Sequence) b).getVector());
+							o.addLast(new Operator.Execute(this, line, a, b));
 						}
-					} else {
-						b = new Operator.HardList(this, ((Operator.Sequence) b).getVector());
-						o.addLast(new Operator.Execute(this, a, b));
-					}
-				}
-				if (token.equals("goto")) {
-					final Operator b = o.pollLast();
-					final Datum a = o.pollLast().evaluate(null, new ArrayList<>());
-					o.addLast(new Operator.SwitchCase(this, a, b));
-				}
-				if (token.equals("switch")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					final Map<Datum, Operator> ops = new HashMap<>();
-					for (final Operator r : b.getChildren()) {
-						final Operator.SwitchCase c = (Operator.SwitchCase) r;
-						ops.put(c.getKey(), c.getOperator());
-					}
-					o.addLast(new Operator.Switch(this, a, ops));
-				}
-				if (token.equals("then")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.IfElse(this, a, b));
-				}
-				if (token.equals("else")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					if (a.type == Operator.Type.IF_ELSE)
-						((Operator.IfElse) a).setElse(b);
-					else if (a.type == Operator.Type.SWITCH)
-						((Operator.Switch) a).setElse(b);
-					o.addLast(a);
-				}
-				if (token.equals("catch")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					((Operator.TryCatch) a).setCatch(b);
-					o.addLast(a);
-				}
-				if (token.equals("_OUTER_CALL_")) {
-					final Operator b = o.pollLast();
-					final Operator a = o.pollLast();
-					o.addLast(new Operator.OuterCall(this, a, b));
-				}
-				if (token.equals("|>")) {
-					Rule.Type rType = null;
-					final Operator b = o.pollLast();
-					final int a = ((Operator.Variable) o.pollLast()).getKey();
-					if (a == S_RULE)
-						rType = Rule.Type.SIMPLE;
-					if (a == AF_RULE)
-						rType = Rule.Type.A_FORWARD;
-					if (a == AB_RULE)
-						rType = Rule.Type.A_BACKWARD;
-					o.addLast(new Operator.RuleDec(this, rType, b));
+						break;
+					case $GOTO:
+						b = o.pollLast();
+						final Datum datumA = o.pollLast().evaluate(null);
+						o.addLast(new Operator.SwitchCase(this, line, datumA, b));
+						break;
+					case $SWITCH:
+						b = o.pollLast();
+						a = o.pollLast();
+						final Map<Datum, Operator> ops = new HashMap<>();
+						for (final Operator r : b.getChildren()) {
+							final Operator.SwitchCase c = (Operator.SwitchCase) r;
+							ops.put(c.getKey(), c.getOperator());
+						}
+						o.addLast(new Operator.Switch(this, line, a, ops));
+						break;
+					case $THEN:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.IfElse(this, line, a, b));
+						break;
+					case $ELSE:
+						b = o.pollLast();
+						a = o.pollLast();
+						if (a.type == Operator.Type.IF_ELSE)
+							((Operator.IfElse) a).setElse(b);
+						else if (a.type == Operator.Type.SWITCH)
+							((Operator.Switch) a).setElse(b);
+						o.addLast(a);
+						break;
+					case $CATCH:
+						b = o.pollLast();
+						a = o.pollLast();
+						((Operator.TryCatch) a).setCatch(b);
+						o.addLast(a);
+						break;
+					case $_OUTER_CALL_:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new Operator.OuterCall(this, line, a, b));
+						break;
+					case $RULE:
+						Rule.Type rType = null;
+						b = o.pollLast();
+						final int r = ((Operator.Variable) o.pollLast()).getKey();
+						if (r == S_RULE)
+							rType = Rule.Type.SIMPLE;
+						if (r == AF_RULE)
+							rType = Rule.Type.A_FORWARD;
+						if (r == AB_RULE)
+							rType = Rule.Type.A_BACKWARD;
+						o.addLast(new Operator.RuleDec(this, line, rType, b));
+						break;
+					default:
+						throw new SonoCompilationException("Unknown operator: " + token);
 				}
 			} else if (token.equals("]")) {
 				final List<Operator> list = new ArrayList<>();
@@ -620,7 +697,7 @@ public class Interpreter {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.MatrixDec(this, list.toArray(new Operator[0])));
+				o.addLast(new Operator.MatrixDec(this, line, list.toArray(new Operator[0])));
 			} else if (token.equals(")")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
@@ -629,7 +706,7 @@ public class Interpreter {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.SoftList(this, list.toArray(new Operator[0])));
+				o.addLast(new Operator.SoftList(this, line, list.toArray(new Operator[0])));
 			} else if (token.equals("}")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
@@ -638,55 +715,55 @@ public class Interpreter {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new Operator.HardList(this, list.toArray(new Operator[0])));
+				o.addLast(new Operator.HardList(this, line, list.toArray(new Operator[0])));
 			} else if (token.charAt(0) == '\'') {
 				final Phone p = pl.interpretSegment(token.substring(1));
-				o.addLast(new Operator.Container(this, new Datum(p)));
+				o.addLast(new Operator.Container(this, line, new Datum(p)));
 			} else if (token.charAt(0) == '@') {
-				final Pair p = pl.interpretFeature(token.substring(1));
-				o.addLast(new Operator.Container(this, new Datum(p)));
+				final Feature p = pl.interpretFeature(token.substring(1));
+				o.addLast(new Operator.Container(this, line, new Datum(p)));
 			} else if (token.charAt(0) == '`') {
 				final Word p = pl.interpretSequence(token.substring(1));
-				o.addLast(new Operator.Container(this, new Datum(p)));
+				o.addLast(new Operator.Container(this, line, new Datum(p)));
 			} else if (token.charAt(0) == '\"') {
 				final String s = token.substring(1);
-				o.addLast(new Operator.Container(this, new Datum(s)));
+				o.addLast(new Operator.Container(this, line, new Datum(s)));
 			} else if (Character.isDigit(token.charAt(0))) {
 				if (token.charAt(token.length() - 1) == 'D')
 					token = token.substring(0, token.length() - 1);
-				o.addLast(new Operator.Container(this, new Datum((double) Double.valueOf(token))));
+				o.addLast(new Operator.Container(this, line, new Datum((double) Double.valueOf(token))));
 			} else if (token.equals("null")) {
-				o.addLast(new Operator.Container(this, new Datum()));
+				o.addLast(new Operator.Container(this, line, new Datum()));
 			} else if (token.equals("Vector")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.VECTOR)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.VECTOR)));
 			} else if (token.equals("Number")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.NUMBER)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.NUMBER)));
 			} else if (token.equals("Function")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.FUNCTION)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.FUNCTION)));
 			} else if (token.equals("String")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.STRING)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.STRING)));
 			} else if (token.equals("Phone")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.PHONE)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.PHONE)));
 			} else if (token.equals("Feature")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.PAIR)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.FEATURE)));
 			} else if (token.equals("Matrix")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.MATRIX)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.MATRIX)));
 			} else if (token.equals("Rule")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.RULE)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.RULE)));
 			} else if (token.equals("Word")) {
-				o.addLast(new Operator.Container(this, new Datum(Datum.Type.WORD)));
+				o.addLast(new Operator.Container(this, line, new Datum(Datum.Type.WORD)));
 			} else if (token.equals("true")) {
-				o.addLast(new Operator.Container(this, new Datum(true)));
+				o.addLast(new Operator.Container(this, line, new Datum(true)));
 			} else if (token.equals("false")) {
-				o.addLast(new Operator.Container(this, new Datum(false)));
+				o.addLast(new Operator.Container(this, line, new Datum(false)));
 			} else if (token.equals("break")) {
-				o.addLast(new Operator.Break(this));
+				o.addLast(new Operator.Break(this, line));
 			} else {
-				o.addLast(new Operator.Variable(this, hashVariable(token)));
+				o.addLast(new Operator.Variable(this, line, hashVariable(token)));
 			}
 		}
 
-		final Operator m = new Operator.SoftList(this, o.toArray(new Operator[0]));
+		final Operator m = new Operator.SoftList(this, null, o.toArray(new Operator[0]));
 		m.condense();
 		return m;
 	}

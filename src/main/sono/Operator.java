@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import main.SonoWrapper;
 import main.phl.Matrix;
-import main.phl.Pair;
+import main.phl.Feature;
 import main.phl.Phone;
 import main.phl.Rule;
 import main.phl.Word;
@@ -29,12 +28,13 @@ public abstract class Operator {
 
 	protected Type type;
 	protected Interpreter interpreter;
+	protected Token line;
 
 	private abstract static class Unary extends Operator {
 		protected Operator a;
 
-		public Unary(final Interpreter i, final Type type, final Operator a) {
-			super(i, type);
+		public Unary(final Interpreter i, final Type type, final Token line, final Operator a) {
+			super(i, type, line);
 			this.a = a;
 		}
 
@@ -58,8 +58,8 @@ public abstract class Operator {
 	private abstract static class Binary extends Unary {
 		protected Operator b;
 
-		public Binary(final Interpreter i, final Type type, final Operator a, final Operator b) {
-			super(i, type, a);
+		public Binary(final Interpreter i, final Type type, final Token line, final Operator a, final Operator b) {
+			super(i, type, line, a);
 			this.b = b;
 		}
 
@@ -84,8 +84,8 @@ public abstract class Operator {
 	public abstract static class Sequence extends Operator {
 		protected Operator[] operators;
 
-		public Sequence(final Interpreter i, final Type type, final Operator[] operators) {
-			super(i, type);
+		public Sequence(final Interpreter i, final Type type, final Token line, final Operator[] operators) {
+			super(i, type, line);
 			this.operators = operators;
 		}
 
@@ -115,8 +115,8 @@ public abstract class Operator {
 	public abstract static class Casting extends Operator {
 		protected int varName;
 
-		public Casting(final Interpreter i, final Type type, final int varName) {
-			super(i, type);
+		public Casting(final Interpreter i, final Type type, final Token line, final int varName) {
+			super(i, type, line);
 			this.varName = varName;
 		}
 
@@ -136,17 +136,13 @@ public abstract class Operator {
 	}
 
 	public static class Variable extends Casting {
-		public Variable(final Interpreter interpreter, final int varName) {
-			super(interpreter, Type.VARIABLE, varName);
+		public Variable(final Interpreter interpreter, final Token line, final int varName) {
+			super(interpreter, Type.VARIABLE, line, varName);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			return scope.getVariable(varName, interpreter, trace);
+		public Datum evaluate(final Scope scope) {
+			return scope.getVariable(varName, interpreter, line);
 		}
 
 		@Override
@@ -158,8 +154,8 @@ public abstract class Operator {
 	public static class Container extends Operator {
 		private final Datum datum;
 
-		public Container(final Interpreter interpreter, final Datum datum) {
-			super(interpreter, Type.DATUM);
+		public Container(final Interpreter interpreter, final Token line, final Datum datum) {
+			super(interpreter, Type.DATUM, line);
 			this.datum = datum;
 		}
 
@@ -168,11 +164,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return datum;
 		}
 
@@ -193,19 +185,15 @@ public abstract class Operator {
 	}
 
 	public static class Set extends Binary {
-		public Set(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.SET, a, b);
+		public Set(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.SET, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			datumA.set(interpreter.getManager(), datumB, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			datumA.set(interpreter.getManager(), datumB, line);
 			return datumA;
 		}
 
@@ -216,32 +204,27 @@ public abstract class Operator {
 	}
 
 	public static class Transform extends Binary {
-		public Transform(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.TRANSFORM, a, b);
+		public Transform(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.TRANSFORM, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
 			switch (datumB.getType()) {
 				case MATRIX:
-					final Phone ret = datumA.getPhone(trace).transform(datumB.getMatrix(trace), true);
+					final Phone ret = datumA.getPhone(line).transform(datumB.getMatrix(line), true);
 					if (ret == null)
 						return new Datum();
 					return new Datum(ret);
 				case RULE:
-					final Word result = datumB.getRule(trace).transform(interpreter.getManager(),
-							datumA.getWord(trace));
+					final Word result = datumB.getRule(line).transform(interpreter.getManager(), datumA.getWord(line));
 					return new Datum(result);
 				default:
-					throw new SonoRuntimeException("Cannot transform value <" + datumA.getDebugString(trace)
-							+ "> with value <" + datumB.getDebugString(trace) + ">", trace);
+					throw new SonoRuntimeException("Cannot transform value <" + datumA.getDebugString(line)
+							+ "> with value <" + datumB.getDebugString(line) + ">", line);
 			}
 		}
 
@@ -252,24 +235,20 @@ public abstract class Operator {
 	}
 
 	public static class SoftList extends Sequence {
-		public SoftList(final Interpreter interpreter, final Operator[] operators) {
-			super(interpreter, Type.SOFT_LIST, operators);
+		public SoftList(final Interpreter interpreter, final Token line, final Operator[] operators) {
+			super(interpreter, Type.SOFT_LIST, line, operators);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			Datum[] data = null;
 			if (Interpreter.containsInstance(operators, RangeUntil.class)) {
 				final List<Datum> list = new ArrayList<>();
 				for (final Operator o : operators) {
 					if (o.type == Type.RANGE_UNTIL)
-						list.addAll(((RangeUntil) o).getRange(scope, trace));
+						list.addAll(((RangeUntil) o).getRange(scope));
 					else {
-						final Datum d = o.evaluate(scope, trace);
+						final Datum d = o.evaluate(scope);
 						if (d.getType() == Datum.Type.I_BREAK)
 							return d;
 						if (d.getRet() || d.getRefer())
@@ -282,7 +261,7 @@ public abstract class Operator {
 				data = new Datum[operators.length];
 				int i = 0;
 				for (final Operator o : operators) {
-					final Datum d = o.evaluate(scope, trace);
+					final Datum d = o.evaluate(scope);
 					if (d.getType() == Datum.Type.I_BREAK)
 						return d;
 					if (d.getRet() || d.getRefer())
@@ -302,25 +281,21 @@ public abstract class Operator {
 	}
 
 	public static class HardList extends Sequence {
-		public HardList(final Interpreter interpreter, final Operator[] operators) {
-			super(interpreter, Type.HARD_LIST, operators);
+		public HardList(final Interpreter interpreter, final Token line, final Operator[] operators) {
+			super(interpreter, Type.HARD_LIST, line, operators);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			Datum[] data = null;
 			final Scope newScope = new Scope(scope.getStructure(), scope);
 			if (Interpreter.containsInstance(operators, RangeUntil.class)) {
 				final List<Datum> list = new ArrayList<>();
 				for (final Operator o : operators) {
 					if (o.type == Type.RANGE_UNTIL)
-						list.addAll(((RangeUntil) o).getRange(newScope, trace));
+						list.addAll(((RangeUntil) o).getRange(newScope));
 					else {
-						final Datum d = o.evaluate(newScope, trace);
+						final Datum d = o.evaluate(newScope);
 						if (d.getType() == Datum.Type.I_BREAK || d.getRet() || d.getRefer())
 							return d;
 						list.add(d);
@@ -331,7 +306,7 @@ public abstract class Operator {
 				data = new Datum[operators.length];
 				int i = 0;
 				for (final Operator o : operators) {
-					final Datum d = o.evaluate(newScope, trace);
+					final Datum d = o.evaluate(newScope);
 					if (d.getType() == Datum.Type.I_BREAK || d.getRet() || d.getRefer())
 						return d;
 					data[i++] = d;
@@ -347,21 +322,17 @@ public abstract class Operator {
 	}
 
 	public static class MatrixDec extends Sequence {
-		public MatrixDec(final Interpreter interpreter, final Operator[] operators) {
-			super(interpreter, Type.MATRIX_DEC, operators);
+		public MatrixDec(final Interpreter interpreter, final Token line, final Operator[] operators) {
+			super(interpreter, Type.MATRIX_DEC, line, operators);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
 			final Matrix matrix = new Matrix(interpreter.getManager());
 			for (final Operator o : operators) {
-				final Pair p = o.evaluate(scope, trace).getPair(trace);
-				matrix.put(p.getFeature(), p.getQuality());
+				final Feature p = o.evaluate(scope).getFeature(line);
+				matrix.put(p.getKey(), p.getQuality());
 			}
 			return new Datum(matrix);
 		}
@@ -373,17 +344,13 @@ public abstract class Operator {
 	}
 
 	public static class RangeUntil extends Binary {
-		public RangeUntil(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.RANGE_UNTIL, a, b);
+		public RangeUntil(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.RANGE_UNTIL, line, a, b);
 		}
 
-		public List<Datum> getRange(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final int datumA = (int) a.evaluate(scope, trace).getNumber(trace);
-			final int datumB = (int) b.evaluate(scope, trace).getNumber(trace);
+		public List<Datum> getRange(final Scope scope) {
+			final int datumA = (int) a.evaluate(scope).getNumber(line);
+			final int datumB = (int) b.evaluate(scope).getNumber(line);
 			final List<Datum> data = new ArrayList<>();
 			for (int i = datumA; i < datumB; i++)
 				data.add(new Datum(i));
@@ -391,11 +358,7 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -406,16 +369,12 @@ public abstract class Operator {
 	}
 
 	public static class Arrow extends Binary {
-		public Arrow(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.ARROW, a, b);
+		public Arrow(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.ARROW, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -426,17 +385,13 @@ public abstract class Operator {
 	}
 
 	public static class Ref extends Casting {
-		public Ref(final Interpreter interpreter, final int varName) {
-			super(interpreter, Type.REF_DEC, varName);
+		public Ref(final Interpreter interpreter, final Token line, final int varName) {
+			super(interpreter, Type.REF_DEC, line, varName);
 			this.varName = varName;
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -447,17 +402,13 @@ public abstract class Operator {
 	}
 
 	public static class Final extends Casting {
-		public Final(final Interpreter interpreter, final int varName) {
-			super(interpreter, Type.FINAL, varName);
+		public Final(final Interpreter interpreter, final Token line, final int varName) {
+			super(interpreter, Type.FINAL, line, varName);
 			this.varName = varName;
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -468,19 +419,15 @@ public abstract class Operator {
 	}
 
 	public static class FeatDec extends Unary {
-		public FeatDec(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.FEAT_DEC, a);
+		public FeatDec(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.FEAT_DEC, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			final Datum datumA = a.evaluate(scope, trace);
-			return new Datum(interpreter.getManager().interpretFeature(datumA.getString(trace)));
+			final Datum datumA = a.evaluate(scope);
+			return new Datum(interpreter.getManager().interpretFeature(datumA.getString(line)));
 		}
 
 		@Override
@@ -490,31 +437,27 @@ public abstract class Operator {
 	}
 
 	public static class Allocate extends Unary {
-		public Allocate(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.ALLOC, a);
+		public Allocate(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.ALLOC, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
 			if (datumA.type == Datum.Type.NUMBER) {
-				final double dn = datumA.getNumber(trace);
+				final double dn = datumA.getNumber(line);
 				final Datum[] data = new Datum[(int) dn];
 				for (int i = 0; i < dn; i++)
 					data[i] = new Datum();
 				return new Datum(data);
 			} else if (datumA.type == Datum.Type.VECTOR) {
-				final Datum[] dv = datumA.getVector(trace);
-				final Datum[] data = new Datum[(int) dv[0].getNumber(trace)];
+				final Datum[] dv = datumA.getVector(line);
+				final Datum[] data = new Datum[(int) dv[0].getNumber(line)];
 				for (int i = 0; i < data.length; i++)
 					data[i] = new Datum();
 				Datum[] curr = data;
 				for (int j = 1; j < dv.length; j++) {
-					final int size = (int) dv[j].getNumber(trace);
+					final int size = (int) dv[j].getNumber(line);
 					final Datum[] next = new Datum[curr.length * size];
 					int k = 0;
 					for (int i = 0; i < curr.length; i++) {
@@ -530,7 +473,7 @@ public abstract class Operator {
 				return new Datum(data);
 			} else {
 				throw new SonoRuntimeException(
-						"Value <" + datumA.getDebugString(trace) + "> cannot be used in Vector allocation.", trace);
+						"Value <" + datumA.getDebugString(line) + "> cannot be used in Vector allocation.", line);
 			}
 		}
 
@@ -541,18 +484,14 @@ public abstract class Operator {
 	}
 
 	public static class Throw extends Unary {
-		public Throw(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.THROW, a);
+		public Throw(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.THROW, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			throw new SonoRuntimeException(datumA.getString(trace), trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			throw new SonoRuntimeException(datumA.getString(line), line);
 		}
 
 		@Override
@@ -564,8 +503,8 @@ public abstract class Operator {
 	public static class TryCatch extends Unary {
 		private Operator b;
 
-		public TryCatch(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.TRY_CATCH, a);
+		public TryCatch(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.TRY_CATCH, line, a);
 			this.b = null;
 		}
 
@@ -574,22 +513,19 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			try {
-				return a.evaluate(scope, trace);
+				return a.evaluate(scope);
 			} catch (final SonoRuntimeException e) {
 				if (b != null) {
 					final Scope catchScope = new Scope(scope.getStructure(), scope);
-					catchScope.setVariable(interpreter, interpreter.ERROR, new Datum(e.getMessage()), trace);
-					final Datum[] list = new Datum[trace.size()];
-					for (int i = 0; i < trace.size(); i++)
-						list[i] = new Datum(trace.get(trace.size() - i - 1));
-					catchScope.setVariable(interpreter, interpreter.TRACE, new Datum(list), trace);
-					return b.evaluate(catchScope, trace);
+					catchScope.setVariable(interpreter, interpreter.ERROR, new Datum(e.getMessage()), line);
+					/*
+					 * final Datum[] list = new Datum[line.size()]; for (int i = 0; i < line.size();
+					 * i++) list[i] = new Datum(line.get(line.size() - i - 1));
+					 * catchScope.setVariable(interpreter, interpreter.TRACE, new Datum(list));
+					 */
+					return b.evaluate(catchScope);
 				} else {
 					return new Datum();
 				}
@@ -611,16 +547,12 @@ public abstract class Operator {
 	}
 
 	public static class Slash extends Binary {
-		public Slash(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.SLASH, a, b);
+		public Slash(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.SLASH, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -631,16 +563,12 @@ public abstract class Operator {
 	}
 
 	public static class Underscore extends Binary {
-		public Underscore(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.UNDERSCORE, a, b);
+		public Underscore(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.UNDERSCORE, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -651,16 +579,12 @@ public abstract class Operator {
 	}
 
 	public static class Iterator extends Binary {
-		public Iterator(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.ITERATOR, a, b);
+		public Iterator(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.ITERATOR, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -671,16 +595,12 @@ public abstract class Operator {
 	}
 
 	public static class StructDec extends Casting {
-		public StructDec(final Interpreter interpreter, final int varName) {
-			super(interpreter, Type.STRUCT_DEC, varName);
+		public StructDec(final Interpreter interpreter, final Token line, final int varName) {
+			super(interpreter, Type.STRUCT_DEC, line, varName);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -691,16 +611,12 @@ public abstract class Operator {
 	}
 
 	public static class AbstractDec extends Casting {
-		public AbstractDec(final Interpreter interpreter, final int varName) {
-			super(interpreter, Type.ABSTRACT_DEC, varName);
+		public AbstractDec(final Interpreter interpreter, final Token line, final int varName) {
+			super(interpreter, Type.ABSTRACT_DEC, line, varName);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -711,16 +627,12 @@ public abstract class Operator {
 	}
 
 	public static class StaticDec extends Casting {
-		public StaticDec(final Interpreter interpreter, final int varName) {
-			super(interpreter, Type.STATIC_DEC, varName);
+		public StaticDec(final Interpreter interpreter, final Token line, final int varName) {
+			super(interpreter, Type.STATIC_DEC, line, varName);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -731,16 +643,12 @@ public abstract class Operator {
 	}
 
 	public static class Extends extends Binary {
-		public Extends(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.EXTENDS, a, b);
+		public Extends(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.EXTENDS, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -751,16 +659,12 @@ public abstract class Operator {
 	}
 
 	public static class TypeDec extends Binary {
-		public TypeDec(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.TYPE_DEC, a, b);
+		public TypeDec(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.TYPE_DEC, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return null;
 		}
 
@@ -771,33 +675,29 @@ public abstract class Operator {
 	}
 
 	public static class Loop extends Binary {
-		public Loop(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.LOOP, a, b);
+		public Loop(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.LOOP, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			if (a.type == Type.ITERATOR) {
-				final Datum datumAB = ((Iterator) a).getB().evaluate(scope, trace);
-				final int valuesSize = datumAB.getVectorLength(trace);
+				final Datum datumAB = ((Iterator) a).getB().evaluate(scope);
+				final int valuesSize = datumAB.getVectorLength(line);
 				final int variable = ((Variable) ((Iterator) a).getA()).getKey();
 				for (int i = 0; i < valuesSize; i++) {
 					final Scope loopScope = new Scope(scope.getStructure(), scope);
-					loopScope.setVariable(interpreter, variable, datumAB.indexVector(i), trace);
-					final Datum result = b.evaluate(loopScope, trace);
+					loopScope.setVariable(interpreter, variable, datumAB.indexVector(i), line);
+					final Datum result = b.evaluate(loopScope);
 					if (result.getType() == Datum.Type.I_BREAK)
 						break;
 					if (result.getRet() || result.getRefer())
 						return result;
 				}
 			} else {
-				while (a.evaluate(scope, trace).getBool(trace)) {
+				while (a.evaluate(scope).getBool(line)) {
 					final Scope loopScope = new Scope(scope.getStructure(), scope);
-					final Datum result = b.evaluate(loopScope, trace);
+					final Datum result = b.evaluate(loopScope);
 					if (result.getType() == Datum.Type.I_BREAK)
 						break;
 					if (result.getRet() || result.getRefer())
@@ -816,24 +716,20 @@ public abstract class Operator {
 	public static class RuleDec extends Unary {
 		private final Rule.Type ruleType;
 
-		public RuleDec(final Interpreter interpreter, final Rule.Type ruleType, final Operator a) {
-			super(interpreter, Type.RULE_DEC, a);
+		public RuleDec(final Interpreter interpreter, final Token line, final Rule.Type ruleType, final Operator a) {
+			super(interpreter, Type.RULE_DEC, line, a);
 			this.ruleType = ruleType;
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
 			while (a.type != Type.SLASH)
 				a = ((Sequence) a).operators[0];
-			final Datum dSearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, trace);
-			final Datum rawTrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, trace);
-			final Datum rawInit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, trace);
-			final Datum rawFin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope, trace);
+			final Datum dSearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope);
+			final Datum rawTrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope);
+			final Datum rawInit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope);
+			final Datum rawFin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope);
 
 			Object search = null;
 			Datum[] dTrans;
@@ -844,12 +740,12 @@ public abstract class Operator {
 			final List<Object> fin = new ArrayList<>();
 
 			if (dSearch.getType() == Datum.Type.MATRIX)
-				search = dSearch.getMatrix(trace);
+				search = dSearch.getMatrix(line);
 			else if (dSearch.getType() == Datum.Type.PHONE)
-				search = dSearch.getPhone(trace);
+				search = dSearch.getPhone(line);
 
 			if (rawTrans.getType() == Datum.Type.VECTOR)
-				dTrans = rawTrans.getVector(trace);
+				dTrans = rawTrans.getVector(line);
 			else {
 				dTrans = new Datum[1];
 				dTrans[0] = rawTrans;
@@ -858,21 +754,21 @@ public abstract class Operator {
 			for (final Datum d : dTrans) {
 				switch (d.type) {
 					case PHONE:
-						trans.add(d.getPhone(trace));
+						trans.add(d.getPhone(line));
 						break;
 					case MATRIX:
-						trans.add(d.getMatrix(trace));
+						trans.add(d.getMatrix(line));
 						break;
 					case NULL:
 						break;
 					default:
 						throw new SonoRuntimeException(
-								"Value <" + d.getDebugString(trace) + "> cannot be used in a Rule declaration.", trace);
+								"Value <" + d.getDebugString(line) + "> cannot be used in a Rule declaration.", line);
 				}
 			}
 
 			if (rawInit.getType() == Datum.Type.VECTOR)
-				dInit = rawInit.getVector(trace);
+				dInit = rawInit.getVector(line);
 			else {
 				dInit = new Datum[1];
 				dInit[0] = rawInit;
@@ -881,13 +777,13 @@ public abstract class Operator {
 			for (final Datum d : dInit) {
 				switch (d.type) {
 					case PHONE:
-						init.add(d.getPhone(trace));
+						init.add(d.getPhone(line));
 						break;
 					case MATRIX:
-						init.add(d.getMatrix(trace));
+						init.add(d.getMatrix(line));
 						break;
 					case STRING:
-						switch (d.getString(trace)) {
+						switch (d.getString(line)) {
 							case "#":
 								init.add(Rule.Variants.WORD_INITIAL);
 								break;
@@ -905,12 +801,12 @@ public abstract class Operator {
 						break;
 					default:
 						throw new SonoRuntimeException(
-								"Value <" + d.getDebugString(trace) + "> cannot be used in a Rule declaration.", trace);
+								"Value <" + d.getDebugString(line) + "> cannot be used in a Rule declaration.", line);
 				}
 			}
 
 			if (rawFin.getType() == Datum.Type.VECTOR)
-				dFin = rawFin.getVector(trace);
+				dFin = rawFin.getVector(line);
 			else {
 				dFin = new Datum[1];
 				dFin[0] = rawFin;
@@ -919,13 +815,13 @@ public abstract class Operator {
 			for (final Datum d : dFin) {
 				switch (d.type) {
 					case PHONE:
-						fin.add(d.getPhone(trace));
+						fin.add(d.getPhone(line));
 						break;
 					case MATRIX:
-						fin.add(d.getMatrix(trace));
+						fin.add(d.getMatrix(line));
 						break;
 					case STRING:
-						switch (d.getString(trace)) {
+						switch (d.getString(line)) {
 							case "#":
 								fin.add(Rule.Variants.WORD_FINAL);
 								break;
@@ -943,7 +839,7 @@ public abstract class Operator {
 						break;
 					default:
 						throw new SonoRuntimeException(
-								"Value <" + d.getDebugString(trace) + "> cannot be used in a Rule declaration.", trace);
+								"Value <" + d.getDebugString(line) + "> cannot be used in a Rule declaration.", line);
 				}
 			}
 
@@ -966,30 +862,26 @@ public abstract class Operator {
 	}
 
 	public static class Register extends Binary {
-		public Register(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.REGISTER, a, b);
+		public Register(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.REGISTER, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			final String segment = a.evaluate(scope, trace).getString(trace);
-			final Matrix features = b.evaluate(scope, trace).getMatrix(trace);
+			final String segment = a.evaluate(scope).getString(line);
+			final Matrix features = b.evaluate(scope).getMatrix(line);
 			final Phone ret = interpreter.getManager().registerNewPhone(segment, features);
 			if (ret == null)
-				throw new SonoRuntimeException("Cannot register Phone with features <" + features + ">", trace);
-			final Datum allV = interpreter.getScope().getVariable(interpreter.ALL, interpreter, trace);
-			final int oldVSize = interpreter.getScope().getVariable(interpreter.ALL, interpreter, trace)
-					.getVectorLength(trace);
+				throw new SonoRuntimeException("Cannot register Phone with features <" + features + ">", line);
+			final Datum allV = interpreter.getScope().getVariable(interpreter.ALL, interpreter, line);
+			final int oldVSize = interpreter.getScope().getVariable(interpreter.ALL, interpreter, line)
+					.getVectorLength(line);
 			final Datum[] newV = new Datum[oldVSize + 1];
 			for (int i = 0; i < oldVSize; i++)
 				newV[i] = allV.indexVector(i);
 			newV[oldVSize] = new Datum(ret);
-			interpreter.getScope().setVariable(interpreter, interpreter.ALL, new Datum(newV), trace);
+			interpreter.getScope().setVariable(interpreter, interpreter.ALL, new Datum(newV), line);
 			return new Datum(ret);
 		}
 
@@ -1000,34 +892,30 @@ public abstract class Operator {
 	}
 
 	public static class SeqDec extends Unary {
-		public SeqDec(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.SEQ_DEC, a);
+		public SeqDec(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.SEQ_DEC, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			final Datum datumA = a.evaluate(scope, trace);
+			final Datum datumA = a.evaluate(scope);
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				final List<Phone> phones = new ArrayList<>();
 				final List<Word.SyllableDelim> delimits = new ArrayList<>();
 				boolean flag = true;
-				final int dataSize = datumA.getVectorLength(trace);
+				final int dataSize = datumA.getVectorLength(line);
 				for (int i = 0; i < dataSize; i++) {
 					final Datum d = datumA.indexVector(i);
 					if (d.getType() == Datum.Type.PHONE) {
-						phones.add(d.getPhone(trace));
+						phones.add(d.getPhone(line));
 						if (flag)
 							delimits.add(Word.SyllableDelim.NULL);
 						else
 							flag = true;
 					} else if (d.getType() == Datum.Type.STRING) {
 						flag = false;
-						switch (d.getString(trace)) {
+						switch (d.getString(line)) {
 							case ".":
 								delimits.add(Word.SyllableDelim.DELIM);
 								break;
@@ -1036,17 +924,17 @@ public abstract class Operator {
 								break;
 							default:
 								throw new SonoRuntimeException(
-										"Value <" + d.getDebugString(trace) + "> is not applicable as a word delimiter",
-										trace);
+										"Value <" + d.getDebugString(line) + "> is not applicable as a word delimiter",
+										line);
 						}
 					}
 				}
 				return new Datum(new Word(phones, delimits));
 			} else if (datumA.getType() == Datum.Type.STRING) {
-				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(trace)));
+				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(line)));
 			}
-			throw new SonoRuntimeException(
-					"Value <" + datumA.getDebugString(trace) + "> cannot be converted to a Word.", trace);
+			throw new SonoRuntimeException("Value <" + datumA.getDebugString(line) + "> cannot be converted to a Word.",
+					line);
 		}
 
 		@Override
@@ -1056,49 +944,45 @@ public abstract class Operator {
 	}
 
 	public static class ListDec extends Unary {
-		public ListDec(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.LIST_DEC, a);
+		public ListDec(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.LIST_DEC, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			Datum[] list = null;
-			final Datum datumA = a.evaluate(scope, trace);
+			final Datum datumA = a.evaluate(scope);
 			int i;
 			switch (datumA.getType()) {
 				case MATRIX:
-					list = new Datum[datumA.getMatrix(trace).size()];
+					list = new Datum[datumA.getMatrix(line).size()];
 					i = 0;
-					for (final Pair p : datumA.getMatrix(trace))
+					for (final Feature p : datumA.getMatrix(line))
 						list[i++] = new Datum(p);
 					break;
 				case STRING:
-					final String s = datumA.getString(trace);
+					final String s = datumA.getString(line);
 					list = new Datum[s.length()];
 					for (i = 0; i < s.length(); i++)
 						list[i] = new Datum(String.valueOf(s.charAt(i)));
 					break;
 				case WORD:
 					final List<Datum> tempList = new ArrayList<>();
-					for (i = 0; i < datumA.getWord(trace).size(); i++) {
-						if (datumA.getWord(trace).getDelim(i) != Word.SyllableDelim.NULL)
-							tempList.add(new Datum(datumA.getWord(trace).getDelim(i).toString()));
-						tempList.add(new Datum(datumA.getWord(trace).get(i)));
+					for (i = 0; i < datumA.getWord(line).size(); i++) {
+						if (datumA.getWord(line).getDelim(i) != Word.SyllableDelim.NULL)
+							tempList.add(new Datum(datumA.getWord(line).getDelim(i).toString()));
+						tempList.add(new Datum(datumA.getWord(line).get(i)));
 					}
 					list = tempList.toArray(new Datum[0]);
 					break;
 				case VECTOR:
 					return datumA;
 				case STRUCTURE:
-					return datumA.getStructure(trace).getScope().getVariable(interpreter.GET_LIST, interpreter, trace)
-							.getFunction(Datum.Type.ANY, trace).execute(null, trace);
+					return datumA.getStructure(line).getScope().getVariable(interpreter.GET_LIST, interpreter, line)
+							.getFunction(Datum.Type.ANY, line).execute(null, line);
 				default:
 					throw new SonoRuntimeException(
-							"Cannot convert value <" + datumA.getDebugString(trace) + "> into a List", trace);
+							"Cannot convert value <" + datumA.getDebugString(line) + "> into a List", line);
 			}
 			return new Datum(list);
 		}
@@ -1110,17 +994,13 @@ public abstract class Operator {
 	}
 
 	public static class StringDec extends Unary {
-		public StringDec(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.STR_DEC, a);
+		public StringDec(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.STR_DEC, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final String s = a.evaluate(scope, trace).toRawStringTrace(trace);
+		public Datum evaluate(final Scope scope) {
+			final String s = a.evaluate(scope).toRawStringTrace(line);
 			return new Datum(s);
 		}
 
@@ -1131,17 +1011,13 @@ public abstract class Operator {
 	}
 
 	public static class TypeConvert extends Unary {
-		public TypeConvert(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.TYPE_CONVERT, a);
+		public TypeConvert(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.TYPE_CONVERT, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
 			return new Datum(datumA.getTypeString());
 		}
 
@@ -1152,17 +1028,13 @@ public abstract class Operator {
 	}
 
 	public static class Hash extends Unary {
-		public Hash(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.HASH, a);
+		public Hash(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.HASH, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
 			return new Datum(datumA.hashCode());
 		}
 
@@ -1173,31 +1045,27 @@ public abstract class Operator {
 	}
 
 	public static class MatConvert extends Unary {
-		public MatConvert(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.MATRIX_CONVERT, a);
+		public MatConvert(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.MATRIX_CONVERT, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			final Datum datumA = a.evaluate(scope, trace);
+			final Datum datumA = a.evaluate(scope);
 			if (datumA.getType() == Datum.Type.VECTOR) {
-				final int listSize = datumA.getVectorLength(trace);
+				final int listSize = datumA.getVectorLength(line);
 				final Matrix m = new Matrix(interpreter.getManager());
 				for (int i = 0; i < listSize; i++) {
-					final Pair p = datumA.indexVector(i).getPair(trace);
-					m.put(p.getFeature(), p.getQuality());
+					final Feature p = datumA.indexVector(i).getFeature(line);
+					m.put(p.getKey(), p.getQuality());
 				}
 				return new Datum(m);
 			} else if (datumA.getType() == Datum.Type.PHONE) {
-				return new Datum(datumA.getPhone(trace).getMatrix());
+				return new Datum(datumA.getPhone(line).getMatrix());
 			}
-			throw new SonoRuntimeException("Cannot convert value <" + datumA.getDebugString(trace) + "> to a Matrix.",
-					trace);
+			throw new SonoRuntimeException("Cannot convert value <" + datumA.getDebugString(line) + "> to a Matrix.",
+					line);
 		}
 
 		@Override
@@ -1207,23 +1075,19 @@ public abstract class Operator {
 	}
 
 	public static class Find extends Binary {
-		public Find(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.FIND_DEC, a, b);
+		public Find(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.FIND_DEC, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			final Matrix matrix = a.evaluate(scope, trace).getMatrix(trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			final int dataSize = datumB.getVectorLength(trace);
+			final Matrix matrix = a.evaluate(scope).getMatrix(line);
+			final Datum datumB = b.evaluate(scope);
+			final int dataSize = datumB.getVectorLength(line);
 			final List<Phone> phones = new ArrayList<>();
 			for (int i = 0; i < dataSize; i++)
-				phones.add(datumB.indexVector(i).getPhone(trace));
+				phones.add(datumB.indexVector(i).getPhone(line));
 			final List<Phone> list = interpreter.getManager().getPhones(phones, matrix);
 			final Datum[] newData = new Datum[list.size()];
 			for (int i = 0; i < list.size(); i++)
@@ -1238,28 +1102,24 @@ public abstract class Operator {
 	}
 
 	public static class NumConvert extends Unary {
-		public NumConvert(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.NUMBER_CONVERT, a);
+		public NumConvert(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.NUMBER_CONVERT, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
 			if (datumA.getType() == Datum.Type.NUMBER) {
 				return datumA;
 			} else if (datumA.getType() == Datum.Type.STRING) {
 				try {
-					return new Datum((double) Double.valueOf(datumA.getString(trace)));
+					return new Datum((double) Double.valueOf(datumA.getString(line)));
 				} catch (final Exception e) {
 					return new Datum();
 				}
 			} else {
 				throw new SonoRuntimeException(
-						"Cannot convert value <" + datumA.getDebugString(trace) + "> to a Number.", trace);
+						"Cannot convert value <" + datumA.getDebugString(line) + "> to a Number.", line);
 			}
 		}
 
@@ -1270,19 +1130,15 @@ public abstract class Operator {
 	}
 
 	public static class Code extends Unary {
-		public Code(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.CODE, a);
+		public Code(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.CODE, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final String s = a.evaluate(scope, trace).getString(trace);
+		public Datum evaluate(final Scope scope) {
+			final String s = a.evaluate(scope).getString(line);
 			if (s.length() != 1)
-				throw new SonoRuntimeException("Value <" + s + "> is not a single char.", trace);
+				throw new SonoRuntimeException("Value <" + s + "> is not a single char.", line);
 			return new Datum((int) s.charAt(0));
 		}
 
@@ -1293,23 +1149,19 @@ public abstract class Operator {
 	}
 
 	public static class Char extends Unary {
-		public Char(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.CHAR, a);
+		public Char(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.CHAR, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
 			try {
-				final int i = (int) datumA.getNumber(trace);
+				final int i = (int) datumA.getNumber(line);
 				return new Datum(String.valueOf((char) i));
 			} catch (final Exception e) {
-				throw new SonoRuntimeException("Value <" + datumA.getDebugString(trace) + "> is not of type `Number`",
-						trace);
+				throw new SonoRuntimeException("Value <" + datumA.getDebugString(line) + "> is not of type `Number`",
+						line);
 			}
 		}
 
@@ -1320,32 +1172,28 @@ public abstract class Operator {
 	}
 
 	public static class Length extends Unary {
-		public Length(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.LEN, a);
+		public Length(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.LEN, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
 			switch (datumA.getType()) {
 				case STRING:
-					return new Datum(datumA.getString(trace).length());
+					return new Datum(datumA.getString(line).length());
 				case WORD:
-					return new Datum(datumA.getWord(trace).size());
+					return new Datum(datumA.getWord(line).size());
 				case VECTOR:
-					return new Datum(datumA.getVectorLength(trace));
+					return new Datum(datumA.getVectorLength(line));
 				case MATRIX:
-					return new Datum(datumA.getMatrix(trace).size());
+					return new Datum(datumA.getMatrix(line).size());
 				case STRUCTURE:
-					return datumA.getStructure(trace).getScope().getVariable(interpreter.GET_LEN, interpreter, trace)
-							.getFunction(Datum.Type.ANY, trace).execute(null, trace);
+					return datumA.getStructure(line).getScope().getVariable(interpreter.GET_LEN, interpreter, line)
+							.getFunction(Datum.Type.ANY, line).execute(null, line);
 				default:
-					throw new SonoRuntimeException("Cannot get length of value <" + datumA.getDebugString(trace) + ">",
-							trace);
+					throw new SonoRuntimeException("Cannot get length of value <" + datumA.getDebugString(line) + ">",
+							line);
 			}
 		}
 
@@ -1356,17 +1204,13 @@ public abstract class Operator {
 	}
 
 	public static class Return extends Unary {
-		public Return(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.RETURN, a);
+		public Return(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.RETURN, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
 			datumA.setRet(true);
 			return datumA;
 		}
@@ -1378,17 +1222,13 @@ public abstract class Operator {
 	}
 
 	public static class Refer extends Unary {
-		public Refer(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.REFER, a);
+		public Refer(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.REFER, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
 			datumA.setRefer(true);
 			return datumA;
 		}
@@ -1400,40 +1240,36 @@ public abstract class Operator {
 	}
 
 	public static class Add extends Binary {
-		public Add(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.ADD, a, b);
+		public Add(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.ADD, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
 			if (datumA.getType() != datumB.getType())
-				throw new SonoRuntimeException("Cannot add values <" + datumA.getDebugString(trace) + "> and <"
-						+ datumB.getDebugString(trace) + ">", trace);
+				throw new SonoRuntimeException("Cannot add values <" + datumA.getDebugString(line) + "> and <"
+						+ datumB.getDebugString(line) + ">", line);
 			switch (datumA.getType()) {
 				case NUMBER:
-					return new Datum(datumA.getNumber(trace) + datumB.getNumber(trace));
+					return new Datum(datumA.getNumber(line) + datumB.getNumber(line));
 				case VECTOR:
 					return Datum.arrayConcat(datumA, datumB);
 				case MATRIX:
 					final Matrix newMatrix = new Matrix(interpreter.getManager());
-					newMatrix.putAll(datumA.getMatrix(trace));
-					newMatrix.putAll(datumB.getMatrix(trace));
+					newMatrix.putAll(datumA.getMatrix(line));
+					newMatrix.putAll(datumB.getMatrix(line));
 					return new Datum(newMatrix);
 				case WORD:
 					final Word newWord = new Word();
-					newWord.addAll(datumA.getWord(trace));
-					newWord.addAll(datumB.getWord(trace));
+					newWord.addAll(datumA.getWord(line));
+					newWord.addAll(datumB.getWord(line));
 					return new Datum(newWord);
 				case STRING:
-					return new Datum(datumA.getString(trace) + datumB.getString(trace));
+					return new Datum(datumA.getString(line) + datumB.getString(line));
 				default:
-					throw new SonoRuntimeException("Values of type <" + datumA.getType() + "> cannot be added.", trace);
+					throw new SonoRuntimeException("Values of type <" + datumA.getType() + "> cannot be added.", line);
 			}
 		}
 
@@ -1444,19 +1280,15 @@ public abstract class Operator {
 	}
 
 	public static class Sub extends Binary {
-		public Sub(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.SUB, a, b);
+		public Sub(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.SUB, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) - datumB.getNumber(trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(datumA.getNumber(line) - datumB.getNumber(line));
 		}
 
 		@Override
@@ -1466,19 +1298,15 @@ public abstract class Operator {
 	}
 
 	public static class Mul extends Binary {
-		public Mul(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.MUL, a, b);
+		public Mul(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.MUL, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) * datumB.getNumber(trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(datumA.getNumber(line) * datumB.getNumber(line));
 		}
 
 		@Override
@@ -1488,20 +1316,16 @@ public abstract class Operator {
 	}
 
 	public static class Div extends Binary {
-		public Div(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.DIV, a, b);
+		public Div(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.DIV, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
 			try {
-				return new Datum(datumA.getNumber(trace) / datumB.getNumber(trace));
+				return new Datum(datumA.getNumber(line) / datumB.getNumber(line));
 			} catch (final Exception e) {
 				return new Datum();
 			}
@@ -1514,20 +1338,16 @@ public abstract class Operator {
 	}
 
 	public static class Mod extends Binary {
-		public Mod(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.MOD, a, b);
+		public Mod(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.MOD, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
 			try {
-				return new Datum(datumA.getNumber(trace) % datumB.getNumber(trace));
+				return new Datum(datumA.getNumber(line) % datumB.getNumber(line));
 			} catch (final Exception e) {
 				return new Datum();
 			}
@@ -1540,20 +1360,16 @@ public abstract class Operator {
 	}
 
 	public static class Pow extends Binary {
-		public Pow(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.POW, a, b);
+		public Pow(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.POW, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
 			try {
-				return new Datum(Math.pow(datumA.getNumber(trace), datumB.getNumber(trace)));
+				return new Datum(Math.pow(datumA.getNumber(line), datumB.getNumber(line)));
 			} catch (final Exception e) {
 				return new Datum();
 			}
@@ -1566,32 +1382,28 @@ public abstract class Operator {
 	}
 
 	public static class Index extends Binary {
-		public Index(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.INDEX, a, b);
+		public Index(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.INDEX, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
 			if (datumA.getType() == Datum.Type.VECTOR) {
 				try {
-					return datumA.indexVector((int) datumB.getNumber(trace));
+					return datumA.indexVector((int) datumB.getNumber(line));
 				} catch (final Exception e) {
 					throw new SonoRuntimeException(
-							"Cannot index List <" + datumA.getDebugString(trace) + "> with value <"
-									+ datumB.getDebugString(trace) + ">; Length: " + datumA.getVectorLength(trace),
-							trace);
+							"Cannot index List <" + datumA.getDebugString(line) + "> with value <"
+									+ datumB.getDebugString(line) + ">; Length: " + datumA.getVectorLength(line),
+							line);
 				}
 			} else if (datumA.getType() == Datum.Type.STRUCTURE) {
-				return datumA.getStructure(trace).getScope().getVariable(interpreter.GET_INDEX, interpreter, trace)
-						.getFunction(Datum.Type.ANY, trace).execute(new Datum[] { datumB }, trace);
+				return datumA.getStructure(line).getScope().getVariable(interpreter.GET_INDEX, interpreter, line)
+						.getFunction(Datum.Type.ANY, line).execute(new Datum[] { datumB }, line);
 			}
-			throw new SonoRuntimeException("Cannot index value <" + datumA.getDebugString(trace) + ">", trace);
+			throw new SonoRuntimeException("Cannot index value <" + datumA.getDebugString(line) + ">", line);
 		}
 
 		@Override
@@ -1601,19 +1413,15 @@ public abstract class Operator {
 	}
 
 	public static class Equal extends Binary {
-		public Equal(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.EQUAL, a, b);
+		public Equal(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.EQUAL, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqual(datumB, trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(datumA.isEqual(datumB, line));
 		}
 
 		@Override
@@ -1623,19 +1431,15 @@ public abstract class Operator {
 	}
 
 	public static class PureEqual extends Binary {
-		public PureEqual(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.P_EQUALS, a, b);
+		public PureEqual(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.P_EQUALS, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.isEqualPure(datumB, trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(datumA.isEqualPure(datumB, line));
 		}
 
 		@Override
@@ -1645,19 +1449,15 @@ public abstract class Operator {
 	}
 
 	public static class NEqual extends Binary {
-		public NEqual(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.NOT_EQUAL, a, b);
+		public NEqual(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.NOT_EQUAL, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(!datumA.isEqual(datumB, trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(!datumA.isEqual(datumB, line));
 		}
 
 		@Override
@@ -1667,19 +1467,15 @@ public abstract class Operator {
 	}
 
 	public static class PureNEqual extends Binary {
-		public PureNEqual(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.P_NOT_EQUAL, a, b);
+		public PureNEqual(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.P_NOT_EQUAL, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(!datumA.isEqualPure(datumB, trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(!datumA.isEqualPure(datumB, line));
 		}
 
 		@Override
@@ -1689,19 +1485,15 @@ public abstract class Operator {
 	}
 
 	public static class Contrast extends Binary {
-		public Contrast(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.CONTRAST, a, b);
+		public Contrast(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.CONTRAST, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			return new Datum(interpreter.getManager().getContrast(a.evaluate(scope, trace).getPhone(trace),
-					b.evaluate(scope, trace).getPhone(trace)));
+			return new Datum(interpreter.getManager().getContrast(a.evaluate(scope).getPhone(line),
+					b.evaluate(scope).getPhone(line)));
 		}
 
 		@Override
@@ -1711,22 +1503,18 @@ public abstract class Operator {
 	}
 
 	public static class Common extends Unary {
-		public Common(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.COMMON, a);
+		public Common(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.COMMON, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			final Datum datumA = a.evaluate(scope, trace);
-			final int dataSize = datumA.getVectorLength(trace);
+			final Datum datumA = a.evaluate(scope);
+			final int dataSize = datumA.getVectorLength(line);
 			final List<Phone> phones = new ArrayList<>();
 			for (int i = 0; i < dataSize; i++)
-				phones.add(datumA.indexVector(i).getPhone(trace));
+				phones.add(datumA.indexVector(i).getPhone(line));
 			return new Datum(interpreter.getManager().getCommon(phones));
 		}
 
@@ -1740,18 +1528,14 @@ public abstract class Operator {
 	public static class VarDec extends Operator {
 		private final int varName;
 
-		public VarDec(final Interpreter interpreter, final int varName) {
-			super(interpreter, Type.VAR_DEC);
+		public VarDec(final Interpreter interpreter, final Token line, final int varName) {
+			super(interpreter, Type.VAR_DEC, line);
 			this.varName = varName;
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			return scope.setVariable(interpreter, varName, null, trace);
+		public Datum evaluate(final Scope scope) {
+			return scope.setVariable(interpreter, varName, null, line);
 		}
 
 		@Override
@@ -1771,16 +1555,12 @@ public abstract class Operator {
 	}
 
 	public static class Break extends Operator {
-		public Break(final Interpreter interpreter) {
-			super(interpreter, Type.BREAK);
+		public Break(final Interpreter interpreter, final Token line) {
+			super(interpreter, Type.BREAK, line);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			return new Datum.Break();
 		}
 
@@ -1803,8 +1583,8 @@ public abstract class Operator {
 	public static class IfElse extends Binary {
 		private Operator c;
 
-		public IfElse(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.IF_ELSE, a, b);
+		public IfElse(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.IF_ELSE, line, a, b);
 			this.c = null;
 		}
 
@@ -1813,16 +1593,12 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum condition = a.evaluate(scope, trace);
-			if (condition.getBool(trace))
-				return b.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum condition = a.evaluate(scope);
+			if (condition.getBool(line))
+				return b.evaluate(scope);
 			else if (c != null)
-				return c.evaluate(scope, trace);
+				return c.evaluate(scope);
 			return new Datum();
 		}
 
@@ -1851,16 +1627,12 @@ public abstract class Operator {
 	}
 
 	public static class Lambda extends Binary {
-		public Lambda(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.LAMBDA, a, b);
+		public Lambda(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.LAMBDA, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			Operator[] paramsRaw;
 			int[] pNames = null;
 			boolean[] pRefs = null;
@@ -1893,10 +1665,11 @@ public abstract class Operator {
 					i++;
 				}
 			} else if (a.type == Type.TYPE_DEC) {
-				final Datum t = ((TypeDec) a).getA().evaluate(scope, trace);
+				final Datum t = ((TypeDec) a).getA().evaluate(scope);
 				if (!t.isPrototypic())
-					throw new SonoRuntimeException("Value <" + t.getDebugString(trace)
-							+ "> cannot be used to designate an objective function.", trace);
+					throw new SonoRuntimeException(
+							"Value <" + t.getDebugString(line) + "> cannot be used to designate an objective function.",
+							line);
 				fType = t.getType();
 				paramsRaw = ((Sequence) ((TypeDec) a).getB()).getVector();
 				pNames = new int[paramsRaw.length];
@@ -1933,47 +1706,43 @@ public abstract class Operator {
 	}
 
 	public static class Execute extends Binary {
-		public Execute(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.EXECUTE, a, b);
+		public Execute(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.EXECUTE, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumB = b.evaluate(scope, trace);
-			final int pValuesSize = datumB.getVectorLength(trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum datumB = b.evaluate(scope);
+			final int pValuesSize = datumB.getVectorLength(line);
 			Datum[] pValues = null;
 			Function f = null;
 			if (a.type == Type.INNER) {
-				final Datum datumA = ((Inner) a).getA().evaluate(scope, trace);
+				final Datum datumA = ((Inner) a).getA().evaluate(scope);
 				if (datumA.getType() != Datum.Type.STRUCTURE) {
 					final Datum[] tempValues = new Datum[pValuesSize + 1];
 					tempValues[0] = datumA;
 					for (int i = 0; i < pValuesSize; i++)
 						tempValues[i + 1] = datumB.indexVector(i);
 					pValues = tempValues;
-					final Datum functionB = ((Inner) a).getB().evaluate(scope, trace);
-					f = functionB.getFunction(datumA.getType(), trace);
+					final Datum functionB = ((Inner) a).getB().evaluate(scope);
+					f = functionB.getFunction(datumA.getType(), line);
 					if (f == null)
-						f = functionB.getFunction(Datum.Type.ANY, trace);
+						f = functionB.getFunction(Datum.Type.ANY, line);
 				} else {
-					pValues = datumB.getVector(trace);
-					f = a.evaluate(scope, trace).getFunction(Datum.Type.ANY, trace);
+					pValues = datumB.getVector(line);
+					f = a.evaluate(scope).getFunction(Datum.Type.ANY, line);
 				}
 			} else {
-				pValues = datumB.getVector(trace);
-				final Datum fDatum = a.evaluate(scope, trace);
+				pValues = datumB.getVector(line);
+				final Datum fDatum = a.evaluate(scope);
 				if (pValuesSize != 0)
-					f = fDatum.getFunction(datumB.indexVector(0).getType(), trace);
+					f = fDatum.getFunction(datumB.indexVector(0).getType(), line);
 				if (f == null)
-					f = fDatum.getFunction(Datum.Type.ANY, trace);
+					f = fDatum.getFunction(Datum.Type.ANY, line);
 			}
 			if (f == null)
-				throw new SonoRuntimeException("No function found", trace);
-			return f.execute(pValues, trace);
+				throw new SonoRuntimeException("No function found", line);
+			return f.execute(pValues, line);
 		}
 
 		@Override
@@ -1983,19 +1752,15 @@ public abstract class Operator {
 	}
 
 	public static class Less extends Binary {
-		public Less(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.LESS, a, b);
+		public Less(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.LESS, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) < datumB.getNumber(trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(datumA.getNumber(line) < datumB.getNumber(line));
 		}
 
 		@Override
@@ -2005,19 +1770,15 @@ public abstract class Operator {
 	}
 
 	public static class More extends Binary {
-		public More(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.LESS, a, b);
+		public More(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.LESS, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) > datumB.getNumber(trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(datumA.getNumber(line) > datumB.getNumber(line));
 		}
 
 		@Override
@@ -2027,19 +1788,15 @@ public abstract class Operator {
 	}
 
 	public static class ELess extends Binary {
-		public ELess(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.E_LESS, a, b);
+		public ELess(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.E_LESS, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) <= datumB.getNumber(trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(datumA.getNumber(line) <= datumB.getNumber(line));
 		}
 
 		@Override
@@ -2049,19 +1806,15 @@ public abstract class Operator {
 	}
 
 	public static class EMore extends Binary {
-		public EMore(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.E_MORE, a, b);
+		public EMore(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.E_MORE, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			final Datum datumB = b.evaluate(scope, trace);
-			return new Datum(datumA.getNumber(trace) >= datumB.getNumber(trace));
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			final Datum datumB = b.evaluate(scope);
+			return new Datum(datumA.getNumber(line) >= datumB.getNumber(line));
 		}
 
 		@Override
@@ -2071,20 +1824,16 @@ public abstract class Operator {
 	}
 
 	public static class And extends Binary {
-		public And(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.AND, a, b);
+		public And(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.AND, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			if (datumA.getBool(trace)) {
-				final Datum datumB = b.evaluate(scope, trace);
-				if (datumB.getBool(trace))
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			if (datumA.getBool(line)) {
+				final Datum datumB = b.evaluate(scope);
+				if (datumB.getBool(line))
 					return new Datum(true);
 			}
 			return new Datum(false);
@@ -2097,22 +1846,18 @@ public abstract class Operator {
 	}
 
 	public static class Or extends Binary {
-		public Or(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.OR, a, b);
+		public Or(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.OR, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum datumA = a.evaluate(scope, trace);
-			if (datumA.getBool(trace)) {
+		public Datum evaluate(final Scope scope) {
+			final Datum datumA = a.evaluate(scope);
+			if (datumA.getBool(line)) {
 				return new Datum(true);
 			} else {
-				final Datum datumB = b.evaluate(scope, trace);
-				if (datumB.getBool(trace))
+				final Datum datumB = b.evaluate(scope);
+				if (datumB.getBool(line))
 					return new Datum(true);
 			}
 			return new Datum(false);
@@ -2125,28 +1870,24 @@ public abstract class Operator {
 	}
 
 	public static class Inner extends Binary {
-		public Inner(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.INNER, a, b);
+		public Inner(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.INNER, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Datum object = a.evaluate(scope, trace);
+		public Datum evaluate(final Scope scope) {
+			final Datum object = a.evaluate(scope);
 			if (object.type != Datum.Type.STRUCTURE) {
 				if (!object.isPrototypic())
-					throw new SonoRuntimeException("Value <" + object.getDebugString(trace)
-							+ "> is not prototypic and therefore cannot extract objective methods.", trace);
-				final Datum fHolder = b.evaluate(scope, trace);
-				return new Datum(object.getType(), fHolder.getFunction(object.getType(), trace));
+					throw new SonoRuntimeException("Value <" + object.getDebugString(line)
+							+ "> is not prototypic and therefore cannot extract objective methods.", line);
+				final Datum fHolder = b.evaluate(scope);
+				return new Datum(object.getType(), fHolder.getFunction(object.getType(), line));
 			} else {
-				final Structure s = object.getStructure(trace);
+				final Structure s = object.getStructure(line);
 				if (s.perusable())
-					return b.evaluate(object.getStructure(trace).getScope(), trace);
-				throw new SonoRuntimeException("Class <" + s.getName() + "> is not perusable.", trace);
+					return b.evaluate(object.getStructure(line).getScope());
+				throw new SonoRuntimeException("Class <" + s.getName() + "> is not perusable.", line);
 			}
 		}
 
@@ -2157,18 +1898,14 @@ public abstract class Operator {
 	}
 
 	public static class OuterCall extends Binary {
-		public OuterCall(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.OUTER_CALL, a, b);
+		public OuterCall(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.OUTER_CALL, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			return interpreter.getCommandManager().execute(a.evaluate(scope, trace).getString(trace),
-					b.evaluate(scope, trace), trace, interpreter);
+		public Datum evaluate(final Scope scope) {
+			return interpreter.getCommandManager().execute(a.evaluate(scope).getString(line), b.evaluate(scope), line,
+					interpreter);
 		}
 
 		@Override
@@ -2178,22 +1915,18 @@ public abstract class Operator {
 	}
 
 	public static class ClassDec extends Binary {
-		public ClassDec(final Interpreter interpreter, final Operator a, final Operator b) {
-			super(interpreter, Type.CLASS_DEC, a, b);
+		public ClassDec(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+			super(interpreter, Type.CLASS_DEC, line, a, b);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 			Structure.Type stype = Structure.Type.STRUCT;
 			Operator objectOperator = null;
 			Structure extending = null;
 			if (a.type == Type.EXTENDS) {
 				objectOperator = ((Extends) a).getA();
-				extending = ((Extends) a).getB().evaluate(scope, trace).getStructure(trace);
+				extending = ((Extends) a).getB().evaluate(scope).getStructure(line);
 			} else {
 				objectOperator = a;
 			}
@@ -2204,11 +1937,11 @@ public abstract class Operator {
 				stype = Structure.Type.ABSTRACT;
 			Operator main = b;
 			if (extending != null)
-				main = new SoftList(interpreter, new Operator[] { extending.getMain(), main });
+				main = new SoftList(interpreter, line, new Operator[] { extending.getMain(), main });
 			final Structure structure = new Structure(scope.getStructure(), stype, scope, main, varName, interpreter);
 			if (stype == Structure.Type.STATIC)
-				b.evaluate(structure.getScope(), trace);
-			return scope.setVariable(interpreter, varName, new Datum(structure), trace);
+				b.evaluate(structure.getScope());
+			return scope.setVariable(interpreter, varName, new Datum(structure), line);
 		}
 
 		@Override
@@ -2218,19 +1951,15 @@ public abstract class Operator {
 	}
 
 	public static class NewDec extends Unary {
-		public NewDec(final Interpreter interpreter, final Operator a) {
-			super(interpreter, Type.NEW_DEC, a);
+		public NewDec(final Interpreter interpreter, final Token line, final Operator a) {
+			super(interpreter, Type.NEW_DEC, line, a);
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			final Structure struct = ((Execute) a).getA().evaluate(scope, trace).getStructure(trace);
-			final Datum[] params = ((Execute) a).getB().evaluate(scope, trace).getVector(trace);
-			return struct.instantiate(params, trace);
+		public Datum evaluate(final Scope scope) {
+			final Structure struct = ((Execute) a).getA().evaluate(scope).getStructure(line);
+			final Datum[] params = ((Execute) a).getB().evaluate(scope).getVector(line);
+			return struct.instantiate(params, line);
 		}
 
 		@Override
@@ -2243,8 +1972,9 @@ public abstract class Operator {
 		private final Map<Datum, Operator> map;
 		private Operator c;
 
-		public Switch(final Interpreter interpreter, final Operator a, final Map<Datum, Operator> map) {
-			super(interpreter, Type.SWITCH, a);
+		public Switch(final Interpreter interpreter, final Token line, final Operator a,
+				final Map<Datum, Operator> map) {
+			super(interpreter, Type.SWITCH, line, a);
 			this.map = map;
 			this.c = null;
 		}
@@ -2254,21 +1984,17 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
+		public Datum evaluate(final Scope scope) {
 
-			final Datum key = a.evaluate(scope, trace);
+			final Datum key = a.evaluate(scope);
 			final Operator b = map.get(key);
 			if (b == null) {
 				if (c == null)
 					return new Datum();
 				else
-					return c.evaluate(scope, trace);
+					return c.evaluate(scope);
 			}
-			return map.get(key).evaluate(scope, trace);
+			return map.get(key).evaluate(scope);
 		}
 
 		@Override
@@ -2313,8 +2039,8 @@ public abstract class Operator {
 		private final Datum key;
 		private final Operator seq;
 
-		public SwitchCase(final Interpreter interpreter, final Datum key, final Operator seq) {
-			super(interpreter, Type.SWITCH_CASE);
+		public SwitchCase(final Interpreter interpreter, final Token line, final Datum key, final Operator seq) {
+			super(interpreter, Type.SWITCH_CASE, line);
 			this.key = key;
 			this.seq = seq;
 		}
@@ -2328,12 +2054,8 @@ public abstract class Operator {
 		}
 
 		@Override
-		public Datum evaluate(final Scope scope, List<String> trace) {
-			if (SonoWrapper.DEBUG) {
-				trace = new ArrayList<>(trace);
-				trace.add(this.toString());
-			}
-			throw new SonoRuntimeException("Cannot evaluate uncontrolled goto statement", trace);
+		public Datum evaluate(final Scope scope) {
+			throw new SonoRuntimeException("Cannot evaluate uncontrolled goto statement", line);
 		}
 
 		@Override
@@ -2352,16 +2074,17 @@ public abstract class Operator {
 		}
 	}
 
-	public Operator(final Interpreter interpreter, final Type type) {
+	public Operator(final Interpreter interpreter, final Type type, final Token line) {
 		this.interpreter = interpreter;
 		this.type = type;
+		this.line = line;
 	}
 
 	public abstract Operator[] getChildren();
 
 	public abstract void condense();
 
-	public abstract Datum evaluate(Scope scope, List<String> trace);
+	public abstract Datum evaluate(Scope scope);
 
 	public abstract String toString();
 }

@@ -1,0 +1,11 @@
+fibonacci(final x) => {
+	var vector = alloc(x);
+	vector[0] = 1;
+	vector[1] = 1;
+	i in {2 until x} do {
+		vector[i] = vector[i - 1] + vector[i - 2];
+	}
+	return vector;
+}
+
+println(fibonacci(20));

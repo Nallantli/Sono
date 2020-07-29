@@ -1,7 +1,5 @@
 package main.sono;
 
-import java.util.List;
-
 public class Function {
 	private Scope parent;
 	private final int[] paramKeys;
@@ -20,35 +18,35 @@ public class Function {
 		this.interpreter = interpreter;
 	}
 
-	public Datum execute(final Datum[] pValues, final List<String> trace) {
+	public Datum execute(final Datum[] pValues, final Token line) {
 		final Scope scope = new Scope(parent.getStructure(), parent);
 		for (int i = 0; i < paramKeys.length; i++) {
 			if (pValues != null && i < pValues.length) {
 				if (Boolean.TRUE.equals(paramRefs[i])) {
-					scope.setVariable(interpreter, paramKeys[i], pValues[i], trace);
+					scope.setVariable(interpreter, paramKeys[i], pValues[i], line);
 				} else if (Boolean.TRUE.equals(paramFins[i])) {
 					final Datum d = new Datum();
-					d.set(interpreter.getManager(), pValues[i], trace);
+					d.set(interpreter.getManager(), pValues[i], line);
 					d.setMutable(false);
-					scope.setVariable(interpreter, paramKeys[i], d, trace);
+					scope.setVariable(interpreter, paramKeys[i], d, line);
 				} else {
 					final Datum d = new Datum();
-					d.set(interpreter.getManager(), pValues[i], trace);
-					scope.setVariable(interpreter, paramKeys[i], d, trace);
+					d.set(interpreter.getManager(), pValues[i], line);
+					scope.setVariable(interpreter, paramKeys[i], d, line);
 				}
 			} else {
-				scope.setVariable(interpreter, paramKeys[i], new Datum(), trace);
+				scope.setVariable(interpreter, paramKeys[i], new Datum(), line);
 			}
 		}
 
-		final Datum r = body.evaluate(scope, trace);
+		final Datum r = body.evaluate(scope);
 		if (r.getRefer()) {
 			r.setRefer(false);
 			return r;
 		} else if (r.getRet()) {
 			r.setRet(false);
 			final Datum nr = new Datum();
-			nr.set(interpreter.getManager(), r, trace);
+			nr.set(interpreter.getManager(), r, line);
 			return nr;
 		}
 		return new Datum();

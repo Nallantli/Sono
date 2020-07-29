@@ -103,7 +103,7 @@ public class PhoneManager {
 		return this.validate(newMatrix);
 	}
 
-	public Pair interpretFeature(final String s) {
+	public Feature interpretFeature(final String s) {
 		final String[] split = s.split("\\|");
 		final int quality = Hasher.hash(split[0]);
 		final int value = Hasher.hash(split[1]);
@@ -118,7 +118,7 @@ public class PhoneManager {
 		if (feature == -1)
 			return null;
 
-		return new Pair(feature, quality);
+		return new Feature(feature, quality);
 	}
 
 	public Matrix fuzzySearch(final Matrix m) {
@@ -126,10 +126,10 @@ public class PhoneManager {
 		for (final Map.Entry<Matrix, String> pl : phoneLibrary.entrySet()) {
 			final Matrix temp = pl.getKey();
 			boolean flag = true;
-			for (final Pair e : features) {
+			for (final Feature e : features) {
 				if (e.getQuality() == Hasher.ZERO)
 					continue;
-				if (e.getQuality() != temp.getQuality(e.getFeature())) {
+				if (e.getQuality() != temp.getQuality(e.getKey())) {
 					flag = false;
 					break;
 				}

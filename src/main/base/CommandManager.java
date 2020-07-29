@@ -2,17 +2,17 @@ package main.base;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import main.SonoWrapper;
 import main.sono.Datum;
 import main.sono.Interpreter;
+import main.sono.Token;
 import main.sono.err.SonoCompilationException;
 
 public class CommandManager {
 	public interface Command {
-		public Datum execute(Datum datum, List<String> trace, Interpreter interpreter);
+		public Datum execute(Datum datum, Token line, Interpreter interpreter);
 	}
 
 	private final Map<String, Command> commands;
@@ -34,7 +34,7 @@ public class CommandManager {
 		}
 	}
 
-	public Datum execute(final String key, final Datum datum, final List<String> trace, final Interpreter interpreter) {
-		return commands.get(key).execute(datum, trace, interpreter);
+	public Datum execute(final String key, final Datum datum, final Token line, final Interpreter interpreter) {
+		return commands.get(key).execute(datum, line, interpreter);
 	}
 }

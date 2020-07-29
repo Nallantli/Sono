@@ -18,7 +18,7 @@ public class SecondaryArticulation {
 
 	public SecondaryArticulation(final PhoneManager pm, final String segment, final int feature, final int value,
 			final List<PhoneLoader.Secondary> restrictions, final List<Matrix> requirements) {
-		this(segment, new Matrix(pm, new Pair(feature, value)), restrictions, requirements);
+		this(segment, new Matrix(pm, new Feature(feature, value)), restrictions, requirements);
 	}
 
 	public Matrix getMatrix() {
@@ -36,8 +36,8 @@ public class SecondaryArticulation {
 		for (int i = 0; i < requirements.size(); i++) {
 			boolean flag = true;
 			final Matrix r = requirements.get(i);
-			for (final Pair feature : r) {
-				if (matrix.getQuality(feature.getFeature()) != feature.getQuality()) {
+			for (final Feature feature : r) {
+				if (matrix.getQuality(feature.getKey()) != feature.getQuality()) {
 					flag = false;
 					break;
 				}

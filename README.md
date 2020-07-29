@@ -1,4 +1,4 @@
-# Sono Beta 1.7.6
+# Sono Beta 1.8.0
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -28,7 +28,7 @@ It is possible to run the JAR file directly, however it is recommended for the s
 
 The first argument (if the user wishes to run a file) must be the path to the file. Otherwise the CLI interpreter will be opened, from which commands may be run per user input.
 
-There are currently only three command line arguments: `-l` which disables all phonological features of the language (for use as a general scripting language), `-d` which takes in a file path for phonological base data, and `-g`, which activates debug mode which will create a stack trace for any caught error.
+There are currently only two command line arguments: `-l` which disables all phonological features of the language (for use as a general scripting language) and `-d` which takes in a file path for phonological base data.
 
 During the initial run, `-d` will be required to develop a cache for the phonological data, and this process will take time depending on the extent of the data file given. Thereafter however the interpreter will automatically load the cached data at a significantly faster rate. A cache can always be re-initialized with `-d`.
 
@@ -358,7 +358,7 @@ try {
 }
 ```
 
-Within the `catch` statement, the variables `_e` and `_trace` are generated, the former indicating the message of the error and the latter indicating a trace of the operations preceding that error.
+Within the `catch` statement, the variable `_e` is generated, indicating the message of the error.
 
 The `catch` clause is optional.
 

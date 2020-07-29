@@ -2,7 +2,6 @@ package main.sono;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 import main.phl.PhoneManager;
 import main.sono.err.SonoRuntimeException;
@@ -26,30 +25,29 @@ public class Scope {
 		this.data = data;
 	}
 
-	public Scope instantiate(final Structure correspondent, final PhoneManager pm, final List<String> trace) {
+	public Scope instantiate(final Structure correspondent, final PhoneManager pm, final Token line) {
 		final Scope scope = new Scope(correspondent, this.parent);
 		final Map<Integer, Datum> newMap = new HashMap<>();
 		for (final Map.Entry<Integer, Datum> e : data.entrySet())
-			newMap.put(e.getKey(), new Datum(pm, e.getValue(), scope, trace));
+			newMap.put(e.getKey(), new Datum(pm, e.getValue(), scope, line));
 		scope.setMap(newMap);
 		return scope;
 	}
 
-	public Datum getVariable(final int key, final Interpreter interpreter, final List<String> trace) {
+	public Datum getVariable(final int key, final Interpreter interpreter, final Token line) {
 		if (data.containsKey(key))
 			return data.get(key);
 		else if (parent != null)
-			return parent.getVariable(key, interpreter, trace);
+			return parent.getVariable(key, interpreter, line);
 
 		throw new SonoRuntimeException(
-				"Variable <" + interpreter.deHash(key) + "> is not within scope or does not exist.", trace);
+				"Variable <" + interpreter.deHash(key) + "> is not within scope or does not exist.", line);
 	}
 
-	public Datum setVariable(final Interpreter interpreter, final int key, final Datum value,
-			final List<String> trace) {
+	public Datum setVariable(final Interpreter interpreter, final int key, final Datum value, final Token line) {
 		if (data.containsKey(key)) {
 			if (value != null)
-				this.data.get(key).set(interpreter.getManager(), value, trace);
+				this.data.get(key).set(interpreter.getManager(), value, line);
 			return data.get(key);
 		}
 
