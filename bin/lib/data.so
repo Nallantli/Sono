@@ -1,5 +1,5 @@
 # Benjamin Park
-# 27-07-2020
+# 30-07-2020
 
 load "graphics.so";
 
@@ -12,7 +12,7 @@ static Data class {
 			this.b = b;
 		}
 
-		getStr() => {
+		getString() => {
 			return "(" + str x + ", " + str y + ")";
 		}
 	}
@@ -22,7 +22,7 @@ static Data class {
 
 		init(ref xData, ref yData) => {
 			this.data = {};
-			i in {0 until len xData} do {
+			i in {0 until xData.length()} do {
 				this.data += { new Tuple(xData[i], yData[i]) };
 			}
 		}
@@ -43,11 +43,11 @@ static Data class {
 			return data;
 		}
 
-		getLen() => {
-			return len data;
+		getLength() => {
+			return data.length();
 		}
 
-		getStr() => {
+		getStringing() => {
 			return str data;
 		}
 	}
@@ -84,7 +84,7 @@ static Graph class {
 			e in data.getTuples() do {
 				type(e.a) != "Number" then {
 					labels = true;
-					this.maxX = len data;
+					this.maxX = data.length();
 					this.minX = 0;
 				}
 				labels == false then {
@@ -263,7 +263,7 @@ static Graph class {
 			this.height = height;
 			this.window = new Window(title, width, height, function);
 			this.graphics = this.window.getGraphics();
-			this.maxX = len data;
+			this.maxX = data.length();
 			this.minY = minY;
 			this.maxY = maxY;
 			e in data.getTuples() do {

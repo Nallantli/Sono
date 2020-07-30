@@ -30,7 +30,7 @@ error >= 0.05 do {
 		cycles += 1;
 		error += n.train(0.5, s[0], s[1]);
 	}
-	error /= len sets;
+	error /= sets.length();
 	println("Error:\t" + str (error * 100).round() + "%");
 }
 

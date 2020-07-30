@@ -750,7 +750,7 @@ public class LIB_Graphics extends Library {
 				(final Datum datum, final Token line, final Interpreter interpreter) -> {
 					final Datum[] list = datum.getVector(line);
 					final AbstractButton component = (AbstractButton) list[0].getPointer(line);
-					final boolean enabled = list[1].getNumber(line) != 0;
+					final boolean enabled = list[1].getBool(line);
 					component.setEnabled(enabled);
 					return new Datum();
 				});

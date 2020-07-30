@@ -1,5 +1,5 @@
 # Benjamin Park
-# 24-07-2020
+# 30-07-2020
 
 load "vector.so";
 
@@ -22,7 +22,7 @@ String::back(ref this) => {
 }
 
 String::isEmpty(ref this) => {
-	return (len this == 0);
+	return (length(this) == 0);
 }
 
 String::at(ref this, final index) => {
@@ -35,7 +35,7 @@ String::push(ref this, ref value) => {
 }
 
 String::contains(ref this, final pattern) => {
-	return (len this.match(pattern) > 0);
+	return (length(this.match(pattern)) > 0);
 }
 
 String::distArray(ref this, ref string, final costDel, final costIns, final costRep) => {
@@ -65,13 +65,13 @@ String::split(ref this, final pattern) => {
 	var mode = true;
 	var c = 0;
 	var curr = {};
-	i in {0 until len this} do {
-		c < len coords then {
+	i in {0 until length(this)} do {
+		c < length(coords) then {
 			coords[c][1] == i then {
 				mode = true;
 				c = c + 1;
 			}
-			c < len coords then {
+			c < length(coords) then {
 				coords[c][0] == i then {
 					array = array + { curr.join() };
 					curr = {};
@@ -96,13 +96,13 @@ String::replace(ref this, final pattern, final value) => {
 	var mode = true;
 	var c = 0;
 	var curr = {};
-	i in {0 until len this} do {
-		c < len coords then {
+	i in {0 until length(this)} do {
+		c < length(coords) then {
 			coords[c][1] == i then {
 				mode = true;
 				c = c + 1;
 			}
-			c < len coords then {
+			c < length(coords) then {
 				coords[c][0] == i then {
 					array = array + { curr.join(), value };
 					curr = {};

@@ -1,5 +1,5 @@
 # Benjamin Park
-# 28-07-2020
+# 30-07-2020
 
 import "LIB_Console";
 
@@ -13,6 +13,10 @@ var com = (ref x) => {
 
 var alloc = (ref x) => {
 	return alloc(x);
+}
+
+var length = (ref x) => {
+	return length(x);
 }
 
 print(ref message) => {
@@ -66,16 +70,12 @@ getNum(ref x) => {
 	return num x;
 }
 
-getStr(ref x) => {
+getString(ref x) => {
 	return str x;
 }
 
-getVec(ref x) => {
+getVector(ref x) => {
 	return vec x;
-}
-
-getLen(ref x) => {
-	return len x;
 }
 
 getWord(ref x) => {
@@ -112,7 +112,7 @@ static Random class {
 	}
 
 	set(ref vector) => {
-		refer vector[int(0, len vector)]
+		refer vector[int(0, vector.length())]
 	}
 }
 

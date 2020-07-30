@@ -1,5 +1,5 @@
 # Benjamin Park
-# 27-07-2020
+# 30-07-2020
 
 load "feature.so";
 load "vector.so";
@@ -18,7 +18,7 @@ static Phonology class {
 
 	isNaturalSet(ref phones, ref set) => {
 		var ns = getNaturalSet(phones, set);
-		return len ns == len set;
+		return length(ns) == length(set);
 	}
 
 	findNaturalSets(ref phones, ref set, ref explored) => {
@@ -30,13 +30,13 @@ static Phonology class {
 		isNaturalSet(phones, set) then {
 			ns += { set };
 		}
-		len set > 2 then {
-			i in {0 until len set} do {
+		length(set) > 2 then {
+			i in {0 until length(set)} do {
 				var nv = set;
 				nv.remove(i);
 				explored.contains(nv) == false then {
 					var s = findNaturalSets(phones, nv, explored);
-					len s > 0 then {
+					length(s) > 0 then {
 						ns += s;
 					}
 				}
@@ -48,14 +48,14 @@ static Phonology class {
 	naturalize(ref phones, ref set) => {
 		var natural = (ref phones, ref matrix) => {
 			var list = {};
-			i in {0 until len matrix} do {
+			i in {0 until length(matrix)} do {
 				var temp = mat (vec matrix).remove(i);
 				(temp from phones) == (matrix from phones) then {
 					list += natural(phones, temp);
 					break;
 				}
 			}
-			len list == 0 then {
+			length(list) == 0 then {
 				return { matrix };
 			} else {
 				refer list;
@@ -129,7 +129,7 @@ struct Corpus class {
 		IDFcache.contains(value) then {
 			return IDFcache[value];
 		}
-		return 1 + (len corpus / (1 + count(value))).log();
+		return 1 + (length(corpus) / (1 + count(value))).log();
 	}
 
 	TFIDF(final value, final doc) => {
@@ -148,8 +148,8 @@ struct Corpus class {
 		return corpus;
 	}
 
-	getLen() => {
-		return len corpus;
+	getLength() => {
+		return length(corpus);
 	}
 }
 
@@ -196,7 +196,7 @@ struct Inventory class {
 		return Phonology.isNaturalSet(this.phonemes, phones);
 	}
 
-	getStr() => {
+	getString() => {
 		return this.name;
 	}
 }

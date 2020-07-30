@@ -60,7 +60,7 @@ struct Socket class {
 
 	##	Returns a `String` representation of the object
 	##	@return	String	Representation of the object
-	getStr() => {
+	getString() => {
 		return address + ":" + str port
 	}
 
@@ -151,7 +151,7 @@ struct Server class {
 
 	##	Returns a `String` representation of the object
 	##	@return	String	Representation of the object
-	getStr() => {
+	getString() => {
 		return "LocalServer:" + str port;
 	}
 }

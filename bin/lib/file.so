@@ -18,7 +18,7 @@ struct File class {
 		return "LIB_FileIO.CREATE" _OUTER_CALL_ (this.pointer);
 	}
 
-	getStr() => {
+	getString() => {
 		return str this.pointer;
 	}
 
@@ -68,7 +68,7 @@ struct File class {
 			pointer = null;
 		}
 
-		getStr() => {
+		getString() => {
 			return str this.pointer;
 		}
 	}
@@ -89,7 +89,7 @@ struct File class {
 			pointer = null;
 		}
 
-		getStr() => {
+		getString() => {
 			return str this.pointer;
 		}
 	}

@@ -1,4 +1,4 @@
-# Sono Beta 1.8.1
+# Sono Beta 1.8.2
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -106,9 +106,6 @@ All basic arithmetic operators exist, including `**` for exponent. Any alteratio
 Operator | Function | Values
 -|-|-
 `a + b` | Concatenates or adds values<br>In the case of two `Matrix` values, the returned `Matrix` will contain a combination of values that allow for `from` to return a natural class `Vector` encompassing values given by both `Matrix` values | `a` and `b` must be of the same type
-`len a` | Returns the length of a value | `String`, `Vector`, `Matrix`, `Word`
-`type a` | Returns a `String` representation of the value type | Any
-`com a` | Returns a `Matrix` of features shared between two values | `Phone`
 `a ?> b` | Returns a `Matrix` of contrastive features between two values | `Phone`
 `a from b` | Returns all `Phone` values from `b` that contain features expressed in `a` | `Matrix` and `Vector` (of Phones)
 `a >> b` | Transforms `a` by `b` | `Word` and `Rule`, `Phone` and `Matrix`
@@ -126,10 +123,10 @@ Objects declared as `static` cannot be instantiated, they exist as "holders" for
 
 Method | Arguments | Use
 -|-|-
-`getStr`|None|Returns a `String` representation of the object when the object is called with `str`
+`getString`|None|Returns a `String` representation of the object when the object is called with `str`
 `getIndex`|Any single value|Overrides the `Vector` indexing operator `[]`
-`getVec`|None|Returns a `Vector` representation of the object when the object is called with `vec`
-`getLen`|None|Returns the length of the object when called with `len`
+`getVector`|None|Returns a `Vector` representation of the object when the object is called with `vec`
+`getLength`|None|Returns the length of the object when called with `length()`
 `getHash`|None|Returns the hashcode of the object when called with `hash`
 `equals`|Any single value|Overrides the `==` operator (and by extension, the `!=` operator)
 

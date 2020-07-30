@@ -36,5 +36,5 @@ var start = timeMS();
 var result = SOE(MAX);
 var time = timeMS() - start;
 
-println(str len result + " Primes found for numbers below " + str MAX);
+println(str result.length() + " Primes found for numbers below " + str MAX);
 println("Time: " + str time + "ms");

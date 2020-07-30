@@ -1,12 +1,12 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 27-07-2020
+# 30-07-2020
 
 load "math.so";
 
 Vector::pop(ref this) => {
-	var nl = alloc(len this - 1);
-	i in {0 until len nl} do {
+	var nl = alloc(length(this) - 1);
+	i in {0 until length(nl)} do {
 		nl[i] = this[i];
 	}
 	this = nl;
@@ -14,8 +14,8 @@ Vector::pop(ref this) => {
 }
 
 Vector::shift(ref this) => {
-	var nl = alloc(len this - 1);
-	i in {1 until len this} do {
+	var nl = alloc(length(this) - 1);
+	i in {1 until length(this)} do {
 		nl[i - 1] = this[i];
 	}
 	this = nl;
@@ -27,11 +27,11 @@ Vector::front(ref this) => {
 }
 
 Vector::back(ref this) => {
-	refer this[len this - 1];
+	refer this[length(this) - 1];
 }
 
 Vector::isEmpty(ref this) => {
-	return (len this == 0);
+	return (length(this) == 0);
 }
 
 Vector::contains(ref this, ref value) => {
@@ -57,9 +57,9 @@ Vector::join(ref this) => {
 }
 
 Vector::remove(ref this, final index) => {
-	var nv = alloc(len this - 1);
+	var nv = alloc(length(this) - 1);
 	var j = 0;
-	i in {0 until len this} do {
+	i in {0 until length(this)} do {
 		i != index then {
 			nv[j] = this[i];
 			j += 1;
@@ -70,9 +70,9 @@ Vector::remove(ref this, final index) => {
 }
 
 Vector::reverse(final this) => {
-	var nv = alloc(len this);
-	i in {0 until len this} do {
-		nv[i] = this[len this - i - 1];
+	var nv = alloc(length(this));
+	i in {0 until length(this)} do {
+		nv[i] = this[length(this) - i - 1];
 	}
 	return nv;
 }
@@ -99,8 +99,8 @@ Vector::distArray(ref this, ref vector, costDel, costIns, costRep) => {
 		costRep = 1;
 	}
 
-	var m = len this;
-	var n = len vector;
+	var m = length(this);
+	var n = length(vector);
 	var array = alloc(m + 1, n + 1).set(0);
 
 	i in {1 until (m + 1)} do {
@@ -124,13 +124,13 @@ Vector::distArray(ref this, ref vector, costDel, costIns, costRep) => {
 }
 
 Vector::dist(ref this, ref vector, final costDel, final costIns, final costRep) => {
-	return this.distArray(vector, costDel, costIns, costRep)[len this][len vector];
+	return this.distArray(vector, costDel, costIns, costRep)[length(this)][length(vector)];
 }
 
 Vector::steps(ref this, ref vector, final costDel, final costIns, final costRep) => {
 	var D = this.distArray(vector, costDel, costIns, costRep);
-	var i = len this;
-	var j = len vector;
+	var i = length(this);
+	var j = length(vector);
 	var steps = {};
 	true do {
 		i > 0 then {
@@ -171,7 +171,7 @@ Vector::steps(ref this, ref vector, final costDel, final costIns, final costRep)
 
 Vector::nGram(ref this, final n) => {
 	var nv = {};
-	i in {0 until (len this - n + 1)} do {
+	i in {0 until (length(this) - n + 1)} do {
 		var gram = {};
 		j in {0 until n} do {
 			gram += {this[i + j]};
@@ -188,12 +188,12 @@ Vector::sort(ref this, comp) => {
 		throw "Parameter <comp> of Vector::sort() must be of type Function";
 	}
 	Vector::merge_sort(final this) => {
-		len this <= 1 then {
+		length(this) <= 1 then {
 			return this;
 		}
 		var a = {};
 		var b = {};
-		i in {1 until len this} do {
+		i in {1 until length(this)} do {
 			comp(this[i], this[0]) then {
 				a += { this[i] };
 			} else {
@@ -206,8 +206,8 @@ Vector::sort(ref this, comp) => {
 }
 
 Vector::map(ref this, ref function) => {
-	var nl = alloc(len this);
-	i in {0 until len this} do {
+	var nl = alloc(length(this));
+	i in {0 until length(this)} do {
 		nl[i] = function(this[i]);
 	}
 	return nl;
@@ -224,7 +224,7 @@ Vector::filter(ref this, ref function) => {
 }
 
 Vector::foldRight(ref this, ref function) => {
-	len this == 1 then {
+	length(this) == 1 then {
 		return this[0];
 	}
 	var nl = this;
@@ -232,18 +232,18 @@ Vector::foldRight(ref this, ref function) => {
 }
 
 Vector::foldLeft(ref this, ref function) => {
-	len this == 1 then {
+	length(this) == 1 then {
 		return this[0];
 	}
 	var nl = this;
-	return function(nl.pop().foldLeft(function), this[len this - 1]);
+	return function(nl.pop().foldLeft(function), this[length(this) - 1]);
 }
 
 Vector::randomize(ref this) => {
 	var temp = this;
-	var nv = alloc(len this);
-	i in {0 until len this} do {
-		var index = Random.int(0, len temp);
+	var nv = alloc(length(this));
+	i in {0 until length(this)} do {
+		var index = Random.int(0, length(temp));
 		nv[i] = temp[index];
 		temp.remove(index);
 	}

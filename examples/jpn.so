@@ -37,6 +37,6 @@ var words = {
 
 var applied = words.apply(ruleSet);
 
-i in {0 until len words} do {
+i in {0 until words.length()} do {
 	println("/" + str words[i] + "/ -> [" + str applied[i] + "]");
 }

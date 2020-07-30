@@ -154,7 +154,7 @@ struct Window class {
 			this.screenY = screenY;
 		}
 
-		getStr() => {
+		getString() => {
 			return "(BUTTON=" + str button + ", COUNT=" + str clickCount + ", MODIFIERS=" + str modifiers + ", X=" + str x + ", Y=" + str y + ", SCREEN_X=" + str screenX + ", SCREEN_Y=" + str screenY + ")";
 		}
 	}
@@ -170,7 +170,7 @@ struct Window class {
 			this.actionKey = actionKey;
 		}
 
-		getStr() => {
+		getString() => {
 			return "(CODE=" + str charCode + ", STR=" + charStr + ", ISACTION=" + str actionKey + ")";
 		}
 	}
@@ -609,7 +609,7 @@ struct Font class {
 		this.font = ("LIB_Graphics.FONT.INIT" _OUTER_CALL_ (fontName, style, size));
 	}
 
-	getStr() => {
+	getString() => {
 		return "(" + str fontName + ", " + str style + ", " + str size + ")";
 	}
 }
@@ -634,7 +634,7 @@ static Color class {
 			this.data = ("LIB_Graphics.COLOR.INIT" _OUTER_CALL_ (r, g, b, this.a));
 		}
 
-		getStr() => {
+		getString() => {
 			return "(" + str r + ", " + str g + ", " + str b + ", " + str a + ")";
 		}
 

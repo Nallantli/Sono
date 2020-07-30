@@ -34,7 +34,7 @@ Number::format(ref this, final d) => {
 static Math class {
 	min(ref vector) => {
 		var n = vector[0];
-		i in {1 until len vector} do {
+		i in {1 until length(vector)} do {
 			vector[i] < n then {
 				n = vector[i];
 			}
@@ -45,7 +45,7 @@ static Math class {
 	minIndex(ref vector) => {
 		var n = vector[0];
 		var index = 0;
-		i in {1 until len vector} do {
+		i in {1 until length(vector)} do {
 			vector[i] < n then {
 				n = vector[i];
 				index = i;
@@ -56,7 +56,7 @@ static Math class {
 
 	max(ref vector) => {
 		var n = vector[0];
-		i in {1 until len vector} do {
+		i in {1 until length(vector)} do {
 			vector[i] > n then {
 				n = vector[i];
 			}
@@ -67,7 +67,7 @@ static Math class {
 	maxIndex(ref vector) => {
 		var n = vector[0];
 		var index = 0;
-		i in {1 until len vector} do {
+		i in {1 until length(vector)} do {
 			vector[i] > n then {
 				n = vector[i];
 				index = i;

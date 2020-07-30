@@ -9,4 +9,4 @@ i in {0 until 1000} do {
 }
 
 println("Time: " + str (timeMS() - start) + "ms");
-println("Size: " + str len m);
+println("Size: " + str m.length());

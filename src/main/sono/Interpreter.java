@@ -59,7 +59,7 @@ public class Interpreter {
 	protected static final String $INDEX = ".index";
 	protected static final String $INNER = ".";
 	protected static final String $LAMBDA = "=>";
-	protected static final String $LEN = "len";
+	protected static final String $LEN = "length";
 	protected static final String $LESS = "<";
 	protected static final String $LOAD = "load";
 	protected static final String $MAT = "mat";
@@ -149,10 +149,10 @@ public class Interpreter {
 
 		INIT = hashVariable("init");
 		THIS = hashVariable("this");
-		GET_STR = hashVariable("getStr");
-		GET_LEN = hashVariable("getLen");
+		GET_STR = hashVariable("getString");
+		GET_LEN = hashVariable("getLength");
 		GET_INDEX = hashVariable("getIndex");
-		GET_LIST = hashVariable("getVec");
+		GET_LIST = hashVariable("getVector");
 		ISEQUALS = hashVariable("equals");
 		GET_HASH = hashVariable("getHash");
 		ERROR = hashVariable("_e");
@@ -625,6 +625,9 @@ public class Interpreter {
 									break;
 								case $TYPE:
 									o.addLast(new ToTypeString(this, line, b));
+									break;
+								case $LEN:
+									o.addLast(new Length(this, line, b));
 									break;
 								default:
 									b = new HardList(this, line, ((Sequence) b).getVector());

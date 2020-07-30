@@ -1,5 +1,5 @@
 # Benjamin Park
-# 24-07-2020
+# 30-07-2020
 
 load "vector.so";
 
@@ -26,10 +26,10 @@ static Network class {
 			var ret = propogate(values);
 			backpropogate(learningRate, correct);
 			var error = 0;
-			i in {0 until len ret} do {
+			i in {0 until length(ret)} do {
 				error += abs(ret[i] - correct[i]);
 			}
-			return error / len ret;
+			return error / length(ret);
 		}
 
 		propogate(ref values) => {
@@ -42,16 +42,16 @@ static Network class {
 
 		backpropogate(final learningRate, ref correct) => {
 			var outputLayer = layers.back();
-			i in {0 until len outputLayer.nodes} do {
+			i in {0 until length(outputLayer.nodes)} do {
 				var n = outputLayer.nodes[i];
 				n.delta = (correct[i] - n.value) * dSigmoid(n.value);
 			}
 
-			var i = len layers - 2;
+			var i = length(layers) - 2;
 			i >= 1 do {
 				var layer1 = layers[i];
 				var layer2 = layers[i + 1];
-				j in {0 until len layer1.nodes} do {
+				j in {0 until length(layer1.nodes)} do {
 					var error = 0;
 					n in layer2.nodes do {
 						error += n.weights[j] * n.delta;
@@ -61,9 +61,9 @@ static Network class {
 				i -= 1;
 			}
 
-			i in {1 until len layers} do {
+			i in {1 until length(layers)} do {
 				n in layers[i].nodes do {
-					j in {0 until len n.inputs} do {
+					j in {0 until length(n.inputs)} do {
 						n.weights[j] += learningRate * n.delta * n.inputs[j].value;
 					}
 					n.weights.back() += learningRate * n.delta * BIAS;
@@ -71,7 +71,7 @@ static Network class {
 			}
 		}
 
-		getStr() => {
+		getString() => {
 			return str layers;
 		}
 
@@ -98,20 +98,20 @@ static Network class {
 			}
 
 			set(ref values) => {
-				i in {0 until len values} do {
+				i in {0 until length(values)} do {
 					nodes[i].value = values[i];
 				}
 			}
 
 			get() => {
-				var values = alloc(len nodes);
-				i in {0 until len nodes} do {
+				var values = alloc(length(nodes));
+				i in {0 until length(nodes)} do {
 					values[i] = nodes[i].value;
 				}
 				return values;
 			}
 
-			getStr() => {
+			getString() => {
 				return str nodes;
 			}
 
@@ -125,7 +125,7 @@ static Network class {
 					this.inputs = inputs;
 					this.value = -1;
 					inputs != null then {
-						this.weights = alloc(len inputs + 1);
+						this.weights = alloc(length(inputs) + 1);
 						w in this.weights do {
 							w = Random.float() - 1;
 						}
@@ -139,7 +139,7 @@ static Network class {
 				propogate() => {
 					inputs != null then {
 						var sum = 0;
-						i in {0 until len inputs} do {
+						i in {0 until length(inputs)} do {
 							sum += inputs[i].value * weights[i];
 						}
 						sum += weights.back() * BIAS;
@@ -147,7 +147,7 @@ static Network class {
 					}
 				}
 
-				getStr() => {
+				getString() => {
 					return str weights;
 				}
 			}

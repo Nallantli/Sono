@@ -38,7 +38,6 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$CODE, -11),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$FEAT, -11),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$HASH, -11),
-			new SimpleImmutableEntry<String, Integer>(Interpreter.$LEN, -11),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$MAT, -11),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$NEGATIVE, -11),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$NUM, -11),

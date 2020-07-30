@@ -1,5 +1,5 @@
 # Benjamin Park
-# 27-07-2020
+# 30-07-2020
 
 struct Map class {
 	struct Node class {
@@ -24,7 +24,7 @@ struct Map class {
 			this.value = value;
 		}
 
-		getStr() => {
+		getString() => {
 			return str key + "=" + str value;
 		}
 
@@ -135,7 +135,7 @@ struct Map class {
 		}
 	}
 
-	getVec() => {
+	getVector() => {
 		var list = {};
 		b in buckets do {
 			var curr = b;
@@ -147,11 +147,11 @@ struct Map class {
 		return list;
 	}
 
-	getLen() => {
+	getLength() => {
 		return size;
 	}
 
-	getStr() => {
-		return str getVec();
+	getString() => {
+		return str getVector();
 	}
 }
