@@ -56,6 +56,10 @@ public class Function {
 		this.parent = parent;
 	}
 
+	public Scope getParent() {
+		return this.parent;
+	}
+
 	@Override
 	public int hashCode() {
 		return toString().hashCode();

@@ -5,6 +5,7 @@ import main.sono.Function;
 import main.sono.Interpreter;
 import main.sono.Operator;
 import main.sono.Scope;
+import main.sono.Structure;
 import main.sono.Token;
 import main.sono.err.SonoRuntimeException;
 
@@ -21,19 +22,31 @@ public class Execute extends Binary {
 		Function f = null;
 		if (a.getType() == Type.INNER) {
 			final Datum datumA = ((Inner) a).getA().evaluate(scope);
-			if (datumA.getType() != Datum.Type.STRUCTURE) {
+
+			if (datumA.getType() == Datum.Type.STRUCTURE) {
+				f = a.evaluate(scope).getFunction(Datum.Type.ANY, line);
+
+				final Structure structure = datumA.getStructure(line);
+				if (f != null && f.getParent() == structure.getScope()) {
+					pValues = datumB.getVector(line);
+				} else {
+					final Datum[] tempValues = new Datum[pValuesSize + 1];
+					tempValues[0] = datumA;
+					for (int i = 0; i < pValuesSize; i++)
+						tempValues[i + 1] = datumB.indexVector(i);
+					pValues = tempValues;
+				}
+			} else {
+				final Datum functionB = ((Inner) a).getB().evaluate(scope);
+				f = functionB.getFunction(datumA.getType(), line);
+				if (f == null)
+					f = functionB.getFunction(Datum.Type.ANY, line);
+
 				final Datum[] tempValues = new Datum[pValuesSize + 1];
 				tempValues[0] = datumA;
 				for (int i = 0; i < pValuesSize; i++)
 					tempValues[i + 1] = datumB.indexVector(i);
 				pValues = tempValues;
-				final Datum functionB = ((Inner) a).getB().evaluate(scope);
-				f = functionB.getFunction(datumA.getType(), line);
-				if (f == null)
-					f = functionB.getFunction(Datum.Type.ANY, line);
-			} else {
-				pValues = datumB.getVector(line);
-				f = a.evaluate(scope).getFunction(Datum.Type.ANY, line);
 			}
 		} else {
 			pValues = datumB.getVector(line);
@@ -45,6 +58,7 @@ public class Execute extends Binary {
 		}
 		if (f == null)
 			throw new SonoRuntimeException("No function found", line);
+
 		return f.execute(pValues, line);
 	}
 
