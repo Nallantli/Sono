@@ -283,7 +283,7 @@ public class Interpreter {
 							fileDirectory.append(File.separator + (new StringBuilder(split[1])).reverse().toString());
 						if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
 							loadedFiles.add(fileDirectory + File.separator + filename);
-							console.importLibrary(fileDirectory.toString(), filename, "ext." + path);
+							console.importLibrary(fileDirectory.toString(), filename, "ext." + path, this);
 						}
 						break;
 					case $UNARY_NOT:
@@ -401,7 +401,7 @@ public class Interpreter {
 						b = o.pollLast();
 						a = o.pollLast();
 						if (b.type == Operator.Type.SOFT_LIST)
-							b = new HardList(this, line, ((Sequence) b).getVector());
+							b = new HardList(this, line, ((Sequence) b).getVector(), false);
 						o.addLast(new CastType(this, line, a, b));
 						break;
 					case $ARROW:
@@ -597,17 +597,17 @@ public class Interpreter {
 							if (name.type == Operator.Type.TYPE_DEC) {
 								final Operator typeDec = ((CastType) name).getA();
 								final Operator fName = ((CastType) name).getB();
-								a = new HardList(this, line, ((Sequence) ((Execute) a).getB()).getVector());
+								a = new HardList(this, line, ((Sequence) ((Execute) a).getB()).getVector(), false);
 								o.addLast(new Set(this, line, new DecVariable(this, line, ((Variable) fName).getKey()),
 										new DecLambda(this, line, new CastType(this, line, typeDec, a), b)));
 							} else {
-								a = new HardList(this, line, ((Sequence) ((Execute) a).getB()).getVector());
+								a = new HardList(this, line, ((Sequence) ((Execute) a).getB()).getVector(), false);
 								o.addLast(new Set(this, line, new DecVariable(this, line, ((Variable) name).getKey()),
 										new DecLambda(this, line, a, b)));
 							}
 						} else {
 							if (a.type != Operator.Type.TYPE_DEC)
-								a = new HardList(this, line, ((Sequence) a).getVector());
+								a = new HardList(this, line, ((Sequence) a).getVector(), false);
 							o.addLast(new DecLambda(this, line, a, b));
 						}
 						break;
@@ -630,12 +630,12 @@ public class Interpreter {
 									o.addLast(new Length(this, line, b));
 									break;
 								default:
-									b = new HardList(this, line, ((Sequence) b).getVector());
+									b = new HardList(this, line, ((Sequence) b).getVector(), false);
 									o.addLast(new Execute(this, line, a, b));
 									break;
 							}
 						} else {
-							b = new HardList(this, line, ((Sequence) b).getVector());
+							b = new HardList(this, line, ((Sequence) b).getVector(), false);
 							o.addLast(new Execute(this, line, a, b));
 						}
 						break;
@@ -675,9 +675,12 @@ public class Interpreter {
 						o.addLast(a);
 						break;
 					case $_OUTER_CALL_:
-						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new OuterCall(this, line, a, b));
+						final String clazz = ((Sequence) a).getChildren()[0].evaluate(null).getString(line);
+						final String key = ((Sequence) a).getChildren()[1].evaluate(null).getString(line);
+						final Operator[] newOps = new Operator[a.getChildren().length - 2];
+						System.arraycopy(a.getChildren(), 2, newOps, 0, newOps.length);
+						o.addLast(new OuterCall(this, line, clazz, key, new HardList(this, a.line, newOps, false)));
 						break;
 					case $RULE:
 						Rule.Type rType = null;
@@ -717,7 +720,7 @@ public class Interpreter {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new HardList(this, line, list.toArray(new Operator[0])));
+				o.addLast(new HardList(this, line, list.toArray(new Operator[0]), true));
 			} else if (token.charAt(0) == '\'') {
 				final Phone p = pl.interpretSegment(token.substring(1));
 				o.addLast(new Container(this, line, new Datum(p)));

@@ -1,6 +1,8 @@
 package main.base;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,30 +13,34 @@ import main.sono.Token;
 import main.sono.err.SonoCompilationException;
 
 public class CommandManager {
-	public interface Command {
-		public Datum execute(Datum datum, Token line, Interpreter interpreter);
-	}
-
-	private final Map<String, Command> commands;
+	private final Map<String, Library> classes;
 
 	public CommandManager() {
-		commands = new HashMap<>();
+		classes = new HashMap<>();
 	}
 
-	public void importLibrary(final String directory, final String filename, final String classpath) {
+	public void importLibrary(final String directory, final String filename, final String classpath,
+			final Interpreter interpreter) {
 		File file = new File(directory, filename);
 		if (!file.exists())
 			file = new File(SonoWrapper.getGlobalOption("PATH"), "lib/" + filename);
 		try {
 			final ExtensionLoader<Library> loader = new ExtensionLoader<>();
-			final Library library = loader.loadClass(file, classpath, Library.class);
-			commands.putAll(library.getCommands());
+			classes.put(filename, loader.loadClass(file, classpath, Library.class, interpreter));
 		} catch (final ClassNotFoundException e) {
 			throw new SonoCompilationException("Cannot find library <" + filename + ">");
 		}
 	}
 
-	public Datum execute(final String key, final Datum datum, final Token line, final Interpreter interpreter) {
-		return commands.get(key).execute(datum, line, interpreter);
+	public Datum execute(final String clazz, final String key, final Datum[] data, final Token line)
+			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		final Library l = classes.get(clazz + ".jar");
+		if (data.length > 0) {
+			final Method m = l.getClass().getDeclaredMethod(key, Datum[].class, Token.class);
+			return (Datum) m.invoke(l, data, line);
+		} else {
+			final Method m = l.getClass().getDeclaredMethod(key, Token.class);
+			return (Datum) m.invoke(l, line);
+		}
 	}
 }

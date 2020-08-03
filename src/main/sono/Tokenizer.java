@@ -16,7 +16,7 @@ public class Tokenizer {
 
 	protected static final Map<String, Integer> operators = Map.ofEntries(
 			new SimpleImmutableEntry<String, Integer>("|", 999),
-			new SimpleImmutableEntry<String, Integer>(Interpreter.$_OUTER_CALL_, 20),
+			new SimpleImmutableEntry<String, Integer>(Interpreter.$_OUTER_CALL_, -20),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$OBJECTIVE, 16),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$EXEC, 15),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$INDEX, 15),

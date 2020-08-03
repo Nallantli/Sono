@@ -1,5 +1,5 @@
 # Benjamin Park
-# 09-07-2020
+# 02-08-2020
 
 import "LIB_FileIO";
 
@@ -7,15 +7,15 @@ struct File class {
 	var pointer;
 
 	init(final filename) => {
-		this.pointer = ("LIB_FileIO.INIT" _OUTER_CALL_ filename);
+		this.pointer = _OUTER_CALL_ ("LIB_FileIO", "INIT", filename);
 	}
 
 	exists() => {
-		return "LIB_FileIO.EXISTS" _OUTER_CALL_ (this.pointer);
+		return _OUTER_CALL_ ("LIB_FileIO", "EXISTS", this.pointer);
 	}
 
 	create() => {
-		return "LIB_FileIO.CREATE" _OUTER_CALL_ (this.pointer);
+		return _OUTER_CALL_ ("LIB_FileIO", "CREATE", this.pointer);
 	}
 
 	getString() => {
@@ -34,11 +34,11 @@ struct File class {
 		var pointer;
 
 		init(ref pointer) => {
-			this.pointer = ("LIB_FileIO.READER.INIT" _OUTER_CALL_ pointer);
+			this.pointer = (_OUTER_CALL_ ("LIB_FileIO", "READER_INIT", pointer));
 		}
 
 		readLine() => {
-			return ("LIB_FileIO.READER.GETLINE" _OUTER_CALL_ pointer);
+			return _OUTER_CALL_ ("LIB_FileIO", "READER_GETLINE", pointer);
 		}
 
 		read(i) => {
@@ -50,7 +50,7 @@ struct File class {
 			}
 			var s = "";
 			j in {0 until i} do {
-				var c = ("LIB_FileIO.READER.GET" _OUTER_CALL_ pointer);
+				var c = (_OUTER_CALL_ ("LIB_FileIO", "READER_GET", pointer));
 				c == null then {
 					s == "" then {
 						s = null;
@@ -64,7 +64,7 @@ struct File class {
 		}
 
 		close() => {
-			"LIB_FileIO.READER.CLOSE" _OUTER_CALL_ pointer;
+			_OUTER_CALL_ ("LIB_FileIO", "READER_CLOSE", pointer);
 			pointer = null;
 		}
 
@@ -77,15 +77,15 @@ struct File class {
 		var pointer;
 
 		init(ref pointer) => {
-			this.pointer = ("LIB_FileIO.WRITER.INIT" _OUTER_CALL_ pointer);
+			this.pointer = (_OUTER_CALL_ ("LIB_FileIO", "WRITER_INIT", pointer));
 		}
 
 		write(ref string) => {
-			"LIB_FileIO.WRITER.WRITE" _OUTER_CALL_ (pointer, string);
+			_OUTER_CALL_ ("LIB_FileIO", "WRITER_WRITE", pointer, string);
 		}
 
 		close() => {
-			"LIB_FileIO.WRITER.CLOSE" _OUTER_CALL_ pointer;
+			_OUTER_CALL_ ("LIB_FileIO", "WRITER_CLOSE", pointer);
 			pointer = null;
 		}
 

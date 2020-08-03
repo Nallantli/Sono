@@ -1,5 +1,5 @@
 # Benjamin Park
-# 09-07-2020
+# 02-08-2020
 
 import "LIB_Socket";
 
@@ -22,7 +22,7 @@ struct Socket class {
 		port == null then {
 			this.socket = address;
 		} else {
-			this.socket = ("LIB_Socket.OPEN" _OUTER_CALL_ (address, port));
+			this.socket = (_OUTER_CALL_ ("LIB_Socket", "OPEN", address, port));
 			this.address = address;
 			this.port = port;
 		}
@@ -30,32 +30,32 @@ struct Socket class {
 
 	##	Closes a `Socket`
 	close() => {
-		"LIB_Socket.CLOSE" _OUTER_CALL_ (this.socket);
-		this.socket = null;
+		_OUTER_CALL_ ("LIB_Socket", "CLOSE", socket);
+		socket = null;
 	}
 
 	##	Gets a `Socket.Output` object referring to the current instance of `Socket`
 	##	@return	Socket.Output	The relevant `Output` object
 	getOutput() => {
-		refer new Output(this.socket);
+		refer new Output(socket);
 	}
 
 	##	Gets a `Socket.Input` object referring to the current instance of `Socket`
 	##	@return	Socket.Input	The relevant `Input` object
 	getInput() => {
-		refer new Input(this.socket);
+		refer new Input(socket);
 	}
 
 	##	Gets the value of the Socket's connecting address
 	##	@return	String	The relevant address
 	getAddress() => {
-		return this.address;
+		return address;
 	}
 
 	##	Gets the value of the Socket's connecting port
 	##	@return	Number	The relevant port
 	getPort() => {
-		return this.port;
+		return port;
 	}
 
 	##	Returns a `String` representation of the object
@@ -73,19 +73,19 @@ struct Socket class {
 		##	Constructor for `Socket.Output`
 		##	@param	socket	Pointer	Value referring to a `Socket.class` instance
 		init(final socket) => {
-			this.out = ("LIB_Socket.OUT.OPEN" _OUTER_CALL_ socket);
+			this.out = (_OUTER_CALL_ ("LIB_Socket", "OUT_OPEN", socket));
 		}
 
 		##	Sends data through the output stream
 		##	@param	string	String	Value to be sent
 		send(final string) => {
-			"LIB_Socket.OUT.SEND" _OUTER_CALL_ (this.out, string);
+			_OUTER_CALL_ ("LIB_Socket", "OUT_SEND", out, string);
 		}
 
 		##	Closes a `Socket.Output` object
 		close() => {
-			"LIB_Socket.OUT.CLOSE" _OUTER_CALL_ (this.out);
-			this.out = null;
+			_OUTER_CALL_ ("LIB_Socket", "OUT_CLOSE", out);
+			out = null;
 		}
 	}
 
@@ -98,19 +98,19 @@ struct Socket class {
 		##	Constructor for `Socket.Input`
 		##	@param	socket	Pointer	Value referring to a `Socket.class` instance
 		init(final socket) => {
-			this.input = ("LIB_Socket.IN.OPEN" _OUTER_CALL_ socket);
+			this.input = (_OUTER_CALL_ ("LIB_Socket", "IN_OPEN", socket));
 		}
 
 		##	Reads in any incoming values to the Socket, pauses the thread until a value is resolved
 		##	@return	String	Value of data read
 		read() => {
-			return ("LIB_Socket.IN.READ" _OUTER_CALL_ (this.input));
+			return (_OUTER_CALL_ ("LIB_Socket", "IN_READ", input));
 		}
 
 		##	Closes a `Socket.Input` object
 		close() => {
-			"LIB_Socket.IN.CLOSE" _OUTER_CALL_ (this.input);
-			this.input = null;
+			_OUTER_CALL_ ("LIB_Socket", "IN_CLOSE", input);
+			input = null;
 		}
 	}
 }
@@ -127,26 +127,26 @@ struct Server class {
 	##	Constructor for `Server`
 	##	@param	port	Number	Value of the port on which the Server opens
 	init(final port) => {
-		this.server = ("LIB_Socket.SERVER.OPEN" _OUTER_CALL_ port);
+		this.server = (_OUTER_CALL_ ("LIB_Socket", "SERVER_OPEN", port));
 		this.port = port;
 	}
 
 	##	Closes a `Server` object
 	close() => {
-		"LIB_Socket.SERVER.CLOSE" _OUTER_CALL_ (this.server);
-		this.server = null;
+		_OUTER_CALL_ ("LIB_Socket", "SERVER_CLOSE", server);
+		server = null;
 	}
 
 	##	Waits for an incoming socket to connect to the server, pauses the thread until a socket connects
 	##	@return	Socket	Object of the connected socket
 	accept() => {
-		refer new Socket("LIB_Socket.SERVER.ACCEPT" _OUTER_CALL_ (this.server));
+		refer new Socket(_OUTER_CALL_ ("LIB_Socket", "SERVER_ACCEPT", server));
 	}
 
 	##	Gets the value of the Server's connecting port
 	##	@return	Number	The relevant port
 	getPort() => {
-		return this.port;
+		return port;
 	}
 
 	##	Returns a `String` representation of the object

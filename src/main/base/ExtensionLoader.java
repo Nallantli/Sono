@@ -5,18 +5,19 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import main.sono.Interpreter;
 import main.sono.err.SonoCompilationException;
 
 public class ExtensionLoader<C> {
-	public C loadClass(final File file, final String classpath, final Class<C> parentClass)
-			throws ClassNotFoundException {
+	public C loadClass(final File file, final String classpath, final Class<C> parentClass,
+			final Interpreter interpreter) throws ClassNotFoundException {
 		try {
 			final ClassLoader loader = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() },
 					getClass().getClassLoader());
 			final Class<?> clazz = Class.forName(classpath, true, loader);
 			final Class<? extends C> newClass = clazz.asSubclass(parentClass);
-			final Constructor<? extends C> constructor = newClass.getConstructor();
-			return constructor.newInstance();
+			final Constructor<? extends C> constructor = newClass.getConstructor(Interpreter.class);
+			return constructor.newInstance(interpreter);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

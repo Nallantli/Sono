@@ -10,14 +10,21 @@ import main.sono.Scope;
 import main.sono.Token;
 
 public class HardList extends Sequence {
-	public HardList(final Interpreter interpreter, final Token line, final Operator[] operators) {
+	private final boolean scoped;
+
+	public HardList(final Interpreter interpreter, final Token line, final Operator[] operators, final boolean scoped) {
 		super(interpreter, Type.HARD_LIST, line, operators);
+		this.scoped = scoped;
 	}
 
 	@Override
 	public Datum evaluate(final Scope scope) {
 		Datum[] data = null;
-		final Scope newScope = new Scope(scope.getStructure(), scope);
+		final Scope newScope;
+		if (scoped)
+			newScope = new Scope(scope.getStructure(), scope);
+		else
+			newScope = scope;
 		if (Interpreter.containsInstance(operators, RangeUntil.class)) {
 			final List<Datum> list = new ArrayList<>();
 			for (final Operator o : operators) {

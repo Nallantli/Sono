@@ -1,5 +1,5 @@
 # Benjamin Park
-# 27-07-2020
+# 02-08-2020
 
 import "LIB_Graphics";
 
@@ -13,33 +13,33 @@ struct Window class {
 	init(final title, final width, final height, ref closefunction) => {
 		this.width = width;
 		this.height = height;
-		var data = ("LIB_Graphics.INIT" _OUTER_CALL_ (title, width, height, closefunction));
+		var data = (_OUTER_CALL_ ("LIB_Graphics", "INIT", title, width, height, closefunction));
 		this.window = data[0];
 		this.component = data[1];
 	}
 
 	show() => {
-		"LIB_Graphics.SHOW" _OUTER_CALL_ (this.window);
+		_OUTER_CALL_ ("LIB_Graphics", "SHOW", window);
 	}
 
 	hide() => {
-		"LIB_Graphics.HIDE" _OUTER_CALL_ (this.window);
+		_OUTER_CALL_ ("LIB_Graphics", "HIDE", window);
 	}
 
 	resize(final width, final height) => {
-		"LIB_Graphics.SETSIZE" _OUTER_CALL_ (window, width, height);
+		_OUTER_CALL_ ("LIB_Graphics", "SETSIZE", window, width, height);
 		this.width = width;
 		this.height = height;
 	}
 
 	add(ref child, ref position) => {
-		"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component, position);
+		_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_ADD", component, child.component, position);
 		return child;
 	}
 
 	close() => {
-		"LIB_Graphics.CLOSE" _OUTER_CALL_ (this.window);
-		this.window = null;
+		_OUTER_CALL_ ("LIB_Graphics", "CLOSE", window);
+		window = null;
 	}
 
 	getGraphics() => {
@@ -51,77 +51,77 @@ struct Window class {
 	}
 
 	repaint() => {
-		"LIB_Graphics.REPAINT" _OUTER_CALL_ (window);
+		_OUTER_CALL_ ("LIB_Graphics", "REPAINT", window);
 	}
 
 	onMouseMove(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 0, mousef);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDMOUSELISTENER", window, 0, mousef);
 	}
 
 	onMouseDrag(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 1, mousef);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDMOUSELISTENER", window, 1, mousef);
 	}
 
 	onMouseRelease(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 2, mousef);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDMOUSELISTENER", window, 2, mousef);
 	}
 
 	onMousePress(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 3, mousef);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDMOUSELISTENER", window, 3, mousef);
 	}
 
 	onMouseExit(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 4, mousef);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDMOUSELISTENER", window, 4, mousef);
 	}
 
 	onMouseEnter(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 5, mousef);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDMOUSELISTENER", window, 5, mousef);
 	}
 
 	onMouseClick(ref function) => {
 		var mousef = (a, b, c, d, e, f, g) => {
 			refer function(new MouseEvent(a, b, c, d, e, f, g));
 		}
-		"LIB_Graphics.ADDMOUSELISTENER" _OUTER_CALL_ (window, 6, mousef);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDMOUSELISTENER", window, 6, mousef);
 	}
 
 	onKeyPress(ref function) => {
 		var keyf = (a, b, c) => {
 			refer function(new KeyEvent(a, b, c));
 		}
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 0, keyf);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDKEYLISTENER", window, 0, keyf);
 	}
 
 	onKeyRelease(ref function) => {
 		var keyf = (a, b, c) => {
 			refer function(new KeyEvent(a, b, c));
 		}
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 1, keyf);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDKEYLISTENER", window, 1, keyf);
 	}
 
 	onKeyType(ref function) => {
 		var keyf = (a, b, c) => {
 			refer function(new KeyEvent(a, b, c));
 		}
-		"LIB_Graphics.ADDKEYLISTENER" _OUTER_CALL_ (window, 2, keyf);
+		_OUTER_CALL_ ("LIB_Graphics", "ADDKEYLISTENER", window, 2, keyf);
 	}
 
 	getHash() => {
@@ -194,7 +194,7 @@ static Component class {
 		var component;
 
 		add(ref child) => {
-			"LIB_Graphics.COMPONENT.ADD" _OUTER_CALL_ (component, child.component);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_ADD", component, child.component);
 			refer child;
 		}
 
@@ -215,30 +215,30 @@ static Component class {
 
 		enable() => {
 			this.enabled = true;
-			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, true);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_SETENABLE", component, true);
 		}
 
 		disable() => {
 			this.enabled = false;
-			"LIB_Graphics.COMPONENT.SETENABLE" _OUTER_CALL_ (component, false);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_SETENABLE", component, false);
 		}
 
 		action(ref function) => {
-			"LIB_Graphics.COMPONENT.ACTION" _OUTER_CALL_ (component, function);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_ACTION", component, function);
 		}
 
 		click() => {
-			"LIB_Graphics.COMPONENT.CLICK" _OUTER_CALL_ component;
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_CLICK", component);
 		}
 	}
 
 	struct Graphics extends Prototype class {
 		init() => {
-			this.component = ("LIB_Graphics.GRAPHICS.INIT" _OUTER_CALL_ null);
+			this.component = (_OUTER_CALL_ ("LIB_Graphics", "GRAPHICS_INIT"));
 		}
 
 		add(ref shape) => {
-			var success = ("LIB_Graphics.GRAPHICS.ADD" _OUTER_CALL_ (this.component, shape.data));
+			var success = (_OUTER_CALL_ ("LIB_Graphics", "GRAPHICS_ADD", component, shape.data));
 			success == false then {
 				throw "Shape already exists in Graphics";
 			}
@@ -246,7 +246,7 @@ static Component class {
 		}
 
 		remove(ref shape) => {
-			"LIB_Graphics.GRAPHICS.REMOVE" _OUTER_CALL_ (this.component, shape.data);
+			_OUTER_CALL_ ("LIB_Graphics", "GRAPHICS_REMOVE", component, shape.data);
 			success == false then {
 				throw "Shape does not exist in Graphics";
 			}
@@ -260,18 +260,18 @@ static Component class {
 
 		init(final label) => {
 			this.label = label;
-			this.component = ("LIB_Graphics.COMPONENT.TEXT.INIT" _OUTER_CALL_ label);
+			this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_TEXT_INIT", label));
 		}
 
 		align(final alignmentX, final alignmentY) => {
 			this.alignmentX = alignmentX;
 			this.alignmentY	= alignmentY;
-			"LIB_Graphics.COMPONENT.TEXT.ALIGN" _OUTER_CALL_ (component, alignmentX, alignmentY);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_TEXT_ALIGN", component, alignmentX, alignmentY);
 		}
 
 		setText(final label) => {
 			this.label = label;
-			"LIB_Graphics.COMPONENT.TEXT.SETTEXT" _OUTER_CALL_ (component, label);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_TEXT_SETTEXT", component, label);
 		}
 	}
 
@@ -280,12 +280,12 @@ static Component class {
 
 		init(final label) => {
 			this.label = label;
-			this.component = ("LIB_Graphics.COMPONENT.BUTTON.INIT" _OUTER_CALL_ label);
+			this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_BUTTON_INIT", label));
 		}
 
 		setText(final label) => {
 			this.label = label;
-			"LIB_Graphics.COMPONENT.BUTTON.SETTEXT" _OUTER_CALL_ (component, label);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_BUTTON_SETTEXT", component, label);
 		}
 	}
 
@@ -294,31 +294,31 @@ static Component class {
 
 		init(final label) => {
 			this.label = label;
-			this.component = ("LIB_Graphics.COMPONENT.CHECKBOX.INIT" _OUTER_CALL_ label);
+			this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_CHECKBOX_INIT", label));
 		}
 
 		setText(final label) => {
 			this.label = label;
-			"LIB_Graphics.COMPONENT.CHECKBOX.SETTEXT" _OUTER_CALL_ (component, label);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_CHECKBOX_SETTEXT", component, label);
 		}
 	}
 
 	static Panel class {
 		struct Border extends Prototype class {
 			init() => {
-				this.component = ("LIB_Graphics.COMPONENT.PANEL.BORDER.INIT" _OUTER_CALL_ null);
+				this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_PANEL_BORDER_INIT"));
 			}
 		}
 
 		struct Block extends Prototype class {
 			init() => {
-				this.component = ("LIB_Graphics.COMPONENT.PANEL.BLOCK.INIT" _OUTER_CALL_ null);
+				this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_PANEL_BLOCK_INIT"));
 			}
 		}
 
 		struct Inline extends Prototype class {
 			init() => {
-				this.component = ("LIB_Graphics.COMPONENT.PANEL.INLINE.INIT" _OUTER_CALL_ null);
+				this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_PANEL_INLINE_INIT"));
 			}
 		}
 
@@ -329,7 +329,7 @@ static Component class {
 			init(final rows, final cols) => {
 				this.rows = rows;
 				this.cols = cols;
-				this.component = ("LIB_Graphics.COMPONENT.PANEL.TABLE.INIT" _OUTER_CALL_ (rows, cols));
+				this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_PANEL_TABLE_INIT", rows, cols));
 			}
 		}
 
@@ -338,18 +338,18 @@ static Component class {
 
 			init(final orientation) => {
 				this.orientation = orientation;
-				this.component = ("LIB_Graphics.COMPONENT.PANEL.SPLIT.INIT" _OUTER_CALL_ orientation);
+				this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_PANEL_SPLIT_INIT", orientation));
 			}
 		}
 	}
 
 	struct TabPane extends Prototype class {
 		init() => {
-			this.component = ("LIB_Graphics.COMPONENT.TABPANE.INIT" _OUTER_CALL_ null);
+			this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_TABPANE_INIT"));
 		}
 
 		add(final label, ref child) => {
-			"LIB_Graphics.COMPONENT.TABPANE.ADD" _OUTER_CALL_ (component, child.component, label);
+			_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_TABPANE_ADD", component, child.component, label);
 			refer child;
 		}
 	}
@@ -357,7 +357,7 @@ static Component class {
 	static Menu class {
 		struct Bar extends Prototype class {
 			init() => {
-				this.component = ("LIB_Graphics.COMPONENT.MENU.BAR.INIT" _OUTER_CALL_ null);
+				this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_MENU_BAR_INIT"));
 			}
 		}
 
@@ -366,7 +366,7 @@ static Component class {
 
 			init(final label) => {
 				this.label = label;
-				this.component = ("LIB_Graphics.COMPONENT.MENU.ITEM.INIT" _OUTER_CALL_ label);
+				this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_MENU_ITEM_INIT", label));
 			}
 		}
 
@@ -375,7 +375,7 @@ static Component class {
 
 			init(final label) => {
 				this.label = label;
-				this.component = ("LIB_Graphics.COMPONENT.MENU.LABEL.INIT" _OUTER_CALL_ label);
+				this.component = (_OUTER_CALL_ ("LIB_Graphics", "COMPONENT_MENU_LABEL_INIT", label));
 			}
 		}
 	}
@@ -404,44 +404,44 @@ static Shape class {
 			this.width = width;
 			this.height = height;
 			fill == null then {
-				this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ (null, outline.data, x, y, width, height));
+				this.data = (_OUTER_CALL_ ("LIB_Graphics", "SHAPE_RECTANGLE_INIT", null, outline.data, x, y, width, height));
 			} else outline == null then {
-				this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ (fill.data, null, x, y, width, height));
+				this.data = (_OUTER_CALL_ ("LIB_Graphics", "SHAPE_RECTANGLE_INIT", fill.data, null, x, y, width, height));
 			} else {
-				this.data = ("LIB_Graphics.SHAPE.RECTANGLE.INIT" _OUTER_CALL_ (fill.data, outline.data, x, y, width, height));
+				this.data = (_OUTER_CALL_ ("LIB_Graphics", "SHAPE_RECTANGLE_INIT", fill.data, outline.data, x, y, width, height));
 			}
 		}
 
 		setFill(ref fill) => {
 			fill != this.fill then {
 				this.fill = fill;
-				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+				_OUTER_CALL_ ("LIB_Graphics", "SHAPE_SETFILL", data, fill.data);
 			}
 		}
 
 		setOutline(ref outline) => {
 			outline != this.outline then {
 				this.outline = outline;
-				"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline.data);
+				_OUTER_CALL_ ("LIB_Graphics", "SHAPE_SETOUTLINE", data, outline.data);
 			}
 		}
 
 		setSize(final width, final height) => {
 			this.width = width;
 			this.height = height;
-			"LIB_Graphics.SHAPE.RECTANGLE.SIZE" _OUTER_CALL_ (this.data, width, height);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_RECTANGLE_SIZE", data, width, height);
 		}
 
 		setOrigin(final x, final y) => {
 			this.x = x;
 			this.y = y;
-			"LIB_Graphics.SHAPE.RECTANGLE.MOVE" _OUTER_CALL_ (this.data, x, y);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_RECTANGLE_MOVE", data, x, y);
 		}
 
 		move(final x, final y) => {
 			this.x += x;
 			this.y += y;
-			"LIB_Graphics.SHAPE.RECTANGLE.MOVE" _OUTER_CALL_ (this.data, this.x, this.y);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_RECTANGLE_MOVE", data, this.x, this.y);
 		}
 	}
 
@@ -463,44 +463,44 @@ static Shape class {
 			this.width = width;
 			this.height = height;
 			fill == null then {
-				this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ (null, outline.data, x, y, width, height));
+				this.data = (_OUTER_CALL_ ("LIB_Graphics", "SHAPE_OVAL_INIT", null, outline.data, x, y, width, height));
 			} else outline == null then {
-				this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ (fill.data, null, x, y, width, height));
+				this.data = (_OUTER_CALL_ ("LIB_Graphics", "SHAPE_OVAL_INIT", fill.data, null, x, y, width, height));
 			} else {
-				this.data = ("LIB_Graphics.SHAPE.OVAL.INIT" _OUTER_CALL_ (fill.data, outline.data, x, y, width, height));
+				this.data = (_OUTER_CALL_ ("LIB_Graphics", "SHAPE_OVAL_INIT", fill.data, outline.data, x, y, width, height));
 			}
 		}
 
 		setFill(ref fill) => {
 			fill != this.fill then {
 				this.fill = fill;
-				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+				_OUTER_CALL_ ("LIB_Graphics", "SHAPE_SETFILL", data, fill.data);
 			}
 		}
 
 		setOutline(ref outline) => {
 			outline != this.outline then {
 				this.outline = outline;
-				"LIB_Graphics.SHAPE.SETOUTLINE" _OUTER_CALL_ (data, outline.data);
+				_OUTER_CALL_ ("LIB_Graphics", "SHAPE_SETOUTLINE", data, outline.data);
 			}
 		}
 
 		setSize(final width, final height) => {
 			this.width = width;
 			this.height = height;
-			"LIB_Graphics.SHAPE.OVAL.SIZE" _OUTER_CALL_ (this.data, width, height);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_OVAL_SIZE", data, width, height);
 		}
 
 		setOrigin(final x, final y) => {
 			this.x = x;
 			this.y = y;
-			"LIB_Graphics.SHAPE.OVAL.MOVE" _OUTER_CALL_ (this.data, x, y);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_OVAL_MOVE", data, x, y);
 		}
 
 		move(final x, final y) => {
 			this.x += x;
 			this.y += y;
-			"LIB_Graphics.SHAPE.OVAL.MOVE" _OUTER_CALL_ (this.data, this.x, this.y);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_OVAL_MOVE", data, this.x, this.y);
 		}
 	}
 
@@ -519,13 +519,13 @@ static Shape class {
 			this.y1 = y1;
 			this.x2 = x2;
 			this.y2 = y2;
-			this.data = ("LIB_Graphics.SHAPE.LINE.INIT" _OUTER_CALL_ (fill.data, x1, y1, x2, y2));
+			this.data = (_OUTER_CALL_ ("LIB_Graphics", "SHAPE_LINE_INIT", fill.data, x1, y1, x2, y2));
 		}
 
 		setFill(ref fill) => {
 			fill != this.fill then {
 				this.fill = fill;
-				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+				_OUTER_CALL_ ("LIB_Graphics", "SHAPE_SETFILL", data, fill.data);
 			}
 		}
 
@@ -534,7 +534,7 @@ static Shape class {
 			this.y1 = y1;
 			this.x2 = x2;
 			this.y2 = y2;
-			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ (this.data, this.x1, this.y1, this.x2, this.y2);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_LINE_MOVE", data, x1, y1, x2, y2);
 		}
 
 		move(final x, final y) => {
@@ -542,7 +542,7 @@ static Shape class {
 			this.x2 += x;
 			this.y1 += y;
 			this.y2 += y;
-			"LIB_Graphics.SHAPE.LINE.MOVE" _OUTER_CALL_ (this.data, this.x1, this.y1, this.x2, this.y2);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_LINE_MOVE", data, this.x1, this.y1, this.x2, this.y2);
 		}
 	}
 
@@ -562,36 +562,36 @@ static Shape class {
 			this.y = y;
 			this.string = string;
 			this.align = align;
-			this.data = ("LIB_Graphics.SHAPE.TEXT.INIT" _OUTER_CALL_ (fill.data, x, y, string, align));
+			this.data = (_OUTER_CALL_ ("LIB_Graphics", "SHAPE_TEXT_INIT", fill.data, x, y, string, align));
 		}
 
 		setFill(ref fill) => {
 			fill != this.fill then {
 				this.fill = fill;
-				"LIB_Graphics.SHAPE.SETFILL" _OUTER_CALL_ (data, fill.data);
+				_OUTER_CALL_ ("LIB_Graphics", "SHAPE_SETFILL", data, fill.data);
 			}
 		}
 
 		setFont(ref font) => {
 			this.font = font;
-			"LIB_Graphics.SHAPE.TEXT.SETFONT" _OUTER_CALL_ (data, font.font);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_TEXT_SETFONT", data, font.font);
 		}
 
 		setText(final string) => {
 			this.string = string;
-			"LIB_Graphics.SHAPE.TEXT.SETSTRING" _OUTER_CALL_ (data, string);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_TEXT_SETSTRING", data, string);
 		}
 
 		setOrigin(final x, final y) => {
 			this.x = x;
 			this.y = y;
-			"LIB_Graphics.SHAPE.TEXT.MOVE" _OUTER_CALL_ (data, x, y);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_TEXT_MOVE", data, x, y);
 		}
 
 		move(final x, final y) => {
 			this.x += x;
 			this.y += y;
-			"LIB_Graphics.SHAPE.TEXT.MOVE" _OUTER_CALL_ (data, this.x, this.y);
+			_OUTER_CALL_ ("LIB_Graphics", "SHAPE_TEXT_MOVE", data, this.x, this.y);
 		}
 	}
 }
@@ -606,7 +606,7 @@ struct Font class {
 		this.fontName = fontName;
 		this.style = style;
 		this.size = size;
-		this.font = ("LIB_Graphics.FONT.INIT" _OUTER_CALL_ (fontName, style, size));
+		this.font = (_OUTER_CALL_ ("LIB_Graphics", "FONT_INIT", fontName, style, size));
 	}
 
 	getString() => {
@@ -631,7 +631,7 @@ static Color class {
 			} else {
 				this.a = a;
 			}
-			this.data = ("LIB_Graphics.COLOR.INIT" _OUTER_CALL_ (r, g, b, this.a));
+			this.data = (_OUTER_CALL_ ("LIB_Graphics", "COLOR_INIT", r, g, b, this.a));
 		}
 
 		getString() => {

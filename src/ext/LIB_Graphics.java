@@ -410,9 +410,8 @@ class WindowFunctions extends JFrame {
 }
 
 public class LIB_Graphics extends Library {
-	public LIB_Graphics() {
-		super();
-
+	public LIB_Graphics(final Interpreter interpreter) {
+		super(interpreter);
 		if (!SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE")) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -421,474 +420,447 @@ public class LIB_Graphics extends Library {
 				e.printStackTrace();
 			}
 		}
+	}
 
-		commands.put("LIB_Graphics.INIT", (final Datum datum, final Token line, final Interpreter interpreter) -> {
-			if (SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE"))
-				throw error("Graphics permissions are disabled for this interpreter.", line);
-			final Datum[] list = datum.getVector(line);
-			final String title = list[0].getString(line);
-			final int width = (int) list[1].getNumber(line);
-			final int height = (int) list[2].getNumber(line);
-			final WindowFunctions f = new WindowFunctions(title);
-			if (list[3].getType() == Datum.Type.FUNCTION) {
-				final Function close = list[3].getFunction(Datum.Type.ANY, line);
-				f.addWindowListener(new WindowAdapter() {
-					@Override
-					public void windowClosing(final WindowEvent e) {
-						close.execute(null, line);
-					}
-				});
-			} else {
-				f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+	public Datum INIT(final Datum[] data, final Token line) {
+		if (SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE"))
+			throw error("Graphics permissions are disabled for this interpreter.", line);
+		final String title = data[0].getString(line);
+		final int width = (int) data[1].getNumber(line);
+		final int height = (int) data[2].getNumber(line);
+		final WindowFunctions f = new WindowFunctions(title);
+		if (data[3].getType() == Datum.Type.FUNCTION) {
+			final Function close = data[3].getFunction(Datum.Type.ANY, line);
+			f.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(final WindowEvent e) {
+					close.execute(null, line);
+				}
+			});
+		} else {
+			f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		}
+		f.setIconImage(Toolkit.getDefaultToolkit().getImage(SonoWrapper.getGlobalOption("PATH") + "/res/sono.png"));
+		f.setResizable(false);
+		f.getContentPane().setPreferredSize(new Dimension(width, height));
+		f.pack();
+		f.setVisible(true);
+		return new Datum(new Datum[] { new Datum((Object) f), new Datum((Object) f.getContentPane()) });
+	}
+
+	public Datum SHOW(final Datum[] data, final Token line) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+		f.setVisible(true);
+		return new Datum();
+	}
+
+	public Datum HIDE(final Datum[] data, final Token line) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+		f.setVisible(false);
+		return new Datum();
+	}
+
+	public Datum FONT_INIT(final Datum[] data, final Token line) {
+		final String fontName = data[0].getString(line);
+		final String styleRaw = data[1].getString(line);
+		final int size = (int) data[2].getNumber(line);
+		final String[] split = styleRaw.split("\\s");
+		int style = Font.PLAIN;
+		for (final String s : split) {
+			switch (s) {
+				case "Bold":
+					style |= Font.BOLD;
+					break;
+				case "Italic":
+					style |= Font.ITALIC;
+					break;
+				case "Plain":
+					style |= Font.PLAIN;
+					break;
+				default:
+					break;
 			}
-			f.setIconImage(Toolkit.getDefaultToolkit().getImage(SonoWrapper.getGlobalOption("PATH") + "/res/sono.png"));
-			f.setResizable(false);
-			f.getContentPane().setPreferredSize(new Dimension(width, height));
-			f.pack();
-			f.setVisible(true);
-			return new Datum(new Datum[] { new Datum((Object) f), new Datum((Object) f.getContentPane()) });
+		}
+		final Font font = new Font(fontName, style, size);
+		return new Datum((Object) font);
+	}
+
+	public Datum ADDMOUSELISTENER(final Datum[] data, final Token line) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+		final int id = (int) data[1].getNumber(line);
+		final Function function = data[2].getFunction(Datum.Type.ANY, line);
+		switch (id) {
+			case 0:
+				f.setOnMouseMoved(function);
+				break;
+			case 1:
+				f.setOnMouseDragged(function);
+				break;
+			case 2:
+				f.setOnMouseReleased(function);
+				break;
+			case 3:
+				f.setOnMousePressed(function);
+				break;
+			case 4:
+				f.setOnMouseExited(function);
+				break;
+			case 5:
+				f.setOnMouseEntered(function);
+				break;
+			case 6:
+				f.setOnMouseClicked(function);
+				break;
+			default:
+				throw error("Unknown mouse event ID <" + id + ">", line);
+		}
+		return new Datum();
+	}
+
+	public Datum ADDKEYLISTENER(final Datum[] data, final Token line) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+		final int id = (int) data[1].getNumber(line);
+		final Function function = data[2].getFunction(Datum.Type.ANY, line);
+		switch (id) {
+			case 0:
+				f.setOnKeyPressed(function);
+				break;
+			case 1:
+				f.setOnKeyReleased(function);
+				break;
+			case 2:
+				f.setOnKeyTyped(function);
+				break;
+			default:
+				throw error("Unknown key event ID <" + id + ">", line);
+		}
+		return new Datum();
+	}
+
+	public Datum SETSIZE(final Datum[] data, final Token line) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+		final int width = (int) data[1].getNumber(line);
+		final int height = (int) data[2].getNumber(line);
+		f.getContentPane().setPreferredSize(new Dimension(width, height));
+		f.pack();
+		return new Datum();
+	}
+
+	public Datum CLOSE(final Datum[] data, final Token line) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+		f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
+		return new Datum();
+	}
+
+	public Datum GRAPHICS_INIT(final Token line) {
+		final GraphicsPanel gp = new GraphicsPanel();
+		return new Datum((Object) gp);
+	}
+
+	public Datum REPAINT(final Datum[] data, final Token line) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+		f.revalidate();
+		f.repaint();
+		return new Datum();
+	}
+
+	public Datum GRAPHICS_ADD(final Datum[] data, final Token line) {
+		final GraphicsPanel gp = (GraphicsPanel) data[0].getPointer(line);
+		final Paintable paintable = (Paintable) data[1].getPointer(line);
+		final boolean success = gp.addBuffer(paintable);
+		return new Datum(success ? 1 : 0);
+	}
+
+	public Datum GRAPHICS_REMOVE(final Datum[] data, final Token line) {
+		final GraphicsPanel gp = (GraphicsPanel) data[0].getPointer(line);
+		final Paintable paintable = (Paintable) data[1].getPointer(line);
+		final boolean success = gp.removeBuffer(paintable);
+		return new Datum(success ? 1 : 0);
+	}
+
+	public Datum COLOR_INIT(final Datum[] data, final Token line) {
+		final int r = (int) data[0].getNumber(line);
+		final int g = (int) data[1].getNumber(line);
+		final int b = (int) data[2].getNumber(line);
+		final int a = (int) data[3].getNumber(line);
+		final Color c = new Color(r, g, b, a);
+		return new Datum((Object) c);
+	}
+
+	public Datum SHAPE_SETFILL(final Datum[] data, final Token line) {
+		final Paintable paintable = (Paintable) data[0].getPointer(line);
+		final Color color = (Color) data[1].getPointer(line);
+		paintable.setFill(color);
+		return new Datum();
+	}
+
+	public Datum SHAPE_SETOUTLINE(final Datum[] data, final Token line) {
+		final Paintable paintable = (Paintable) data[0].getPointer(line);
+		final Color color = (Color) data[1].getPointer(line);
+		paintable.setOutline(color);
+		return new Datum();
+	}
+
+	public Datum SHAPE_RECTANGLE_INIT(final Datum[] data, final Token line) {
+		Color fill = null;
+		Color outline = null;
+		if (data[0].getType() != Datum.Type.NULL) {
+			fill = (Color) data[0].getPointer(line);
+		}
+		if (data[1].getType() != Datum.Type.NULL) {
+			outline = (Color) data[1].getPointer(line);
+		}
+		final int x = (int) data[2].getNumber(line);
+		final int y = (int) data[3].getNumber(line);
+		final int width = (int) data[4].getNumber(line);
+		final int height = (int) data[5].getNumber(line);
+		final Paintable.Rectangle rectangle = new Paintable.Rectangle(fill, outline, x, y, width, height);
+		return new Datum((Object) rectangle);
+	}
+
+	public Datum SHAPE_RECTANGLE_MOVE(final Datum[] data, final Token line) {
+		final Paintable.Rectangle rectangle = (Paintable.Rectangle) data[0].getPointer(line);
+		final int x = (int) data[1].getNumber(line);
+		final int y = (int) data[2].getNumber(line);
+		rectangle.setOrigin(x, y);
+		return new Datum();
+	}
+
+	public Datum SHAPE_RECTANGLE_SIZE(final Datum[] data, final Token line) {
+		final Paintable.Rectangle rectangle = (Paintable.Rectangle) data[0].getPointer(line);
+		final int width = (int) data[1].getNumber(line);
+		final int height = (int) data[2].getNumber(line);
+		rectangle.setSize(width, height);
+		return new Datum();
+	}
+
+	public Datum SHAPE_LINE_INIT(final Datum[] data, final Token line) {
+		final Color fill = (Color) data[0].getPointer(line);
+		final int x1 = (int) data[1].getNumber(line);
+		final int y1 = (int) data[2].getNumber(line);
+		final int x2 = (int) data[3].getNumber(line);
+		final int y2 = (int) data[4].getNumber(line);
+		final Paintable.Line lineshape = new Paintable.Line(fill, x1, y1, x2, y2);
+		return new Datum((Object) lineshape);
+	}
+
+	public Datum SHAPE_LINE_MOVE(final Datum[] data, final Token line) {
+		final Paintable.Line lineshape = (Paintable.Line) data[0].getPointer(line);
+		final int x1 = (int) data[1].getNumber(line);
+		final int y1 = (int) data[2].getNumber(line);
+		final int x2 = (int) data[3].getNumber(line);
+		final int y2 = (int) data[4].getNumber(line);
+		lineshape.setPoints(x1, y1, x2, y2);
+		return new Datum();
+	}
+
+	public Datum SHAPE_OVAL_INIT(final Datum[] data, final Token line) {
+		Color fill = null;
+		Color outline = null;
+		if (data[0].getType() != Datum.Type.NULL) {
+			fill = (Color) data[0].getPointer(line);
+		}
+		if (data[1].getType() != Datum.Type.NULL) {
+			outline = (Color) data[1].getPointer(line);
+		}
+		final int x = (int) data[2].getNumber(line);
+		final int y = (int) data[3].getNumber(line);
+		final int width = (int) data[4].getNumber(line);
+		final int height = (int) data[5].getNumber(line);
+		final Paintable.Oval oval = new Paintable.Oval(fill, outline, x, y, width, height);
+		return new Datum((Object) oval);
+	}
+
+	public Datum SHAPE_OVAL_MOVE(final Datum[] data, final Token line) {
+		final Paintable.Oval oval = (Paintable.Oval) data[0].getPointer(line);
+		final int x = (int) data[1].getNumber(line);
+		final int y = (int) data[2].getNumber(line);
+		oval.setOrigin(x, y);
+		return new Datum();
+	}
+
+	public Datum SHAPE_OVAL_SIZE(final Datum[] data, final Token line) {
+		final Paintable.Oval oval = (Paintable.Oval) data[0].getPointer(line);
+		final int width = (int) data[1].getNumber(line);
+		final int height = (int) data[2].getNumber(line);
+		oval.setSize(width, height);
+		return new Datum();
+	}
+
+	public Datum SHAPE_TEXT_INIT(final Datum[] data, final Token line) {
+		final Color fill = (Color) data[0].getPointer(line);
+		final int x = (int) data[1].getNumber(line);
+		final int y = (int) data[2].getNumber(line);
+		final String string = data[3].getString(line);
+		final int align = (int) data[4].getNumber(line);
+		final Paintable.Text text = new Paintable.Text(fill, x, y, string, align);
+		return new Datum((Object) text);
+	}
+
+	public Datum SHAPE_TEXT_SETFONT(final Datum[] data, final Token line) {
+		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line);
+		final Font font = (Font) data[1].getPointer(line);
+		text.setFont(font);
+		return new Datum();
+	}
+
+	public Datum SHAPE_TEXT_SETSTRING(final Datum[] data, final Token line) {
+		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line);
+		final String string = data[1].getString(line);
+		text.setText(string);
+		return new Datum();
+	}
+
+	public Datum SHAPE_TEXT_MOVE(final Datum[] data, final Token line) {
+		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line);
+		final int x = (int) data[1].getNumber(line);
+		final int y = (int) data[2].getNumber(line);
+		text.setOrigin(x, y);
+		return new Datum();
+	}
+
+	public Datum COMPONENT_ADD(final Datum[] data, final Token line) {
+		final JComponent frame = ((JComponent) data[0].getPointer(line));
+		final JComponent child = (JComponent) data[1].getPointer(line);
+		if (data.length > 2)
+			frame.add(child, data[2].getString(line));
+		else
+			frame.add(child);
+		return new Datum();
+	}
+
+	public Datum COMPONENT_SETENABLE(final Datum[] data, final Token line) {
+		final AbstractButton component = (AbstractButton) data[0].getPointer(line);
+		final boolean enabled = data[1].getBool(line);
+		component.setEnabled(enabled);
+		return new Datum();
+	}
+
+	public Datum COMPONENT_CLICK(final Datum[] data, final Token line) {
+		final AbstractButton component = (AbstractButton) data[0].getPointer(line);
+		component.doClick();
+		return new Datum();
+	}
+
+	public Datum COMPONENT_ACTION(final Datum[] data, final Token line) {
+		final AbstractButton component = ((AbstractButton) data[0].getPointer(line));
+		final Function function = data[1].getFunction(Datum.Type.ANY, line);
+		component.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, line);
+			}
 		});
-		commands.put("LIB_Graphics.SHOW", (final Datum datum, final Token line, final Interpreter interpreter) -> {
-			final WindowFunctions f = (WindowFunctions) datum.getPointer(line);
-			f.setVisible(true);
-			return new Datum();
-		});
-		commands.put("LIB_Graphics.HIDE", (final Datum datum, final Token line, final Interpreter interpreter) -> {
-			final WindowFunctions f = (WindowFunctions) datum.getPointer(line);
-			f.setVisible(false);
-			return new Datum();
-		});
-		commands.put("LIB_Graphics.FONT.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final String fontName = list[0].getString(line);
-					final String styleRaw = list[1].getString(line);
-					final int size = (int) list[2].getNumber(line);
-					final String[] split = styleRaw.split("\\s");
-					int style = Font.PLAIN;
-					for (final String s : split) {
-						switch (s) {
-							case "Bold":
-								style |= Font.BOLD;
-								break;
-							case "Italic":
-								style |= Font.ITALIC;
-								break;
-							case "Plain":
-								style |= Font.PLAIN;
-								break;
-							default:
-								break;
-						}
-					}
-					final Font font = new Font(fontName, style, size);
-					return new Datum((Object) font);
-				});
-		commands.put("LIB_Graphics.ADDMOUSELISTENER",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final WindowFunctions f = (WindowFunctions) list[0].getPointer(line);
-					final int id = (int) list[1].getNumber(line);
-					final Function function = list[2].getFunction(Datum.Type.ANY, line);
-					switch (id) {
-						case 0:
-							f.setOnMouseMoved(function);
-							break;
-						case 1:
-							f.setOnMouseDragged(function);
-							break;
-						case 2:
-							f.setOnMouseReleased(function);
-							break;
-						case 3:
-							f.setOnMousePressed(function);
-							break;
-						case 4:
-							f.setOnMouseExited(function);
-							break;
-						case 5:
-							f.setOnMouseEntered(function);
-							break;
-						case 6:
-							f.setOnMouseClicked(function);
-							break;
-						default:
-							throw error("Unknown mouse event ID <" + id + ">", line);
-					}
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.ADDKEYLISTENER",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final WindowFunctions f = (WindowFunctions) list[0].getPointer(line);
-					final int id = (int) list[1].getNumber(line);
-					final Function function = list[2].getFunction(Datum.Type.ANY, line);
-					switch (id) {
-						case 0:
-							f.setOnKeyPressed(function);
-							break;
-						case 1:
-							f.setOnKeyReleased(function);
-							break;
-						case 2:
-							f.setOnKeyTyped(function);
-							break;
-						default:
-							throw error("Unknown key event ID <" + id + ">", line);
-					}
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SETSIZE", (final Datum datum, final Token line, final Interpreter interpreter) -> {
-			final Datum[] list = datum.getVector(line);
-			final WindowFunctions f = (WindowFunctions) list[0].getPointer(line);
-			final int width = (int) list[1].getNumber(line);
-			final int height = (int) list[2].getNumber(line);
-			f.getContentPane().setPreferredSize(new Dimension(width, height));
-			f.pack();
-			return new Datum();
-		});
-		commands.put("LIB_Graphics.CLOSE", (final Datum datum, final Token line, final Interpreter interpreter) -> {
-			final WindowFunctions f = (WindowFunctions) datum.getPointer(line);
-			f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
-			return new Datum();
-		});
-		commands.put("LIB_Graphics.GRAPHICS.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final GraphicsPanel gp = new GraphicsPanel();
-					return new Datum((Object) gp);
-				});
-		commands.put("LIB_Graphics.REPAINT", (final Datum datum, final Token line, final Interpreter interpreter) -> {
-			final WindowFunctions f = (WindowFunctions) datum.getPointer(line);
-			f.revalidate();
-			f.repaint();
-			return new Datum();
-		});
-		commands.put("LIB_Graphics.GRAPHICS.ADD",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final GraphicsPanel gp = (GraphicsPanel) list[0].getPointer(line);
-					final Paintable paintable = (Paintable) list[1].getPointer(line);
-					final boolean success = gp.addBuffer(paintable);
-					return new Datum(success ? 1 : 0);
-				});
-		commands.put("LIB_Graphics.GRAPHICS.REMOVE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final GraphicsPanel gp = (GraphicsPanel) list[0].getPointer(line);
-					final Paintable paintable = (Paintable) list[1].getPointer(line);
-					final boolean success = gp.removeBuffer(paintable);
-					return new Datum(success ? 1 : 0);
-				});
-		commands.put("LIB_Graphics.COLOR.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final int r = (int) list[0].getNumber(line);
-					final int g = (int) list[1].getNumber(line);
-					final int b = (int) list[2].getNumber(line);
-					final int a = (int) list[3].getNumber(line);
-					final Color c = new Color(r, g, b, a);
-					return new Datum((Object) c);
-				});
-		commands.put("LIB_Graphics.SHAPE.SETFILL",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable paintable = (Paintable) list[0].getPointer(line);
-					final Color color = (Color) list[1].getPointer(line);
-					paintable.setFill(color);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.SETOUTLINE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable paintable = (Paintable) list[0].getPointer(line);
-					final Color color = (Color) list[1].getPointer(line);
-					paintable.setOutline(color);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.RECTANGLE.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					Color fill = null;
-					Color outline = null;
-					if (list[0].getType() != Datum.Type.NULL) {
-						fill = (Color) list[0].getPointer(line);
-					}
-					if (list[1].getType() != Datum.Type.NULL) {
-						outline = (Color) list[1].getPointer(line);
-					}
-					final int x = (int) list[2].getNumber(line);
-					final int y = (int) list[3].getNumber(line);
-					final int width = (int) list[4].getNumber(line);
-					final int height = (int) list[5].getNumber(line);
-					final Paintable.Rectangle rectangle = new Paintable.Rectangle(fill, outline, x, y, width, height);
-					return new Datum((Object) rectangle);
-				});
-		commands.put("LIB_Graphics.SHAPE.RECTANGLE.MOVE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable.Rectangle rectangle = (Paintable.Rectangle) list[0].getPointer(line);
-					final int x = (int) list[1].getNumber(line);
-					final int y = (int) list[2].getNumber(line);
-					rectangle.setOrigin(x, y);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.RECTANGLE.SIZE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable.Rectangle rectangle = (Paintable.Rectangle) list[0].getPointer(line);
-					final int width = (int) list[1].getNumber(line);
-					final int height = (int) list[2].getNumber(line);
-					rectangle.setSize(width, height);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.LINE.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Color fill = (Color) list[0].getPointer(line);
-					final int x1 = (int) list[1].getNumber(line);
-					final int y1 = (int) list[2].getNumber(line);
-					final int x2 = (int) list[3].getNumber(line);
-					final int y2 = (int) list[4].getNumber(line);
-					final Paintable.Line lineshape = new Paintable.Line(fill, x1, y1, x2, y2);
-					return new Datum((Object) lineshape);
-				});
-		commands.put("LIB_Graphics.SHAPE.LINE.MOVE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable.Line lineshape = (Paintable.Line) list[0].getPointer(line);
-					final int x1 = (int) list[1].getNumber(line);
-					final int y1 = (int) list[2].getNumber(line);
-					final int x2 = (int) list[3].getNumber(line);
-					final int y2 = (int) list[4].getNumber(line);
-					lineshape.setPoints(x1, y1, x2, y2);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.OVAL.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					Color fill = null;
-					Color outline = null;
-					if (list[0].getType() != Datum.Type.NULL) {
-						fill = (Color) list[0].getPointer(line);
-					}
-					if (list[1].getType() != Datum.Type.NULL) {
-						outline = (Color) list[1].getPointer(line);
-					}
-					final int x = (int) list[2].getNumber(line);
-					final int y = (int) list[3].getNumber(line);
-					final int width = (int) list[4].getNumber(line);
-					final int height = (int) list[5].getNumber(line);
-					final Paintable.Oval oval = new Paintable.Oval(fill, outline, x, y, width, height);
-					return new Datum((Object) oval);
-				});
-		commands.put("LIB_Graphics.SHAPE.OVAL.MOVE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable.Oval oval = (Paintable.Oval) list[0].getPointer(line);
-					final int x = (int) list[1].getNumber(line);
-					final int y = (int) list[2].getNumber(line);
-					oval.setOrigin(x, y);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.OVAL.SIZE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable.Oval oval = (Paintable.Oval) list[0].getPointer(line);
-					final int width = (int) list[1].getNumber(line);
-					final int height = (int) list[2].getNumber(line);
-					oval.setSize(width, height);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.TEXT.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Color fill = (Color) list[0].getPointer(line);
-					final int x = (int) list[1].getNumber(line);
-					final int y = (int) list[2].getNumber(line);
-					final String string = list[3].getString(line);
-					final int align = (int) list[4].getNumber(line);
-					final Paintable.Text text = new Paintable.Text(fill, x, y, string, align);
-					return new Datum((Object) text);
-				});
-		commands.put("LIB_Graphics.SHAPE.TEXT.SETFONT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable.Text text = (Paintable.Text) list[0].getPointer(line);
-					final Font font = (Font) list[1].getPointer(line);
-					text.setFont(font);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.TEXT.SETSTRING",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable.Text text = (Paintable.Text) list[0].getPointer(line);
-					final String string = list[1].getString(line);
-					text.setText(string);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.SHAPE.TEXT.MOVE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final Paintable.Text text = (Paintable.Text) list[0].getPointer(line);
-					final int x = (int) list[1].getNumber(line);
-					final int y = (int) list[2].getNumber(line);
-					text.setOrigin(x, y);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.ADD",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final JComponent frame = ((JComponent) list[0].getPointer(line));
-					final JComponent child = (JComponent) list[1].getPointer(line);
-					if (list.length > 2)
-						frame.add(child, list[2].getString(line));
-					else
-						frame.add(child);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.SETENABLE",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final AbstractButton component = (AbstractButton) list[0].getPointer(line);
-					final boolean enabled = list[1].getBool(line);
-					component.setEnabled(enabled);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.CLICK",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final AbstractButton component = (AbstractButton) datum.getPointer(line);
-					component.doClick();
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.ACTION",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final AbstractButton component = ((AbstractButton) list[0].getPointer(line));
-					final Function function = list[1].getFunction(Datum.Type.ANY, line);
-					component.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(final ActionEvent e) {
-							function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, line);
-						}
-					});
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.MENU.BAR.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JMenuBar mb = new JMenuBar();
-					return new Datum((Object) mb);
-				});
-		commands.put("LIB_Graphics.COMPONENT.MENU.ITEM.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JMenu menu = new JMenu(datum.getString(line));
-					return new Datum((Object) menu);
-				});
-		commands.put("LIB_Graphics.COMPONENT.MENU.LABEL.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JMenuItem item = new JMenuItem(datum.getString(line));
-					return new Datum((Object) item);
-				});
-		commands.put("LIB_Graphics.COMPONENT.TEXT.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JLabel component = new JLabel(datum.getString(line));
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.TEXT.ALIGN",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final JLabel component = (JLabel) list[0].getPointer(line);
-					final int alignmentX = (int) list[1].getNumber(line);
-					final int alignmentY = (int) list[2].getNumber(line);
-					component.setHorizontalAlignment(alignmentX);
-					component.setVerticalAlignment(alignmentY);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.TEXT.SETTEXT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final JLabel component = (JLabel) list[0].getPointer(line);
-					final String label = list[1].getString(line);
-					component.setText(label);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.BUTTON.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JButton component = new JButton(datum.getString(line));
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.BUTTON.SETTEXT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final JButton component = (JButton) list[0].getPointer(line);
-					final String label = list[1].getString(line);
-					component.setText(label);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.CHECKBOX.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JCheckBox component = new JCheckBox(datum.getString(line));
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.CHECKBOX.SETTEXT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final JCheckBox component = (JCheckBox) list[0].getPointer(line);
-					final String label = list[1].getString(line);
-					component.setText(label);
-					return new Datum();
-				});
-		commands.put("LIB_Graphics.COMPONENT.PANEL.BORDER.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JPanel component = new JPanel();
-					component.setLayout(new BorderLayout());
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.PANEL.BLOCK.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JPanel component = new JPanel();
-					component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.PANEL.INLINE.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JPanel component = new JPanel();
-					component.setLayout(new FlowLayout());
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.PANEL.TABLE.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final JPanel component = new JPanel();
-					component.setLayout(new GridLayout((int) list[0].getNumber(line), (int) list[1].getNumber(line)));
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.PANEL.SPLIT.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					int orientation = JSplitPane.VERTICAL_SPLIT;
-					if (datum.getString(line).equals("Horizontal"))
-						orientation = JSplitPane.HORIZONTAL_SPLIT;
-					else if (datum.getString(line).equals("Vertical"))
-						orientation = JSplitPane.VERTICAL_SPLIT;
-					else
-						throw new SonoRuntimeException(
-								"Component.Panel.Split can only be initialized with \"Horizontal\" or \"Vertical\"",
-								line);
-					final JSplitPane component = new JSplitPane(orientation);
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.TABPANE.INIT",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final JTabbedPane component = new JTabbedPane();
-					return new Datum((Object) component);
-				});
-		commands.put("LIB_Graphics.COMPONENT.TABPANE.ADD",
-				(final Datum datum, final Token line, final Interpreter interpreter) -> {
-					final Datum[] list = datum.getVector(line);
-					final JTabbedPane frame = ((JTabbedPane) list[0].getPointer(line));
-					final JComponent child = (JComponent) list[1].getPointer(line);
-					final String label = list[2].getString(line);
-					frame.addTab(label, child);
-					return new Datum();
-				});
+		return new Datum();
+	}
+
+	public Datum COMPONENT_MENU_BAR_INIT(final Token line) {
+		final JMenuBar mb = new JMenuBar();
+		return new Datum((Object) mb);
+	}
+
+	public Datum COMPONENT_MENU_ITEM_INIT(final Datum[] data, final Token line) {
+		final JMenu menu = new JMenu(data[0].getString(line));
+		return new Datum((Object) menu);
+	}
+
+	public Datum COMPONENT_MENU_LABEL_INIT(final Datum[] data, final Token line) {
+		final JMenuItem item = new JMenuItem(data[0].getString(line));
+		return new Datum((Object) item);
+	}
+
+	public Datum COMPONENT_TEXT_INIT(final Datum[] data, final Token line) {
+		final JLabel component = new JLabel(data[0].getString(line));
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_TEXT_ALIGN(final Datum[] data, final Token line) {
+		final JLabel component = (JLabel) data[0].getPointer(line);
+		final int alignmentX = (int) data[1].getNumber(line);
+		final int alignmentY = (int) data[2].getNumber(line);
+		component.setHorizontalAlignment(alignmentX);
+		component.setVerticalAlignment(alignmentY);
+		return new Datum();
+	}
+
+	public Datum COMPONENT_TEXT_SETTEXT(final Datum[] data, final Token line) {
+		final JLabel component = (JLabel) data[0].getPointer(line);
+		final String label = data[1].getString(line);
+		component.setText(label);
+		return new Datum();
+	}
+
+	public Datum COMPONENT_BUTTON_INIT(final Datum[] data, final Token line) {
+		final JButton component = new JButton(data[0].getString(line));
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_BUTTON_SETTEXT(final Datum[] data, final Token line) {
+		final JButton component = (JButton) data[0].getPointer(line);
+		final String label = data[1].getString(line);
+		component.setText(label);
+		return new Datum();
+	}
+
+	public Datum COMPONENT_CHECKBOX_INIT(final Datum[] data, final Token line) {
+		final JCheckBox component = new JCheckBox(data[0].getString(line));
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_CHECKBOX_SETTEXT(final Datum[] data, final Token line) {
+		final JCheckBox component = (JCheckBox) data[0].getPointer(line);
+		final String label = data[1].getString(line);
+		component.setText(label);
+		return new Datum();
+	}
+
+	public Datum COMPONENT_PANEL_BORDER_INIT(final Token line) {
+		final JPanel component = new JPanel();
+		component.setLayout(new BorderLayout());
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_PANEL_BLOCK_INIT(final Token line) {
+		final JPanel component = new JPanel();
+		component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_PANEL_INLINE_INIT(final Token line) {
+		final JPanel component = new JPanel();
+		component.setLayout(new FlowLayout());
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_PANEL_TABLE_INIT(final Datum[] data, final Token line) {
+		final JPanel component = new JPanel();
+		component.setLayout(new GridLayout((int) data[0].getNumber(line), (int) data[1].getNumber(line)));
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_PANEL_SPLIT_INIT(final Datum[] data, final Token line) {
+		int orientation;
+		if (data[0].getString(line).equals("Horizontal"))
+			orientation = JSplitPane.HORIZONTAL_SPLIT;
+		else if (data[0].getString(line).equals("Vertical"))
+			orientation = JSplitPane.VERTICAL_SPLIT;
+		else
+			throw new SonoRuntimeException(
+					"Component.Panel.Split can only be initialized with \"Horizontal\" or \"Vertical\"", line);
+		final JSplitPane component = new JSplitPane(orientation);
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_TABPANE_INIT(final Token line) {
+		final JTabbedPane component = new JTabbedPane();
+		return new Datum((Object) component);
+	}
+
+	public Datum COMPONENT_TABPANE_ADD(final Datum[] data, final Token line) {
+		final JTabbedPane frame = ((JTabbedPane) data[0].getPointer(line));
+		final JComponent child = (JComponent) data[1].getPointer(line);
+		final String label = data[2].getString(line);
+		frame.addTab(label, child);
+		return new Datum();
 	}
 }

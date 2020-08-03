@@ -1,5 +1,5 @@
 # Benjamin Park
-# 30-07-2020
+# 02-08-2020
 
 import "LIB_Console";
 
@@ -20,7 +20,7 @@ var length = (ref x) => {
 }
 
 print(ref message) => {
-	"LIB_Console.PRINT" _OUTER_CALL_ (str message);
+	_OUTER_CALL_ ("LIB_Console", "PRINT", str message);
 }
 
 println(ref message) => {
@@ -28,19 +28,19 @@ println(ref message) => {
 }
 
 exit() => {
-	"LIB_Console.EXIT" _OUTER_CALL_ null;
+	_OUTER_CALL_ ("LIB_Console", "EXIT");
 }
 
 timeMS() => {
-	return ("LIB_Console.TIME" _OUTER_CALL_ null);
+	return _OUTER_CALL_ ("LIB_Console", "TIME");
 }
 
 String::match(ref this, ref pattern) => {
-	return "LIB_Console.REGEX" _OUTER_CALL_ (pattern, this);
+	return _OUTER_CALL_ ("LIB_Console", "REGEX", pattern, this);
 }
 
 Number::log(ref this) => {
-	return "LIB_Console.LOG" _OUTER_CALL_ this;
+	return _OUTER_CALL_ ("LIB_Console", "LOG", this);
 }
 
 Number::abs(ref this) => {
@@ -52,18 +52,18 @@ Number::abs(ref this) => {
 }
 
 Number::floor(ref this) => {
-	return "LIB_Console.FLOOR" _OUTER_CALL_ this;
+	return _OUTER_CALL_ ("LIB_Console", "FLOOR", this);
 }
 
 Number::ceil(ref this) => {
-	return "LIB_Console.CEIL" _OUTER_CALL_ this;
+	return _OUTER_CALL_ ("LIB_Console", "CEIL", this);
 }
 
 Number::round(ref this, ref place) => {
 	place == null then {
-		return "LIB_Console.ROUND" _OUTER_CALL_ this;
+		return _OUTER_CALL_ ("LIB_Console", "ROUND", this);
 	}
-	return ("LIB_Console.ROUND" _OUTER_CALL_ (this * (10 ** place))) / (10 ** place);
+	return (_OUTER_CALL_ ("LIB_Console", "ROUND", this * (10 ** place))) / (10 ** place);
 }
 
 getNum(ref x) => {
@@ -104,7 +104,7 @@ getHash(ref x) => {
 
 static Random class {
 	float() => {
-		return ("LIB_Console.RAND" _OUTER_CALL_ null);
+		return _OUTER_CALL_ ("LIB_Console", "RAND");
 	}
 
 	int(ref lower, ref upper) => {
@@ -118,9 +118,9 @@ static Random class {
 
 static Input class {
 	line() => {
-		return ("LIB_Console.GET.LINE" _OUTER_CALL_ null);
+		return _OUTER_CALL_ ("LIB_Console", "GET_LINE");
 	}
 	number() => {
-		return ("LIB_Console.GET.NUMBER" _OUTER_CALL_ null);
+		return _OUTER_CALL_ ("LIB_Console", "GET_NUMBER");
 	}
 }
