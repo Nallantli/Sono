@@ -1,4 +1,6 @@
 let files = [
+	"SOE.so",
+	"transformer.so",
     "datasetgen.so",
     "deu.so",
     "epenthesis.so",
@@ -10,8 +12,7 @@ let files = [
     "maptest.so",
     "nah.so",
     "naturalsets.so",
-    "nn_adder.so",
-    "SOE.so",
+    "nn_adder.so"
 ];
 
 let fileCache = { "untitled.so": "" };
