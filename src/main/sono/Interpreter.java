@@ -50,6 +50,7 @@ public class Interpreter {
 	protected static final String $EXEC = ".exec";
 	protected static final String $EXTENDS = "extends";
 	protected static final String $FEAT = "feat";
+	protected static final String $EVAL = "eval";
 	protected static final String $FINAL = "final";
 	protected static final String $FROM = "from";
 	protected static final String $GOTO = "goto";
@@ -573,6 +574,9 @@ public class Interpreter {
 					case $IN:
 						b = o.pollLast();
 						a = o.pollLast();
+						if (b.getType() == Operator.Type.HARD_LIST) {
+							b = new HardList(this, b.line, b.getChildren(), false);
+						}
 						o.addLast(new Iterator(this, line, a, b));
 						break;
 					case $UNTIL:
@@ -628,6 +632,9 @@ public class Interpreter {
 									break;
 								case $LEN:
 									o.addLast(new Length(this, line, b));
+									break;
+								case $EVAL:
+									o.addLast(new Eval(this, line, b));
 									break;
 								default:
 									b = new HardList(this, line, ((Sequence) b).getVector(), false);
@@ -753,6 +760,8 @@ public class Interpreter {
 				o.addLast(new Container(this, line, new Datum(Datum.Type.FEATURE)));
 			} else if (token.equals("Matrix")) {
 				o.addLast(new Container(this, line, new Datum(Datum.Type.MATRIX)));
+			} else if (token.equals("Boolean")) {
+				o.addLast(new Container(this, line, new Datum(Datum.Type.BOOL)));
 			} else if (token.equals("Rule")) {
 				o.addLast(new Container(this, line, new Datum(Datum.Type.RULE)));
 			} else if (token.equals("Word")) {

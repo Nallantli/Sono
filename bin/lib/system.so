@@ -1,5 +1,5 @@
 # Benjamin Park
-# 02-08-2020
+# 05-08-2020
 
 import "LIB_Console";
 
@@ -17,6 +17,10 @@ var alloc = (ref x) => {
 
 var length = (ref x) => {
 	return length(x);
+}
+
+var eval = (ref x) => {
+	return eval(x);
 }
 
 print(ref message) => {
@@ -44,11 +48,7 @@ Number::log(ref this) => {
 }
 
 Number::abs(ref this) => {
-	this < 0 then {
-		return -this ;
-	} else {
-		return this;
-	}
+	return (this < 0 then -this else this);
 }
 
 Number::floor(ref this) => {

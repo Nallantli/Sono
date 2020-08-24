@@ -26,8 +26,7 @@ public class Switch extends Unary {
 	@Override
 	public Datum evaluate(final Scope scope) {
 		final Datum key = a.evaluate(scope);
-		final Operator b = map.get(key);
-		if (b == null) {
+		if (!map.containsKey(key)) {
 			if (c == null)
 				return new Datum();
 			else

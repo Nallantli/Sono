@@ -14,7 +14,7 @@ import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class SonoWrapper {
-	public static final String VERSION = "Beta 1.8.3";
+	public static final String VERSION = "Beta 1.8.4";
 
 	private Interpreter sono = null;
 	private final Output stderr;

@@ -1,0 +1,135 @@
+load "vector.so";
+load "rule.so";
+
+var corpusData = {};
+var ruleData = {};
+
+menu() => {
+	println("\nMenu");
+	println("------------------------");
+	println("(1) Corpus");
+	println("(2) Rules");
+	println("(~) Exit");
+	var input = num Input.line();
+	input switch {
+		1 goto corpus();
+		2 goto rules();
+	}
+}
+
+corpus() => {
+	println("\nCorpus");
+	i in {0 until corpusData.length()} do {
+		println(str i + "\t/" + str corpusData[i] + "/ -> [" + str corpusData[i].apply(ruleData) + "]");
+	}
+	println("------------------------");
+	println("(1) Delete word");
+	println("(2) Add word");
+	println("(3) Replace word");
+	println("(~) Return to Menu");
+	var input = num Input.line();
+	input switch {
+		1 goto deleteWord();
+		2 goto addWord();
+		3 goto replaceWord();
+	}
+	menu();
+}
+
+deleteWord() => {
+	print("\nEnter index of word: ");
+	var d = num Input.line();
+	corpusData.remove(d);
+	corpus();
+}
+
+addWord() => {
+	print("\nEnter Word: ");
+	try {
+		var w = word Input.line();
+		corpusData += { w };
+	} catch {
+		println("Error: Input is not a valid word sequence");
+	}
+	corpus();
+}
+
+replaceWord() => {
+	print("\nEnter index of word: ");
+	var d = num Input.line();
+	print("\nEnter new Word: ");
+	try {
+		var w = word Input.line();
+		corpusData[d] = w;
+	} catch {
+		println("Error: Input is not a valid word sequence");
+	}
+	corpus();
+}
+
+rules() => {
+	println("\nRules");
+	i in {0 until ruleData.length()} do {
+		println(str i + "\t" + str ruleData[i]);
+	}
+	println("------------------------");
+	println("(1) Delete rule");
+	println("(2) Add rule");
+	println("(3) Replace rule");
+	println("(4) Switch rules");
+	println("(~) Return to Menu");
+	var input = num Input.line();
+	input switch {
+		1 goto deleteRule();
+		2 goto addRule();
+		3 goto replaceRule();
+		4 goto switchRules();
+	}
+	menu();
+}
+
+deleteRule() => {
+	print("\nEnter index of rule: ");
+	var d = num Input.line();
+	ruleData.remove(d);
+	rules();
+}
+
+addRule() => {
+	print("\nEnter Rule: ");
+	var r = Input.line().eval();
+	r.type() != "Rule" then {
+		println("Error: Input is not a valid rule");
+	} else {
+		ruleData += { r };
+	}
+	rules();
+}
+
+replaceRule() => {
+	print("\nEnter index of rule: ");
+	var d = num Input.line();
+	print("\nEnter new Rule: ");
+	var r = Input.line().eval();
+	r.type() != "Rule" then {
+		println("Error: Input is not a valid rule");
+	} else {
+		ruleData[d] = r;
+	}
+	rules();
+}
+
+switchRules() => {
+	print("\nEnter index of rule A: ");
+	var d1 = num Input.line();
+	print("\nEnter index of rule B: ");
+	var d2 = num Input.line();
+	var r1 = ruleData[d1];
+	var r2 = ruleData[d2];
+	ruleData[d1] = r2;
+	ruleData[d2] = r1;
+	rules();
+}
+
+println("Rule Transformation Testing");
+menu();

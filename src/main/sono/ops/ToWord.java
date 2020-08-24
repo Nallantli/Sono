@@ -51,7 +51,12 @@ public class ToWord extends Unary {
 			}
 			return new Datum(new Word(phones, delimits));
 		} else if (datumA.getType() == Datum.Type.STRING) {
-			return new Datum(interpreter.getManager().interpretSequence(datumA.getString(line)));
+			try {
+				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(line)));
+			} catch (final Exception e) {
+				throw new SonoRuntimeException(
+						"Value <" + datumA.getDebugString(line) + "> cannot be converted to a Word.", line);
+			}
 		}
 		throw new SonoRuntimeException("Value <" + datumA.getDebugString(line) + "> cannot be converted to a Word.",
 				line);
