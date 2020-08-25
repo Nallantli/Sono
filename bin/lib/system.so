@@ -23,6 +23,31 @@ var eval = (ref x) => {
 	return eval(x);
 }
 
+Function::detatch(ref this, ref params) => {
+	var t = new Thread(this, params);
+	t.start();
+}
+
+struct Thread class {
+	var thread;
+
+	init(ref f, ref params) => {
+		params == null then {
+			thread = (_OUTER_CALL_ ("LIB_Console", "THREAD_INIT", f, {}));
+		} else {
+			thread = (_OUTER_CALL_ ("LIB_Console", "THREAD_INIT", f, params));
+		}
+	}
+
+	start() => {
+		_OUTER_CALL_ ("LIB_Console", "THREAD_START", thread);
+	}
+
+	join() => {
+		_OUTER_CALL_ ("LIB_Console", "THREAD_JOIN", thread);
+	}
+}
+
 print(ref message) => {
 	_OUTER_CALL_ ("LIB_Console", "PRINT", str message);
 }

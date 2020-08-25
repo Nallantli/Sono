@@ -7,7 +7,30 @@ const LIBRARIES = {
         ],
         load: [],
         values: [],
-        methods: [{
+        methods: [
+            {
+                name: "detatch",
+                template: "Function",
+                params: [{
+						modifier: "ref",
+						key: "this",
+						type: [
+							"Function"
+						]
+					},
+					{
+						modifier: "ref",
+						key: "params",
+						type: [
+							"Vector"
+						]
+					}
+				],
+                desc: "Detatches the execution of a function from the main thread, does not pause execution.",
+                return: undefined,
+                see: ["system.Thread", "system.Thread.start"]
+			},
+			{
                 name: "print",
                 template: undefined,
                 params: [{
@@ -388,6 +411,56 @@ const LIBRARIES = {
                     params: [],
                     desc: "Asks the user for an input via the standard input channel.",
                     return: "Number",
+                    see: []
+                }
+            ],
+            classes: []
+		},
+		{
+            name: "Thread",
+            modifier: "struct",
+            values: [{
+				key: "thread",
+				desc: "Pointer to the internal thread.",
+				value: "null"
+			}],
+            methods: [{
+                    name: "init",
+                    template: undefined,
+                    params: [
+						{
+							modifier: "ref",
+							key: "f",
+							type: [
+								"Function"
+							]
+						},
+						{
+							modifier: "ref",
+							key: "params",
+							type: [
+								"Vector"
+							]
+						}
+					],
+                    desc: "Initializes the <code>Thread</code> object with a given <code>Function</code> and its respective paramaters.",
+                    return: undefined,
+                    see: []
+                },
+                {
+                    name: "start",
+                    template: undefined,
+                    params: [],
+                    desc: "Calls the <code>Thread</code> function.",
+                    return: undefined,
+                    see: []
+                },
+                {
+                    name: "join",
+                    template: undefined,
+                    params: [],
+                    desc: "Blocks the main execution from continuing until the <code>Thread</code> has completed.",
+                    return: undefined,
                     see: []
                 }
             ],

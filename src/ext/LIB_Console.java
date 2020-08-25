@@ -7,11 +7,29 @@ import java.util.regex.Pattern;
 
 import main.base.Library;
 import main.sono.Datum;
+import main.sono.Function;
 import main.sono.Interpreter;
 import main.sono.Token;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+
+class FThread extends Thread {
+	final Function f;
+	final Datum[] params;
+	final Token line;
+
+	public FThread(Function f, Datum[] params, Token line) {
+		this.f = f;
+		this.params = params;
+		this.line = line;
+	}
+
+	@Override
+	public void run() {
+		f.execute(params, line);
+	}
+}
 
 public class LIB_Console extends Library {
 	public LIB_Console(final Interpreter interpreter) {
@@ -96,5 +114,29 @@ public class LIB_Console extends Library {
 	public Datum ROUND(final Datum[] data, final Token line) {
 		final double i = Math.round(data[0].getNumber(line));
 		return new Datum(i);
+	}
+
+	public Datum THREAD_INIT(final Datum[] data, final Token line) {
+		Function f = data[0].getFunction(Datum.Type.ANY, line);
+		Datum[] params = data[1].getVector(line);
+		FThread thread = new FThread(f, params, line);
+		return new Datum((Object)thread);
+	}
+
+	public Datum THREAD_START(final Datum[] data, final Token line) {
+		FThread thread = (FThread) data[0].getPointer(line);
+		thread.start();
+		return new Datum();
+	}
+
+	public Datum THREAD_JOIN(final Datum[] data, final Token line) {
+		FThread thread = (FThread) data[0].getPointer(line);
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw error("Cannot join thread", line);
+		}
+		return new Datum();
 	}
 }

@@ -1,0 +1,21 @@
+thread(final n) => {
+	i in {0 until 10} do {
+		println("Thread " + str n + "\t" + str i);
+	}
+}
+
+var t1 = new Thread(thread, {1});
+var t2 = new Thread(thread, {2});
+var t3 = new Thread(thread, {3});
+
+println("Starting Threads...");
+
+t1.start();
+t2.start();
+t3.start();
+
+t1.join();
+t2.join();
+t3.join();
+
+println("Done.");
