@@ -1,5 +1,6 @@
 let files = [
 	"SOE.so",
+	"threads.so",
 	"transformer.so",
     "datasetgen.so",
     "deu.so",
