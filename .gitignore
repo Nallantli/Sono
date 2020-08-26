@@ -1,5 +1,6 @@
 bin/src
 bin/lib/*.jar
-bin/res/*.jar
+bin/*.jar
+bin-server/*.jar
 bin/.config
 .vscode

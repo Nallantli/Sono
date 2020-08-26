@@ -32,13 +32,12 @@ public class SonoClient {
 
 	public static void main(final String[] args) {
 		final String configPath = System.getProperty("user.home");
-		String path = SonoClient.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String path = new File(SonoClient.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
 		} catch (final UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}
-		path = path.replace("/res/sono.jar", "");
 
 		SonoWrapper.setGlobalOption("PATH", path);
 

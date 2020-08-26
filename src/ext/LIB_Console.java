@@ -19,7 +19,7 @@ class FThread extends Thread {
 	final Datum[] params;
 	final Token line;
 
-	public FThread(Function f, Datum[] params, Token line) {
+	public FThread(final Function f, final Datum[] params, final Token line) {
 		this.f = f;
 		this.params = params;
 		this.line = line;
@@ -82,6 +82,16 @@ public class LIB_Console extends Library {
 		return new Datum(i);
 	}
 
+	public Datum SLEEP(final Datum[] data, final Token line) {
+		try {
+			Thread.sleep((long) data[0].getNumber(line));
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw error("Cannot pause thread execution", line);
+		}
+		return new Datum();
+	}
+
 	public Datum RAND(final Token line) {
 		final double i = Math.random();
 		return new Datum(i);
@@ -90,7 +100,7 @@ public class LIB_Console extends Library {
 	public Datum EXIT(final Token line) {
 		try {
 			System.exit(0);
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			throw error("Unable to terminate interpreter", line);
 		}
 		return null;
@@ -117,23 +127,23 @@ public class LIB_Console extends Library {
 	}
 
 	public Datum THREAD_INIT(final Datum[] data, final Token line) {
-		Function f = data[0].getFunction(Datum.Type.ANY, line);
-		Datum[] params = data[1].getVector(line);
-		FThread thread = new FThread(f, params, line);
-		return new Datum((Object)thread);
+		final Function f = data[0].getFunction(Datum.Type.ANY, line);
+		final Datum[] params = data[1].getVector(line);
+		final FThread thread = new FThread(f, params, line);
+		return new Datum((Object) thread);
 	}
 
 	public Datum THREAD_START(final Datum[] data, final Token line) {
-		FThread thread = (FThread) data[0].getPointer(line);
+		final FThread thread = (FThread) data[0].getPointer(line);
 		thread.start();
 		return new Datum();
 	}
 
 	public Datum THREAD_JOIN(final Datum[] data, final Token line) {
-		FThread thread = (FThread) data[0].getPointer(line);
+		final FThread thread = (FThread) data[0].getPointer(line);
 		try {
 			thread.join();
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw error("Cannot join thread", line);
 		}

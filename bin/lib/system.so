@@ -64,6 +64,10 @@ timeMS() => {
 	return _OUTER_CALL_ ("LIB_Console", "TIME");
 }
 
+sleep(ref ms) => {
+	return _OUTER_CALL_ ("LIB_Console", "SLEEP", ms);
+}
+
 String::match(ref this, ref pattern) => {
 	return _OUTER_CALL_ ("LIB_Console", "REGEX", pattern, this);
 }

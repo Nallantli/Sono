@@ -57,13 +57,12 @@ public class SonoServer extends WebSocketServer {
 		SonoWrapper.setGlobalOption("WRITE", "FALSE");
 		SonoWrapper.setGlobalOption("SOCKET", "FALSE");
 		SonoWrapper.setGlobalOption("GRAPHICS", "FALSE");
-		String path = SonoServer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String path = new File(SonoServer.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getParent() + "/bin/";
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
 		} catch (final UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}
-		path = path.replace("bin-server/res/SonoServer.jar", "bin/");
 
 		SonoWrapper.setGlobalOption("PATH", path);
 
