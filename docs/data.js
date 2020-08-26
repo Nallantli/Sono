@@ -1,9 +1,9 @@
 const LIBRARIES = {
-    "system": {
-        name: "System Library",
-        file: "system.so",
+    "std": {
+        name: "Standard Functions Library",
+        file: "std.so",
         import: [
-            "LIB_Console"
+            "LIB_Standard"
         ],
         load: [],
         values: [],
@@ -336,7 +336,254 @@ const LIBRARIES = {
                 desc: "Returns a unique <code>Number</code> value hash of the given value.",
                 return: "Number",
                 see: []
-            }
+			},
+			{
+				name: "format",
+				template: "Number",
+				params: [{
+						modifier: "ref",
+						key: "this",
+						type: [
+							"Number"
+						]
+					},
+					{
+						modifier: "final",
+						key: "d",
+						type: [
+							"Number"
+						]
+					}
+				],
+				desc: "Returns a <code>String</code> value of the given <code>Number</code> formatted to show the given amount of significant figures.",
+				return: "String",
+				see: []
+			},
+			{
+				name: "Math",
+				modifier: "static",
+				values: [],
+				methods: [{
+						name: "min",
+						template: undefined,
+						params: [{
+							modifier: "ref",
+							key: "vector",
+							type: [
+								"Vector"
+							]
+						}],
+						desc: "Returns the minimum value from a set of elements in a given <code>Vector</code>.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "minIndex",
+						template: undefined,
+						params: [{
+							modifier: "ref",
+							key: "vector",
+							type: [
+								"Vector"
+							]
+						}],
+						desc: "Returns the index of the lowest element from a given <code>Vector</code>.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "max",
+						template: undefined,
+						params: [{
+							modifier: "ref",
+							key: "vector",
+							type: [
+								"Vector"
+							]
+						}],
+						desc: "Returns the maximum value from a set of elements in a given <code>Vector</code>.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "maxIndex",
+						template: undefined,
+						params: [{
+							modifier: "ref",
+							key: "vector",
+							type: [
+								"Vector"
+							]
+						}],
+						desc: "Returns the index of the highest element from a given <code>Vector</code>.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "add",
+						template: undefined,
+						params: [{
+								modifier: "ref",
+								key: "a",
+								type: [
+									"Number",
+									"Vector",
+									"Word",
+									"Matrix",
+									"String"
+								]
+							},
+							{
+								modifier: "ref",
+								key: "b",
+								type: [
+									"Number",
+									"Vector",
+									"Word",
+									"Matrix",
+									"String"
+								]
+							}
+						],
+						desc: "Equivalent to the usage of the operator <code>+</code> between two values.",
+						return: "Any",
+						see: []
+					},
+					{
+						name: "sub",
+						template: undefined,
+						params: [{
+								modifier: "ref",
+								key: "a",
+								type: [
+									"Number"
+								]
+							},
+							{
+								modifier: "ref",
+								key: "b",
+								type: [
+									"Number"
+								]
+							}
+						],
+						desc: "Equivalent to the usage of the operator <code>-</code> between two <code>Number</code> values.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "mul",
+						template: undefined,
+						params: [{
+								modifier: "ref",
+								key: "a",
+								type: [
+									"Number"
+								]
+							},
+							{
+								modifier: "ref",
+								key: "b",
+								type: [
+									"Number"
+								]
+							}
+						],
+						desc: "Equivalent to the usage of the operator <code>*</code> between two <code>Number</code> values.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "mul",
+						template: undefined,
+						params: [{
+								modifier: "ref",
+								key: "a",
+								type: [
+									"Number"
+								]
+							},
+							{
+								modifier: "ref",
+								key: "b",
+								type: [
+									"Number"
+								]
+							}
+						],
+						desc: "Equivalent to the usage of the operator <code>*</code> between two <code>Number</code> values.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "div",
+						template: undefined,
+						params: [{
+								modifier: "ref",
+								key: "a",
+								type: [
+									"Number"
+								]
+							},
+							{
+								modifier: "ref",
+								key: "b",
+								type: [
+									"Number"
+								]
+							}
+						],
+						desc: "Equivalent to the usage of the operator <code>/</code> between two <code>Number</code> values.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "mod",
+						template: undefined,
+						params: [{
+								modifier: "ref",
+								key: "a",
+								type: [
+									"Number"
+								]
+							},
+							{
+								modifier: "ref",
+								key: "b",
+								type: [
+									"Number"
+								]
+							}
+						],
+						desc: "Equivalent to the usage of the operator <code>%</code> between two <code>Number</code> values.",
+						return: "Number",
+						see: []
+					},
+					{
+						name: "pow",
+						template: undefined,
+						params: [{
+								modifier: "ref",
+								key: "a",
+								type: [
+									"Number"
+								]
+							},
+							{
+								modifier: "ref",
+								key: "b",
+								type: [
+									"Number"
+								]
+							}
+						],
+						desc: "Equivalent to the usage of the operator <code>**</code> between two <code>Number</code> values.",
+						return: "Number",
+						see: []
+					}
+				],
+				classes: []
+			}
         ],
         classes: [{
             name: "Random",
@@ -461,260 +708,6 @@ const LIBRARIES = {
                     params: [],
                     desc: "Blocks the main execution from continuing until the <code>Thread</code> has completed.",
                     return: undefined,
-                    see: []
-                }
-            ],
-            classes: []
-        }]
-    },
-    "math": {
-        name: "Mathematics and Number Library",
-        file: "math.so",
-        import: [],
-        load: [],
-        values: [],
-        methods: [{
-            name: "format",
-            template: "Number",
-            params: [{
-                    modifier: "ref",
-                    key: "this",
-                    type: [
-                        "Number"
-                    ]
-                },
-                {
-                    modifier: "final",
-                    key: "d",
-                    type: [
-                        "Number"
-                    ]
-                }
-            ],
-            desc: "Returns a <code>String</code> value of the given <code>Number</code> formatted to show the given amount of significant figures.",
-            return: "String",
-            see: []
-        }],
-        classes: [{
-            name: "Math",
-            modifier: "static",
-            values: [],
-            methods: [{
-                    name: "min",
-                    template: undefined,
-                    params: [{
-                        modifier: "ref",
-                        key: "vector",
-                        type: [
-                            "Vector"
-                        ]
-                    }],
-                    desc: "Returns the minimum value from a set of elements in a given <code>Vector</code>.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "minIndex",
-                    template: undefined,
-                    params: [{
-                        modifier: "ref",
-                        key: "vector",
-                        type: [
-                            "Vector"
-                        ]
-                    }],
-                    desc: "Returns the index of the lowest element from a given <code>Vector</code>.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "max",
-                    template: undefined,
-                    params: [{
-                        modifier: "ref",
-                        key: "vector",
-                        type: [
-                            "Vector"
-                        ]
-                    }],
-                    desc: "Returns the maximum value from a set of elements in a given <code>Vector</code>.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "maxIndex",
-                    template: undefined,
-                    params: [{
-                        modifier: "ref",
-                        key: "vector",
-                        type: [
-                            "Vector"
-                        ]
-                    }],
-                    desc: "Returns the index of the highest element from a given <code>Vector</code>.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "add",
-                    template: undefined,
-                    params: [{
-                            modifier: "ref",
-                            key: "a",
-                            type: [
-                                "Number",
-                                "Vector",
-                                "Word",
-                                "Matrix",
-                                "String"
-                            ]
-                        },
-                        {
-                            modifier: "ref",
-                            key: "b",
-                            type: [
-                                "Number",
-                                "Vector",
-                                "Word",
-                                "Matrix",
-                                "String"
-                            ]
-                        }
-                    ],
-                    desc: "Equivalent to the usage of the operator <code>+</code> between two values.",
-                    return: "Any",
-                    see: []
-                },
-                {
-                    name: "sub",
-                    template: undefined,
-                    params: [{
-                            modifier: "ref",
-                            key: "a",
-                            type: [
-                                "Number"
-                            ]
-                        },
-                        {
-                            modifier: "ref",
-                            key: "b",
-                            type: [
-                                "Number"
-                            ]
-                        }
-                    ],
-                    desc: "Equivalent to the usage of the operator <code>-</code> between two <code>Number</code> values.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "mul",
-                    template: undefined,
-                    params: [{
-                            modifier: "ref",
-                            key: "a",
-                            type: [
-                                "Number"
-                            ]
-                        },
-                        {
-                            modifier: "ref",
-                            key: "b",
-                            type: [
-                                "Number"
-                            ]
-                        }
-                    ],
-                    desc: "Equivalent to the usage of the operator <code>*</code> between two <code>Number</code> values.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "mul",
-                    template: undefined,
-                    params: [{
-                            modifier: "ref",
-                            key: "a",
-                            type: [
-                                "Number"
-                            ]
-                        },
-                        {
-                            modifier: "ref",
-                            key: "b",
-                            type: [
-                                "Number"
-                            ]
-                        }
-                    ],
-                    desc: "Equivalent to the usage of the operator <code>*</code> between two <code>Number</code> values.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "div",
-                    template: undefined,
-                    params: [{
-                            modifier: "ref",
-                            key: "a",
-                            type: [
-                                "Number"
-                            ]
-                        },
-                        {
-                            modifier: "ref",
-                            key: "b",
-                            type: [
-                                "Number"
-                            ]
-                        }
-                    ],
-                    desc: "Equivalent to the usage of the operator <code>/</code> between two <code>Number</code> values.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "mod",
-                    template: undefined,
-                    params: [{
-                            modifier: "ref",
-                            key: "a",
-                            type: [
-                                "Number"
-                            ]
-                        },
-                        {
-                            modifier: "ref",
-                            key: "b",
-                            type: [
-                                "Number"
-                            ]
-                        }
-                    ],
-                    desc: "Equivalent to the usage of the operator <code>%</code> between two <code>Number</code> values.",
-                    return: "Number",
-                    see: []
-                },
-                {
-                    name: "pow",
-                    template: undefined,
-                    params: [{
-                            modifier: "ref",
-                            key: "a",
-                            type: [
-                                "Number"
-                            ]
-                        },
-                        {
-                            modifier: "ref",
-                            key: "b",
-                            type: [
-                                "Number"
-                            ]
-                        }
-                    ],
-                    desc: "Equivalent to the usage of the operator <code>**</code> between two <code>Number</code> values.",
-                    return: "Number",
                     see: []
                 }
             ],
@@ -1180,7 +1173,7 @@ const LIBRARIES = {
         name: "Vector Prototyping Methods Library",
         file: "vector.so",
         import: [],
-        load: ["math", "system"],
+        load: ["system"],
         values: [],
         methods: [{
                 name: "pop",

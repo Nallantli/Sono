@@ -31,8 +31,8 @@ class FThread extends Thread {
 	}
 }
 
-public class LIB_Console extends Library {
-	public LIB_Console(final Interpreter interpreter) {
+public class LIB_Standard extends Library {
+	public LIB_Standard(final Interpreter interpreter) {
 		super(interpreter);
 	}
 
@@ -123,6 +123,36 @@ public class LIB_Console extends Library {
 
 	public Datum ROUND(final Datum[] data, final Token line) {
 		final double i = Math.round(data[0].getNumber(line));
+		return new Datum(i);
+	}
+
+	public Datum MATH_COS(final Datum[] data, final Token line) {
+		final double i = Math.cos(data[0].getNumber(line));
+		return new Datum(i);
+	}
+
+	public Datum MATH_SIN(final Datum[] data, final Token line) {
+		final double i = Math.sin(data[0].getNumber(line));
+		return new Datum(i);
+	}
+
+	public Datum MATH_TAN(final Datum[] data, final Token line) {
+		final double i = Math.tan(data[0].getNumber(line));
+		return new Datum(i);
+	}
+
+	public Datum MATH_COSH(final Datum[] data, final Token line) {
+		final double i = Math.cosh(data[0].getNumber(line));
+		return new Datum(i);
+	}
+
+	public Datum MATH_SINH(final Datum[] data, final Token line) {
+		final double i = Math.sinh(data[0].getNumber(line));
+		return new Datum(i);
+	}
+
+	public Datum MATH_TANH(final Datum[] data, final Token line) {
+		final double i = Math.tanh(data[0].getNumber(line));
 		return new Datum(i);
 	}
 

@@ -1,5 +1,4 @@
 load "graphics.so";
-load "math.so";
 
 var SIZE_X = 60;
 var SIZE_Y = 60;

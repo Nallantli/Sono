@@ -1,8 +1,6 @@
 # Benjamin Park
 # Vector::steps() adapted from https://gist.github.com/kylebgorman/1081951 by Kyle Gorman
-# 30-07-2020
-
-load "math.so";
+# 26-08-2020
 
 Vector::pop(ref this) => {
 	var nl = alloc(length(this) - 1);

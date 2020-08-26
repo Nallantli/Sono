@@ -1,0 +1,279 @@
+# Benjamin Park
+# 26-08-2020
+
+import "LIB_Standard";
+
+var type = (ref x) => {
+	return type(x);
+}
+
+var com = (ref x) => {
+	return com(x);
+}
+
+var alloc = (ref x) => {
+	return alloc(x);
+}
+
+var length = (ref x) => {
+	return length(x);
+}
+
+var eval = (ref x) => {
+	return eval(x);
+}
+
+Function::detatch(ref this, ref params) => {
+	var t = new Thread(this, params);
+	t.start();
+}
+
+struct Thread class {
+	var thread;
+
+	init(ref f, ref params) => {
+		params == null then {
+			thread = (_OUTER_CALL_ ("LIB_Standard", "THREAD_INIT", f, {}));
+		} else {
+			thread = (_OUTER_CALL_ ("LIB_Standard", "THREAD_INIT", f, params));
+		}
+	}
+
+	start() => {
+		_OUTER_CALL_ ("LIB_Standard", "THREAD_START", thread);
+	}
+
+	join() => {
+		_OUTER_CALL_ ("LIB_Standard", "THREAD_JOIN", thread);
+	}
+}
+
+print(ref message) => {
+	_OUTER_CALL_ ("LIB_Standard", "PRINT", str message);
+}
+
+println(ref message) => {
+	print(str message + "\n");
+}
+
+exit() => {
+	_OUTER_CALL_ ("LIB_Standard", "EXIT");
+}
+
+timeMS() => {
+	return _OUTER_CALL_ ("LIB_Standard", "TIME");
+}
+
+sleep(ref ms) => {
+	return _OUTER_CALL_ ("LIB_Standard", "SLEEP", ms);
+}
+
+String::match(ref this, ref pattern) => {
+	return _OUTER_CALL_ ("LIB_Standard", "REGEX", pattern, this);
+}
+
+Number::log(ref this) => {
+	return _OUTER_CALL_ ("LIB_Standard", "LOG", this);
+}
+
+Number::abs(ref this) => {
+	return (this < 0 then -this else this);
+}
+
+Number::floor(ref this) => {
+	return _OUTER_CALL_ ("LIB_Standard", "FLOOR", this);
+}
+
+Number::ceil(ref this) => {
+	return _OUTER_CALL_ ("LIB_Standard", "CEIL", this);
+}
+
+Number::round(ref this, ref place) => {
+	place == null then {
+		return _OUTER_CALL_ ("LIB_Standard", "ROUND", this);
+	}
+	return (_OUTER_CALL_ ("LIB_Standard", "ROUND", this * (10 ** place))) / (10 ** place);
+}
+
+getNum(ref x) => {
+	return num x;
+}
+
+getString(ref x) => {
+	return str x;
+}
+
+getVector(ref x) => {
+	return vec x;
+}
+
+getWord(ref x) => {
+	return word x;
+}
+
+getPhone(ref x) => {
+	return (vec word x)[0];
+}
+
+getChar(ref x) => {
+	return char x;
+}
+
+getCode(ref x) => {
+	return code x;
+}
+
+getMat(ref x) => {
+	return mat x;
+}
+
+getHash(ref x) => {
+	return hash x;
+}
+
+static Random class {
+	float() => {
+		return _OUTER_CALL_ ("LIB_Standard", "RAND");
+	}
+
+	int(ref lower, ref upper) => {
+		return (float() * (upper - lower) + lower).floor();
+	}
+
+	set(ref vector) => {
+		refer vector[int(0, vector.length())]
+	}
+}
+
+static Input class {
+	line() => {
+		return _OUTER_CALL_ ("LIB_Standard", "GET_LINE");
+	}
+	number() => {
+		return _OUTER_CALL_ ("LIB_Standard", "GET_NUMBER");
+	}
+}
+
+Number::format(ref this, final d) => {
+	var s = vec str this;
+	var ns = "";
+	var i = 0;
+	var mode = true;
+	c in s do {
+		mode then {
+			ns += c;
+			c == "." then {
+				mode = false;
+			}
+		} else {
+			i < d then {
+				ns += c;
+			} else {
+				break;
+			}
+			i += 1;
+		}
+	}
+	i == 0 then {
+		ns += ".";
+	}
+	i < d do {
+		ns += "0";
+		i += 1;
+	}
+	return ns;
+}
+
+static Math class {
+	min(ref vector) => {
+		var n = vector[0];
+		i in {1 until length(vector)} do {
+			vector[i] < n then {
+				n = vector[i];
+			}
+		}
+		refer n;
+	}
+
+	minIndex(ref vector) => {
+		var n = vector[0];
+		var index = 0;
+		i in {1 until length(vector)} do {
+			vector[i] < n then {
+				n = vector[i];
+				index = i;
+			}
+		}
+		return index;
+	}
+
+	max(ref vector) => {
+		var n = vector[0];
+		i in {1 until length(vector)} do {
+			vector[i] > n then {
+				n = vector[i];
+			}
+		}
+		refer n;
+	}
+
+	maxIndex(ref vector) => {
+		var n = vector[0];
+		var index = 0;
+		i in {1 until length(vector)} do {
+			vector[i] > n then {
+				n = vector[i];
+				index = i;
+			}
+		}
+		return index;
+	}
+
+	add(ref a, ref b) => {
+		return a + b;
+	}
+
+	sub(ref a, ref b) => {
+		return a - b;
+	}
+
+	mul(ref a, ref b) => {
+		return a * b;
+	}
+
+	div(ref a, ref b) => {
+		return a / b;
+	}
+
+	mod(ref a, ref b) => {
+		return a % b;
+	}
+
+	pow(ref a, ref b) => {
+		return a ** b;
+	}
+
+	cos(ref x) => {
+		return _OUTER_CALL_ ("LIB_Standard", "MATH_COS", x);
+	}
+
+	sin(ref x) => {
+		return _OUTER_CALL_ ("LIB_Standard", "MATH_SIN", x);
+	}
+
+	tan(ref x) => {
+		return _OUTER_CALL_ ("LIB_Standard", "MATH_TAN", x);
+	}
+
+	cosh(ref x) => {
+		return _OUTER_CALL_ ("LIB_Standard", "MATH_COSH", x);
+	}
+
+	sinh(ref x) => {
+		return _OUTER_CALL_ ("LIB_Standard", "MATH_SINH", x);
+	}
+
+	tanh(ref x) => {
+		return _OUTER_CALL_ ("LIB_Standard", "MATH_TANH", x);
+	}
+}
