@@ -1,5 +1,4 @@
 load "vector.so";
-load "rule.so";
 
 var corpusData = {};
 var ruleData = {};

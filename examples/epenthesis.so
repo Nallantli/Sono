@@ -1,5 +1,3 @@
-load "rule.so";
-
 # I can't think of a language that does this but I'd still like to give it as an example
 # Insertion of a [ə] between two subsequent nasals
 var rule = S |> null -> 'ə' // [-|syl, +|nasal] .. [-|syl, +|nasal];

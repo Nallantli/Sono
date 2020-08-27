@@ -1,5 +1,5 @@
 load "ling/dataset.so";
-load "rule.so";
+load "ling/rule.so";
 load "vector.so";
 load "string.so";
 load "html.so";

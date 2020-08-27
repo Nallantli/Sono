@@ -1,5 +1,3 @@
-load "rule.so";
-
 var ruleSet = {
 	# All consonants that are followed by another consonant (except nasals) are [+long]; /kk/ -> /kː/
 	Af |> [-|syl, -|nasal] -> [+|long] // null .. [-|syl, -|approx],
