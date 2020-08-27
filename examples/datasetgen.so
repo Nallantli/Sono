@@ -1,4 +1,4 @@
-load "dataset.so";
+load "ling/dataset.so";
 load "rule.so";
 load "vector.so";
 load "string.so";

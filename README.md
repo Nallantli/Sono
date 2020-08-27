@@ -1,4 +1,4 @@
-# Sono Beta 1.8.6
+# Sono Beta 1.9.0
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -25,6 +25,12 @@ There are two pairs of files necessary to build, depending on your OS. For Windo
 It is possible to run the JAR file directly, however it is recommended for the sake of brevity to use the files [bin/sono.bat](bin/sono.bat) for Windows or [bin/sono.sh](bin/sono.sh) for Linux/OSX, as these contain the necessary arguments to run the interpreter in UTF-8, necessary for IPA.
 
 ## Command Line Arguments
+
+Packages may be installed from GitHub Repos with `-ig`. Use the URL as the parameter:
+
+```sh
+sono -ig "https://github.com/Nallantli/Sono-Linguistics-Package"
+```
 
 The first argument (if the user wishes to run a file) must be the path to the file. Otherwise the CLI interpreter will be opened, from which commands may be run per user input.
 

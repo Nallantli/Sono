@@ -1,4 +1,4 @@
-load "ling.so";
+load "ling/phonology.so";
 load "vector.so";
 load "html.so";
 

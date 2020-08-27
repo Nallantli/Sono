@@ -19,11 +19,14 @@ public class CommandManager {
 		classes = new HashMap<>();
 	}
 
-	public void importLibrary(final String directory, final String filename, final String classpath,
-			final Interpreter interpreter) {
+	public void importLibrary(final String directory, final String filename, final String rawDir, final String path,
+			final String classpath, final Interpreter interpreter) {
 		File file = new File(directory, filename);
 		if (!file.exists())
-			file = new File(SonoWrapper.getGlobalOption("PATH"), "lib/" + filename);
+			file = new File(SonoWrapper.getGlobalOption("PATH"),
+					"lib" + File.separator + directory + File.separator + filename);
+		if (!file.exists())
+			file = new File(SonoWrapper.getGlobalOption("PATH"), "lib" + File.separator + path);
 		try {
 			final ExtensionLoader<Library> loader = new ExtensionLoader<>();
 			classes.put(filename, loader.loadClass(file, classpath, Library.class, interpreter));

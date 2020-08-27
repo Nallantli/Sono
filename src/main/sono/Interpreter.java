@@ -228,12 +228,20 @@ public class Interpreter {
 		return tokens;
 	}
 
-	public List<Token> loadFile(final String directory, final String filename) {
+	public Operator loadFile(final String fullDirectory, final String filename, final String rawDir,
+			final String path) {
 		final StringBuilder contents = new StringBuilder();
-		File file = new File(directory, filename);
+		File file = new File(fullDirectory, filename);
+		boolean flag = false;
 		try {
-			if (!file.exists())
-				file = new File(SonoWrapper.getGlobalOption("PATH"), "lib/" + filename);
+			if (!file.exists()) {
+				file = new File(SonoWrapper.getGlobalOption("PATH"),
+						"lib" + File.separator + fullDirectory + File.separator + filename);
+			}
+			if (!file.exists()) {
+				file = new File(SonoWrapper.getGlobalOption("PATH"), "lib" + File.separator + path);
+				flag = true;
+			}
 
 			try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 				String line;
@@ -243,7 +251,12 @@ public class Interpreter {
 		} catch (final Exception e) {
 			throw new SonoCompilationException("File <" + file.toString() + "> does not exist.");
 		}
-		return tokenize(contents.toString());
+
+		if (flag) {
+			return parse(rawDir, tokenize(contents.toString()));
+		} else {
+			return parse(fullDirectory, tokenize(contents.toString()));
+		}
 	}
 
 	public Operator parse(final String directory, final List<Token> tokens) {
@@ -251,6 +264,7 @@ public class Interpreter {
 		String path;
 		String[] split;
 		String filename;
+		String rawDir;
 		StringBuilder fileDirectory;
 		Operator a;
 		Operator b;
@@ -267,24 +281,31 @@ public class Interpreter {
 						path = ((Container) o.pollLast()).getDatum().getString(null);
 						split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
 						filename = (new StringBuilder(split[0])).reverse().toString();
+						rawDir = "";
 						fileDirectory = new StringBuilder(directory);
-						if (split.length > 1)
-							fileDirectory.append(File.separator + (new StringBuilder(split[1])).reverse().toString());
-						if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
-							loadedFiles.add(fileDirectory + File.separator + filename);
-							o.addLast(parse(fileDirectory.toString(), loadFile(fileDirectory.toString(), filename)));
+						if (split.length > 1) {
+							rawDir = (new StringBuilder(split[1])).reverse().toString();
+							fileDirectory.append(File.separator + rawDir);
+						}
+						if (!loadedFiles.contains(fileDirectory.toString() + filename)) {
+							loadedFiles.add(fileDirectory.toString() + filename);
+							o.addLast(loadFile(fileDirectory.toString(), filename, rawDir, path));
 						}
 						break;
 					case $IMPORT:
 						path = ((Container) o.pollLast()).getDatum().getString(null);
 						split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
 						filename = (new StringBuilder(split[0])).reverse().toString() + ".jar";
+						rawDir = "";
 						fileDirectory = new StringBuilder(directory);
-						if (split.length > 1)
-							fileDirectory.append(File.separator + (new StringBuilder(split[1])).reverse().toString());
-						if (!loadedFiles.contains(fileDirectory + File.separator + filename)) {
-							loadedFiles.add(fileDirectory + File.separator + filename);
-							console.importLibrary(fileDirectory.toString(), filename, "ext." + path, this);
+						if (split.length > 1) {
+							rawDir = (new StringBuilder(split[1])).reverse().toString();
+							fileDirectory.append(File.separator + rawDir);
+						}
+						if (!loadedFiles.contains(fileDirectory.toString() + filename)) {
+							loadedFiles.add(fileDirectory.toString() + filename);
+							console.importLibrary(fileDirectory.toString(), filename, rawDir, path, "ext." + path,
+									this);
 						}
 						break;
 					case $UNARY_NOT:
