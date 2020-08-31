@@ -20,6 +20,26 @@ Place features in all-caps have sub-features that are considered to be `0` in qu
 
 There are two pairs of files necessary to build, depending on your OS. For Windows, [build-jar.bat](build-jar.bat) and [build-lib.bat](build-lib.bat) will build the JAR file and the libraries and place them in their respective folders. For Linux/OSX, the same files exist as `.sh` versions and can be invoked in the same manner in a bash terminal.
 
+### Windows
+
+```sh
+git clone https://github.com/Nallantli/Sono
+cd Sono
+./build-lib
+./build-jar
+```
+
+### OSX/Linux
+
+```sh
+git clone https://github.com/Nallantli/Sono
+cd Sono
+sh build-lib.sh
+sh build-jar.sh
+```
+
+Make sure to move `Sono/bin` do your desired location and add `/bin` to your system's `PATH` variable.
+
 ## Running
 
 It is possible to run the JAR file directly, however it is recommended for the sake of brevity to use the files [bin/sono.bat](bin/sono.bat) for Windows or [bin/sono.sh](bin/sono.sh) for Linux/OSX, as these contain the necessary arguments to run the interpreter in UTF-8, necessary for IPA.
