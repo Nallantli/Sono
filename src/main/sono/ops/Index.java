@@ -26,6 +26,8 @@ public class Index extends Binary {
 		} else if (datumA.getType() == Datum.Type.STRUCTURE) {
 			return datumA.getStructure(line).getScope().getVariable(interpreter.GET_INDEX, interpreter, line)
 					.getFunction(Datum.Type.ANY, line).execute(new Datum[] { datumB }, line);
+		} else if (datumA.getType() == Datum.Type.DICTIONARY) {
+			return datumA.indexDictionary(datumB.getString(line));
 		}
 		throw new SonoRuntimeException("Cannot index value <" + datumA.getDebugString(line) + ">", line);
 	}

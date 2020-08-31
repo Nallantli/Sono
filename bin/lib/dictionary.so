@@ -1,0 +1,48 @@
+# Benjamin Park
+# 31-08-2020
+
+Dictionary::isEmpty(ref this) => {
+	return (length(this) == 0);
+}
+
+Dictionary::containsKey(ref this, ref key) => {
+	return (this["key"] != null);
+}
+
+Dictionary::keys(ref this) => {
+	var v = alloc(length(this));
+	var i = 0;
+	e in this do {
+		v[i] = e["key"];
+		i += 1;
+	}
+	return v;
+}
+
+Dictionary::values(ref this) => {
+	var v = alloc(length(this));
+	var i = 0;
+	e in this do {
+		v[i] = e["value"];
+		i += 1;
+	}
+	return v;
+}
+
+Dictionary::map(ref this, ref function) => {
+	var nl = @{};
+	e in this do {
+		nl[e["key"]] = function(e["value"]);
+	}
+	return nl;
+}
+
+Dictionary::filter(ref this, ref function) => {
+	var nl = @{};
+	e in this do {
+		function(e["value"]) then {
+			nl[e["key"]] = e["value"];
+		}
+	}
+	return nl;
+}

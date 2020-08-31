@@ -71,6 +71,7 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$XOR, 5),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$RULE, 5),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$UNTIL, 4),
+			new SimpleImmutableEntry<String, Integer>(Interpreter.$ENTRY, 4),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$ADD_SET, -4),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$DIV_SET, -4),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$MOD_SET, -4),
@@ -98,7 +99,7 @@ public class Tokenizer {
 		char lastChar = 0;
 		boolean comment = false;
 		final List<Token> tokens = new ArrayList<>();
-		tokens.add(new Token("#[", "", 0, 0));
+		// tokens.add(new Token("#[", "", 0, 0));
 		final String[] lines = str.split("[\\n\\r]");
 		int lineIndex = 0;
 		int cursorIndex = 0;
@@ -179,17 +180,24 @@ public class Tokenizer {
 					pChar = c;
 					tokens.add(new Token(String.valueOf(c), lines[lineIndex], cursorIndex, lineIndex));
 					continue;
-				} else if (c == '{') {
+				} else if (c == '{' && lastChar != '@') {
 					tokens.add(new Token("{", lines[lineIndex], cursorIndex, lineIndex));
-					tokens.add(new Token("#[", lines[lineIndex], cursorIndex, lineIndex));
+					// tokens.add(new Token("#[", lines[lineIndex], cursorIndex, lineIndex));
+					lastChar = '(';
+					mode = 0;
+					continue;
+				} else if (c == '{' && lastChar == '@') {
+					tokens.remove(tokens.size() - 1);
+					tokens.add(new Token(Interpreter.$OBJECT_RAW_START, lines[lineIndex], cursorIndex, lineIndex));
+					// tokens.add(new Token("#[", lines[lineIndex], cursorIndex, lineIndex));
 					lastChar = '(';
 					mode = 0;
 					continue;
 				} else if (c == '}') {
-					tokens.add(new Token("#]", lines[lineIndex], cursorIndex, lineIndex));
+					// tokens.add(new Token("#]", lines[lineIndex], cursorIndex, lineIndex));
 					tokens.add(new Token("}", lines[lineIndex], cursorIndex, lineIndex));
-					tokens.add(new Token("#]", lines[lineIndex], cursorIndex, lineIndex));
-					tokens.add(new Token("#[", lines[lineIndex], cursorIndex, lineIndex));
+					// tokens.add(new Token("#]", lines[lineIndex], cursorIndex, lineIndex));
+					// tokens.add(new Token("#[", lines[lineIndex], cursorIndex, lineIndex));
 					lastChar = '(';
 					mode = 0;
 					continue;
@@ -228,8 +236,8 @@ public class Tokenizer {
 			final String t = raw.getKey();
 			final String line = raw.getLine();
 			final int cursor = raw.getCursor();
-			if (t.equals("#[") || t.equals("#]"))
-				continue;
+			//if (t.equals("#[") || t.equals("#]"))
+			//	continue;
 			if (last.equals("}") && !t.equals(Interpreter.$ELSE) && !t.equals("[")
 					&& (!operators.containsKey(t) || (operators.containsKey(t) && operators.get(t) < 0)))
 				newTokens.add(new Token(";", line, cursor + 1, raw.getLineNumber()));
@@ -241,14 +249,14 @@ public class Tokenizer {
 			if (t.equals("(") && ((Character.isLetterOrDigit(last.charAt(0)) || last.charAt(0) == '_')
 					|| last.equals(")") || last.equals("]")) && !operators.containsKey(last))
 				newTokens.add(new Token(Interpreter.$EXEC, line, cursor, raw.getLineNumber()));
-			if (t.equals("-")
-					&& (operators.containsKey(last) || last.equals("(") || last.equals("[") || last.equals("{"))) {
+			if (t.equals("-") && (operators.containsKey(last) || last.equals("(") || last.equals("[")
+					|| last.equals("{") || last.equals(Interpreter.$OBJECT_RAW_START))) {
 				newTokens.add(new Token(Interpreter.$NEGATIVE, line, cursor, raw.getLineNumber()));
 				last = t;
 				continue;
 			}
-			if (t.equals(Interpreter.$ADD)
-					&& (operators.containsKey(last) || last.equals("(") || last.equals("[") || last.equals("{"))) {
+			if (t.equals(Interpreter.$ADD) && (operators.containsKey(last) || last.equals("(") || last.equals("[")
+					|| last.equals("{") || last.equals(Interpreter.$OBJECT_RAW_START))) {
 				newTokens.add(new Token(Interpreter.$POSITIVE, line, cursor, raw.getLineNumber()));
 				last = t;
 				continue;
@@ -279,7 +287,7 @@ public class Tokenizer {
 					t1 = "+";
 				else if (t1.equals(Interpreter.$NEGATIVE))
 					t1 = "-";
-				postFeatures.add(new Token("@" + t1 + "|" + t2, line, cursor, lineN));
+				postFeatures.add(new Token("#" + t1 + "|" + t2, line, cursor, lineN));
 				i++;
 			} else {
 				postFeatures.add(new Token(t, line, cursor, lineN));
@@ -298,7 +306,7 @@ public class Tokenizer {
 
 		for (final Token token : tokens) {
 			if ((Character.isLetterOrDigit(token.charAt(0)) || token.charAt(0) == '_' || token.charAt(0) == '\"'
-					|| token.charAt(0) == '@' || token.charAt(0) == '\'' || token.charAt(0) == '`')
+					|| token.charAt(0) == '#' || token.charAt(0) == '\'' || token.charAt(0) == '`')
 					&& !operators.containsKey(token.getKey()))
 				output.addLast(token);
 			else if (operators.containsKey(token.getKey())) {
@@ -307,7 +315,8 @@ public class Tokenizer {
 					while ((Math.abs(getPrecedence(token.getKey())) < Math.abs(getPrecedence(sb.getKey()))
 							|| (getPrecedence(sb.getKey()) > 0
 									&& Math.abs(getPrecedence(token.getKey())) == Math.abs(getPrecedence(sb.getKey()))))
-							&& (!sb.getKey().equals("(") && !sb.getKey().equals("[") && !sb.getKey().equals("{"))) {
+							&& (!sb.getKey().equals("(") && !sb.getKey().equals("[") && !sb.getKey().equals("{")
+									&& !sb.getKey().equals(Interpreter.$OBJECT_RAW_START))) {
 						output.addLast(sb);
 						stack.pollLast();
 						if (stack.isEmpty())
@@ -317,7 +326,8 @@ public class Tokenizer {
 					}
 				}
 				stack.addLast(token);
-			} else if (token.getKey().equals("(") || token.getKey().equals("[") || token.getKey().equals("{")) {
+			} else if (token.getKey().equals("(") || token.getKey().equals("[") || token.getKey().equals("{")
+					|| token.getKey().equals(Interpreter.$OBJECT_RAW_START)) {
 				stack.addLast(token);
 				output.addLast(token);
 				switch (token.charAt(0)) {
@@ -328,6 +338,7 @@ public class Tokenizer {
 						bCount++;
 						break;
 					case '{':
+					case '@':
 						cCount++;
 						break;
 					default:
@@ -361,7 +372,8 @@ public class Tokenizer {
 						cCount--;
 						if (stack.isEmpty())
 							throw new SonoCompilationException("Unmatched scoping bracket!");
-						while (!stack.peekLast().getKey().equals("{")) {
+						while (!stack.peekLast().getKey().equals("{")
+								&& !stack.peekLast().getKey().equals(Interpreter.$OBJECT_RAW_START)) {
 							output.addLast(stack.peekLast());
 							stack.pollLast();
 							if (stack.isEmpty())

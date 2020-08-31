@@ -3,6 +3,7 @@ package main.sono;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import main.phl.Feature;
@@ -93,6 +94,12 @@ public class Datum {
 				return "Boolean";
 			}
 		},
+		DICTIONARY {
+			@Override
+			public String toString() {
+				return "Dictionary";
+			}
+		},
 
 		// INTERPRETER USE
 		I_BREAK, ANY
@@ -111,6 +118,7 @@ public class Datum {
 	private Word valueWord = null;
 	private Structure valueStructure = null;
 	private Object valuePointer = null;
+	private Map<String, Datum> valueDictionary = null;
 
 	protected Type type;
 
@@ -190,6 +198,11 @@ public class Datum {
 	public Datum(final Word valueWord) {
 		this.type = Type.WORD;
 		this.valueWord = valueWord;
+	}
+
+	public Datum(final Map<String, Datum> valueDictionary) {
+		this.type = Type.DICTIONARY;
+		this.valueDictionary = valueDictionary;
 	}
 
 	public Datum(final Object valuePointer) {
@@ -276,6 +289,13 @@ public class Datum {
 		return this.valueBool;
 	}
 
+	public Map<String, Datum> getMap(final Token line) {
+		if (type != Type.DICTIONARY)
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Dictionary.", line);
+		this.valueDictionary.values().removeIf(val -> val.type == Type.NULL);
+		return this.valueDictionary;
+	}
+
 	public void setMutable(final boolean mutable) {
 		this.mutable = mutable;
 	}
@@ -296,6 +316,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				final Datum[] dVec = datum.valueVector;
 				this.valueVector = new Datum[dVec.length];
@@ -315,6 +336,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				this.valueMatrix = new Matrix(pm);
 				for (final Feature p : datum.valueMatrix)
@@ -330,6 +352,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				final Feature temp = datum.valueFeature;
 				this.valueFeature = new Feature(temp.getKey(), temp.getQuality());
@@ -344,6 +367,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				this.valuePhone = datum.valuePhone;
 				break;
@@ -357,6 +381,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				this.valueRule = datum.valueRule;
 				break;
@@ -370,6 +395,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				this.valueString = datum.valueString;
 				break;
@@ -384,6 +410,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				this.valueNumber = datum.valueNumber;
 				break;
@@ -398,6 +425,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				this.valueBool = datum.valueBool;
 				break;
@@ -411,6 +439,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				if (this.valueFunction == null)
 					this.valueFunction = new EnumMap<>(Type.class);
@@ -426,6 +455,7 @@ public class Datum {
 				this.valueFunction = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 
 				this.valueWord = datum.valueWord;
 				break;
@@ -442,6 +472,25 @@ public class Datum {
 
 				this.valueStructure = datum.valueStructure;
 				break;
+			case DICTIONARY:
+				this.valueVector = null;
+				this.valueMatrix = null;
+				this.valueFeature = null;
+				this.valuePhone = null;
+				this.valueRule = null;
+				this.valueString = null;
+				this.valueFunction = null;
+				this.valueWord = null;
+				this.valueStructure = null;
+				this.valuePointer = null;
+
+				this.valueDictionary = new HashMap<>();
+				for (final Map.Entry<String, Datum> e : datum.valueDictionary.entrySet()) {
+					final Datum e2 = new Datum();
+					e2.set(pm, e.getValue(), line);
+					this.valueDictionary.put(e.getKey(), e2);
+				}
+				break;
 			case POINTER:
 				this.valueVector = null;
 				this.valueMatrix = null;
@@ -452,6 +501,7 @@ public class Datum {
 				this.valueFunction = null;
 				this.valueWord = null;
 				this.valueStructure = null;
+				this.valueDictionary = null;
 
 				this.valuePointer = datum.valuePointer;
 				break;
@@ -466,6 +516,7 @@ public class Datum {
 				this.valueWord = null;
 				this.valueStructure = null;
 				this.valuePointer = null;
+				this.valueDictionary = null;
 				break;
 			default:
 				break;
@@ -504,6 +555,8 @@ public class Datum {
 				return "`" + valueWord.toString() + "`";
 			case STRUCTURE:
 				return valueStructure.toStringTrace(line);
+			case DICTIONARY:
+				return "@" + valueDictionary.toString();
 			case POINTER:
 				return valuePointer.toString();
 			default:
@@ -543,6 +596,8 @@ public class Datum {
 				return valueWord.toString();
 			case STRUCTURE:
 				return valueStructure.toStringTrace(line);
+			case DICTIONARY:
+				return "@" + valueDictionary.toString();
 			case POINTER:
 				return valuePointer.toString();
 			default:
@@ -576,10 +631,23 @@ public class Datum {
 		return valueVector[i];
 	}
 
+	public Datum indexDictionary(final String i) {
+		if (!valueDictionary.containsKey(i))
+			valueDictionary.put(i, new Datum());
+		return valueDictionary.get(i);
+	}
+
 	public int getVectorLength(final Token line) {
 		if (type != Type.VECTOR)
 			throw new SonoRuntimeException("Value <" + this.toStringTrace(line) + "> is not a Vector.", line);
 		return valueVector.length;
+	}
+
+	public int getDictionaryLength(final Token line) {
+		if (type != Type.DICTIONARY)
+			throw new SonoRuntimeException("Value <" + this.toStringTrace(line) + "> is not a Dictionary.", line);
+		valueDictionary.values().removeIf(val -> val.type == Type.NULL);
+		return valueDictionary.size();
 	}
 
 	public void setRet(final boolean ret) {
@@ -631,6 +699,8 @@ public class Datum {
 				return valueStructure.getHash();
 			case VECTOR:
 				return Arrays.deepHashCode(valueVector);
+			case DICTIONARY:
+				return valueDictionary.hashCode();
 			case WORD:
 				return valueWord.toString().hashCode();
 			default:
@@ -674,6 +744,8 @@ public class Datum {
 				return valueWord.equals(d.valueWord);
 			case STRUCTURE:
 				return valueStructure.isEqual(d.valueStructure, line);
+			case DICTIONARY:
+				return valueDictionary.equals(d.valueDictionary);
 			case POINTER:
 				return valuePointer.equals(d.valuePointer);
 			default:
@@ -713,6 +785,9 @@ public class Datum {
 	}
 
 	public String getDebugString(final Token line) {
-		return getTypeString() + ":" + toStringTrace(line);
+		String content = toStringTrace(line);
+		if (content.length() > 50)
+			content = content.substring(0, 50) + "...";
+		return getTypeString() + ":" + content;
 	}
 }

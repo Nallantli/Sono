@@ -5,8 +5,21 @@ var m = new Map();
 var start = timeMS();
 
 i in {0 until 1000} do {
-	m[Random.int(0, 1000)] = Random.float();
+	m[str Random.int(0, 1000)] = Random.float();
 }
 
+println("Map Object:");
 println("Time: " + str (timeMS() - start) + "ms");
 println("Size: " + str m.length());
+
+var dict = @{};
+
+start = timeMS();
+
+i in {0 until 1000} do {
+	dict[str Random.int(0, 1000)] = Random.float();
+}
+
+println("Dictionary:");
+println("Time: " + str (timeMS() - start) + "ms");
+println("Size: " + str dict.length());

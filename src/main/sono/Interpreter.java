@@ -106,6 +106,8 @@ public class Interpreter {
 	protected static final String $VEC = "vec";
 	protected static final String $WORD = "word";
 	protected static final String $XOR = "^";
+	protected static final String $OBJECT_RAW_START = "@{";
+	protected static final String $ENTRY = ":";
 
 	private final Scope main;
 	private final PhoneManager pl;
@@ -131,6 +133,7 @@ public class Interpreter {
 	public final int AB_RULE;
 	public final int SQUARE_BRACKET;
 	public final int CURLY_BRACKET;
+	public final int OBJECT_CURLY_BRACKET;
 	public final int PARENTHESES;
 	public final int ALL;
 	public final int BASE;
@@ -162,6 +165,7 @@ public class Interpreter {
 		AB_RULE = hashVariable("Ab");
 		SQUARE_BRACKET = hashVariable("[");
 		CURLY_BRACKET = hashVariable("{");
+		OBJECT_CURLY_BRACKET = hashVariable($OBJECT_RAW_START);
 		PARENTHESES = hashVariable("(");
 		ALL = hashVariable("_all");
 		BASE = hashVariable("_base");
@@ -435,6 +439,11 @@ public class Interpreter {
 						b = o.pollLast();
 						a = o.pollLast();
 						o.addLast(new Underscore(this, line, a, b));
+						break;
+					case $ENTRY:
+						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new DecEntry(this, line, a, b));
 						break;
 					case $SLASH:
 						b = o.pollLast();
@@ -744,15 +753,20 @@ public class Interpreter {
 			} else if (token.equals("}")) {
 				final List<Operator> list = new ArrayList<>();
 				Operator curr = o.pollLast();
-				while (!(curr.type == Operator.Type.VARIABLE && ((Variable) curr).getKey() == this.CURLY_BRACKET)) {
+				while (!(curr.type == Operator.Type.VARIABLE && (((Variable) curr).getKey() == this.CURLY_BRACKET
+						|| ((Variable) curr).getKey() == this.OBJECT_CURLY_BRACKET))) {
 					list.add(0, curr);
 					curr = o.pollLast();
 				}
-				o.addLast(new HardList(this, line, list.toArray(new Operator[0]), true));
+				final Variable currV = (Variable) curr;
+				if (currV.getKey() == this.CURLY_BRACKET)
+					o.addLast(new HardList(this, line, list.toArray(new Operator[0]), true));
+				else if (currV.getKey() == this.OBJECT_CURLY_BRACKET)
+					o.addLast(new DecRawObject(this, line, list.toArray(new Operator[0])));
 			} else if (token.charAt(0) == '\'') {
 				final Phone p = pl.interpretSegment(token.substring(1));
 				o.addLast(new Container(this, line, new Datum(p)));
-			} else if (token.charAt(0) == '@') {
+			} else if (token.charAt(0) == '#') {
 				final Feature p = pl.interpretFeature(token.substring(1));
 				o.addLast(new Container(this, line, new Datum(p)));
 			} else if (token.charAt(0) == '`') {
@@ -785,6 +799,8 @@ public class Interpreter {
 				o.addLast(new Container(this, line, new Datum(Datum.Type.BOOL)));
 			} else if (token.equals("Rule")) {
 				o.addLast(new Container(this, line, new Datum(Datum.Type.RULE)));
+			} else if (token.equals("Dictionary")) {
+				o.addLast(new Container(this, line, new Datum(Datum.Type.DICTIONARY)));
 			} else if (token.equals("Word")) {
 				o.addLast(new Container(this, line, new Datum(Datum.Type.WORD)));
 			} else if (token.equals("true")) {

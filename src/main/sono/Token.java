@@ -62,4 +62,9 @@ public class Token {
 	public int getLineNumber() {
 		return this.lineNumber;
 	}
+
+	@Override
+	public String toString() {
+		return this.getKey();
+	}
 }

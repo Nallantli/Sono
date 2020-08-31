@@ -18,3 +18,29 @@ static Format class {
 		return s;
 	}
 }
+
+jsonify(ref value) => {
+	type(value) == "Vector" then {
+		var s = "[";
+		i in {0 until length(value)} do {
+			s += jsonify(value[i]);
+			i < length(value) - 1 then {
+				s += ",";
+			}
+		}
+		return s + "]";
+	} else type(value) == "Dictionary" then {
+		var s = "{";
+		var i = 0;
+		e in value do {
+			s += "\"" + e["key"] + "\":" + jsonify(e["value"]);
+			i < length(value) - 1 then {
+				s += ",";
+			}
+			i += 1;
+		}
+		return s + "}";
+	} else {
+		return "\"" + str value + "\"";
+	}
+}

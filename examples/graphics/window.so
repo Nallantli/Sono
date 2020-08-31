@@ -1,5 +1,4 @@
 load "graphics.so";
-load "map.so";
 load "vector.so";
 load "feature.so";
 
@@ -12,21 +11,21 @@ var exitLabel = first.add(new Component.Menu.Label("Exit"));
 
 window.add(menuBar, Component.NORTH);
 
-var selected = new Map();
-var FB = new Map();
-var phoneB = new Map();
+var selected = @{};
+var FB = @{};
+var phoneB = @{};
 
 evaluate() => {
 	var m = {};
-	e in vec selected do {
-		m += {feat (e.value + "|" + e.key)};
+	e in selected do {
+		m += {feat (e["value"] + "|" + e["key"])};
 	}
 	var phones = (mat m) from _base;
 	p in _base do {
 		phones.contains(p) then {
-			phoneB[p].enable();
+			phoneB[str p].enable();
 		} else {
-			phoneB[p].disable();
+			phoneB[str p].disable();
 		}
 	}
 }
@@ -107,7 +106,7 @@ f in _features do {
 var panel = featurePad.add(new Component.Panel.Table(0, 10));
 p in _base do {
 	var button = panel.add(new Component.Button(str p));
-	phoneB[p] = button;
+	phoneB[str p] = button;
 
 	button.action(() => {
 		setPhone(p);

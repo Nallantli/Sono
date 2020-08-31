@@ -22,6 +22,8 @@ public class Length extends Unary {
 				return new Datum(datumA.getWord(line).size());
 			case VECTOR:
 				return new Datum(datumA.getVectorLength(line));
+			case DICTIONARY:
+				return new Datum(datumA.getDictionaryLength(line));
 			case MATRIX:
 				return new Datum(datumA.getMatrix(line).size());
 			case STRUCTURE:

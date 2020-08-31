@@ -1,4 +1,4 @@
-# Sono Beta 1.9.0
+# Sono Beta 1.10.0
 
 <div align="center">
 <img src="misc/Sono.svg" alt="Sono Logo" width="150">
@@ -57,6 +57,7 @@ Type | Notes | Examples of Literals
 `Boolean` | `true` or `false`, comparsion boolean values | `true`, `false`
 `String` | Sequence of text, immutable | `"Hello World"`
 `Vector` | List of any values, including mixed types | `{1,2,3,4}`, `{"Hello", 1}`, `{{1,2}, 3}`
+`Dictionary` | Associative array of `String` to any value; for an associative array with keys of type other than `String`, see `map.so` | `@{"hello" : "world", "salve" : "munde"}`
 `Phone` | Phonological segment or phoneme, support for all segments in the user selected feature file and various secondary articulations (`◌̩`, `◌̠`, `◌̟`, `◌̪`, `◌̺`, `◌̥`, `◌̥`, `◌̃`, `◌ʷ`, `◌ʲ`, `◌ˠ`, `◌ˤ`, `◌ʰ`, `◌ː`, a segment may use multiple secondary articulations, but those that contrast with each other will give error *c.f. `*[o̟̠]`*)<br>Currently there is no support for X-SAMPA<br>Affricates must have an underscore to bind them | `'s'`, `'t_ɕ'`, `'rʷː'`
 `Word` | Sequence of Phones, with the addition of syllable delimiters `.` and morpheme boundary markers `+` | `` `foʊnɒləd_ʒi` ``, `` `soʊ.noʊ` ``, `` `naː.wa+tɬ` ``
 `Feature` | Distinctive feature and its quality | `+|long`, `-|LAB`
@@ -95,8 +96,8 @@ Operators are strictly typed however, and thus a variable of type `Number` canno
 
 Keyword | Conversion | Values
 -|-|-
-`str` | Convert to a `String` | Any value
-`vec` | Converts to a `Vector` | `String`, `Matrix`, `Word`
+`str` | Convert to a `String` | `Any`
+`vec` | Converts to a `Vector` | `String`, `Matrix`, `Word`, `Dictionary`
 `mat` | Converts to a `Matrix` | `Vector` (of Features)
 `num` | Converts to a `Number` | `String`
 `char` | Converts to a 1-element `String` value of a `Number` | `Number`

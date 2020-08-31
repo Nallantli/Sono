@@ -2,6 +2,7 @@ package main.sono.ops;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import main.phl.Feature;
 import main.phl.Word;
@@ -46,6 +47,13 @@ public class ToVector extends Unary {
 				break;
 			case VECTOR:
 				return datumA;
+			case DICTIONARY:
+				Map<String, Datum> dict = datumA.getMap(line);
+				list = new Datum[dict.size()];
+				i = 0;
+				for (Map.Entry<String, Datum> e : dict.entrySet())
+					list[i++] = new Datum(Map.of("key", new Datum(e.getKey()), "value", e.getValue()));
+				break;
 			case STRUCTURE:
 				return datumA.getStructure(line).getScope().getVariable(interpreter.GET_LIST, interpreter, line)
 						.getFunction(Datum.Type.ANY, line).execute(null, line);
