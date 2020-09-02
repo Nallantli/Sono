@@ -4,6 +4,7 @@ import main.sono.Datum;
 import main.sono.Interpreter;
 import main.sono.Scope;
 import main.sono.Token;
+import main.sono.err.SonoRuntimeException;
 
 public class CastReference extends Casting {
 	public CastReference(final Interpreter interpreter, final Token line, final int varName) {
@@ -13,7 +14,8 @@ public class CastReference extends Casting {
 
 	@Override
 	public Datum evaluate(final Scope scope) {
-		return null;
+		throw new SonoRuntimeException(
+				"Operator cannot exist as a terminal node (Must be used in Function declaration)", line);
 	}
 
 	@Override

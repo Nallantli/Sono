@@ -18,7 +18,7 @@ public class LIB_Socket extends Library {
 	}
 
 	public Datum OPEN(final Datum[] data, final Token line) {
-		if (SonoWrapper.getGlobalOption("SOCKET").equals("FALSE"))
+		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Socket permissions are disabled for this interpreter.", line);
 		final String address = data[0].getString(line);
 		final int port = (int) data[1].getNumber(line);
@@ -102,7 +102,7 @@ public class LIB_Socket extends Library {
 	}
 
 	public Datum SERVER_OPEN(final Datum[] data, final Token line) {
-		if (SonoWrapper.getGlobalOption("SOCKET").equals("FALSE"))
+		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Socket permissions are disabled for this interpreter.", line);
 		final int port = (int) data[0].getNumber(line);
 		try {

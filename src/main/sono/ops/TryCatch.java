@@ -22,7 +22,7 @@ public class TryCatch extends Unary {
 	@Override
 	public Datum evaluate(final Scope scope) {
 		try {
-			return a.evaluate(scope);
+			return a.evaluate(new Scope(scope.getStructure(), scope));
 		} catch (final SonoRuntimeException e) {
 			if (b != null) {
 				final Scope catchScope = new Scope(scope.getStructure(), scope);

@@ -2,11 +2,12 @@ package main.sono;
 
 public class Token {
 	private final String line;
+	private final String filename;
 	private final StringBuilder key;
 	private final int index;
 	private final int lineNumber;
 
-	public Token(final String key, String line, int index, final int lineNumber) {
+	public Token(final String key, String line, String filename, int index, final int lineNumber) {
 		if (line != null && line.length() > 0) {
 			while (line.charAt(0) == '\t' || line.charAt(0) == ' ') {
 				line = line.substring(1);
@@ -14,6 +15,7 @@ public class Token {
 			}
 		}
 		this.line = line;
+		this.filename = filename;
 		this.index = index;
 		this.key = new StringBuilder(key);
 		this.lineNumber = lineNumber;
@@ -61,6 +63,12 @@ public class Token {
 
 	public int getLineNumber() {
 		return this.lineNumber;
+	}
+
+	public String getFilename() {
+		if (this.filename == null)
+			return "*";
+		return this.filename;
 	}
 
 	@Override

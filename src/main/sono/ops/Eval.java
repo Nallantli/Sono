@@ -14,7 +14,7 @@ public class Eval extends Unary {
 	@Override
 	public Datum evaluate(Scope scope) {
 		final String code = a.evaluate(scope).getString(line);
-		return interpreter.runCode("", code);
+		return interpreter.runCode("", null, code);
 	}
 
 	@Override

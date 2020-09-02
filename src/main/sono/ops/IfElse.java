@@ -22,9 +22,9 @@ public class IfElse extends Binary {
 	public Datum evaluate(final Scope scope) {
 		final Datum condition = a.evaluate(scope);
 		if (condition.getBool(line))
-			return b.evaluate(scope);
+			return b.evaluate(new Scope(scope.getStructure(), scope));
 		else if (c != null)
-			return c.evaluate(scope);
+			return c.evaluate(new Scope(scope.getStructure(), scope));
 		return new Datum();
 	}
 

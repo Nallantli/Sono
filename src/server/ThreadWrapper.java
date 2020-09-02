@@ -26,7 +26,7 @@ public class ThreadWrapper extends Thread {
 	public void run() {
 		stdout.printHeader("STATUS", "TRUE");
 		server.pause(conn);
-		final Datum output = wrapper.run("examples", code);
+		final Datum output = wrapper.run("examples", null, code);
 
 		final StringBuilder sb = new StringBuilder();
 

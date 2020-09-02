@@ -52,9 +52,7 @@ public class SonoClient {
 
 		SonoWrapper.setGlobalOption("PATH", path);
 
-		SonoWrapper.setGlobalOption("WRITE", "TRUE");
-		SonoWrapper.setGlobalOption("SOCKET", "TRUE");
-		SonoWrapper.setGlobalOption("GRAPHICS", "TRUE");
+		SonoWrapper.setGlobalOption("WEB", "FALSE");
 
 		boolean force = false;
 
@@ -183,7 +181,7 @@ public class SonoClient {
 				System.out.print("> ");
 				final String line = sc.nextLine();
 				try {
-					final Datum result = center.run(".", line);
+					final Datum result = center.run(".", null, line);
 					if (result.getType() == Datum.Type.VECTOR) {
 						int i = 0;
 						for (final Datum d : result.getVector(null))

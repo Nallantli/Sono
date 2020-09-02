@@ -412,7 +412,7 @@ class WindowFunctions extends JFrame {
 public class LIB_Graphics extends Library {
 	public LIB_Graphics(final Interpreter interpreter) {
 		super(interpreter);
-		if (!SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE")) {
+		if (SonoWrapper.getGlobalOption("WEB").equals("FALSE")) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
@@ -423,7 +423,7 @@ public class LIB_Graphics extends Library {
 	}
 
 	public Datum INIT(final Datum[] data, final Token line) {
-		if (SonoWrapper.getGlobalOption("GRAPHICS").equals("FALSE"))
+		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Graphics permissions are disabled for this interpreter.", line);
 		final String title = data[0].getString(line);
 		final int width = (int) data[1].getNumber(line);

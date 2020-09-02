@@ -33,7 +33,7 @@ public class LIB_FileIO extends Library {
 	}
 
 	public Datum CREATE(final Datum[] data, final Token line) {
-		if (SonoWrapper.getGlobalOption("WRITE").equals("FALSE"))
+		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Write permissions are disabled for this interpreter.", line);
 		final File file = (File) data[0].getPointer(line);
 		try {
@@ -94,7 +94,7 @@ public class LIB_FileIO extends Library {
 	}
 
 	public Datum WRITER_INIT(final Datum[] data, final Token line) {
-		if (SonoWrapper.getGlobalOption("WRITE").equals("FALSE"))
+		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Write permissions are disabled for this interpreter.", line);
 		final File file = (File) data[0].getPointer(line);
 		BufferedWriter bw;

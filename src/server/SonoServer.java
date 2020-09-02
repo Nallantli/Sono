@@ -54,9 +54,7 @@ public class SonoServer extends WebSocketServer {
 	private final Map<WebSocket, Boolean> WAIT;
 
 	public static void main(final String[] args) {
-		SonoWrapper.setGlobalOption("WRITE", "FALSE");
-		SonoWrapper.setGlobalOption("SOCKET", "FALSE");
-		SonoWrapper.setGlobalOption("GRAPHICS", "FALSE");
+		SonoWrapper.setGlobalOption("WEB", "TRUE");
 		String path = new File(SonoServer.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getParent() + "/bin/";
 		try {
 			path = URLDecoder.decode(path, "UTF-8");

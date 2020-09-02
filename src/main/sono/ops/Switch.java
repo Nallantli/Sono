@@ -30,9 +30,9 @@ public class Switch extends Unary {
 			if (c == null)
 				return new Datum();
 			else
-				return c.evaluate(scope);
+				return c.evaluate(new Scope(scope.getStructure(), scope));
 		}
-		return map.get(key).evaluate(scope);
+		return map.get(key).evaluate(new Scope(scope.getStructure(), scope));
 	}
 
 	@Override

@@ -27,7 +27,8 @@ public class SwitchCase extends Operator {
 
 	@Override
 	public Datum evaluate(final Scope scope) {
-		throw new SonoRuntimeException("Cannot evaluate uncontrolled goto statement", line);
+		throw new SonoRuntimeException("Operator cannot exist as a terminal node (Must be used in Switch declaration)",
+				line);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import main.sono.Interpreter;
 import main.sono.Operator;
 import main.sono.Scope;
 import main.sono.Token;
+import main.sono.err.SonoRuntimeException;
 
 public class Iterator extends Binary {
 	public Iterator(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
@@ -13,7 +14,7 @@ public class Iterator extends Binary {
 
 	@Override
 	public Datum evaluate(final Scope scope) {
-		return null;
+		throw new SonoRuntimeException("Operator cannot exist as a terminal node (Must be used in do-loop)", line);
 	}
 
 	@Override
