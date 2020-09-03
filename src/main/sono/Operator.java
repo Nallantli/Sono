@@ -8,10 +8,11 @@ public abstract class Operator {
 		NUMBER_CONVERT, CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN,
 		JOIN_DEC, STR_DEC, FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONVERT, TYPE_DEC, STRUCT_DEC, STATIC_DEC,
 		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH, HASH,
-		P_EQUALS, P_NOT_EQUAL, ABSTRACT_DEC, EXTENDS, XOR,
+		P_EQUALS, P_NOT_EQUAL, ABSTRACT_DEC, EXTENDS, XOR, IF_ELSE_INLINE, EXECUTE, OUTER_CALL, SWITCH_CASE, EVAL,
+		DEC_RAW_OBJECT, ENTRY,
 
 		// INTERPRETER USE
-		UNARY, BINARY, SEQUENCE, EXECUTE, OUTER_CALL, SWITCH_CASE, EVAL, DEC_RAW_OBJECT, ENTRY
+		UNARY, BINARY, SEQUENCE
 	}
 
 	protected Type type;
@@ -34,5 +35,13 @@ public abstract class Operator {
 
 	public Type getType() {
 		return this.type;
+	}
+
+	public Token getLine() {
+		return this.line;
+	}
+
+	public Interpreter getInterpreter() {
+		return this.interpreter;
 	}
 }

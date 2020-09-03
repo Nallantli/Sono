@@ -60,7 +60,9 @@ setApple() => {
 	true do {
 		x = Random.int(0, SIZE_X);
 		y = Random.int(0, SIZE_Y);
-		valueArray[x][y] == 0 then break;
+		valueArray[x][y] == 0 then {
+			break;
+		}
 	}
 	valueArray[x][y] = -1;
 }
@@ -70,10 +72,18 @@ refresh() => {
 		direction = newDir;
 
 		direction switch {
-			0 goto posX = (posX + 1 + SIZE_X) % SIZE_X;
-			1 goto posX = (posX - 1 + SIZE_X) % SIZE_X;
-			2 goto posY = (posY + 1 + SIZE_Y) % SIZE_Y;
-			3 goto posY = (posY - 1 + SIZE_Y) % SIZE_Y;
+			0 goto {
+				posX = (posX + 1 + SIZE_X) % SIZE_X;
+			}
+			1 goto {
+				posX = (posX - 1 + SIZE_X) % SIZE_X;
+			}
+			2 goto {
+				posY = (posY + 1 + SIZE_Y) % SIZE_Y;
+			}
+			3 goto {
+				posY = (posY - 1 + SIZE_Y) % SIZE_Y;
+			}
 		}
 
 		valueArray[posX][posY] == -1 then {

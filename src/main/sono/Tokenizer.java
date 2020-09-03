@@ -71,7 +71,6 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$XOR, 5),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$RULE, 5),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$UNTIL, 4),
-			new SimpleImmutableEntry<String, Integer>(Interpreter.$ENTRY, 4),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$ADD_SET, -4),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$DIV_SET, -4),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$MOD_SET, -4),
@@ -86,7 +85,9 @@ public class Tokenizer {
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$IN, 3),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$SWITCH, 3),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$THEN, 3),
+			new SimpleImmutableEntry<String, Integer>(Interpreter.$THEN_INLINE, 3),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$ELSE, -3),
+			new SimpleImmutableEntry<String, Integer>(Interpreter.$ENTRY, -3),
 			new SimpleImmutableEntry<String, Integer>(",", 2),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$REFER, 2),
 			new SimpleImmutableEntry<String, Integer>(Interpreter.$RETURN, 2),
@@ -188,7 +189,8 @@ public class Tokenizer {
 					continue;
 				} else if (c == '{' && lastChar == '@') {
 					tokens.remove(tokens.size() - 1);
-					tokens.add(new Token(Interpreter.$OBJECT_RAW_START, lines[lineIndex], filename, cursorIndex, lineIndex));
+					tokens.add(new Token(Interpreter.$OBJECT_RAW_START, lines[lineIndex], filename, cursorIndex,
+							lineIndex));
 					// tokens.add(new Token("#[", lines[lineIndex], cursorIndex, lineIndex));
 					lastChar = '(';
 					mode = 0;
@@ -210,14 +212,16 @@ public class Tokenizer {
 						if (Character.isLetterOrDigit(c) || c == '_')
 							tokens.get(tokens.size() - 1).append(c);
 						else
-							tokens.add(new Token(String.valueOf(c), lines[lineIndex], filename, cursorIndex, lineIndex));
+							tokens.add(
+									new Token(String.valueOf(c), lines[lineIndex], filename, cursorIndex, lineIndex));
 						break;
 					case 2:
 						if (!(Character.isLetterOrDigit(c) || c == '_')
 								&& operators.containsKey(tokens.get(tokens.size() - 1).getKey() + String.valueOf(c)))
 							tokens.get(tokens.size() - 1).append(c);
 						else
-							tokens.add(new Token(String.valueOf(c), lines[lineIndex], filename, cursorIndex, lineIndex));
+							tokens.add(
+									new Token(String.valueOf(c), lines[lineIndex], filename, cursorIndex, lineIndex));
 						break;
 					default:
 						throw new SonoCompilationException("Unknown tokenizer mode change.");
@@ -236,8 +240,8 @@ public class Tokenizer {
 			final String t = raw.getKey();
 			final String line = raw.getLine();
 			final int cursor = raw.getCursor();
-			//if (t.equals("#[") || t.equals("#]"))
-			//	continue;
+			// if (t.equals("#[") || t.equals("#]"))
+			// continue;
 			if (last.equals("}") && !t.equals(Interpreter.$ELSE) && !t.equals("[")
 					&& (!operators.containsKey(t) || (operators.containsKey(t) && operators.get(t) < 0)))
 				newTokens.add(new Token(";", line, filename, cursor + 1, raw.getLineNumber()));
@@ -265,8 +269,8 @@ public class Tokenizer {
 					&& Character.isDigit(newTokens.get(newTokens.size() - 2).charAt(0))) {
 				newTokens.remove(newTokens.size() - 1);
 				final String temp = newTokens.get(newTokens.size() - 1).getKey() + "." + t + "D";
-				newTokens.set(newTokens.size() - 1,
-						new Token(temp, line, filename, newTokens.get(newTokens.size() - 1).getCursor(), raw.getLineNumber()));
+				newTokens.set(newTokens.size() - 1, new Token(temp, line, filename,
+						newTokens.get(newTokens.size() - 1).getCursor(), raw.getLineNumber()));
 				last = t;
 				continue;
 			}

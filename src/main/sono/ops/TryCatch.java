@@ -28,10 +28,9 @@ public class TryCatch extends Unary {
 				final Scope catchScope = new Scope(scope.getStructure(), scope);
 				catchScope.setVariable(interpreter, interpreter.ERROR, new Datum(e.getMessage()), line);
 				return b.evaluate(catchScope);
-			} else {
-				return new Datum();
 			}
 		}
+		return new Datum();
 	}
 
 	@Override

@@ -26,13 +26,12 @@ public class Switch extends Unary {
 	@Override
 	public Datum evaluate(final Scope scope) {
 		final Datum key = a.evaluate(scope);
-		if (!map.containsKey(key)) {
-			if (c == null)
-				return new Datum();
-			else
-				return c.evaluate(new Scope(scope.getStructure(), scope));
+		if (map.containsKey(key)) {
+			return map.get(key).evaluate(new Scope(scope.getStructure(), scope));
+		} else if (c != null) {
+			return c.evaluate(new Scope(scope.getStructure(), scope));
 		}
-		return map.get(key).evaluate(new Scope(scope.getStructure(), scope));
+		return new Datum();
 	}
 
 	@Override

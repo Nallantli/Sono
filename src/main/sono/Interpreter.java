@@ -95,6 +95,7 @@ public class Interpreter {
 	protected static final String $SUB_SET = "-=";
 	protected static final String $SWITCH = "switch";
 	protected static final String $THEN = "then";
+	protected static final String $THEN_INLINE = "?";
 	protected static final String $THROW = "throw";
 	protected static final String $TRANSFORM = ">>";
 	protected static final String $TRANSFORM_SET = ">>=";
@@ -449,7 +450,12 @@ public class Interpreter {
 					case $ENTRY:
 						b = o.pollLast();
 						a = o.pollLast();
-						o.addLast(new DecEntry(this, line, a, b));
+						if (a.type == Operator.Type.IF_ELSE_INLINE) {
+							((IfElseInline) a).setElse(b);
+							o.addLast(a);
+						} else {
+							o.addLast(new DecEntry(this, line, a, b));
+						}
 						break;
 					case $SLASH:
 						b = o.pollLast();
@@ -618,9 +624,7 @@ public class Interpreter {
 						o.addLast(new RangeUntil(this, line, a, b));
 						break;
 					case $DO:
-						b = o.pollLast();
-						if (b.type == Operator.Type.HARD_LIST)
-							b = new SoftList(this, line, b.getChildren());
+						b = softenIfList(o.pollLast());
 						a = o.pollLast();
 						o.addLast(new Loop(this, line, a, b));
 						break;
@@ -680,7 +684,7 @@ public class Interpreter {
 						}
 						break;
 					case $GOTO:
-						b = o.pollLast();
+						b = softenIfList(o.pollLast());
 						final Datum datumA = o.pollLast().evaluate(null);
 						o.addLast(new SwitchCase(this, line, datumA, b));
 						break;
@@ -695,12 +699,17 @@ public class Interpreter {
 						o.addLast(new Switch(this, line, a, ops));
 						break;
 					case $THEN:
-						b = o.pollLast();
+						b = softenIfList(o.pollLast());
 						a = o.pollLast();
 						o.addLast(new IfElse(this, line, a, b));
 						break;
-					case $ELSE:
+					case $THEN_INLINE:
 						b = o.pollLast();
+						a = o.pollLast();
+						o.addLast(new IfElseInline(this, line, a, b));
+						break;
+					case $ELSE:
+						b = softenIfList(o.pollLast());
 						a = o.pollLast();
 						if (a.type == Operator.Type.IF_ELSE)
 							((IfElse) a).setElse(b);
@@ -709,7 +718,7 @@ public class Interpreter {
 						o.addLast(a);
 						break;
 					case $CATCH:
-						b = o.pollLast();
+						b = softenIfList(o.pollLast());
 						a = o.pollLast();
 						((TryCatch) a).setCatch(b);
 						o.addLast(a);
@@ -866,5 +875,11 @@ public class Interpreter {
 		}
 		s.append(fin);
 		return s.toString();
+	}
+
+	private static Operator softenIfList(final Operator o) {
+		if (o.type == Operator.Type.HARD_LIST)
+			return new SoftList((HardList) o);
+		return o;
 	}
 }

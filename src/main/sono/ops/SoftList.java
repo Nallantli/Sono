@@ -14,6 +14,10 @@ public class SoftList extends Sequence {
 		super(interpreter, Type.SOFT_LIST, line, operators);
 	}
 
+	public SoftList(final HardList o) {
+		super(o.getInterpreter(), Type.SOFT_LIST, o.getLine(), o.operators);
+	}
+
 	@Override
 	public Datum evaluate(final Scope scope) {
 		Datum[] data = null;
