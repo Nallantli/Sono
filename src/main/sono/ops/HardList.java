@@ -17,7 +17,7 @@ public class HardList extends Sequence {
 	@Override
 	public Datum evaluate(final Scope scope) {
 		Datum[] data = null;
-		if (Interpreter.containsInstance(operators, RangeUntil.class)) {
+		if (this.containsRange) {
 			final List<Datum> list = new ArrayList<>();
 			for (final Operator o : operators) {
 				if (o.getType() == Type.RANGE_UNTIL)

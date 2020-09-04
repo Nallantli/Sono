@@ -15,7 +15,7 @@ public class DecRule extends Unary {
 	private final Rule.Type ruleType;
 
 	public DecRule(final Interpreter interpreter, final Token line, final Rule.Type ruleType, final Operator a) {
-		super(interpreter, Type.RULE_DEC, line, a);
+		super(interpreter, Type.DEC_RULE, line, a);
 		this.ruleType = ruleType;
 	}
 

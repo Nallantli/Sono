@@ -8,7 +8,7 @@ import main.sono.Token;
 
 public class Equals extends Binary {
 	public Equals(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
-		super(interpreter, Type.EQUAL, line, a, b);
+		super(interpreter, Type.EQUALS, line, a, b);
 	}
 
 	@Override

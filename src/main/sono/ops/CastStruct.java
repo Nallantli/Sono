@@ -8,7 +8,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class CastStruct extends Casting {
 	public CastStruct(final Interpreter interpreter, final Token line, final int varName) {
-		super(interpreter, Type.STRUCT_DEC, line, varName);
+		super(interpreter, Type.CAST_STRUCT, line, varName);
 	}
 
 	@Override

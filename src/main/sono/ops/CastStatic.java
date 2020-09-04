@@ -8,7 +8,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class CastStatic extends Casting {
 	public CastStatic(final Interpreter interpreter, final Token line, final int varName) {
-		super(interpreter, Type.STATIC_DEC, line, varName);
+		super(interpreter, Type.CAST_STATIC, line, varName);
 	}
 
 	@Override

@@ -9,10 +9,12 @@ import main.sono.Token;
 
 public abstract class Sequence extends Operator {
 	protected Operator[] operators;
+	protected boolean containsRange;
 
 	public Sequence(final Interpreter i, final Type type, final Token line, final Operator[] operators) {
 		super(i, type, line);
 		this.operators = operators;
+		this.containsRange = true;
 	}
 
 	public Operator[] getVector() {
@@ -35,5 +37,11 @@ public abstract class Sequence extends Operator {
 				newO.add(o);
 		}
 		this.operators = newO.toArray(new Operator[0]);
+		this.containsRange = Interpreter.containsInstance(this.operators, RangeUntil.class);
+	}
+
+	@Override
+	protected String getInfo() {
+		return "(" + containsRange + ")";
 	}
 }

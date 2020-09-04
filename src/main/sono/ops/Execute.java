@@ -51,7 +51,7 @@ public class Execute extends Binary {
 		} else {
 			pValues = datumB.getVector(line);
 			final Datum fDatum = a.evaluate(scope);
-			if (pValuesSize != 0)
+			if (pValuesSize > 0)
 				f = fDatum.getFunction(datumB.indexVector(0).getType(), line);
 			if (f == null)
 				f = fDatum.getFunction(Datum.Type.ANY, line);

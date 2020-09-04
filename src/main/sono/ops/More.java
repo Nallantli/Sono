@@ -8,7 +8,7 @@ import main.sono.Token;
 
 public class More extends Binary {
 	public More(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
-		super(interpreter, Type.LESS, line, a, b);
+		super(interpreter, Type.MORE, line, a, b);
 	}
 
 	@Override

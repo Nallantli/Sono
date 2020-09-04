@@ -45,4 +45,9 @@ public class OuterCall extends Unary {
 	public String toString() {
 		return " _OUTER_CALL_ " + a.toString();
 	}
+
+	@Override
+	protected String getInfo() {
+		return "(" + clazz + ", " + key + ")";
+	}
 }

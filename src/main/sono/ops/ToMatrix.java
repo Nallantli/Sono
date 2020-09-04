@@ -11,7 +11,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class ToMatrix extends Unary {
 	public ToMatrix(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.MATRIX_CONVERT, line, a);
+		super(interpreter, Type.TO_MATRIX, line, a);
 	}
 
 	@Override

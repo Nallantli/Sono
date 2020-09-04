@@ -9,7 +9,7 @@ import main.sono.Token;
 
 public class DecNew extends Unary {
 	public DecNew(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.NEW_DEC, line, a);
+		super(interpreter, Type.DEC_NEW, line, a);
 	}
 
 	@Override

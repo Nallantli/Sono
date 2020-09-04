@@ -9,7 +9,7 @@ import main.sono.Token;
 
 public class DecClass extends Binary {
 	public DecClass(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
-		super(interpreter, Type.CLASS_DEC, line, a, b);
+		super(interpreter, Type.DEC_CLASS, line, a, b);
 	}
 
 	@Override
@@ -24,9 +24,9 @@ public class DecClass extends Binary {
 			objectOperator = a;
 		}
 		final int varName = ((Casting) objectOperator).getKey();
-		if (objectOperator.getType() == Type.STATIC_DEC)
+		if (objectOperator.getType() == Type.CAST_STATIC)
 			stype = Structure.Type.STATIC;
-		else if (objectOperator.getType() == Type.ABSTRACT_DEC)
+		else if (objectOperator.getType() == Type.CAST_ABSTRACT)
 			stype = Structure.Type.ABSTRACT;
 		Operator main = b;
 		if (extending != null)

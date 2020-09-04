@@ -9,7 +9,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class DecEntry extends Binary {
 	public DecEntry(final Interpreter i, final Token line, final Operator a, final Operator b) {
-		super(i, Operator.Type.ENTRY, line, a, b);
+		super(i, Operator.Type.DEC_ENTRY, line, a, b);
 	}
 
 	@Override

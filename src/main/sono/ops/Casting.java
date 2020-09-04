@@ -25,4 +25,9 @@ public abstract class Casting extends Operator {
 	public void condense() {
 		// Unnecessary
 	}
+
+	@Override
+	protected String getInfo() {
+		return "(" + interpreter.deHash(varName) + ")";
+	}
 }

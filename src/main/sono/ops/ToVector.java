@@ -15,7 +15,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class ToVector extends Unary {
 	public ToVector(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.LIST_DEC, line, a);
+		super(interpreter, Type.TO_VECTOR, line, a);
 	}
 
 	@Override

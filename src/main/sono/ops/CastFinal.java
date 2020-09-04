@@ -8,7 +8,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class CastFinal extends Casting {
 	public CastFinal(final Interpreter interpreter, final Token line, final int varName) {
-		super(interpreter, Type.FINAL, line, varName);
+		super(interpreter, Type.CAST_FINAL, line, varName);
 		this.varName = varName;
 	}
 

@@ -20,7 +20,7 @@ public class DecRawObject extends Sequence {
 	public Datum evaluate(final Scope scope) {
 		final Map<String, Datum> entries = new HashMap<>();
 		for (final Operator o : operators) {
-			if (o.getType() != Operator.Type.ENTRY)
+			if (o.getType() != Operator.Type.DEC_ENTRY)
 				throw new SonoRuntimeException("Dictionary values require entries as children in declaration", line);
 			final DecEntry entry = (DecEntry) o;
 			final String entryKey = entry.getA().evaluate(scope).getString(line);

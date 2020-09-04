@@ -9,7 +9,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class ToChar extends Unary {
 	public ToChar(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.CHAR, line, a);
+		super(interpreter, Type.TO_CHAR, line, a);
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import main.sono.Token;
 
 public class ToFeature extends Unary {
 	public ToFeature(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.FEAT_DEC, line, a);
+		super(interpreter, Type.TO_FEATURE, line, a);
 	}
 
 	@Override

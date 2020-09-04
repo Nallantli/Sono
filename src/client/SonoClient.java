@@ -120,6 +120,8 @@ public class SonoClient {
 			}
 		}
 
+		boolean drawTree = getOption("-tree", args) != null;
+
 		if (getOption("-d", args) != null) {
 			force = true;
 			final File directory = new File(configPath, ".sono");
@@ -171,7 +173,7 @@ public class SonoClient {
 			filename = new File(args[0]);
 		}
 		final SonoWrapper center = new SonoWrapper(pl, filename, new StandardOutput(), new ErrorOutput(),
-				new StandardInput(sc));
+				new StandardInput(sc), drawTree);
 
 		if (filename == null) {
 			System.out.println("Sono " + SonoWrapper.VERSION);
@@ -181,7 +183,7 @@ public class SonoClient {
 				System.out.print("> ");
 				final String line = sc.nextLine();
 				try {
-					final Datum result = center.run(".", null, line);
+					final Datum result = center.run(".", null, line, drawTree);
 					if (result.getType() == Datum.Type.VECTOR) {
 						int i = 0;
 						for (final Datum d : result.getVector(null))

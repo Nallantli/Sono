@@ -9,7 +9,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class Length extends Unary {
 	public Length(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.LEN, line, a);
+		super(interpreter, Type.LENGTH, line, a);
 	}
 
 	@Override

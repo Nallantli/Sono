@@ -10,7 +10,7 @@ import main.sono.Token;
 
 public class DecMatrix extends Sequence {
 	public DecMatrix(final Interpreter interpreter, final Token line, final Operator[] operators) {
-		super(interpreter, Type.MATRIX_DEC, line, operators);
+		super(interpreter, Type.DEC_MATRIX, line, operators);
 	}
 
 	@Override

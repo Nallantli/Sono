@@ -10,7 +10,7 @@ public class Container extends Operator {
 	private final Datum datum;
 
 	public Container(final Interpreter interpreter, final Token line, final Datum datum) {
-		super(interpreter, Type.DATUM, line);
+		super(interpreter, Type.CONTAINER, line);
 		this.datum = datum;
 	}
 
@@ -36,5 +36,10 @@ public class Container extends Operator {
 	@Override
 	public void condense() {
 		// Unnecessary
+	}
+
+	@Override
+	protected String getInfo() {
+		return "(" + datum.getDebugString(null) + ")";
 	}
 }

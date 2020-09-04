@@ -8,7 +8,7 @@ import main.sono.Token;
 
 public class ToHash extends Unary {
 	public ToHash(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.HASH, line, a);
+		super(interpreter, Type.TO_HASH, line, a);
 	}
 
 	@Override

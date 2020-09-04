@@ -8,7 +8,7 @@ import main.sono.Token;
 
 public class NotEqualsPure extends Binary {
 	public NotEqualsPure(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
-		super(interpreter, Type.P_NOT_EQUAL, line, a, b);
+		super(interpreter, Type.NOT_EQUALS_PURE, line, a, b);
 	}
 
 	@Override

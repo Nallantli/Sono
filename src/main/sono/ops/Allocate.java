@@ -9,7 +9,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class Allocate extends Unary {
 	public Allocate(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.ALLOC, line, a);
+		super(interpreter, Type.ALLOCATE, line, a);
 	}
 
 	@Override

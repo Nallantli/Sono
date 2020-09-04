@@ -13,7 +13,7 @@ import main.sono.Token;
 
 public class Find extends Binary {
 	public Find(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
-		super(interpreter, Type.FIND_DEC, line, a, b);
+		super(interpreter, Type.FIND, line, a, b);
 	}
 
 	@Override

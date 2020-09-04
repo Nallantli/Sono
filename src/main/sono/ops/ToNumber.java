@@ -9,7 +9,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class ToNumber extends Unary {
 	public ToNumber(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.NUMBER_CONVERT, line, a);
+		super(interpreter, Type.TO_NUMBER, line, a);
 	}
 
 	@Override

@@ -7,9 +7,9 @@ import main.sono.Scope;
 import main.sono.Token;
 import main.sono.err.SonoRuntimeException;
 
-public class CastType extends Binary {
-	public CastType(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
-		super(interpreter, Type.TYPE_DEC, line, a, b);
+public class DecObjective extends Binary {
+	public DecObjective(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
+		super(interpreter, Type.DEC_OBJECTIVE, line, a, b);
 	}
 
 	@Override

@@ -1,15 +1,17 @@
 package main.sono;
 
+import main.base.ConsoleColors;
+
 public abstract class Operator {
 
 	public enum Type {
-		VARIABLE, DATUM, SET, TRANSFORM, SOFT_LIST, HARD_LIST, RULE_DEC, ARROW, SLASH, UNDERSCORE, MATRIX_DEC, SEQ_DEC,
-		COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUAL, NOT_EQUAL, LESS, MORE, E_LESS, E_MORE, MATRIX_CONVERT,
-		NUMBER_CONVERT, CONTRAST, VAR_DEC, LIST_DEC, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, LAMBDA, RETURN,
-		JOIN_DEC, STR_DEC, FIND_DEC, AND, OR, LEN, INNER, REF_DEC, TYPE_CONVERT, TYPE_DEC, STRUCT_DEC, STATIC_DEC,
-		CLASS_DEC, NEW_DEC, POW, FEAT_DEC, THROW, TRY_CATCH, CHAR, ALLOC, FINAL, REGISTER, CODE, REFER, SWITCH, HASH,
-		P_EQUALS, P_NOT_EQUAL, ABSTRACT_DEC, EXTENDS, XOR, IF_ELSE_INLINE, EXECUTE, OUTER_CALL, SWITCH_CASE, EVAL,
-		DEC_RAW_OBJECT, ENTRY,
+		VARIABLE, CONTAINER, SET, TRANSFORM, SOFT_LIST, HARD_LIST, DEC_RULE, ARROW, SLASH, UNDERSCORE, DEC_MATRIX,
+		TO_WORD, COMMON, ADD, SUB, MUL, DIV, MOD, INDEX, EQUALS, NOT_EQUALS, LESS, MORE, E_LESS, E_MORE, TO_MATRIX,
+		TO_NUMBER, CONTRAST, DEC_VARIABLE, TO_VECTOR, ITERATOR, LOOP, RANGE_UNTIL, BREAK, IF_ELSE, DEC_LAMBDA, RETURN,
+		JOIN_DEC, TO_STRING, FIND, AND, OR, LENGTH, INNER, CAST_REFERENCE, TO_TYPE_STRING, DEC_OBJECTIVE, CAST_STRUCT,
+		CAST_STATIC, DEC_CLASS, DEC_NEW, POW, TO_FEATURE, THROW, TRY_CATCH, TO_CHAR, ALLOCATE, CAST_FINAL, REGISTER,
+		TO_CHAR_CODE, REFER, SWITCH, TO_HASH, EQUALS_PURE, NOT_EQUALS_PURE, CAST_ABSTRACT, EXTENDS, XOR, IF_ELSE_INLINE,
+		EXECUTE, OUTER_CALL, SWITCH_CASE, EVAL, DEC_RAW_OBJECT, DEC_ENTRY,
 
 		// INTERPRETER USE
 		UNARY, BINARY, SEQUENCE
@@ -43,5 +45,24 @@ public abstract class Operator {
 
 	public Interpreter getInterpreter() {
 		return this.interpreter;
+	}
+
+	protected String getInfo() {
+		return "";
+	}
+
+	public void printTree(String indent, boolean last) {
+		System.out.print(indent);
+		if (last) {
+			System.out.print("└─");
+			indent += "  ";
+		} else {
+			System.out.print("├─");
+			indent += "│ ";
+		}
+		System.out.println(this.type.toString() + ConsoleColors.CYAN + getInfo() + ConsoleColors.RESET);
+
+		for (int i = 0; i < getChildren().length; i++)
+			getChildren()[i].printTree(indent, i == getChildren().length - 1);
 	}
 }

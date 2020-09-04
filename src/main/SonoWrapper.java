@@ -14,7 +14,7 @@ import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class SonoWrapper {
-	public static final String VERSION = "Beta 1.10.2";
+	public static final String VERSION = "Beta 1.10.3";
 
 	private Interpreter sono = null;
 	private final Output stderr;
@@ -31,10 +31,10 @@ public class SonoWrapper {
 		globalOptions.put(key, value);
 	}
 
-	public Datum run(final String directory, final String filename, final String code) {
+	public Datum run(final String directory, final String filename, final String code, final boolean drawTree) {
 		try {
 			if (sono != null)
-				return sono.runCode(directory, filename, code);
+				return sono.runCode(directory, filename, code, drawTree);
 		} catch (final Exception e) {
 			stderr.println(e.getMessage());
 		}
@@ -47,7 +47,7 @@ public class SonoWrapper {
 	}
 
 	public SonoWrapper(final PhoneLoader pl, final File filename, final Output stdout, final Output stderr,
-			final Input stdin) {
+			final Input stdin, final boolean drawTree) {
 		this.stderr = stderr;
 		final CommandManager command = new CommandManager();
 		if (pl == null) {
@@ -57,7 +57,7 @@ public class SonoWrapper {
 		}
 
 		try {
-			sono.runCode("", null, "load \"std.so\"");
+			sono.runCode("", null, "load \"std.so\"", false);
 		} catch (final SonoException e) {
 			stderr.println(
 					"Failure to load system library, cannot initiate interpreter. Please check /bin directory for 'std.so'.");
@@ -65,7 +65,7 @@ public class SonoWrapper {
 		}
 
 		if (filename != null) {
-			sono.runCode("", filename.getName(), "load \"" + escape(filename.getAbsolutePath()) + "\"");
+			sono.runCode("", filename.getName(), "load \"" + escape(filename.getAbsolutePath()) + "\"", drawTree);
 		}
 	}
 }

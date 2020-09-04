@@ -10,7 +10,7 @@ public class DecVariable extends Operator {
 	private final int varName;
 
 	public DecVariable(final Interpreter interpreter, final Token line, final int varName) {
-		super(interpreter, Type.VAR_DEC, line);
+		super(interpreter, Type.DEC_VARIABLE, line);
 		this.varName = varName;
 	}
 
@@ -32,5 +32,10 @@ public class DecVariable extends Operator {
 	@Override
 	public void condense() {
 		// Unnecessary
+	}
+
+	@Override
+	protected String getInfo() {
+		return "(" + interpreter.deHash(varName) + ")";
 	}
 }

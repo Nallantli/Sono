@@ -213,12 +213,14 @@ public class Interpreter {
 		return variableHash.get(key);
 	}
 
-	public Datum runCode(final String directory, final String filename, final String code) {
-		return evaluate(parse(directory, tokenize(code, filename)));
+	public Datum runCode(final String directory, final String filename, final String code, final boolean drawTree) {
+		return evaluate(parse(directory, tokenize(code, filename)), drawTree);
 	}
 
-	public Datum evaluate(final Operator o) {
+	public Datum evaluate(final Operator o, final boolean drawTree) {
 		try {
+			if (drawTree)
+				o.printTree("", true);
 			return o.evaluate(main);
 		} catch (final SonoException e) {
 			if (SonoWrapper.getGlobalOption("WEB").equals("TRUE")) {
@@ -300,7 +302,13 @@ public class Interpreter {
 						}
 						if (!loadedFiles.contains(fileDirectory.toString() + filename)) {
 							loadedFiles.add(fileDirectory.toString() + filename);
-							o.addLast(loadFile(fileDirectory.toString(), filename, rawDir, path));
+							Operator temp = loadFile(fileDirectory.toString(), filename, rawDir, path);
+							if (temp.type == Operator.Type.SOFT_LIST) {
+								for (Operator o2 : temp.getChildren())
+									o.addLast(o2);
+							} else {
+								o.addLast(temp);
+							}
 						}
 						break;
 					case $IMPORT:
@@ -435,7 +443,7 @@ public class Interpreter {
 						a = o.pollLast();
 						if (b.type == Operator.Type.SOFT_LIST)
 							b = new HardList(this, line, ((Sequence) b).getVector());
-						o.addLast(new CastType(this, line, a, b));
+						o.addLast(new DecObjective(this, line, a, b));
 						break;
 					case $ARROW:
 						b = o.pollLast();
@@ -635,19 +643,19 @@ public class Interpreter {
 						a = o.pollLast();
 						if (a.type == Operator.Type.EXECUTE) {
 							final Operator name = ((Execute) a).getA();
-							if (name.type == Operator.Type.TYPE_DEC) {
-								final Operator typeDec = ((CastType) name).getA();
-								final Operator fName = ((CastType) name).getB();
+							if (name.type == Operator.Type.DEC_OBJECTIVE) {
+								final Operator typeDec = ((DecObjective) name).getA();
+								final Operator fName = ((DecObjective) name).getB();
 								a = new HardList(this, line, ((Sequence) ((Execute) a).getB()).getVector());
 								o.addLast(new Set(this, line, new DecVariable(this, line, ((Variable) fName).getKey()),
-										new DecLambda(this, line, new CastType(this, line, typeDec, a), b)));
+										new DecLambda(this, line, new DecObjective(this, line, typeDec, a), b)));
 							} else {
 								a = new HardList(this, line, ((Sequence) ((Execute) a).getB()).getVector());
 								o.addLast(new Set(this, line, new DecVariable(this, line, ((Variable) name).getKey()),
 										new DecLambda(this, line, a, b)));
 							}
 						} else {
-							if (a.type != Operator.Type.TYPE_DEC)
+							if (a.type != Operator.Type.DEC_OBJECTIVE)
 								a = new HardList(this, line, ((Sequence) a).getVector());
 							o.addLast(new DecLambda(this, line, a, b));
 						}

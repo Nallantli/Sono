@@ -8,7 +8,7 @@ import main.sono.Token;
 
 public class ToString extends Unary {
 	public ToString(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.STR_DEC, line, a);
+		super(interpreter, Type.TO_STRING, line, a);
 	}
 
 	@Override

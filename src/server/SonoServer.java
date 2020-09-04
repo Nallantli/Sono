@@ -197,7 +197,7 @@ public class SonoServer extends WebSocketServer {
 		stderr.put(conn, err);
 		stdin.put(conn, in);
 		WAIT.put(conn, false);
-		final SonoWrapper wrapper = new SonoWrapper(pl, null, out, err, in);
+		final SonoWrapper wrapper = new SonoWrapper(pl, null, out, err, in, false);
 		conns.put(conn, wrapper);
 		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
 		out.printHeader("OUT",

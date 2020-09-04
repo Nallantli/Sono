@@ -14,7 +14,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class ToWord extends Unary {
 	public ToWord(final Interpreter interpreter, final Token line, final Operator a) {
-		super(interpreter, Type.SEQ_DEC, line, a);
+		super(interpreter, Type.TO_WORD, line, a);
 	}
 
 	@Override

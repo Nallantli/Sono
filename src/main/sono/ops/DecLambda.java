@@ -10,7 +10,7 @@ import main.sono.err.SonoRuntimeException;
 
 public class DecLambda extends Binary {
 	public DecLambda(final Interpreter interpreter, final Token line, final Operator a, final Operator b) {
-		super(interpreter, Type.LAMBDA, line, a, b);
+		super(interpreter, Type.DEC_LAMBDA, line, a, b);
 	}
 
 	@Override
@@ -28,12 +28,12 @@ public class DecLambda extends Binary {
 			pFins = new boolean[paramsRaw.length];
 			for (final Operator d : paramsRaw) {
 				switch (d.getType()) {
-					case REF_DEC:
+					case CAST_REFERENCE:
 						pRefs[i] = true;
 						pFins[i] = false;
 						pNames[i] = ((CastReference) d).getKey();
 						break;
-					case FINAL:
+					case CAST_FINAL:
 						pFins[i] = true;
 						pRefs[i] = false;
 						pNames[i] = ((CastFinal) d).getKey();
@@ -46,25 +46,25 @@ public class DecLambda extends Binary {
 				}
 				i++;
 			}
-		} else if (a.getType() == Type.TYPE_DEC) {
-			final Datum t = ((CastType) a).getA().evaluate(scope);
+		} else if (a.getType() == Type.DEC_OBJECTIVE) {
+			final Datum t = ((DecObjective) a).getA().evaluate(scope);
 			if (!t.isPrototypic())
 				throw new SonoRuntimeException(
 						"Value <" + t.getDebugString(line) + "> cannot be used to designate an objective function.",
 						line);
 			fType = t.getType();
-			paramsRaw = ((Sequence) ((CastType) a).getB()).getVector();
+			paramsRaw = ((Sequence) ((DecObjective) a).getB()).getVector();
 			pNames = new int[paramsRaw.length];
 			pRefs = new boolean[paramsRaw.length];
 			pFins = new boolean[paramsRaw.length];
 			for (final Operator d : paramsRaw) {
 				switch (d.getType()) {
-					case REF_DEC:
+					case CAST_REFERENCE:
 						pRefs[i] = true;
 						pFins[i] = false;
 						pNames[i] = ((CastReference) d).getKey();
 						break;
-					case FINAL:
+					case CAST_FINAL:
 						pFins[i] = true;
 						pRefs[i] = false;
 						pNames[i] = ((CastFinal) d).getKey();
