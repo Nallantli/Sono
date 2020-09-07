@@ -15,20 +15,20 @@ public class Execute extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumB = b.evaluate(scope);
-		final int pValuesSize = datumB.getVectorLength(line);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumB = b.evaluate(scope, overrides);
+		final int pValuesSize = datumB.getVectorLength(line, overrides);
 		Datum[] pValues = null;
 		Function f = null;
 		if (a.getType() == Type.INNER) {
-			final Datum datumA = ((Inner) a).getA().evaluate(scope);
+			final Datum datumA = ((Inner) a).getA().evaluate(scope, overrides);
 
 			if (datumA.getType() == Datum.Type.STRUCTURE) {
-				f = a.evaluate(scope).getFunction(Datum.Type.ANY, line);
+				f = a.evaluate(scope, overrides).getFunction(Datum.Type.ANY, line, overrides);
 
-				final Structure structure = datumA.getStructure(line);
+				final Structure structure = datumA.getStructure(line, overrides);
 				if (f != null && f.getParent() == structure.getScope()) {
-					pValues = datumB.getVector(line);
+					pValues = datumB.getVector(line, overrides);
 				} else {
 					final Datum[] tempValues = new Datum[pValuesSize + 1];
 					tempValues[0] = datumA;
@@ -37,10 +37,10 @@ public class Execute extends Binary {
 					pValues = tempValues;
 				}
 			} else {
-				final Datum functionB = ((Inner) a).getB().evaluate(scope);
-				f = functionB.getFunction(datumA.getType(), line);
+				final Datum functionB = ((Inner) a).getB().evaluate(scope, overrides);
+				f = functionB.getFunction(datumA.getType(), line, overrides);
 				if (f == null)
-					f = functionB.getFunction(Datum.Type.ANY, line);
+					f = functionB.getFunction(Datum.Type.ANY, line, overrides);
 
 				final Datum[] tempValues = new Datum[pValuesSize + 1];
 				tempValues[0] = datumA;
@@ -49,21 +49,21 @@ public class Execute extends Binary {
 				pValues = tempValues;
 			}
 		} else {
-			pValues = datumB.getVector(line);
-			final Datum fDatum = a.evaluate(scope);
+			pValues = datumB.getVector(line, overrides);
+			final Datum fDatum = a.evaluate(scope, overrides);
 			if (pValuesSize > 0)
-				f = fDatum.getFunction(datumB.indexVector(0).getType(), line);
+				f = fDatum.getFunction(datumB.indexVector(0).getType(), line, overrides);
 			if (f == null)
-				f = fDatum.getFunction(Datum.Type.ANY, line);
+				f = fDatum.getFunction(Datum.Type.ANY, line, overrides);
 		}
 		if (f == null)
 			throw new SonoRuntimeException("No function found", line);
 
-		return f.execute(pValues, line);
+		return f.execute(pValues, line, overrides);
 	}
 
 	@Override
 	public String toString() {
-		return a.toString() + Interpreter.stringFromList(((Sequence) b).getVector(), "(", ")");
+		return a.toString() + Interpreter.stringFromList(((Sequence) b).getVector(), "(", ")", ",");
 	}
 }

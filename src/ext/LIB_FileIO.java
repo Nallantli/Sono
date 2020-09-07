@@ -19,23 +19,23 @@ public class LIB_FileIO extends Library {
 		super(interpreter);
 	}
 
-	public Datum INIT(final Datum[] data, final Token line) {
-		final File file = new File(data[0].getString(line));
+	public Datum INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final File file = new File(data[0].getString(line, overrides));
 		return new Datum((Object) file);
 	}
 
-	public Datum EXISTS(final Datum[] data, final Token line) {
-		final File file = (File) data[0].getPointer(line);
+	public Datum EXISTS(final Datum[] data, final Token line, final Object[] overrides) {
+		final File file = (File) data[0].getPointer(line, overrides);
 		if (file.exists())
 			return new Datum(true);
 		else
 			return new Datum(false);
 	}
 
-	public Datum CREATE(final Datum[] data, final Token line) {
+	public Datum CREATE(final Datum[] data, final Token line, final Object[] overrides) {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Write permissions are disabled for this interpreter.", line);
-		final File file = (File) data[0].getPointer(line);
+		final File file = (File) data[0].getPointer(line, overrides);
 		try {
 			if (file.createNewFile())
 				return new Datum(true);
@@ -46,8 +46,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum READER_INIT(final Datum[] data, final Token line) {
-		final File file = (File) data[0].getPointer(line);
+	public Datum READER_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final File file = (File) data[0].getPointer(line, overrides);
 		BufferedReader br;
 		try {
 			br = new BufferedReader(new FileReader(file));
@@ -57,8 +57,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum READER_GETLINE(final Datum[] data, final Token line) {
-		final BufferedReader br = (BufferedReader) data[0].getPointer(line);
+	public Datum READER_GETLINE(final Datum[] data, final Token line, final Object[] overrides) {
+		final BufferedReader br = (BufferedReader) data[0].getPointer(line, overrides);
 		try {
 			final String s = br.readLine();
 			if (s == null)
@@ -70,8 +70,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum READER_GET(final Datum[] data, final Token line) {
-		final BufferedReader br = (BufferedReader) data[0].getPointer(line);
+	public Datum READER_GET(final Datum[] data, final Token line, final Object[] overrides) {
+		final BufferedReader br = (BufferedReader) data[0].getPointer(line, overrides);
 		try {
 			final int c = br.read();
 			if (c == -1)
@@ -83,8 +83,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum READER_CLOSE(final Datum[] data, final Token line) {
-		final BufferedReader br = (BufferedReader) data[0].getPointer(line);
+	public Datum READER_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+		final BufferedReader br = (BufferedReader) data[0].getPointer(line, overrides);
 		try {
 			br.close();
 			return new Datum();
@@ -93,10 +93,10 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum WRITER_INIT(final Datum[] data, final Token line) {
+	public Datum WRITER_INIT(final Datum[] data, final Token line, final Object[] overrides) {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Write permissions are disabled for this interpreter.", line);
-		final File file = (File) data[0].getPointer(line);
+		final File file = (File) data[0].getPointer(line, overrides);
 		BufferedWriter bw;
 		try {
 			bw = new BufferedWriter(new FileWriter(file));
@@ -106,18 +106,18 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum WRITER_WRITE(final Datum[] data, final Token line) {
-		final BufferedWriter bw = (BufferedWriter) data[0].getPointer(line);
+	public Datum WRITER_WRITE(final Datum[] data, final Token line, final Object[] overrides) {
+		final BufferedWriter bw = (BufferedWriter) data[0].getPointer(line, overrides);
 		try {
-			bw.write(data[1].getString(line));
+			bw.write(data[1].getString(line, overrides));
 			return new Datum();
 		} catch (final IOException e) {
 			throw error("Cannot write from write <" + bw.toString() + ">", line);
 		}
 	}
 
-	public Datum WRITER_CLOSE(final Datum[] data, final Token line) {
-		final BufferedWriter bw = (BufferedWriter) data[0].getPointer(line);
+	public Datum WRITER_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+		final BufferedWriter bw = (BufferedWriter) data[0].getPointer(line, overrides);
 		try {
 			bw.close();
 			return new Datum();

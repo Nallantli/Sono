@@ -13,7 +13,7 @@ public class Underscore extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		throw new SonoRuntimeException("Operator cannot exist as a terminal node (Must be used in Rule declaration)",
 				line);
 	}

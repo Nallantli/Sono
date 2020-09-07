@@ -35,15 +35,15 @@ public class CommandManager {
 		}
 	}
 
-	public Datum execute(final String clazz, final String key, final Datum[] data, final Token line)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public Datum execute(final String clazz, final String key, final Datum[] data, final Token line,
+			final Object[] overrides) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		final Library l = classes.get(clazz + ".jar");
 		if (data.length > 0) {
-			final Method m = l.getClass().getDeclaredMethod(key, Datum[].class, Token.class);
-			return (Datum) m.invoke(l, data, line);
+			final Method m = l.getClass().getDeclaredMethod(key, Datum[].class, Token.class, Object[].class);
+			return (Datum) m.invoke(l, data, line, overrides);
 		} else {
-			final Method m = l.getClass().getDeclaredMethod(key, Token.class);
-			return (Datum) m.invoke(l, line);
+			final Method m = l.getClass().getDeclaredMethod(key, Token.class, Object[].class);
+			return (Datum) m.invoke(l, line, overrides);
 		}
 	}
 }

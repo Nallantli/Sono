@@ -12,8 +12,8 @@ public class Refer extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
 		datumA.setRefer(true);
 		return datumA;
 	}

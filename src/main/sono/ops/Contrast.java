@@ -12,9 +12,9 @@ public class Contrast extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		return new Datum(interpreter.getManager().getContrast(a.evaluate(scope).getPhone(line),
-				b.evaluate(scope).getPhone(line)));
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		return new Datum(interpreter.getManager().getContrast(a.evaluate(scope, overrides).getPhone(line, overrides),
+				b.evaluate(scope, overrides).getPhone(line, overrides)));
 	}
 
 	@Override

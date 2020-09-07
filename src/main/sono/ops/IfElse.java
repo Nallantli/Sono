@@ -19,12 +19,12 @@ public class IfElse extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum condition = a.evaluate(scope);
-		if (condition.getBool(line))
-			return b.evaluate(new Scope(scope.getStructure(), scope));
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum condition = a.evaluate(scope, overrides);
+		if (condition.getBool(line, overrides))
+			return b.evaluate(new Scope(scope.getStructure(), scope, false), overrides);
 		else if (c != null)
-			return c.evaluate(new Scope(scope.getStructure(), scope));
+			return c.evaluate(new Scope(scope.getStructure(), scope, false), overrides);
 		return new Datum();
 	}
 

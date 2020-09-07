@@ -12,8 +12,8 @@ public class ToString extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final String s = a.evaluate(scope).toRawStringTrace(line);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final String s = a.evaluate(scope, overrides).toRawStringTrace(line, overrides);
 		return new Datum(s);
 	}
 

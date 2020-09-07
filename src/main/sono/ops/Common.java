@@ -16,12 +16,12 @@ public class Common extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
-		final int dataSize = datumA.getVectorLength(line);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
+		final int dataSize = datumA.getVectorLength(line, overrides);
 		final List<Phone> phones = new ArrayList<>();
 		for (int i = 0; i < dataSize; i++)
-			phones.add(datumA.indexVector(i).getPhone(line));
+			phones.add(datumA.indexVector(i).getPhone(line, overrides));
 		return new Datum(interpreter.getManager().getCommon(phones));
 	}
 

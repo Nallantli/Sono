@@ -13,8 +13,8 @@ public class ToCharCode extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final String s = a.evaluate(scope).getString(line);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final String s = a.evaluate(scope, overrides).getString(line, overrides);
 		if (s.length() != 1)
 			throw new SonoRuntimeException("Value <" + s + "> is not a single char.", line);
 		return new Datum((int) s.charAt(0));

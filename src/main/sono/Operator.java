@@ -1,6 +1,7 @@
 package main.sono;
 
 import main.base.ConsoleColors;
+import main.sono.err.SonoRuntimeException;
 
 public abstract class Operator {
 
@@ -31,7 +32,15 @@ public abstract class Operator {
 
 	public abstract void condense();
 
-	public abstract Datum evaluate(Scope scope);
+	public void checkInterrupt() throws InterruptedException {
+		if (!Thread.interrupted())
+			throw new InterruptedException();
+	}
+
+	public Datum evaluate(Scope scope, Object[] overrides) throws InterruptedException {
+		checkInterrupt();
+		return null;
+	}
 
 	public abstract String toString();
 

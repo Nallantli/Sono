@@ -22,6 +22,9 @@ import client.io.StandardOutput;
 import main.SonoWrapper;
 import main.phl.PhoneLoader;
 import main.sono.Datum;
+import main.sono.Scope;
+import main.sono.io.Input;
+import main.sono.io.Output;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
@@ -39,8 +42,22 @@ public class SonoClient {
 		return null;
 	}
 
-	public static void main(final String[] args) {
-		final Scanner sc = new Scanner(System.in);
+	public static SonoWrapper startClient(final File filename, final boolean force, final boolean drawTree,
+			final Output stdout, final Output stderr, final Input stdin, final Scope override) {
+		SonoWrapper.setGlobalOption("WEB", "FALSE");
+
+		PhoneLoader pl = null;
+
+		try {
+			pl = new PhoneLoader(SonoWrapper.getGlobalOption("DATA"), force);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+
+		return new SonoWrapper(pl, filename, stdout, stderr, stdin, drawTree, override);
+	}
+
+	public static void setPath() {
 		final String configPath = System.getProperty("user.home");
 		String path = new File(SonoClient.class.getProtectionDomain().getCodeSource().getLocation().getPath())
 				.getParent();
@@ -51,8 +68,36 @@ public class SonoClient {
 		}
 
 		SonoWrapper.setGlobalOption("PATH", path);
+		SonoWrapper.setGlobalOption("CONFIG_PATH", configPath);
+	}
 
-		SonoWrapper.setGlobalOption("WEB", "FALSE");
+	public static void loadData() {
+		final File directory = new File(SonoWrapper.getGlobalOption("CONFIG_PATH"), ".sono");
+		if (!directory.exists())
+			directory.mkdir();
+
+		final File config = new File(directory, "config");
+		if (config.exists()) {
+			try (FileReader fr = new FileReader(config); BufferedReader br = new BufferedReader(fr);) {
+				String line;
+				while ((line = br.readLine()) != null) {
+					final String[] s = line.split("=");
+					SonoWrapper.setGlobalOption(s[0], s[1]);
+				}
+			} catch (final IOException e) {
+				System.err.println("Error reading from /config file.");
+				System.exit(1);
+			}
+		} else {
+			System.err.println("Please initialize /config file with -d");
+			System.exit(1);
+		}
+	}
+
+	public static void main(final String[] args) {
+		final Scanner sc = new Scanner(System.in);
+
+		setPath();
 
 		boolean force = false;
 
@@ -93,7 +138,8 @@ public class SonoClient {
 					System.exit(0);
 				}
 				final Path sourcePath = new File(pkg, pkgName).toPath();
-				final Path targetPath = new File(path, "lib" + File.separator + pkgName).toPath();
+				final Path targetPath = new File(SonoWrapper.getGlobalOption("PATH"), "lib" + File.separator + pkgName)
+						.toPath();
 				if (targetPath.toFile().exists())
 					SonoDownloader.deleteDirectory(targetPath.toFile());
 				Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
@@ -120,11 +166,11 @@ public class SonoClient {
 			}
 		}
 
-		boolean drawTree = getOption("-tree", args) != null;
+		final boolean drawTree = getOption("-tree", args) != null;
 
 		if (getOption("-d", args) != null) {
 			force = true;
-			final File directory = new File(configPath, ".sono");
+			final File directory = new File(SonoWrapper.getGlobalOption("CONFIG_PATH"), ".sono");
 			if (!directory.exists())
 				directory.mkdir();
 			final File config = new File(directory, "config");
@@ -138,42 +184,16 @@ public class SonoClient {
 				System.exit(1);
 			}
 		} else {
-			final File directory = new File(configPath, ".sono");
-			if (!directory.exists())
-				directory.mkdir();
-
-			final File config = new File(directory, "config");
-			if (config.exists()) {
-				try (FileReader fr = new FileReader(config); BufferedReader br = new BufferedReader(fr);) {
-					String line;
-					while ((line = br.readLine()) != null) {
-						final String[] s = line.split("=");
-						SonoWrapper.setGlobalOption(s[0], s[1]);
-					}
-				} catch (final IOException e) {
-					System.err.println("Error reading from /config file.");
-					System.exit(1);
-				}
-			} else {
-				System.err.println("Please initialize /config file with -d");
-				System.exit(1);
-			}
-		}
-
-		PhoneLoader pl = null;
-
-		try {
-			pl = new PhoneLoader(SonoWrapper.getGlobalOption("DATA"), force);
-		} catch (final IOException e) {
-			e.printStackTrace();
+			loadData();
 		}
 
 		File filename = null;
 		if (args.length > 0 && args[0].charAt(0) != '-') {
 			filename = new File(args[0]);
 		}
-		final SonoWrapper center = new SonoWrapper(pl, filename, new StandardOutput(), new ErrorOutput(),
-				new StandardInput(sc), drawTree);
+
+		final SonoWrapper center = startClient(filename, force, drawTree, new StandardOutput(), new ErrorOutput(),
+				new StandardInput(sc), null);
 
 		if (filename == null) {
 			System.out.println("Sono " + SonoWrapper.VERSION);
@@ -183,13 +203,13 @@ public class SonoClient {
 				System.out.print("> ");
 				final String line = sc.nextLine();
 				try {
-					final Datum result = center.run(".", null, line, drawTree);
+					final Datum result = center.run(".", null, line, drawTree, null, null);
 					if (result.getType() == Datum.Type.VECTOR) {
 						int i = 0;
-						for (final Datum d : result.getVector(null))
-							System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(null));
+						for (final Datum d : result.getVector(null, null))
+							System.out.println("\t" + (i++) + ":\t" + d.toStringTrace(null, null));
 					} else {
-						System.out.println("\t" + result.toStringTrace(null));
+						System.out.println("\t" + result.toStringTrace(null, null));
 					}
 				} catch (final Exception e) {
 					e.printStackTrace();

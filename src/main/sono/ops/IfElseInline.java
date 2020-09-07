@@ -20,14 +20,14 @@ public class IfElseInline extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum condition = a.evaluate(scope);
-		if (condition.getBool(line)) {
-			return b.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum condition = a.evaluate(scope, overrides);
+		if (condition.getBool(line, overrides)) {
+			return b.evaluate(scope, overrides);
 		} else {
 			if (c == null)
 				throw new SonoRuntimeException("Inline if-then-statements must have an ELSE clause", line);
-			return c.evaluate(scope);
+			return c.evaluate(scope, overrides);
 		}
 	}
 

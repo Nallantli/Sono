@@ -14,17 +14,17 @@ public class Loop extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		if (a.getType() == Type.ITERATOR) {
-			final Datum datumAB = ((Iterator) a).getB().evaluate(scope);
+			final Datum datumAB = ((Iterator) a).getB().evaluate(scope, overrides);
 			switch (datumAB.getType()) {
 				case VECTOR:
-					final int valuesSize = datumAB.getVectorLength(line);
+					final int valuesSize = datumAB.getVectorLength(line, overrides);
 					final int variableV = ((Variable) ((Iterator) a).getA()).getKey();
 					for (int i = 0; i < valuesSize; i++) {
-						final Scope loopScope = new Scope(scope.getStructure(), scope);
-						loopScope.setVariable(interpreter, variableV, datumAB.indexVector(i), line);
-						final Datum result = b.evaluate(loopScope);
+						final Scope loopScope = new Scope(scope.getStructure(), scope, false);
+						loopScope.setVariable(interpreter, variableV, datumAB.indexVector(i), line, overrides);
+						final Datum result = b.evaluate(loopScope, overrides);
 						if (result.getType() == Datum.Type.I_BREAK)
 							break;
 						if (result.getRet() || result.getRefer())
@@ -32,13 +32,13 @@ public class Loop extends Binary {
 					}
 					break;
 				case DICTIONARY:
-					final Map<String, Datum> values = datumAB.getMap(line);
+					final Map<String, Datum> values = datumAB.getMap(line, overrides);
 					final int variableD = ((Variable) ((Iterator) a).getA()).getKey();
 					for (final Map.Entry<String, Datum> e : values.entrySet()) {
-						final Scope loopScope = new Scope(scope.getStructure(), scope);
+						final Scope loopScope = new Scope(scope.getStructure(), scope, false);
 						loopScope.setVariable(interpreter, variableD,
-								new Datum(Map.of("key", new Datum(e.getKey()), "value", e.getValue())), line);
-						final Datum result = b.evaluate(loopScope);
+								new Datum(Map.of("key", new Datum(e.getKey()), "value", e.getValue())), line, overrides);
+						final Datum result = b.evaluate(loopScope, overrides);
 						if (result.getType() == Datum.Type.I_BREAK)
 							break;
 						if (result.getRet() || result.getRefer())
@@ -48,9 +48,9 @@ public class Loop extends Binary {
 				default:
 			}
 		} else {
-			while (a.evaluate(scope).getBool(line)) {
-				final Scope loopScope = new Scope(scope.getStructure(), scope);
-				final Datum result = b.evaluate(loopScope);
+			while (a.evaluate(scope, overrides).getBool(line, overrides)) {
+				final Scope loopScope = new Scope(scope.getStructure(), scope, false);
+				final Datum result = b.evaluate(loopScope, overrides);
 				if (result.getType() == Datum.Type.I_BREAK)
 					break;
 				if (result.getRet() || result.getRefer())

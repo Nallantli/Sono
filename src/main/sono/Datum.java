@@ -131,8 +131,8 @@ public class Datum {
 		this.type = Type.NULL;
 	}
 
-	public Datum(final PhoneManager pm, final Datum datum, final Scope parent, final Token line) {
-		this.set(pm, datum, line);
+	public Datum(final PhoneManager pm, final Datum datum, final Scope parent, final Token line, final Object[] overrides) {
+		this.set(pm, datum, line, overrides);
 		if (this.type == Type.FUNCTION)
 			for (final Map.Entry<Type, Function> e : valueFunction.entrySet())
 				e.getValue().setParent(parent);
@@ -226,72 +226,72 @@ public class Datum {
 		return this.type.toString();
 	}
 
-	public Phone getPhone(final Token line) {
+	public Phone getPhone(final Token line, final Object[] overrides) {
 		if (type != Type.PHONE)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Phone.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Phone.", line);
 		return this.valuePhone;
 	}
 
-	public Matrix getMatrix(final Token line) {
+	public Matrix getMatrix(final Token line, final Object[] overrides) {
 		if (type != Type.MATRIX)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Matrix.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Matrix.", line);
 		return this.valueMatrix;
 	}
 
-	public Rule getRule(final Token line) {
+	public Rule getRule(final Token line, final Object[] overrides) {
 		if (type != Type.RULE)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Rule.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Rule.", line);
 		return this.valueRule;
 	}
 
-	public String getString(final Token line) {
+	public String getString(final Token line, final Object[] overrides) {
 		if (type != Type.STRING)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a String.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a String.", line);
 		return this.valueString;
 	}
 
-	public double getNumber(final Token line) {
+	public double getNumber(final Token line, final Object[] overrides) {
 		if (type != Type.NUMBER)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Number.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Number.", line);
 		return this.valueNumber;
 	}
 
-	public Structure getStructure(final Token line) {
+	public Structure getStructure(final Token line, final Object[] overrides) {
 		if (type != Type.STRUCTURE)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Structure.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Structure.", line);
 		return this.valueStructure;
 	}
 
-	public Function getFunction(final Type fType, final Token line) {
+	public Function getFunction(final Type fType, final Token line, final Object[] overrides) {
 		if (type != Type.FUNCTION)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Function.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Function.", line);
 		if (this.valueFunction.containsKey(fType))
 			return this.valueFunction.get(fType);
 		else
 			return null;
 	}
 
-	public Object getPointer(final Token line) {
+	public Object getPointer(final Token line, final Object[] overrides) {
 		if (type != Type.POINTER)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Pointer.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Pointer.", line);
 		return this.valuePointer;
 	}
 
-	public Word getWord(final Token line) {
+	public Word getWord(final Token line, final Object[] overrides) {
 		if (type != Type.WORD)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Word.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Word.", line);
 		return this.valueWord;
 	}
 
-	public boolean getBool(final Token line) {
+	public boolean getBool(final Token line, final Object[] overrides) {
 		if (type != Type.BOOL)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Boolean.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Boolean.", line);
 		return this.valueBool;
 	}
 
-	public Map<String, Datum> getMap(final Token line) {
+	public Map<String, Datum> getMap(final Token line, final Object[] overrides) {
 		if (type != Type.DICTIONARY)
-			throw new SonoRuntimeException("Value <" + this.getDebugString(line) + "> is not a Dictionary.", line);
+			throw new SonoRuntimeException("Value <" + this.getDebugString(line, overrides) + "> is not a Dictionary.", line);
 		this.valueDictionary.values().removeIf(val -> val.type == Type.NULL);
 		return this.valueDictionary;
 	}
@@ -300,10 +300,10 @@ public class Datum {
 		this.mutable = mutable;
 	}
 
-	public void set(final PhoneManager pm, final Datum datum, final Token line) {
+	public void set(final PhoneManager pm, final Datum datum, final Token line, final Object[] overrides) {
 		if (!mutable)
-			throw new SonoRuntimeException("You cannot set the value of a constant <" + this.getDebugString(line)
-					+ "> (to value <" + datum.getDebugString(line) + ">)", line);
+			throw new SonoRuntimeException("You cannot set the value of a constant <" + this.getDebugString(line, overrides)
+					+ "> (to value <" + datum.getDebugString(line, overrides) + ">)", line);
 		this.type = datum.getType();
 		switch (type) {
 			case VECTOR:
@@ -322,7 +322,7 @@ public class Datum {
 				this.valueVector = new Datum[dVec.length];
 				for (int i = 0; i < dVec.length; i++) {
 					final Datum n = new Datum();
-					n.set(pm, dVec[i], line);
+					n.set(pm, dVec[i], line, overrides);
 					this.valueVector[i] = n;
 				}
 				break;
@@ -487,7 +487,7 @@ public class Datum {
 				this.valueDictionary = new HashMap<>();
 				for (final Map.Entry<String, Datum> e : datum.valueDictionary.entrySet()) {
 					final Datum e2 = new Datum();
-					e2.set(pm, e.getValue(), line);
+					e2.set(pm, e.getValue(), line, overrides);
 					this.valueDictionary.put(e.getKey(), e2);
 				}
 				break;
@@ -523,12 +523,12 @@ public class Datum {
 		}
 	}
 
-	public String toStringTrace(final Token line) {
+	public String toStringTrace(final Token line, final Object[] overrides) {
 		if (prototypic)
 			return "OBJ-" + type;
 		switch (type) {
 			case VECTOR:
-				return Interpreter.stringFromList(valueVector, "{", "}");
+				return Interpreter.stringFromList(valueVector, "{", "}", ",");
 			case MATRIX:
 				return valueMatrix.toString();
 			case NULL:
@@ -554,7 +554,7 @@ public class Datum {
 			case WORD:
 				return "`" + valueWord.toString() + "`";
 			case STRUCTURE:
-				return valueStructure.toStringTrace(line);
+				return valueStructure.toStringTrace(line, overrides);
 			case DICTIONARY:
 				return "@" + valueDictionary.toString();
 			case POINTER:
@@ -564,12 +564,12 @@ public class Datum {
 		}
 	}
 
-	public String toRawStringTrace(final Token line) {
+	public String toRawStringTrace(final Token line, final Object[] overrides) {
 		if (prototypic)
 			return "OBJ-" + type;
 		switch (type) {
 			case VECTOR:
-				return Interpreter.stringFromList(valueVector, "{", "}");
+				return Interpreter.stringFromList(valueVector, "{", "}", ",");
 			case MATRIX:
 				return valueMatrix.toString();
 			case NULL:
@@ -595,7 +595,7 @@ public class Datum {
 			case WORD:
 				return valueWord.toString();
 			case STRUCTURE:
-				return valueStructure.toStringTrace(line);
+				return valueStructure.toStringTrace(line, overrides);
 			case DICTIONARY:
 				return "@" + valueDictionary.toString();
 			case POINTER:
@@ -607,18 +607,18 @@ public class Datum {
 
 	@Override
 	public String toString() {
-		return this.toStringTrace(null);
+		return this.toStringTrace(null, null);
 	}
 
-	public Feature getFeature(final Token line) {
+	public Feature getFeature(final Token line, final Object[] overrides) {
 		if (type != Type.FEATURE)
-			throw new SonoRuntimeException("Value <" + this.toStringTrace(line) + "> is not a Feature.", line);
+			throw new SonoRuntimeException("Value <" + this.toStringTrace(line, overrides) + "> is not a Feature.", line);
 		return valueFeature;
 	}
 
-	public Datum[] getVector(final Token line) {
+	public Datum[] getVector(final Token line, final Object[] overrides) {
 		if (type != Type.VECTOR)
-			throw new SonoRuntimeException("Value <" + this.toStringTrace(line) + "> is not a Vector.", line);
+			throw new SonoRuntimeException("Value <" + this.toStringTrace(line, overrides) + "> is not a Vector.", line);
 		return valueVector;
 	}
 
@@ -637,15 +637,15 @@ public class Datum {
 		return valueDictionary.get(i);
 	}
 
-	public int getVectorLength(final Token line) {
+	public int getVectorLength(final Token line, final Object[] overrides) {
 		if (type != Type.VECTOR)
-			throw new SonoRuntimeException("Value <" + this.toStringTrace(line) + "> is not a Vector.", line);
+			throw new SonoRuntimeException("Value <" + this.toStringTrace(line, overrides) + "> is not a Vector.", line);
 		return valueVector.length;
 	}
 
-	public int getDictionaryLength(final Token line) {
+	public int getDictionaryLength(final Token line, final Object[] overrides) {
 		if (type != Type.DICTIONARY)
-			throw new SonoRuntimeException("Value <" + this.toStringTrace(line) + "> is not a Dictionary.", line);
+			throw new SonoRuntimeException("Value <" + this.toStringTrace(line, overrides) + "> is not a Dictionary.", line);
 		valueDictionary.values().removeIf(val -> val.type == Type.NULL);
 		return valueDictionary.size();
 	}
@@ -696,7 +696,7 @@ public class Datum {
 			case STRING:
 				return valueString.hashCode();
 			case STRUCTURE:
-				return valueStructure.getHash();
+				return valueStructure.getHash(null);
 			case VECTOR:
 				return Arrays.deepHashCode(valueVector);
 			case DICTIONARY:
@@ -708,7 +708,7 @@ public class Datum {
 		}
 	}
 
-	public boolean isEqual(final Datum d, final Token line) {
+	public boolean isEqual(final Datum d, final Token line, final Object[] overrides) {
 		if (type != d.getType())
 			return false;
 		if (prototypic && d.isPrototypic())
@@ -719,7 +719,7 @@ public class Datum {
 				if (valueVector.length != d.valueVector.length)
 					return false;
 				for (int i = 0; i < valueVector.length; i++)
-					if (!valueVector[i].isEqual(d.valueVector[i], line))
+					if (!valueVector[i].isEqual(d.valueVector[i], line, overrides))
 						return false;
 				return true;
 			case MATRIX:
@@ -743,7 +743,7 @@ public class Datum {
 			case WORD:
 				return valueWord.equals(d.valueWord);
 			case STRUCTURE:
-				return valueStructure.isEqual(d.valueStructure, line);
+				return valueStructure.isEqual(d.valueStructure, line, overrides);
 			case DICTIONARY:
 				return valueDictionary.equals(d.valueDictionary);
 			case POINTER:
@@ -753,7 +753,7 @@ public class Datum {
 		}
 	}
 
-	public boolean isEqualPure(final Datum d, final Token line) {
+	public boolean isEqualPure(final Datum d, final Token line, final Object[] overrides) {
 		if (type != d.getType())
 			return false;
 		if (prototypic && d.isPrototypic())
@@ -763,7 +763,7 @@ public class Datum {
 			case STRUCTURE:
 				return valueStructure == d.valueStructure;
 			default:
-				return this.isEqual(d, line);
+				return this.isEqual(d, line, overrides);
 		}
 	}
 
@@ -774,7 +774,7 @@ public class Datum {
 		if (o.getClass() != this.getClass())
 			return false;
 
-		return this.isEqual((Datum) o, null);
+		return this.isEqual((Datum) o, null, null);
 	}
 
 	public static Datum arrayConcat(final Datum a, final Datum b) {
@@ -784,8 +784,8 @@ public class Datum {
 		return new Datum(newList);
 	}
 
-	public String getDebugString(final Token line) {
-		String content = toStringTrace(line);
+	public String getDebugString(final Token line, final Object[] overrides) {
+		String content = toStringTrace(line, overrides);
 		if (content.length() > 50)
 			content = content.substring(0, 50) + "...";
 		return getTypeString() + ":" + content;

@@ -18,35 +18,35 @@ public class Function {
 		this.interpreter = interpreter;
 	}
 
-	public Datum execute(final Datum[] pValues, final Token line) {
-		final Scope scope = new Scope(parent.getStructure(), parent);
+	public Datum execute(final Datum[] pValues, final Token line, final Object[] overrides) {
+		final Scope scope = new Scope(parent.getStructure(), parent, false);
 		for (int i = 0; i < paramKeys.length; i++) {
 			if (pValues != null && i < pValues.length) {
 				if (paramRefs[i]) {
-					scope.setVariable(interpreter, paramKeys[i], pValues[i], line);
+					scope.setVariable(interpreter, paramKeys[i], pValues[i], line, overrides);
 				} else if (paramFins[i]) {
 					final Datum d = new Datum();
-					d.set(interpreter.getManager(), pValues[i], line);
+					d.set(interpreter.getManager(), pValues[i], line, overrides);
 					d.setMutable(false);
-					scope.setVariable(interpreter, paramKeys[i], d, line);
+					scope.setVariable(interpreter, paramKeys[i], d, line, overrides);
 				} else {
 					final Datum d = new Datum();
-					d.set(interpreter.getManager(), pValues[i], line);
-					scope.setVariable(interpreter, paramKeys[i], d, line);
+					d.set(interpreter.getManager(), pValues[i], line, overrides);
+					scope.setVariable(interpreter, paramKeys[i], d, line, overrides);
 				}
 			} else {
-				scope.setVariable(interpreter, paramKeys[i], new Datum(), line);
+				scope.setVariable(interpreter, paramKeys[i], new Datum(), line, overrides);
 			}
 		}
 
-		final Datum r = body.evaluate(scope);
+		final Datum r = body.evaluate(scope, overrides);
 		if (r.getRefer()) {
 			r.setRefer(false);
 			return r;
 		} else if (r.getRet()) {
 			r.setRet(false);
 			final Datum nr = new Datum();
-			nr.set(interpreter.getManager(), r, line);
+			nr.set(interpreter.getManager(), r, line, overrides);
 			return nr;
 		}
 		return new Datum();
@@ -78,7 +78,7 @@ public class Function {
 	@Override
 	public String toString() {
 		final StringBuilder s = new StringBuilder();
-		s.append(Interpreter.stringFromList(paramKeys, "(", ")"));
+		s.append(Interpreter.stringFromList(paramKeys, "(", ")", ","));
 		s.append(" => ");
 		s.append(body.toString());
 		return s.toString();

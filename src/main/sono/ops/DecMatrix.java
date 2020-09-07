@@ -14,10 +14,10 @@ public class DecMatrix extends Sequence {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		final Matrix matrix = new Matrix(interpreter.getManager());
 		for (final Operator o : operators) {
-			final Feature p = o.evaluate(scope).getFeature(line);
+			final Feature p = o.evaluate(scope, overrides).getFeature(line, overrides);
 			matrix.put(p.getKey(), p.getQuality());
 		}
 		return new Datum(matrix);
@@ -25,6 +25,6 @@ public class DecMatrix extends Sequence {
 
 	@Override
 	public String toString() {
-		return Interpreter.stringFromList(operators, "[", "]");
+		return Interpreter.stringFromList(operators, "[", "]", ",");
 	}
 }

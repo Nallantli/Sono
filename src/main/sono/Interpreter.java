@@ -193,9 +193,9 @@ public class Interpreter {
 			final Datum df = new Datum(dataFeatures.toArray(new Datum[0]));
 			df.setMutable(false);
 
-			main.setVariable(this, ALL, d, null);
-			main.setVariable(this, BASE, db, null);
-			main.setVariable(this, FEATURES, df, null);
+			main.setVariable(this, ALL, d, null, null);
+			main.setVariable(this, BASE, db, null, null);
+			main.setVariable(this, FEATURES, df, null, null);
 		}
 	}
 
@@ -213,22 +213,26 @@ public class Interpreter {
 		return variableHash.get(key);
 	}
 
-	public Datum runCode(final String directory, final String filename, final String code, final boolean drawTree) {
-		return evaluate(parse(directory, tokenize(code, filename)), drawTree);
+	public Datum runCode(final String directory, final String filename, final String code, final boolean drawTree, final Scope override, final Object[] outOverrides) {
+		return evaluate(parse(directory, tokenize(code, filename)), drawTree, override, outOverrides);
 	}
 
-	public Datum evaluate(final Operator o, final boolean drawTree) {
+	public Datum evaluate(final Operator o, final boolean drawTree, final Scope override, final Object[] outOverrides) {
 		try {
 			if (drawTree)
 				o.printTree("", true);
-			return o.evaluate(main);
+			if (override == null)
+				return o.evaluate(main, outOverrides);
+			return o.evaluate(override, outOverrides);
 		} catch (final SonoException e) {
-			if (SonoWrapper.getGlobalOption("WEB").equals("TRUE")) {
-				stderr.println(e.getMessage());
-				stderr.print(e.getLineNoColor());
-			} else {
-				stderr.println(ConsoleColors.RED + e.getMessage());
-				stderr.print(e.getLine());
+			if (outOverrides != null) {
+				((Output)outOverrides[1]).print(e.getMessage() + "\n" + e.getLineNoColor());
+			} else if (stderr != null) {
+				if (SonoWrapper.getGlobalOption("WEB").equals("TRUE")) {
+					stderr.print(e.getMessage() + "\n" + e.getLineNoColor());
+				} else {
+					stderr.print(ConsoleColors.RED + e.getMessage() + "\n" + e.getLine());
+				}
 			}
 			return new Datum();
 		}
@@ -291,7 +295,7 @@ public class Interpreter {
 			if (Tokenizer.operators.containsKey(token)) {
 				switch (token) {
 					case $LOAD:
-						path = ((Container) o.pollLast()).getDatum().getString(null);
+						path = ((Container) o.pollLast()).getDatum().getString(null, null);
 						split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
 						filename = (new StringBuilder(split[0])).reverse().toString();
 						rawDir = "";
@@ -312,7 +316,7 @@ public class Interpreter {
 						}
 						break;
 					case $IMPORT:
-						path = ((Container) o.pollLast()).getDatum().getString(null);
+						path = ((Container) o.pollLast()).getDatum().getString(null, null);
 						split = (new StringBuilder(path)).reverse().toString().split("[\\\\\\/]", 2);
 						filename = (new StringBuilder(split[0])).reverse().toString() + ".jar";
 						rawDir = "";
@@ -693,7 +697,7 @@ public class Interpreter {
 						break;
 					case $GOTO:
 						b = softenIfList(o.pollLast());
-						final Datum datumA = o.pollLast().evaluate(null);
+						final Datum datumA = o.pollLast().evaluate(null, null);
 						o.addLast(new SwitchCase(this, line, datumA, b));
 						break;
 					case $SWITCH:
@@ -733,8 +737,8 @@ public class Interpreter {
 						break;
 					case $_OUTER_CALL_:
 						a = o.pollLast();
-						final String clazz = ((Sequence) a).getChildren()[0].evaluate(null).getString(line);
-						final String key = ((Sequence) a).getChildren()[1].evaluate(null).getString(line);
+						final String clazz = ((Sequence) a).getChildren()[0].evaluate(null, null).getString(line, null);
+						final String key = ((Sequence) a).getChildren()[1].evaluate(null, null).getString(line, null);
 						final Operator[] newOps = new Operator[a.getChildren().length - 2];
 						System.arraycopy(a.getChildren(), 2, newOps, 0, newOps.length);
 						o.addLast(new OuterCall(this, line, clazz, key, new HardList(this, a.line, newOps)));
@@ -839,11 +843,11 @@ public class Interpreter {
 		return m;
 	}
 
-	public static <T> String stringFromList(final T[] list, final String init, final String fin) {
+	public static <T> String stringFromList(final T[] list, final String init, final String fin, final String delim) {
 		final StringBuilder s = new StringBuilder(init);
 		for (int i = 0; i < list.length; i++) {
 			if (i > 0)
-				s.append(", ");
+				s.append(delim + " ");
 			s.append(list[i].toString());
 		}
 		s.append(fin);
@@ -863,22 +867,27 @@ public class Interpreter {
 	}
 
 	public void print(final String str) {
-		stdout.print(str);
+		if (stdout != null)
+			stdout.print(str);
 	}
 
 	public String getLine() {
-		return stdin.getLine();
+		if (stdin != null)
+			return stdin.getLine();
+		return "";
 	}
 
 	public double getNumber() {
-		return stdin.getNumber();
+		if (stdin != null)
+			return stdin.getNumber();
+		return 0;
 	}
 
-	public static Object stringFromList(final int[] list, final String init, final String fin) {
+	public static Object stringFromList(final int[] list, final String init, final String fin, final String delim) {
 		final StringBuilder s = new StringBuilder(init);
 		for (int i = 0; i < list.length; i++) {
 			if (i > 0)
-				s.append(", ");
+				s.append(delim + " ");
 			s.append(Integer.toString(list[i]));
 		}
 		s.append(fin);

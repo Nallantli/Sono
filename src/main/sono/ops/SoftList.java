@@ -19,15 +19,15 @@ public class SoftList extends Sequence {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		Datum[] data = null;
 		if (this.containsRange) {
 			final List<Datum> list = new ArrayList<>();
 			for (final Operator o : operators) {
 				if (o.getType() == Type.RANGE_UNTIL)
-					list.addAll(((RangeUntil) o).getRange(scope));
+					list.addAll(((RangeUntil) o).getRange(scope, overrides));
 				else {
-					final Datum d = o.evaluate(scope);
+					final Datum d = o.evaluate(scope, overrides);
 					if (d.getType() == Datum.Type.I_BREAK)
 						return d;
 					if (d.getRet() || d.getRefer())
@@ -40,7 +40,7 @@ public class SoftList extends Sequence {
 			data = new Datum[operators.length];
 			int i = 0;
 			for (final Operator o : operators) {
-				final Datum d = o.evaluate(scope);
+				final Datum d = o.evaluate(scope, overrides);
 				if (d.getType() == Datum.Type.I_BREAK)
 					return d;
 				if (d.getRet() || d.getRefer())
@@ -55,6 +55,6 @@ public class SoftList extends Sequence {
 
 	@Override
 	public String toString() {
-		return Interpreter.stringFromList(operators, "(", ")");
+		return Interpreter.stringFromList(operators, "(", ")", ",");
 	}
 }

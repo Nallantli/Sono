@@ -17,11 +17,11 @@ public class LIB_Socket extends Library {
 		super(interpreter);
 	}
 
-	public Datum OPEN(final Datum[] data, final Token line) {
+	public Datum OPEN(final Datum[] data, final Token line, final Object[] overrides) {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Socket permissions are disabled for this interpreter.", line);
-		final String address = data[0].getString(line);
-		final int port = (int) data[1].getNumber(line);
+		final String address = data[0].getString(line, overrides);
+		final int port = (int) data[1].getNumber(line, overrides);
 		try {
 			final Socket socket = new Socket(address, port);
 			return new Datum((Object) socket);
@@ -30,8 +30,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum OUT_OPEN(final Datum[] data, final Token line) {
-		final Socket socket = (Socket) data[0].getPointer(line);
+	public Datum OUT_OPEN(final Datum[] data, final Token line, final Object[] overrides) {
+		final Socket socket = (Socket) data[0].getPointer(line, overrides);
 		try {
 			final DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			return new Datum((Object) out);
@@ -40,9 +40,9 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum OUT_SEND(final Datum[] data, final Token line) {
-		final DataOutputStream out = (DataOutputStream) data[0].getPointer(line);
-		final String value = data[1].getString(line);
+	public Datum OUT_SEND(final Datum[] data, final Token line, final Object[] overrides) {
+		final DataOutputStream out = (DataOutputStream) data[0].getPointer(line, overrides);
+		final String value = data[1].getString(line, overrides);
 		try {
 			out.writeUTF(value);
 			return new Datum((Object) out);
@@ -51,8 +51,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum OUT_CLOSE(final Datum[] data, final Token line) {
-		final DataOutputStream out = (DataOutputStream) data[0].getPointer(line);
+	public Datum OUT_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+		final DataOutputStream out = (DataOutputStream) data[0].getPointer(line, overrides);
 		try {
 			out.close();
 			return new Datum();
@@ -61,8 +61,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum IN_OPEN(final Datum[] data, final Token line) {
-		final Socket socket = (Socket) data[0].getPointer(line);
+	public Datum IN_OPEN(final Datum[] data, final Token line, final Object[] overrides) {
+		final Socket socket = (Socket) data[0].getPointer(line, overrides);
 		try {
 			final DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 			return new Datum((Object) in);
@@ -71,8 +71,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum IN_READ(final Datum[] data, final Token line) {
-		final DataInputStream in = (DataInputStream) data[0].getPointer(line);
+	public Datum IN_READ(final Datum[] data, final Token line, final Object[] overrides) {
+		final DataInputStream in = (DataInputStream) data[0].getPointer(line, overrides);
 		try {
 			final String s = in.readUTF();
 			return new Datum(s);
@@ -81,8 +81,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum IN_CLOSE(final Datum[] data, final Token line) {
-		final DataInputStream in = (DataInputStream) data[0].getPointer(line);
+	public Datum IN_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+		final DataInputStream in = (DataInputStream) data[0].getPointer(line, overrides);
 		try {
 			in.close();
 			return new Datum();
@@ -91,8 +91,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum CLOSE(final Datum[] data, final Token line) {
-		final Socket socket = (Socket) data[0].getPointer(line);
+	public Datum CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+		final Socket socket = (Socket) data[0].getPointer(line, overrides);
 		try {
 			socket.close();
 			return new Datum();
@@ -101,10 +101,10 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum SERVER_OPEN(final Datum[] data, final Token line) {
+	public Datum SERVER_OPEN(final Datum[] data, final Token line, final Object[] overrides) {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Socket permissions are disabled for this interpreter.", line);
-		final int port = (int) data[0].getNumber(line);
+		final int port = (int) data[0].getNumber(line, overrides);
 		try {
 			final ServerSocket server = new ServerSocket(port);
 			return new Datum((Object) server);
@@ -113,8 +113,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum SERVER_ACCEPT(final Datum[] data, final Token line) {
-		final ServerSocket server = (ServerSocket) data[0].getPointer(line);
+	public Datum SERVER_ACCEPT(final Datum[] data, final Token line, final Object[] overrides) {
+		final ServerSocket server = (ServerSocket) data[0].getPointer(line, overrides);
 		try {
 			final Socket socket = server.accept();
 			return new Datum((Object) socket);
@@ -123,8 +123,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum SERVER_CLOSE(final Datum[] data, final Token line) {
-		final ServerSocket server = (ServerSocket) data[0].getPointer(line);
+	public Datum SERVER_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+		final ServerSocket server = (ServerSocket) data[0].getPointer(line, overrides);
 		try {
 			server.close();
 			return new Datum();

@@ -21,10 +21,11 @@ public class OuterCall extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
 		try {
-			return interpreter.getCommandManager().execute(clazz, key, datumA.getVector(line), line);
+			return interpreter.getCommandManager().execute(clazz, key, datumA.getVector(line, overrides), line,
+					overrides);
 		} catch (final IllegalAccessException e) {
 			throw new SonoRuntimeException(
 					"The external library <" + clazz + "> does not exist, or the method <" + key + "> does not exist.",

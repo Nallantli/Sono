@@ -12,10 +12,10 @@ public class Set extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
-		final Datum datumB = b.evaluate(scope);
-		datumA.set(interpreter.getManager(), datumB, line);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
+		final Datum datumB = b.evaluate(scope, overrides);
+		datumA.set(interpreter.getManager(), datumB, line, overrides);
 		return datumA;
 	}
 

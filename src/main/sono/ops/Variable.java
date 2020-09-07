@@ -11,8 +11,8 @@ public class Variable extends Casting {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		return scope.getVariable(varName, interpreter, line);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		return scope.getVariable(varName, interpreter, line, overrides);
 	}
 
 	@Override

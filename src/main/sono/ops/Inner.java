@@ -14,18 +14,18 @@ public class Inner extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum object = a.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum object = a.evaluate(scope, overrides);
 		if (object.getType() != Datum.Type.STRUCTURE) {
 			if (!object.isPrototypic())
-				throw new SonoRuntimeException("Value <" + object.getDebugString(line)
+				throw new SonoRuntimeException("Value <" + object.getDebugString(line, overrides)
 						+ "> is not prototypic and therefore cannot extract objective methods.", line);
-			final Datum fHolder = b.evaluate(scope);
-			return new Datum(object.getType(), fHolder.getFunction(object.getType(), line));
+			final Datum fHolder = b.evaluate(scope, overrides);
+			return new Datum(object.getType(), fHolder.getFunction(object.getType(), line, overrides));
 		} else {
-			final Structure s = object.getStructure(line);
+			final Structure s = object.getStructure(line, overrides);
 			if (s.perusable())
-				return b.evaluate(object.getStructure(line).getScope());
+				return b.evaluate(object.getStructure(line, overrides).getScope(), overrides);
 			throw new SonoRuntimeException("Class <" + s.getName() + "> is not perusable.", line);
 		}
 	}

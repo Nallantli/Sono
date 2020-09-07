@@ -12,9 +12,9 @@ public class ToFeature extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
-		return new Datum(interpreter.getManager().interpretFeature(datumA.getString(line)));
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
+		return new Datum(interpreter.getManager().interpretFeature(datumA.getString(line, overrides)));
 	}
 
 	@Override

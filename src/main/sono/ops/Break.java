@@ -12,7 +12,7 @@ public class Break extends Operator {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		return new Datum.Break();
 	}
 

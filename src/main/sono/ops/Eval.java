@@ -12,9 +12,9 @@ public class Eval extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(Scope scope) {
-		final String code = a.evaluate(scope).getString(line);
-		return interpreter.runCode("", null, code, false);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final String code = a.evaluate(scope, overrides).getString(line, overrides);
+		return interpreter.runCode("", null, code, false, null, overrides);
 	}
 
 	@Override

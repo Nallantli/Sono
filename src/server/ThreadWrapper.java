@@ -26,20 +26,20 @@ public class ThreadWrapper extends Thread {
 	public void run() {
 		stdout.printHeader("STATUS", "TRUE");
 		server.pause(conn);
-		final Datum output = wrapper.run("examples", null, code, false);
+		final Datum output = wrapper.run("examples", null, code, false, null, null);
 
 		final StringBuilder sb = new StringBuilder();
 
 		if (output.getType() == Datum.Type.VECTOR) {
 			sb.append("\n<details class=\"fold\">");
-			sb.append("<summary>Raw Output Vector (" + output.getVectorLength(null)
+			sb.append("<summary>Raw Output Vector (" + output.getVectorLength(null, null)
 					+ " <i class=\"fab fa-buffer\"></i>)</summary>");
-			for (int i = 0; i < output.getVectorLength(null); i++)
-				sb.append("\t" + i + ":\t" + SonoServer.validate(output.indexVector(i).toStringTrace(null)) + "\n");
+			for (int i = 0; i < output.getVectorLength(null, null); i++)
+				sb.append("\t" + i + ":\t" + SonoServer.validate(output.indexVector(i).toStringTrace(null, null)) + "\n");
 			sb.append("</details>");
 		} else {
 			sb.append("\n<span class=\"blue\">");
-			sb.append("\t" + SonoServer.validate(output.toStringTrace(null)) + "\n");
+			sb.append("\t" + SonoServer.validate(output.toStringTrace(null, null)) + "\n");
 			sb.append("</span>");
 		}
 		stdout.printHeader("OUT", sb.toString() + "\n");

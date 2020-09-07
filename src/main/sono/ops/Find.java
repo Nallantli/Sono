@@ -17,13 +17,13 @@ public class Find extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Matrix matrix = a.evaluate(scope).getMatrix(line);
-		final Datum datumB = b.evaluate(scope);
-		final int dataSize = datumB.getVectorLength(line);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Matrix matrix = a.evaluate(scope, overrides).getMatrix(line, overrides);
+		final Datum datumB = b.evaluate(scope, overrides);
+		final int dataSize = datumB.getVectorLength(line, overrides);
 		final List<Phone> phones = new ArrayList<>();
 		for (int i = 0; i < dataSize; i++)
-			phones.add(datumB.indexVector(i).getPhone(line));
+			phones.add(datumB.indexVector(i).getPhone(line, overrides));
 		final List<Phone> list = interpreter.getManager().getPhones(phones, matrix);
 		final Datum[] newData = new Datum[list.size()];
 		for (int i = 0; i < list.size(); i++)

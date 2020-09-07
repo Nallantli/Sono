@@ -17,14 +17,14 @@ public class DecRawObject extends Sequence {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		final Map<String, Datum> entries = new HashMap<>();
 		for (final Operator o : operators) {
 			if (o.getType() != Operator.Type.DEC_ENTRY)
 				throw new SonoRuntimeException("Dictionary values require entries as children in declaration", line);
 			final DecEntry entry = (DecEntry) o;
-			final String entryKey = entry.getA().evaluate(scope).getString(line);
-			final Datum entryValue = entry.getB().evaluate(scope);
+			final String entryKey = entry.getA().evaluate(scope, overrides).getString(line, overrides);
+			final Datum entryValue = entry.getB().evaluate(scope, overrides);
 			entries.put(entryKey, entryValue);
 		}
 		return new Datum(entries);
@@ -32,7 +32,7 @@ public class DecRawObject extends Sequence {
 
 	@Override
 	public String toString() {
-		return Interpreter.stringFromList(operators, "@{", "}");
+		return Interpreter.stringFromList(operators, "@{", "}", ",");
 	}
 
 }

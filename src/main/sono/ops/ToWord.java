@@ -18,24 +18,24 @@ public class ToWord extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
 		if (datumA.getType() == Datum.Type.VECTOR) {
 			final List<Phone> phones = new ArrayList<>();
 			final List<Word.SyllableDelim> delimits = new ArrayList<>();
 			boolean flag = true;
-			final int dataSize = datumA.getVectorLength(line);
+			final int dataSize = datumA.getVectorLength(line, overrides);
 			for (int i = 0; i < dataSize; i++) {
 				final Datum d = datumA.indexVector(i);
 				if (d.getType() == Datum.Type.PHONE) {
-					phones.add(d.getPhone(line));
+					phones.add(d.getPhone(line, overrides));
 					if (flag)
 						delimits.add(Word.SyllableDelim.NULL);
 					else
 						flag = true;
 				} else if (d.getType() == Datum.Type.STRING) {
 					flag = false;
-					switch (d.getString(line)) {
+					switch (d.getString(line, overrides)) {
 						case ".":
 							delimits.add(Word.SyllableDelim.DELIM);
 							break;
@@ -44,7 +44,7 @@ public class ToWord extends Unary {
 							break;
 						default:
 							throw new SonoRuntimeException(
-									"Value <" + d.getDebugString(line) + "> is not applicable as a word delimiter",
+									"Value <" + d.getDebugString(line, overrides) + "> is not applicable as a word delimiter",
 									line);
 					}
 				}
@@ -52,13 +52,13 @@ public class ToWord extends Unary {
 			return new Datum(new Word(phones, delimits));
 		} else if (datumA.getType() == Datum.Type.STRING) {
 			try {
-				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(line)));
+				return new Datum(interpreter.getManager().interpretSequence(datumA.getString(line, overrides)));
 			} catch (final Exception e) {
 				throw new SonoRuntimeException(
-						"Value <" + datumA.getDebugString(line) + "> cannot be converted to a Word.", line);
+						"Value <" + datumA.getDebugString(line, overrides) + "> cannot be converted to a Word.", line);
 			}
 		}
-		throw new SonoRuntimeException("Value <" + datumA.getDebugString(line) + "> cannot be converted to a Word.",
+		throw new SonoRuntimeException("Value <" + datumA.getDebugString(line, overrides) + "> cannot be converted to a Word.",
 				line);
 	}
 

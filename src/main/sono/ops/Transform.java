@@ -15,21 +15,21 @@ public class Transform extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
-		final Datum datumB = b.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
+		final Datum datumB = b.evaluate(scope, overrides);
 		switch (datumB.getType()) {
 			case MATRIX:
-				final Phone ret = datumA.getPhone(line).transform(datumB.getMatrix(line), true);
+				final Phone ret = datumA.getPhone(line, overrides).transform(datumB.getMatrix(line, overrides), true);
 				if (ret == null)
 					return new Datum();
 				return new Datum(ret);
 			case RULE:
-				final Word result = datumB.getRule(line).transform(interpreter.getManager(), datumA.getWord(line));
+				final Word result = datumB.getRule(line, overrides).transform(interpreter.getManager(), datumA.getWord(line, overrides));
 				return new Datum(result);
 			default:
-				throw new SonoRuntimeException("Cannot transform value <" + datumA.getDebugString(line)
-						+ "> with value <" + datumB.getDebugString(line) + ">", line);
+				throw new SonoRuntimeException("Cannot transform value <" + datumA.getDebugString(line, overrides)
+						+ "> with value <" + datumB.getDebugString(line, overrides) + ">", line);
 		}
 	}
 

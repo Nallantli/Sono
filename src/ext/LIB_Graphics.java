@@ -273,7 +273,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseReleased.execute(params, null);
+					onMouseReleased.execute(params, null, null);
 				}
 			}
 
@@ -283,7 +283,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMousePressed.execute(params, null);
+					onMousePressed.execute(params, null, null);
 				}
 			}
 
@@ -293,7 +293,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseExited.execute(params, null);
+					onMouseExited.execute(params, null, null);
 				}
 			}
 
@@ -303,7 +303,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseEntered.execute(params, null);
+					onMouseEntered.execute(params, null, null);
 				}
 			}
 
@@ -313,7 +313,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseClicked.execute(params, null);
+					onMouseClicked.execute(params, null, null);
 				}
 			}
 		});
@@ -324,7 +324,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseMoved.execute(params, null);
+					onMouseMoved.execute(params, null, null);
 				}
 			}
 
@@ -334,7 +334,7 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseDragged.execute(params, null);
+					onMouseDragged.execute(params, null, null);
 				}
 			}
 		});
@@ -344,7 +344,7 @@ class WindowFunctions extends JFrame {
 				if (onKeyTyped != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyTyped.execute(params, null);
+					onKeyTyped.execute(params, null, null);
 				}
 			}
 
@@ -353,7 +353,7 @@ class WindowFunctions extends JFrame {
 				if (onKeyPressed != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyPressed.execute(params, null);
+					onKeyPressed.execute(params, null, null);
 				}
 			}
 
@@ -362,7 +362,7 @@ class WindowFunctions extends JFrame {
 				if (onKeyReleased != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyReleased.execute(params, null);
+					onKeyReleased.execute(params, null, null);
 				}
 			}
 		});
@@ -422,19 +422,19 @@ public class LIB_Graphics extends Library {
 		}
 	}
 
-	public Datum INIT(final Datum[] data, final Token line) {
+	public Datum INIT(final Datum[] data, final Token line, final Object[] overrides) {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Graphics permissions are disabled for this interpreter.", line);
-		final String title = data[0].getString(line);
-		final int width = (int) data[1].getNumber(line);
-		final int height = (int) data[2].getNumber(line);
+		final String title = data[0].getString(line, overrides);
+		final int width = (int) data[1].getNumber(line, overrides);
+		final int height = (int) data[2].getNumber(line, overrides);
 		final WindowFunctions f = new WindowFunctions(title);
 		if (data[3].getType() == Datum.Type.FUNCTION) {
-			final Function close = data[3].getFunction(Datum.Type.ANY, line);
+			final Function close = data[3].getFunction(Datum.Type.ANY, line, overrides);
 			f.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(final WindowEvent e) {
-					close.execute(null, line);
+					close.execute(null, line, overrides);
 				}
 			});
 		} else {
@@ -448,22 +448,22 @@ public class LIB_Graphics extends Library {
 		return new Datum(new Datum[] { new Datum((Object) f), new Datum((Object) f.getContentPane()) });
 	}
 
-	public Datum SHOW(final Datum[] data, final Token line) {
-		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+	public Datum SHOW(final Datum[] data, final Token line, final Object[] overrides) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		f.setVisible(true);
 		return new Datum();
 	}
 
-	public Datum HIDE(final Datum[] data, final Token line) {
-		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+	public Datum HIDE(final Datum[] data, final Token line, final Object[] overrides) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		f.setVisible(false);
 		return new Datum();
 	}
 
-	public Datum FONT_INIT(final Datum[] data, final Token line) {
-		final String fontName = data[0].getString(line);
-		final String styleRaw = data[1].getString(line);
-		final int size = (int) data[2].getNumber(line);
+	public Datum FONT_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final String fontName = data[0].getString(line, overrides);
+		final String styleRaw = data[1].getString(line, overrides);
+		final int size = (int) data[2].getNumber(line, overrides);
 		final String[] split = styleRaw.split("\\s");
 		int style = Font.PLAIN;
 		for (final String s : split) {
@@ -485,10 +485,10 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) font);
 	}
 
-	public Datum ADDMOUSELISTENER(final Datum[] data, final Token line) {
-		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
-		final int id = (int) data[1].getNumber(line);
-		final Function function = data[2].getFunction(Datum.Type.ANY, line);
+	public Datum ADDMOUSELISTENER(final Datum[] data, final Token line, final Object[] overrides) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
+		final int id = (int) data[1].getNumber(line, overrides);
+		final Function function = data[2].getFunction(Datum.Type.ANY, line, overrides);
 		switch (id) {
 			case 0:
 				f.setOnMouseMoved(function);
@@ -517,10 +517,10 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum ADDKEYLISTENER(final Datum[] data, final Token line) {
-		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
-		final int id = (int) data[1].getNumber(line);
-		final Function function = data[2].getFunction(Datum.Type.ANY, line);
+	public Datum ADDKEYLISTENER(final Datum[] data, final Token line, final Object[] overrides) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
+		final int id = (int) data[1].getNumber(line, overrides);
+		final Function function = data[2].getFunction(Datum.Type.ANY, line, overrides);
 		switch (id) {
 			case 0:
 				f.setOnKeyPressed(function);
@@ -537,312 +537,312 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum SETSIZE(final Datum[] data, final Token line) {
-		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
-		final int width = (int) data[1].getNumber(line);
-		final int height = (int) data[2].getNumber(line);
+	public Datum SETSIZE(final Datum[] data, final Token line, final Object[] overrides) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
+		final int width = (int) data[1].getNumber(line, overrides);
+		final int height = (int) data[2].getNumber(line, overrides);
 		f.getContentPane().setPreferredSize(new Dimension(width, height));
 		f.pack();
 		return new Datum();
 	}
 
-	public Datum CLOSE(final Datum[] data, final Token line) {
-		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+	public Datum CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
 		return new Datum();
 	}
 
-	public Datum GRAPHICS_INIT(final Token line) {
+	public Datum GRAPHICS_INIT(final Token line, final Object[] overrides) {
 		final GraphicsPanel gp = new GraphicsPanel();
 		return new Datum((Object) gp);
 	}
 
-	public Datum REPAINT(final Datum[] data, final Token line) {
-		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line);
+	public Datum REPAINT(final Datum[] data, final Token line, final Object[] overrides) {
+		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		f.revalidate();
 		f.repaint();
 		return new Datum();
 	}
 
-	public Datum GRAPHICS_ADD(final Datum[] data, final Token line) {
-		final GraphicsPanel gp = (GraphicsPanel) data[0].getPointer(line);
-		final Paintable paintable = (Paintable) data[1].getPointer(line);
+	public Datum GRAPHICS_ADD(final Datum[] data, final Token line, final Object[] overrides) {
+		final GraphicsPanel gp = (GraphicsPanel) data[0].getPointer(line, overrides);
+		final Paintable paintable = (Paintable) data[1].getPointer(line, overrides);
 		final boolean success = gp.addBuffer(paintable);
 		return new Datum(success ? 1 : 0);
 	}
 
-	public Datum GRAPHICS_REMOVE(final Datum[] data, final Token line) {
-		final GraphicsPanel gp = (GraphicsPanel) data[0].getPointer(line);
-		final Paintable paintable = (Paintable) data[1].getPointer(line);
+	public Datum GRAPHICS_REMOVE(final Datum[] data, final Token line, final Object[] overrides) {
+		final GraphicsPanel gp = (GraphicsPanel) data[0].getPointer(line, overrides);
+		final Paintable paintable = (Paintable) data[1].getPointer(line, overrides);
 		final boolean success = gp.removeBuffer(paintable);
 		return new Datum(success ? 1 : 0);
 	}
 
-	public Datum COLOR_INIT(final Datum[] data, final Token line) {
-		final int r = (int) data[0].getNumber(line);
-		final int g = (int) data[1].getNumber(line);
-		final int b = (int) data[2].getNumber(line);
-		final int a = (int) data[3].getNumber(line);
+	public Datum COLOR_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final int r = (int) data[0].getNumber(line, overrides);
+		final int g = (int) data[1].getNumber(line, overrides);
+		final int b = (int) data[2].getNumber(line, overrides);
+		final int a = (int) data[3].getNumber(line, overrides);
 		final Color c = new Color(r, g, b, a);
 		return new Datum((Object) c);
 	}
 
-	public Datum SHAPE_SETFILL(final Datum[] data, final Token line) {
-		final Paintable paintable = (Paintable) data[0].getPointer(line);
-		final Color color = (Color) data[1].getPointer(line);
+	public Datum SHAPE_SETFILL(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable paintable = (Paintable) data[0].getPointer(line, overrides);
+		final Color color = (Color) data[1].getPointer(line, overrides);
 		paintable.setFill(color);
 		return new Datum();
 	}
 
-	public Datum SHAPE_SETOUTLINE(final Datum[] data, final Token line) {
-		final Paintable paintable = (Paintable) data[0].getPointer(line);
-		final Color color = (Color) data[1].getPointer(line);
+	public Datum SHAPE_SETOUTLINE(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable paintable = (Paintable) data[0].getPointer(line, overrides);
+		final Color color = (Color) data[1].getPointer(line, overrides);
 		paintable.setOutline(color);
 		return new Datum();
 	}
 
-	public Datum SHAPE_RECTANGLE_INIT(final Datum[] data, final Token line) {
+	public Datum SHAPE_RECTANGLE_INIT(final Datum[] data, final Token line, final Object[] overrides) {
 		Color fill = null;
 		Color outline = null;
 		if (data[0].getType() != Datum.Type.NULL) {
-			fill = (Color) data[0].getPointer(line);
+			fill = (Color) data[0].getPointer(line, overrides);
 		}
 		if (data[1].getType() != Datum.Type.NULL) {
-			outline = (Color) data[1].getPointer(line);
+			outline = (Color) data[1].getPointer(line, overrides);
 		}
-		final int x = (int) data[2].getNumber(line);
-		final int y = (int) data[3].getNumber(line);
-		final int width = (int) data[4].getNumber(line);
-		final int height = (int) data[5].getNumber(line);
+		final int x = (int) data[2].getNumber(line, overrides);
+		final int y = (int) data[3].getNumber(line, overrides);
+		final int width = (int) data[4].getNumber(line, overrides);
+		final int height = (int) data[5].getNumber(line, overrides);
 		final Paintable.Rectangle rectangle = new Paintable.Rectangle(fill, outline, x, y, width, height);
 		return new Datum((Object) rectangle);
 	}
 
-	public Datum SHAPE_RECTANGLE_MOVE(final Datum[] data, final Token line) {
-		final Paintable.Rectangle rectangle = (Paintable.Rectangle) data[0].getPointer(line);
-		final int x = (int) data[1].getNumber(line);
-		final int y = (int) data[2].getNumber(line);
+	public Datum SHAPE_RECTANGLE_MOVE(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable.Rectangle rectangle = (Paintable.Rectangle) data[0].getPointer(line, overrides);
+		final int x = (int) data[1].getNumber(line, overrides);
+		final int y = (int) data[2].getNumber(line, overrides);
 		rectangle.setOrigin(x, y);
 		return new Datum();
 	}
 
-	public Datum SHAPE_RECTANGLE_SIZE(final Datum[] data, final Token line) {
-		final Paintable.Rectangle rectangle = (Paintable.Rectangle) data[0].getPointer(line);
-		final int width = (int) data[1].getNumber(line);
-		final int height = (int) data[2].getNumber(line);
+	public Datum SHAPE_RECTANGLE_SIZE(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable.Rectangle rectangle = (Paintable.Rectangle) data[0].getPointer(line, overrides);
+		final int width = (int) data[1].getNumber(line, overrides);
+		final int height = (int) data[2].getNumber(line, overrides);
 		rectangle.setSize(width, height);
 		return new Datum();
 	}
 
-	public Datum SHAPE_LINE_INIT(final Datum[] data, final Token line) {
-		final Color fill = (Color) data[0].getPointer(line);
-		final int x1 = (int) data[1].getNumber(line);
-		final int y1 = (int) data[2].getNumber(line);
-		final int x2 = (int) data[3].getNumber(line);
-		final int y2 = (int) data[4].getNumber(line);
+	public Datum SHAPE_LINE_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final Color fill = (Color) data[0].getPointer(line, overrides);
+		final int x1 = (int) data[1].getNumber(line, overrides);
+		final int y1 = (int) data[2].getNumber(line, overrides);
+		final int x2 = (int) data[3].getNumber(line, overrides);
+		final int y2 = (int) data[4].getNumber(line, overrides);
 		final Paintable.Line lineshape = new Paintable.Line(fill, x1, y1, x2, y2);
 		return new Datum((Object) lineshape);
 	}
 
-	public Datum SHAPE_LINE_MOVE(final Datum[] data, final Token line) {
-		final Paintable.Line lineshape = (Paintable.Line) data[0].getPointer(line);
-		final int x1 = (int) data[1].getNumber(line);
-		final int y1 = (int) data[2].getNumber(line);
-		final int x2 = (int) data[3].getNumber(line);
-		final int y2 = (int) data[4].getNumber(line);
+	public Datum SHAPE_LINE_MOVE(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable.Line lineshape = (Paintable.Line) data[0].getPointer(line, overrides);
+		final int x1 = (int) data[1].getNumber(line, overrides);
+		final int y1 = (int) data[2].getNumber(line, overrides);
+		final int x2 = (int) data[3].getNumber(line, overrides);
+		final int y2 = (int) data[4].getNumber(line, overrides);
 		lineshape.setPoints(x1, y1, x2, y2);
 		return new Datum();
 	}
 
-	public Datum SHAPE_OVAL_INIT(final Datum[] data, final Token line) {
+	public Datum SHAPE_OVAL_INIT(final Datum[] data, final Token line, final Object[] overrides) {
 		Color fill = null;
 		Color outline = null;
 		if (data[0].getType() != Datum.Type.NULL) {
-			fill = (Color) data[0].getPointer(line);
+			fill = (Color) data[0].getPointer(line, overrides);
 		}
 		if (data[1].getType() != Datum.Type.NULL) {
-			outline = (Color) data[1].getPointer(line);
+			outline = (Color) data[1].getPointer(line, overrides);
 		}
-		final int x = (int) data[2].getNumber(line);
-		final int y = (int) data[3].getNumber(line);
-		final int width = (int) data[4].getNumber(line);
-		final int height = (int) data[5].getNumber(line);
+		final int x = (int) data[2].getNumber(line, overrides);
+		final int y = (int) data[3].getNumber(line, overrides);
+		final int width = (int) data[4].getNumber(line, overrides);
+		final int height = (int) data[5].getNumber(line, overrides);
 		final Paintable.Oval oval = new Paintable.Oval(fill, outline, x, y, width, height);
 		return new Datum((Object) oval);
 	}
 
-	public Datum SHAPE_OVAL_MOVE(final Datum[] data, final Token line) {
-		final Paintable.Oval oval = (Paintable.Oval) data[0].getPointer(line);
-		final int x = (int) data[1].getNumber(line);
-		final int y = (int) data[2].getNumber(line);
+	public Datum SHAPE_OVAL_MOVE(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable.Oval oval = (Paintable.Oval) data[0].getPointer(line, overrides);
+		final int x = (int) data[1].getNumber(line, overrides);
+		final int y = (int) data[2].getNumber(line, overrides);
 		oval.setOrigin(x, y);
 		return new Datum();
 	}
 
-	public Datum SHAPE_OVAL_SIZE(final Datum[] data, final Token line) {
-		final Paintable.Oval oval = (Paintable.Oval) data[0].getPointer(line);
-		final int width = (int) data[1].getNumber(line);
-		final int height = (int) data[2].getNumber(line);
+	public Datum SHAPE_OVAL_SIZE(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable.Oval oval = (Paintable.Oval) data[0].getPointer(line, overrides);
+		final int width = (int) data[1].getNumber(line, overrides);
+		final int height = (int) data[2].getNumber(line, overrides);
 		oval.setSize(width, height);
 		return new Datum();
 	}
 
-	public Datum SHAPE_TEXT_INIT(final Datum[] data, final Token line) {
-		final Color fill = (Color) data[0].getPointer(line);
-		final int x = (int) data[1].getNumber(line);
-		final int y = (int) data[2].getNumber(line);
-		final String string = data[3].getString(line);
-		final int align = (int) data[4].getNumber(line);
+	public Datum SHAPE_TEXT_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final Color fill = (Color) data[0].getPointer(line, overrides);
+		final int x = (int) data[1].getNumber(line, overrides);
+		final int y = (int) data[2].getNumber(line, overrides);
+		final String string = data[3].getString(line, overrides);
+		final int align = (int) data[4].getNumber(line, overrides);
 		final Paintable.Text text = new Paintable.Text(fill, x, y, string, align);
 		return new Datum((Object) text);
 	}
 
-	public Datum SHAPE_TEXT_SETFONT(final Datum[] data, final Token line) {
-		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line);
-		final Font font = (Font) data[1].getPointer(line);
+	public Datum SHAPE_TEXT_SETFONT(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line, overrides);
+		final Font font = (Font) data[1].getPointer(line, overrides);
 		text.setFont(font);
 		return new Datum();
 	}
 
-	public Datum SHAPE_TEXT_SETSTRING(final Datum[] data, final Token line) {
-		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line);
-		final String string = data[1].getString(line);
+	public Datum SHAPE_TEXT_SETSTRING(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line, overrides);
+		final String string = data[1].getString(line, overrides);
 		text.setText(string);
 		return new Datum();
 	}
 
-	public Datum SHAPE_TEXT_MOVE(final Datum[] data, final Token line) {
-		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line);
-		final int x = (int) data[1].getNumber(line);
-		final int y = (int) data[2].getNumber(line);
+	public Datum SHAPE_TEXT_MOVE(final Datum[] data, final Token line, final Object[] overrides) {
+		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line, overrides);
+		final int x = (int) data[1].getNumber(line, overrides);
+		final int y = (int) data[2].getNumber(line, overrides);
 		text.setOrigin(x, y);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_ADD(final Datum[] data, final Token line) {
-		final JComponent frame = ((JComponent) data[0].getPointer(line));
-		final JComponent child = (JComponent) data[1].getPointer(line);
+	public Datum COMPONENT_ADD(final Datum[] data, final Token line, final Object[] overrides) {
+		final JComponent frame = ((JComponent) data[0].getPointer(line, overrides));
+		final JComponent child = (JComponent) data[1].getPointer(line, overrides);
 		if (data.length > 2)
-			frame.add(child, data[2].getString(line));
+			frame.add(child, data[2].getString(line, overrides));
 		else
 			frame.add(child);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_SETENABLE(final Datum[] data, final Token line) {
-		final AbstractButton component = (AbstractButton) data[0].getPointer(line);
-		final boolean enabled = data[1].getBool(line);
+	public Datum COMPONENT_SETENABLE(final Datum[] data, final Token line, final Object[] overrides) {
+		final AbstractButton component = (AbstractButton) data[0].getPointer(line, overrides);
+		final boolean enabled = data[1].getBool(line, overrides);
 		component.setEnabled(enabled);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_CLICK(final Datum[] data, final Token line) {
-		final AbstractButton component = (AbstractButton) data[0].getPointer(line);
+	public Datum COMPONENT_CLICK(final Datum[] data, final Token line, final Object[] overrides) {
+		final AbstractButton component = (AbstractButton) data[0].getPointer(line, overrides);
 		component.doClick();
 		return new Datum();
 	}
 
-	public Datum COMPONENT_ACTION(final Datum[] data, final Token line) {
-		final AbstractButton component = ((AbstractButton) data[0].getPointer(line));
-		final Function function = data[1].getFunction(Datum.Type.ANY, line);
+	public Datum COMPONENT_ACTION(final Datum[] data, final Token line, final Object[] overrides) {
+		final AbstractButton component = ((AbstractButton) data[0].getPointer(line, overrides));
+		final Function function = data[1].getFunction(Datum.Type.ANY, line, overrides);
 		component.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, line);
+				function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, line, overrides);
 			}
 		});
 		return new Datum();
 	}
 
-	public Datum COMPONENT_MENU_BAR_INIT(final Token line) {
+	public Datum COMPONENT_MENU_BAR_INIT(final Token line, final Object[] overrides) {
 		final JMenuBar mb = new JMenuBar();
 		return new Datum((Object) mb);
 	}
 
-	public Datum COMPONENT_MENU_ITEM_INIT(final Datum[] data, final Token line) {
-		final JMenu menu = new JMenu(data[0].getString(line));
+	public Datum COMPONENT_MENU_ITEM_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final JMenu menu = new JMenu(data[0].getString(line, overrides));
 		return new Datum((Object) menu);
 	}
 
-	public Datum COMPONENT_MENU_LABEL_INIT(final Datum[] data, final Token line) {
-		final JMenuItem item = new JMenuItem(data[0].getString(line));
+	public Datum COMPONENT_MENU_LABEL_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final JMenuItem item = new JMenuItem(data[0].getString(line, overrides));
 		return new Datum((Object) item);
 	}
 
-	public Datum COMPONENT_TEXT_INIT(final Datum[] data, final Token line) {
-		final JLabel component = new JLabel(data[0].getString(line));
+	public Datum COMPONENT_TEXT_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final JLabel component = new JLabel(data[0].getString(line, overrides));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_TEXT_ALIGN(final Datum[] data, final Token line) {
-		final JLabel component = (JLabel) data[0].getPointer(line);
-		final int alignmentX = (int) data[1].getNumber(line);
-		final int alignmentY = (int) data[2].getNumber(line);
+	public Datum COMPONENT_TEXT_ALIGN(final Datum[] data, final Token line, final Object[] overrides) {
+		final JLabel component = (JLabel) data[0].getPointer(line, overrides);
+		final int alignmentX = (int) data[1].getNumber(line, overrides);
+		final int alignmentY = (int) data[2].getNumber(line, overrides);
 		component.setHorizontalAlignment(alignmentX);
 		component.setVerticalAlignment(alignmentY);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_TEXT_SETTEXT(final Datum[] data, final Token line) {
-		final JLabel component = (JLabel) data[0].getPointer(line);
-		final String label = data[1].getString(line);
+	public Datum COMPONENT_TEXT_SETTEXT(final Datum[] data, final Token line, final Object[] overrides) {
+		final JLabel component = (JLabel) data[0].getPointer(line, overrides);
+		final String label = data[1].getString(line, overrides);
 		component.setText(label);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_BUTTON_INIT(final Datum[] data, final Token line) {
-		final JButton component = new JButton(data[0].getString(line));
+	public Datum COMPONENT_BUTTON_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final JButton component = new JButton(data[0].getString(line, overrides));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_BUTTON_SETTEXT(final Datum[] data, final Token line) {
-		final JButton component = (JButton) data[0].getPointer(line);
-		final String label = data[1].getString(line);
+	public Datum COMPONENT_BUTTON_SETTEXT(final Datum[] data, final Token line, final Object[] overrides) {
+		final JButton component = (JButton) data[0].getPointer(line, overrides);
+		final String label = data[1].getString(line, overrides);
 		component.setText(label);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_CHECKBOX_INIT(final Datum[] data, final Token line) {
-		final JCheckBox component = new JCheckBox(data[0].getString(line));
+	public Datum COMPONENT_CHECKBOX_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+		final JCheckBox component = new JCheckBox(data[0].getString(line, overrides));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_CHECKBOX_SETTEXT(final Datum[] data, final Token line) {
-		final JCheckBox component = (JCheckBox) data[0].getPointer(line);
-		final String label = data[1].getString(line);
+	public Datum COMPONENT_CHECKBOX_SETTEXT(final Datum[] data, final Token line, final Object[] overrides) {
+		final JCheckBox component = (JCheckBox) data[0].getPointer(line, overrides);
+		final String label = data[1].getString(line, overrides);
 		component.setText(label);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_PANEL_BORDER_INIT(final Token line) {
+	public Datum COMPONENT_PANEL_BORDER_INIT(final Token line, final Object[] overrides) {
 		final JPanel component = new JPanel();
 		component.setLayout(new BorderLayout());
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_PANEL_BLOCK_INIT(final Token line) {
+	public Datum COMPONENT_PANEL_BLOCK_INIT(final Token line, final Object[] overrides) {
 		final JPanel component = new JPanel();
 		component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_PANEL_INLINE_INIT(final Token line) {
+	public Datum COMPONENT_PANEL_INLINE_INIT(final Token line, final Object[] overrides) {
 		final JPanel component = new JPanel();
 		component.setLayout(new FlowLayout());
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_PANEL_TABLE_INIT(final Datum[] data, final Token line) {
+	public Datum COMPONENT_PANEL_TABLE_INIT(final Datum[] data, final Token line, final Object[] overrides) {
 		final JPanel component = new JPanel();
-		component.setLayout(new GridLayout((int) data[0].getNumber(line), (int) data[1].getNumber(line)));
+		component.setLayout(new GridLayout((int) data[0].getNumber(line, overrides), (int) data[1].getNumber(line, overrides)));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_PANEL_SPLIT_INIT(final Datum[] data, final Token line) {
+	public Datum COMPONENT_PANEL_SPLIT_INIT(final Datum[] data, final Token line, final Object[] overrides) {
 		int orientation;
-		if (data[0].getString(line).equals("Horizontal"))
+		if (data[0].getString(line, overrides).equals("Horizontal"))
 			orientation = JSplitPane.HORIZONTAL_SPLIT;
-		else if (data[0].getString(line).equals("Vertical"))
+		else if (data[0].getString(line, overrides).equals("Vertical"))
 			orientation = JSplitPane.VERTICAL_SPLIT;
 		else
 			throw new SonoRuntimeException(
@@ -851,15 +851,15 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_TABPANE_INIT(final Token line) {
+	public Datum COMPONENT_TABPANE_INIT(final Token line, final Object[] overrides) {
 		final JTabbedPane component = new JTabbedPane();
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_TABPANE_ADD(final Datum[] data, final Token line) {
-		final JTabbedPane frame = ((JTabbedPane) data[0].getPointer(line));
-		final JComponent child = (JComponent) data[1].getPointer(line);
-		final String label = data[2].getString(line);
+	public Datum COMPONENT_TABPANE_ADD(final Datum[] data, final Token line, final Object[] overrides) {
+		final JTabbedPane frame = ((JTabbedPane) data[0].getPointer(line, overrides));
+		final JComponent child = (JComponent) data[1].getPointer(line, overrides);
+		final String label = data[2].getString(line, overrides);
 		frame.addTab(label, child);
 		return new Datum();
 	}

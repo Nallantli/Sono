@@ -12,11 +12,11 @@ public class And extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
-		if (datumA.getBool(line)) {
-			final Datum datumB = b.evaluate(scope);
-			if (datumB.getBool(line))
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
+		if (datumA.getBool(line, overrides)) {
+			final Datum datumB = b.evaluate(scope, overrides);
+			if (datumB.getBool(line, overrides))
 				return new Datum(true);
 		}
 		return new Datum(false);

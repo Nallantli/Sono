@@ -20,13 +20,13 @@ public class DecRule extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		while (a.getType() != Type.SLASH)
 			a = ((Sequence) a).operators[0];
-		final Datum dSearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope);
-		final Datum rawTrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope);
-		final Datum rawInit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope);
-		final Datum rawFin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope);
+		final Datum dSearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, overrides);
+		final Datum rawTrans = ((Binary) ((Binary) a).getA()).getB().evaluate(scope, overrides);
+		final Datum rawInit = ((Binary) ((Binary) a).getB()).getA().evaluate(scope, overrides);
+		final Datum rawFin = ((Binary) ((Binary) a).getB()).getB().evaluate(scope, overrides);
 
 		Object search = null;
 		Datum[] dTrans;
@@ -37,12 +37,12 @@ public class DecRule extends Unary {
 		final List<Object> fin = new ArrayList<>();
 
 		if (dSearch.getType() == Datum.Type.MATRIX)
-			search = dSearch.getMatrix(line);
+			search = dSearch.getMatrix(line, overrides);
 		else if (dSearch.getType() == Datum.Type.PHONE)
-			search = dSearch.getPhone(line);
+			search = dSearch.getPhone(line, overrides);
 
 		if (rawTrans.getType() == Datum.Type.VECTOR)
-			dTrans = rawTrans.getVector(line);
+			dTrans = rawTrans.getVector(line, overrides);
 		else {
 			dTrans = new Datum[1];
 			dTrans[0] = rawTrans;
@@ -51,21 +51,21 @@ public class DecRule extends Unary {
 		for (final Datum d : dTrans) {
 			switch (d.getType()) {
 				case PHONE:
-					trans.add(d.getPhone(line));
+					trans.add(d.getPhone(line, overrides));
 					break;
 				case MATRIX:
-					trans.add(d.getMatrix(line));
+					trans.add(d.getMatrix(line, overrides));
 					break;
 				case NULL:
 					break;
 				default:
 					throw new SonoRuntimeException(
-							"Value <" + d.getDebugString(line) + "> cannot be used in a Rule declaration.", line);
+							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.", line);
 			}
 		}
 
 		if (rawInit.getType() == Datum.Type.VECTOR)
-			dInit = rawInit.getVector(line);
+			dInit = rawInit.getVector(line, overrides);
 		else {
 			dInit = new Datum[1];
 			dInit[0] = rawInit;
@@ -74,13 +74,13 @@ public class DecRule extends Unary {
 		for (final Datum d : dInit) {
 			switch (d.getType()) {
 				case PHONE:
-					init.add(d.getPhone(line));
+					init.add(d.getPhone(line, overrides));
 					break;
 				case MATRIX:
-					init.add(d.getMatrix(line));
+					init.add(d.getMatrix(line, overrides));
 					break;
 				case STRING:
-					switch (d.getString(line)) {
+					switch (d.getString(line, overrides)) {
 						case "#":
 							init.add(Rule.Variants.WORD_INITIAL);
 							break;
@@ -98,12 +98,12 @@ public class DecRule extends Unary {
 					break;
 				default:
 					throw new SonoRuntimeException(
-							"Value <" + d.getDebugString(line) + "> cannot be used in a Rule declaration.", line);
+							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.", line);
 			}
 		}
 
 		if (rawFin.getType() == Datum.Type.VECTOR)
-			dFin = rawFin.getVector(line);
+			dFin = rawFin.getVector(line, overrides);
 		else {
 			dFin = new Datum[1];
 			dFin[0] = rawFin;
@@ -112,13 +112,13 @@ public class DecRule extends Unary {
 		for (final Datum d : dFin) {
 			switch (d.getType()) {
 				case PHONE:
-					fin.add(d.getPhone(line));
+					fin.add(d.getPhone(line, overrides));
 					break;
 				case MATRIX:
-					fin.add(d.getMatrix(line));
+					fin.add(d.getMatrix(line, overrides));
 					break;
 				case STRING:
-					switch (d.getString(line)) {
+					switch (d.getString(line, overrides)) {
 						case "#":
 							fin.add(Rule.Variants.WORD_FINAL);
 							break;
@@ -136,7 +136,7 @@ public class DecRule extends Unary {
 					break;
 				default:
 					throw new SonoRuntimeException(
-							"Value <" + d.getDebugString(line) + "> cannot be used in a Rule declaration.", line);
+							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.", line);
 			}
 		}
 

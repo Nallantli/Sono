@@ -13,23 +13,24 @@ public class Index extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
-		final Datum datumB = b.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
+		final Datum datumB = b.evaluate(scope, overrides);
 		if (datumA.getType() == Datum.Type.VECTOR) {
 			try {
-				return datumA.indexVector((int) datumB.getNumber(line));
+				return datumA.indexVector((int) datumB.getNumber(line, overrides));
 			} catch (final Exception e) {
-				throw new SonoRuntimeException("Cannot index List <" + datumA.getDebugString(line) + "> with value <"
-						+ datumB.getDebugString(line) + ">; Length: " + datumA.getVectorLength(line), line);
+				throw new SonoRuntimeException("Cannot index List <" + datumA.getDebugString(line, overrides)
+						+ "> with value <" + datumB.getDebugString(line, overrides) + ">; Length: "
+						+ datumA.getVectorLength(line, overrides), line);
 			}
 		} else if (datumA.getType() == Datum.Type.STRUCTURE) {
-			return datumA.getStructure(line).getScope().getVariable(interpreter.GET_INDEX, interpreter, line)
-					.getFunction(Datum.Type.ANY, line).execute(new Datum[] { datumB }, line);
+			return datumA.getStructure(line, overrides).getScope().getVariable(interpreter.GET_INDEX, interpreter, line, overrides)
+					.getFunction(Datum.Type.ANY, line, overrides).execute(new Datum[] { datumB }, line, overrides);
 		} else if (datumA.getType() == Datum.Type.DICTIONARY) {
-			return datumA.indexDictionary(datumB.getString(line));
+			return datumA.indexDictionary(datumB.getString(line, overrides));
 		}
-		throw new SonoRuntimeException("Cannot index value <" + datumA.getDebugString(line) + ">", line);
+		throw new SonoRuntimeException("Cannot index value <" + datumA.getDebugString(line, overrides) + ">", line);
 	}
 
 	@Override

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.sono.Interpreter;
+
 public class Rule {
 	public enum Type {
 		SIMPLE, A_FORWARD, A_BACKWARD
@@ -320,11 +322,11 @@ public class Rule {
 		else
 			s.append("null");
 		s.append(" -> ");
-		s.append(trans.toString());
+		s.append(Interpreter.stringFromList(trans.toArray(), "{", "}", ";"));
 		s.append(" // ");
-		s.append(init.toString());
+		s.append(Interpreter.stringFromList(init.toArray(), "{", "}", ";"));
 		s.append(" .. ");
-		s.append(fin.toString());
+		s.append(Interpreter.stringFromList(fin.toArray(), "{", "}", ";"));
 		return s.toString();
 	}
 

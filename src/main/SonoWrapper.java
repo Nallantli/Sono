@@ -31,12 +31,16 @@ public class SonoWrapper {
 		globalOptions.put(key, value);
 	}
 
-	public Datum run(final String directory, final String filename, final String code, final boolean drawTree) {
+	public Datum run(final String directory, final String filename, final String code, final boolean drawTree,
+			final Scope override, final Object[] overrides) {
 		try {
 			if (sono != null)
-				return sono.runCode(directory, filename, code, drawTree);
+				return sono.runCode(directory, filename, code, drawTree, override, overrides);
 		} catch (final Exception e) {
-			stderr.println(e.getMessage());
+			if (overrides != null)
+				((Output) overrides[1]).println(e.getMessage());
+			if (stderr != null)
+				stderr.println(e.getMessage());
 		}
 		return new Datum();
 	}
@@ -47,17 +51,14 @@ public class SonoWrapper {
 	}
 
 	public SonoWrapper(final PhoneLoader pl, final File filename, final Output stdout, final Output stderr,
-			final Input stdin, final boolean drawTree) {
+			final Input stdin, final boolean drawTree, final Scope override) {
 		this.stderr = stderr;
 		final CommandManager command = new CommandManager();
-		if (pl == null) {
-			sono = new Interpreter(new Scope(null, null), null, command, stdout, stderr, stdin);
-		} else {
-			sono = new Interpreter(new Scope(null, null), pl.getManager(), command, stdout, stderr, stdin);
-		}
+		sono = new Interpreter(override != null ? override : new Scope(null, null, false),
+				pl == null ? null : pl.getManager(), command, stdout, stderr, stdin);
 
 		try {
-			sono.runCode("", null, "load \"std.so\"", false);
+			sono.runCode("", null, "load \"std.so\"", false, override, null);
 		} catch (final SonoException e) {
 			stderr.println(
 					"Failure to load system library, cannot initiate interpreter. Please check /bin directory for 'std.so'.");
@@ -65,7 +66,8 @@ public class SonoWrapper {
 		}
 
 		if (filename != null) {
-			sono.runCode("", filename.getName(), "load \"" + escape(filename.getAbsolutePath()) + "\"", drawTree);
+			sono.runCode("", filename.getName(), "load \"" + escape(filename.getAbsolutePath()) + "\"", drawTree, null,
+					null);
 		}
 	}
 }

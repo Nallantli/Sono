@@ -20,14 +20,14 @@ public class TryCatch extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		try {
-			return a.evaluate(new Scope(scope.getStructure(), scope));
+			return a.evaluate(new Scope(scope.getStructure(), scope, false), overrides);
 		} catch (final SonoRuntimeException e) {
 			if (b != null) {
-				final Scope catchScope = new Scope(scope.getStructure(), scope);
-				catchScope.setVariable(interpreter, interpreter.ERROR, new Datum(e.getMessage()), line);
-				return b.evaluate(catchScope);
+				final Scope catchScope = new Scope(scope.getStructure(), scope, false);
+				catchScope.setVariable(interpreter, interpreter.ERROR, new Datum(e.getMessage()), line, overrides);
+				return b.evaluate(catchScope, overrides);
 			}
 		}
 		return new Datum();

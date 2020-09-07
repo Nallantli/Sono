@@ -13,13 +13,13 @@ public class DecClass extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		Structure.Type stype = Structure.Type.STRUCT;
 		Operator objectOperator = null;
 		Structure extending = null;
 		if (a.getType() == Type.EXTENDS) {
 			objectOperator = ((CastExtends) a).getA();
-			extending = ((CastExtends) a).getB().evaluate(scope).getStructure(line);
+			extending = ((CastExtends) a).getB().evaluate(scope, overrides).getStructure(line, overrides);
 		} else {
 			objectOperator = a;
 		}
@@ -33,8 +33,8 @@ public class DecClass extends Binary {
 			main = new SoftList(interpreter, line, new Operator[] { extending.getMain(), main });
 		final Structure structure = new Structure(scope.getStructure(), stype, scope, main, varName, interpreter);
 		if (stype == Structure.Type.STATIC)
-			b.evaluate(structure.getScope());
-		return scope.setVariable(interpreter, varName, new Datum(structure), line);
+			b.evaluate(structure.getScope(), overrides);
+		return scope.setVariable(interpreter, varName, new Datum(structure), line, overrides);
 	}
 
 	@Override

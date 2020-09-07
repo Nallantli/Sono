@@ -15,20 +15,20 @@ public class ToMatrix extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
+		final Datum datumA = a.evaluate(scope, overrides);
 		if (datumA.getType() == Datum.Type.VECTOR) {
-			final int listSize = datumA.getVectorLength(line);
+			final int listSize = datumA.getVectorLength(line, overrides);
 			final Matrix m = new Matrix(interpreter.getManager());
 			for (int i = 0; i < listSize; i++) {
-				final Feature p = datumA.indexVector(i).getFeature(line);
+				final Feature p = datumA.indexVector(i).getFeature(line, overrides);
 				m.put(p.getKey(), p.getQuality());
 			}
 			return new Datum(m);
 		} else if (datumA.getType() == Datum.Type.PHONE) {
-			return new Datum(datumA.getPhone(line).getMatrix());
+			return new Datum(datumA.getPhone(line, overrides).getMatrix());
 		}
-		throw new SonoRuntimeException("Cannot convert value <" + datumA.getDebugString(line) + "> to a Matrix.", line);
+		throw new SonoRuntimeException("Cannot convert value <" + datumA.getDebugString(line, overrides) + "> to a Matrix.", line);
 	}
 
 	@Override

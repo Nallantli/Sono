@@ -14,7 +14,7 @@ public class DecLambda extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		Operator[] paramsRaw;
 		int[] pNames = null;
 		boolean[] pRefs = null;
@@ -47,10 +47,10 @@ public class DecLambda extends Binary {
 				i++;
 			}
 		} else if (a.getType() == Type.DEC_OBJECTIVE) {
-			final Datum t = ((DecObjective) a).getA().evaluate(scope);
+			final Datum t = ((DecObjective) a).getA().evaluate(scope, overrides);
 			if (!t.isPrototypic())
 				throw new SonoRuntimeException(
-						"Value <" + t.getDebugString(line) + "> cannot be used to designate an objective function.",
+						"Value <" + t.getDebugString(line, overrides) + "> cannot be used to designate an objective function.",
 						line);
 			fType = t.getType();
 			paramsRaw = ((Sequence) ((DecObjective) a).getB()).getVector();

@@ -19,7 +19,7 @@ public class Container extends Operator {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		return datum;
 	}
 
@@ -40,6 +40,6 @@ public class Container extends Operator {
 
 	@Override
 	protected String getInfo() {
-		return "(" + datum.getDebugString(null) + ")";
+		return "(" + datum.getDebugString(null, null) + ")";
 	}
 }

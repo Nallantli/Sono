@@ -15,30 +15,31 @@ public class Add extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
-		final Datum datumB = b.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupt();
+		final Datum datumA = a.evaluate(scope, overrides);
+		final Datum datumB = b.evaluate(scope, overrides);
 		if (datumA.getType() != datumB.getType())
 			throw new SonoRuntimeException(
-					"Cannot add values <" + datumA.getDebugString(line) + "> and <" + datumB.getDebugString(line) + ">",
+					"Cannot add values <" + datumA.getDebugString(line, overrides) + "> and <" + datumB.getDebugString(line, overrides) + ">",
 					line);
 		switch (datumA.getType()) {
 			case NUMBER:
-				return new Datum(datumA.getNumber(line) + datumB.getNumber(line));
+				return new Datum(datumA.getNumber(line, overrides) + datumB.getNumber(line, overrides));
 			case VECTOR:
 				return Datum.arrayConcat(datumA, datumB);
 			case MATRIX:
 				final Matrix newMatrix = new Matrix(interpreter.getManager());
-				newMatrix.putAll(datumA.getMatrix(line));
-				newMatrix.putAll(datumB.getMatrix(line));
+				newMatrix.putAll(datumA.getMatrix(line, overrides));
+				newMatrix.putAll(datumB.getMatrix(line, overrides));
 				return new Datum(newMatrix);
 			case WORD:
 				final Word newWord = new Word();
-				newWord.addAll(datumA.getWord(line));
-				newWord.addAll(datumB.getWord(line));
+				newWord.addAll(datumA.getWord(line, overrides));
+				newWord.addAll(datumB.getWord(line, overrides));
 				return new Datum(newWord);
 			case STRING:
-				return new Datum(datumA.getString(line) + datumB.getString(line));
+				return new Datum(datumA.getString(line, overrides) + datumB.getString(line, overrides));
 			default:
 				throw new SonoRuntimeException("Values of type <" + datumA.getType() + "> cannot be added.", line);
 		}

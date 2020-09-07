@@ -9,7 +9,7 @@ Dictionary::containsKey(ref this, ref key) => {
 	return (this["key"] != null);
 }
 
-Dictionary::keys(ref this) => {
+Dictionary::keyVector(ref this) => {
 	var v = alloc(length(this));
 	var i = 0;
 	e in this do {
@@ -19,7 +19,7 @@ Dictionary::keys(ref this) => {
 	return v;
 }
 
-Dictionary::values(ref this) => {
+Dictionary::valueVector(ref this) => {
 	var v = alloc(length(this));
 	var i = 0;
 	e in this do {

@@ -13,10 +13,11 @@ public class Allocate extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
-		final Datum datumA = a.evaluate(scope);
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupt();
+		final Datum datumA = a.evaluate(scope, overrides);
 		if (datumA.getType() == Datum.Type.NUMBER) {
-			final int dn = (int) datumA.getNumber(line);
+			final int dn = (int) datumA.getNumber(line, overrides);
 			if (dn < 0)
 				throw new SonoRuntimeException("Cannot allocate Vector with size <" + dn + ">", line);
 			final Datum[] data = new Datum[dn];
@@ -24,16 +25,16 @@ public class Allocate extends Unary {
 				data[i] = new Datum();
 			return new Datum(data);
 		} else if (datumA.getType() == Datum.Type.VECTOR) {
-			final Datum[] dv = datumA.getVector(line);
-			if (dv[0].getNumber(line) < 0)
-				throw new SonoRuntimeException("Cannot allocate Vector with size <" + dv[0].getNumber(line) + ">",
+			final Datum[] dv = datumA.getVector(line, overrides);
+			if (dv[0].getNumber(line, overrides) < 0)
+				throw new SonoRuntimeException("Cannot allocate Vector with size <" + dv[0].getNumber(line, overrides) + ">",
 						line);
-			final Datum[] data = new Datum[(int) dv[0].getNumber(line)];
+			final Datum[] data = new Datum[(int) dv[0].getNumber(line, overrides)];
 			for (int i = 0; i < data.length; i++)
 				data[i] = new Datum();
 			Datum[] curr = data;
 			for (int j = 1; j < dv.length; j++) {
-				final int size = (int) dv[j].getNumber(line);
+				final int size = (int) dv[j].getNumber(line, overrides);
 				if (size < 0)
 					throw new SonoRuntimeException("Cannot allocate Vector with size <" + size + ">", line);
 				final Datum[] next = new Datum[curr.length * size];
@@ -51,7 +52,7 @@ public class Allocate extends Unary {
 			return new Datum(data);
 		} else {
 			throw new SonoRuntimeException(
-					"Value <" + datumA.getDebugString(line) + "> cannot be used in Vector allocation.", line);
+					"Value <" + datumA.getDebugString(line, overrides) + "> cannot be used in Vector allocation.", line);
 		}
 	}
 

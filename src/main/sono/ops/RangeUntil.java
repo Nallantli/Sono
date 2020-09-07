@@ -14,9 +14,9 @@ public class RangeUntil extends Binary {
 		super(interpreter, Type.RANGE_UNTIL, line, a, b);
 	}
 
-	public List<Datum> getRange(final Scope scope) {
-		final int datumA = (int) a.evaluate(scope).getNumber(line);
-		final int datumB = (int) b.evaluate(scope).getNumber(line);
+	public List<Datum> getRange(final Scope scope, final Object[] overrides) {
+		final int datumA = (int) a.evaluate(scope, overrides).getNumber(line, overrides);
+		final int datumB = (int) b.evaluate(scope, overrides).getNumber(line, overrides);
 		final List<Datum> data = new ArrayList<>();
 		for (int i = datumA; i < datumB; i++)
 			data.add(new Datum(i));
@@ -24,7 +24,7 @@ public class RangeUntil extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) {
 		return null;
 	}
 
