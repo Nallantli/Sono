@@ -14,7 +14,7 @@ import main.sono.io.Input;
 import main.sono.io.Output;
 
 public class SonoWrapper {
-	public static final String VERSION = "Beta 1.10.3";
+	public static final String VERSION = "Beta 1.10.4";
 
 	private Interpreter sono = null;
 	private final Output stderr;
@@ -51,7 +51,7 @@ public class SonoWrapper {
 	}
 
 	public SonoWrapper(final PhoneLoader pl, final File filename, final Output stdout, final Output stderr,
-			final Input stdin, final boolean drawTree, final Scope override) {
+			final Input stdin, final boolean drawTree, final Scope override) throws InterruptedException {
 		this.stderr = stderr;
 		final CommandManager command = new CommandManager();
 		sono = new Interpreter(override != null ? override : new Scope(null, null, false),

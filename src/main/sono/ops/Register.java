@@ -15,7 +15,8 @@ public class Register extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final String segment = a.evaluate(scope, overrides).getString(line, overrides);
 		final Matrix features = b.evaluate(scope, overrides).getMatrix(line, overrides);
 		final Phone ret = interpreter.getManager().registerNewPhone(segment, features);

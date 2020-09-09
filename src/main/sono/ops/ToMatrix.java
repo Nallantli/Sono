@@ -15,7 +15,8 @@ public class ToMatrix extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		if (datumA.getType() == Datum.Type.VECTOR) {
 			final int listSize = datumA.getVectorLength(line, overrides);
@@ -28,7 +29,8 @@ public class ToMatrix extends Unary {
 		} else if (datumA.getType() == Datum.Type.PHONE) {
 			return new Datum(datumA.getPhone(line, overrides).getMatrix());
 		}
-		throw new SonoRuntimeException("Cannot convert value <" + datumA.getDebugString(line, overrides) + "> to a Matrix.", line);
+		throw new SonoRuntimeException(
+				"Cannot convert value <" + datumA.getDebugString(line, overrides) + "> to a Matrix.", line);
 	}
 
 	@Override

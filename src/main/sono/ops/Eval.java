@@ -12,7 +12,8 @@ public class Eval extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final String code = a.evaluate(scope, overrides).getString(line, overrides);
 		return interpreter.runCode("", null, code, false, null, overrides);
 	}

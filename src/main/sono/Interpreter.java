@@ -142,7 +142,7 @@ public class Interpreter {
 	public final int FEATURES;
 
 	public Interpreter(final Scope main, final PhoneManager pl, final CommandManager console, final Output stdout,
-			final Output stderr, final Input stdin) {
+			final Output stderr, final Input stdin) throws InterruptedException {
 		this.stdout = stdout;
 		this.stderr = stderr;
 		this.stdin = stdin;
@@ -213,11 +213,13 @@ public class Interpreter {
 		return variableHash.get(key);
 	}
 
-	public Datum runCode(final String directory, final String filename, final String code, final boolean drawTree, final Scope override, final Object[] outOverrides) {
+	public Datum runCode(final String directory, final String filename, final String code, final boolean drawTree, final Scope override, final Object[] outOverrides)
+			throws InterruptedException {
 		return evaluate(parse(directory, tokenize(code, filename)), drawTree, override, outOverrides);
 	}
 
-	public Datum evaluate(final Operator o, final boolean drawTree, final Scope override, final Object[] outOverrides) {
+	public Datum evaluate(final Operator o, final boolean drawTree, final Scope override, final Object[] outOverrides)
+			throws InterruptedException {
 		try {
 			if (drawTree)
 				o.printTree("", true);
@@ -246,7 +248,7 @@ public class Interpreter {
 	}
 
 	public Operator loadFile(final String fullDirectory, final String filename, final String rawDir,
-			final String path) {
+			final String path) throws InterruptedException {
 		final StringBuilder contents = new StringBuilder();
 		File file = new File(fullDirectory, filename);
 		boolean flag = false;
@@ -276,7 +278,7 @@ public class Interpreter {
 		}
 	}
 
-	public Operator parse(final String directory, final List<Token> tokens) {
+	public Operator parse(final String directory, final List<Token> tokens) throws InterruptedException {
 		final Deque<Operator> o = new ArrayDeque<>();
 		String path;
 		String[] split;

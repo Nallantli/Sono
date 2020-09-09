@@ -16,13 +16,12 @@ public class Add extends Binary {
 
 	@Override
 	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
-		checkInterrupt();
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		final Datum datumB = b.evaluate(scope, overrides);
 		if (datumA.getType() != datumB.getType())
-			throw new SonoRuntimeException(
-					"Cannot add values <" + datumA.getDebugString(line, overrides) + "> and <" + datumB.getDebugString(line, overrides) + ">",
-					line);
+			throw new SonoRuntimeException("Cannot add values <" + datumA.getDebugString(line, overrides) + "> and <"
+					+ datumB.getDebugString(line, overrides) + ">", line);
 		switch (datumA.getType()) {
 			case NUMBER:
 				return new Datum(datumA.getNumber(line, overrides) + datumB.getNumber(line, overrides));

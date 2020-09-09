@@ -15,7 +15,8 @@ public class Execute extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumB = b.evaluate(scope, overrides);
 		final int pValuesSize = datumB.getVectorLength(line, overrides);
 		Datum[] pValues = null;

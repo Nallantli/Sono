@@ -13,7 +13,8 @@ public class DecNew extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Structure struct = ((Execute) a).getA().evaluate(scope, overrides).getStructure(line, overrides);
 		final Datum[] params = ((Execute) a).getB().evaluate(scope, overrides).getVector(line, overrides);
 		return struct.instantiate(params, line, overrides);

@@ -11,7 +11,8 @@ public class Variable extends Casting {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		return scope.getVariable(varName, interpreter, line, overrides);
 	}
 

@@ -55,7 +55,8 @@ public class SonoServer extends WebSocketServer {
 
 	public static void main(final String[] args) {
 		SonoWrapper.setGlobalOption("WEB", "TRUE");
-		String path = new File(SonoServer.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getParent() + "/bin/";
+		String path = new File(SonoServer.class.getProtectionDomain().getCodeSource().getLocation().getPath())
+				.getParentFile().getParent() + "/bin/";
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
 		} catch (final UnsupportedEncodingException e1) {
@@ -197,7 +198,13 @@ public class SonoServer extends WebSocketServer {
 		stderr.put(conn, err);
 		stdin.put(conn, in);
 		WAIT.put(conn, false);
-		final SonoWrapper wrapper = new SonoWrapper(pl, null, out, err, in, false, null);
+		SonoWrapper wrapper = null;
+		try {
+			wrapper = new SonoWrapper(pl, null, out, err, in, false, null);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			e.printStackTrace();
+		}
 		conns.put(conn, wrapper);
 		out.printHeader("OUT", validate("Sono " + SonoWrapper.VERSION + " - Online Interface\n"));
 		out.printHeader("OUT",

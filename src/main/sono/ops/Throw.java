@@ -13,7 +13,8 @@ public class Throw extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		throw new SonoRuntimeException(datumA.getString(line, overrides), line);
 	}

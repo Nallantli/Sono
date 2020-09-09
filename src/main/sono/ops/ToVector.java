@@ -19,7 +19,8 @@ public class ToVector extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		Datum[] list = null;
 		final Datum datumA = a.evaluate(scope, overrides);
 		int i;
@@ -55,11 +56,12 @@ public class ToVector extends Unary {
 					list[i++] = new Datum(Map.of("key", new Datum(e.getKey()), "value", e.getValue()));
 				break;
 			case STRUCTURE:
-				return datumA.getStructure(line, overrides).getScope().getVariable(interpreter.GET_LIST, interpreter, line, overrides)
+				return datumA.getStructure(line, overrides).getScope()
+						.getVariable(interpreter.GET_LIST, interpreter, line, overrides)
 						.getFunction(Datum.Type.ANY, line, overrides).execute(null, line, overrides);
 			default:
-				throw new SonoRuntimeException("Cannot convert value <" + datumA.getDebugString(line, overrides) + "> into a List",
-						line);
+				throw new SonoRuntimeException(
+						"Cannot convert value <" + datumA.getDebugString(line, overrides) + "> into a List", line);
 		}
 		return new Datum(list);
 	}

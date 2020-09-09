@@ -24,7 +24,8 @@ public class Switch extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum key = a.evaluate(scope, overrides);
 		if (map.containsKey(key)) {
 			return map.get(key).evaluate(new Scope(scope.getStructure(), scope, false), overrides);

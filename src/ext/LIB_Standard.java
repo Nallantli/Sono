@@ -30,7 +30,11 @@ class FThread extends Thread {
 
 	@Override
 	public void run() {
-		f.execute(params, line, overrides);
+		try {
+			f.execute(params, line, overrides);
+		} catch (final InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 	}
 }
 
@@ -39,7 +43,7 @@ public class LIB_Standard extends Library {
 		super(interpreter);
 	}
 
-	public Datum PRINT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum PRINT(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		if (overrides != null)
 			((Output) overrides[0]).print(data[0].getString(line, overrides));
 		else
@@ -47,7 +51,7 @@ public class LIB_Standard extends Library {
 		return new Datum();
 	}
 
-	public Datum REGEX(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum REGEX(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final Pattern pattern = Pattern.compile(data[0].getString(line, overrides));
 		final String s = data[1].getString(line, overrides);
 		final Matcher m = pattern.matcher(s);
@@ -91,7 +95,7 @@ public class LIB_Standard extends Library {
 	public Datum SLEEP(final Datum[] data, final Token line, final Object[] overrides) {
 		try {
 			Thread.sleep((long) data[0].getNumber(line, overrides));
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw error("Cannot pause thread execution", line);
 		}
@@ -112,70 +116,73 @@ public class LIB_Standard extends Library {
 		return null;
 	}
 
-	public Datum LOG(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum LOG(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.log(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum FLOOR(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum FLOOR(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.floor(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum CEIL(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum CEIL(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.ceil(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum ROUND(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum ROUND(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.round(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum MATH_COS(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum MATH_COS(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.cos(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum MATH_SIN(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum MATH_SIN(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.sin(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum MATH_TAN(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum MATH_TAN(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.tan(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum MATH_COSH(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum MATH_COSH(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.cosh(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum MATH_SINH(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum MATH_SINH(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.sinh(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum MATH_TANH(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum MATH_TANH(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final double i = Math.tanh(data[0].getNumber(line, overrides));
 		return new Datum(i);
 	}
 
-	public Datum THREAD_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum THREAD_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Function f = data[0].getFunction(Datum.Type.ANY, line, overrides);
 		final Datum[] params = data[1].getVector(line, overrides);
 		final FThread thread = new FThread(f, params, line, overrides);
 		return new Datum((Object) thread);
 	}
 
-	public Datum THREAD_START(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum THREAD_START(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final FThread thread = (FThread) data[0].getPointer(line, overrides);
 		thread.start();
 		return new Datum();
 	}
 
-	public Datum THREAD_JOIN(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum THREAD_JOIN(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final FThread thread = (FThread) data[0].getPointer(line, overrides);
 		try {
 			thread.join();

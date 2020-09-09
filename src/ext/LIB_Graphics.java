@@ -273,7 +273,11 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseReleased.execute(params, null, null);
+					try {
+						onMouseReleased.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 
@@ -283,7 +287,11 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMousePressed.execute(params, null, null);
+					try {
+						onMousePressed.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 
@@ -293,7 +301,11 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseExited.execute(params, null, null);
+					try {
+						onMouseExited.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 
@@ -303,7 +315,11 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseEntered.execute(params, null, null);
+					try {
+						onMouseEntered.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 
@@ -313,7 +329,11 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseClicked.execute(params, null, null);
+					try {
+						onMouseClicked.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 		});
@@ -324,7 +344,11 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseMoved.execute(params, null, null);
+					try {
+						onMouseMoved.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 
@@ -334,7 +358,11 @@ class WindowFunctions extends JFrame {
 					final Datum[] params = new Datum[] { new Datum(e.getButton()), new Datum(e.getClickCount()),
 							new Datum(MouseEvent.getMouseModifiersText(e.getModifiersEx())), new Datum(e.getX()),
 							new Datum(e.getY()), new Datum(e.getXOnScreen()), new Datum(e.getYOnScreen()) };
-					onMouseDragged.execute(params, null, null);
+					try {
+						onMouseDragged.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 		});
@@ -344,7 +372,11 @@ class WindowFunctions extends JFrame {
 				if (onKeyTyped != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyTyped.execute(params, null, null);
+					try {
+						onKeyTyped.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 
@@ -353,7 +385,11 @@ class WindowFunctions extends JFrame {
 				if (onKeyPressed != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyPressed.execute(params, null, null);
+					try {
+						onKeyPressed.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 
@@ -362,7 +398,11 @@ class WindowFunctions extends JFrame {
 				if (onKeyReleased != null) {
 					final Datum[] params = new Datum[] { new Datum(e.getKeyChar()),
 							new Datum(KeyEvent.getKeyText(e.getKeyCode())), new Datum(e.isActionKey() ? 1 : 0) };
-					onKeyReleased.execute(params, null, null);
+					try {
+						onKeyReleased.execute(params, null, null);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 		});
@@ -422,7 +462,7 @@ public class LIB_Graphics extends Library {
 		}
 	}
 
-	public Datum INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum INIT(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Graphics permissions are disabled for this interpreter.", line);
 		final String title = data[0].getString(line, overrides);
@@ -434,7 +474,11 @@ public class LIB_Graphics extends Library {
 			f.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(final WindowEvent e) {
-					close.execute(null, line, overrides);
+					try {
+						close.execute(null, line, overrides);
+					} catch (final InterruptedException e1) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			});
 		} else {
@@ -448,19 +492,19 @@ public class LIB_Graphics extends Library {
 		return new Datum(new Datum[] { new Datum((Object) f), new Datum((Object) f.getContentPane()) });
 	}
 
-	public Datum SHOW(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHOW(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		f.setVisible(true);
 		return new Datum();
 	}
 
-	public Datum HIDE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum HIDE(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		f.setVisible(false);
 		return new Datum();
 	}
 
-	public Datum FONT_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum FONT_INIT(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final String fontName = data[0].getString(line, overrides);
 		final String styleRaw = data[1].getString(line, overrides);
 		final int size = (int) data[2].getNumber(line, overrides);
@@ -485,7 +529,8 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) font);
 	}
 
-	public Datum ADDMOUSELISTENER(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum ADDMOUSELISTENER(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		final int id = (int) data[1].getNumber(line, overrides);
 		final Function function = data[2].getFunction(Datum.Type.ANY, line, overrides);
@@ -517,7 +562,8 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum ADDKEYLISTENER(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum ADDKEYLISTENER(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		final int id = (int) data[1].getNumber(line, overrides);
 		final Function function = data[2].getFunction(Datum.Type.ANY, line, overrides);
@@ -537,7 +583,7 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum SETSIZE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SETSIZE(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		final int width = (int) data[1].getNumber(line, overrides);
 		final int height = (int) data[2].getNumber(line, overrides);
@@ -546,7 +592,7 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum CLOSE(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
 		return new Datum();
@@ -557,28 +603,31 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) gp);
 	}
 
-	public Datum REPAINT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum REPAINT(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final WindowFunctions f = (WindowFunctions) data[0].getPointer(line, overrides);
 		f.revalidate();
 		f.repaint();
 		return new Datum();
 	}
 
-	public Datum GRAPHICS_ADD(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum GRAPHICS_ADD(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final GraphicsPanel gp = (GraphicsPanel) data[0].getPointer(line, overrides);
 		final Paintable paintable = (Paintable) data[1].getPointer(line, overrides);
 		final boolean success = gp.addBuffer(paintable);
 		return new Datum(success ? 1 : 0);
 	}
 
-	public Datum GRAPHICS_REMOVE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum GRAPHICS_REMOVE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final GraphicsPanel gp = (GraphicsPanel) data[0].getPointer(line, overrides);
 		final Paintable paintable = (Paintable) data[1].getPointer(line, overrides);
 		final boolean success = gp.removeBuffer(paintable);
 		return new Datum(success ? 1 : 0);
 	}
 
-	public Datum COLOR_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COLOR_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final int r = (int) data[0].getNumber(line, overrides);
 		final int g = (int) data[1].getNumber(line, overrides);
 		final int b = (int) data[2].getNumber(line, overrides);
@@ -587,21 +636,24 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) c);
 	}
 
-	public Datum SHAPE_SETFILL(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_SETFILL(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable paintable = (Paintable) data[0].getPointer(line, overrides);
 		final Color color = (Color) data[1].getPointer(line, overrides);
 		paintable.setFill(color);
 		return new Datum();
 	}
 
-	public Datum SHAPE_SETOUTLINE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_SETOUTLINE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable paintable = (Paintable) data[0].getPointer(line, overrides);
 		final Color color = (Color) data[1].getPointer(line, overrides);
 		paintable.setOutline(color);
 		return new Datum();
 	}
 
-	public Datum SHAPE_RECTANGLE_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_RECTANGLE_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		Color fill = null;
 		Color outline = null;
 		if (data[0].getType() != Datum.Type.NULL) {
@@ -618,7 +670,8 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) rectangle);
 	}
 
-	public Datum SHAPE_RECTANGLE_MOVE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_RECTANGLE_MOVE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable.Rectangle rectangle = (Paintable.Rectangle) data[0].getPointer(line, overrides);
 		final int x = (int) data[1].getNumber(line, overrides);
 		final int y = (int) data[2].getNumber(line, overrides);
@@ -626,7 +679,8 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum SHAPE_RECTANGLE_SIZE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_RECTANGLE_SIZE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable.Rectangle rectangle = (Paintable.Rectangle) data[0].getPointer(line, overrides);
 		final int width = (int) data[1].getNumber(line, overrides);
 		final int height = (int) data[2].getNumber(line, overrides);
@@ -634,7 +688,8 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum SHAPE_LINE_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_LINE_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Color fill = (Color) data[0].getPointer(line, overrides);
 		final int x1 = (int) data[1].getNumber(line, overrides);
 		final int y1 = (int) data[2].getNumber(line, overrides);
@@ -644,7 +699,8 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) lineshape);
 	}
 
-	public Datum SHAPE_LINE_MOVE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_LINE_MOVE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable.Line lineshape = (Paintable.Line) data[0].getPointer(line, overrides);
 		final int x1 = (int) data[1].getNumber(line, overrides);
 		final int y1 = (int) data[2].getNumber(line, overrides);
@@ -654,7 +710,8 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum SHAPE_OVAL_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_OVAL_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		Color fill = null;
 		Color outline = null;
 		if (data[0].getType() != Datum.Type.NULL) {
@@ -671,7 +728,8 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) oval);
 	}
 
-	public Datum SHAPE_OVAL_MOVE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_OVAL_MOVE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable.Oval oval = (Paintable.Oval) data[0].getPointer(line, overrides);
 		final int x = (int) data[1].getNumber(line, overrides);
 		final int y = (int) data[2].getNumber(line, overrides);
@@ -679,7 +737,8 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum SHAPE_OVAL_SIZE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_OVAL_SIZE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable.Oval oval = (Paintable.Oval) data[0].getPointer(line, overrides);
 		final int width = (int) data[1].getNumber(line, overrides);
 		final int height = (int) data[2].getNumber(line, overrides);
@@ -687,7 +746,8 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum SHAPE_TEXT_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_TEXT_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Color fill = (Color) data[0].getPointer(line, overrides);
 		final int x = (int) data[1].getNumber(line, overrides);
 		final int y = (int) data[2].getNumber(line, overrides);
@@ -697,21 +757,24 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) text);
 	}
 
-	public Datum SHAPE_TEXT_SETFONT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_TEXT_SETFONT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line, overrides);
 		final Font font = (Font) data[1].getPointer(line, overrides);
 		text.setFont(font);
 		return new Datum();
 	}
 
-	public Datum SHAPE_TEXT_SETSTRING(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_TEXT_SETSTRING(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line, overrides);
 		final String string = data[1].getString(line, overrides);
 		text.setText(string);
 		return new Datum();
 	}
 
-	public Datum SHAPE_TEXT_MOVE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SHAPE_TEXT_MOVE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Paintable.Text text = (Paintable.Text) data[0].getPointer(line, overrides);
 		final int x = (int) data[1].getNumber(line, overrides);
 		final int y = (int) data[2].getNumber(line, overrides);
@@ -719,7 +782,8 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum COMPONENT_ADD(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_ADD(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JComponent frame = ((JComponent) data[0].getPointer(line, overrides));
 		final JComponent child = (JComponent) data[1].getPointer(line, overrides);
 		if (data.length > 2)
@@ -729,26 +793,33 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum COMPONENT_SETENABLE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_SETENABLE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final AbstractButton component = (AbstractButton) data[0].getPointer(line, overrides);
 		final boolean enabled = data[1].getBool(line, overrides);
 		component.setEnabled(enabled);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_CLICK(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_CLICK(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final AbstractButton component = (AbstractButton) data[0].getPointer(line, overrides);
 		component.doClick();
 		return new Datum();
 	}
 
-	public Datum COMPONENT_ACTION(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_ACTION(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final AbstractButton component = ((AbstractButton) data[0].getPointer(line, overrides));
 		final Function function = data[1].getFunction(Datum.Type.ANY, line, overrides);
 		component.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, line, overrides);
+				try {
+					function.execute(new Datum[] { new Datum(component.isSelected() ? 1 : 0) }, line, overrides);
+				} catch (final InterruptedException e1) {
+					Thread.currentThread().interrupt();
+				}
 			}
 		});
 		return new Datum();
@@ -759,22 +830,26 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) mb);
 	}
 
-	public Datum COMPONENT_MENU_ITEM_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_MENU_ITEM_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JMenu menu = new JMenu(data[0].getString(line, overrides));
 		return new Datum((Object) menu);
 	}
 
-	public Datum COMPONENT_MENU_LABEL_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_MENU_LABEL_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JMenuItem item = new JMenuItem(data[0].getString(line, overrides));
 		return new Datum((Object) item);
 	}
 
-	public Datum COMPONENT_TEXT_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_TEXT_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JLabel component = new JLabel(data[0].getString(line, overrides));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_TEXT_ALIGN(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_TEXT_ALIGN(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JLabel component = (JLabel) data[0].getPointer(line, overrides);
 		final int alignmentX = (int) data[1].getNumber(line, overrides);
 		final int alignmentY = (int) data[2].getNumber(line, overrides);
@@ -783,31 +858,36 @@ public class LIB_Graphics extends Library {
 		return new Datum();
 	}
 
-	public Datum COMPONENT_TEXT_SETTEXT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_TEXT_SETTEXT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JLabel component = (JLabel) data[0].getPointer(line, overrides);
 		final String label = data[1].getString(line, overrides);
 		component.setText(label);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_BUTTON_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_BUTTON_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JButton component = new JButton(data[0].getString(line, overrides));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_BUTTON_SETTEXT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_BUTTON_SETTEXT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JButton component = (JButton) data[0].getPointer(line, overrides);
 		final String label = data[1].getString(line, overrides);
 		component.setText(label);
 		return new Datum();
 	}
 
-	public Datum COMPONENT_CHECKBOX_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_CHECKBOX_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JCheckBox component = new JCheckBox(data[0].getString(line, overrides));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_CHECKBOX_SETTEXT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_CHECKBOX_SETTEXT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JCheckBox component = (JCheckBox) data[0].getPointer(line, overrides);
 		final String label = data[1].getString(line, overrides);
 		component.setText(label);
@@ -832,13 +912,16 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_PANEL_TABLE_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_PANEL_TABLE_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JPanel component = new JPanel();
-		component.setLayout(new GridLayout((int) data[0].getNumber(line, overrides), (int) data[1].getNumber(line, overrides)));
+		component.setLayout(
+				new GridLayout((int) data[0].getNumber(line, overrides), (int) data[1].getNumber(line, overrides)));
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_PANEL_SPLIT_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_PANEL_SPLIT_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		int orientation;
 		if (data[0].getString(line, overrides).equals("Horizontal"))
 			orientation = JSplitPane.HORIZONTAL_SPLIT;
@@ -856,7 +939,8 @@ public class LIB_Graphics extends Library {
 		return new Datum((Object) component);
 	}
 
-	public Datum COMPONENT_TABPANE_ADD(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum COMPONENT_TABPANE_ADD(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final JTabbedPane frame = ((JTabbedPane) data[0].getPointer(line, overrides));
 		final JComponent child = (JComponent) data[1].getPointer(line, overrides);
 		final String label = data[2].getString(line, overrides);

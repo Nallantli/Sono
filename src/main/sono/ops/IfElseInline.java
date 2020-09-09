@@ -20,7 +20,8 @@ public class IfElseInline extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum condition = a.evaluate(scope, overrides);
 		if (condition.getBool(line, overrides)) {
 			return b.evaluate(scope, overrides);

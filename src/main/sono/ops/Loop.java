@@ -14,7 +14,8 @@ public class Loop extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		if (a.getType() == Type.ITERATOR) {
 			final Datum datumAB = ((Iterator) a).getB().evaluate(scope, overrides);
 			switch (datumAB.getType()) {
@@ -37,7 +38,8 @@ public class Loop extends Binary {
 					for (final Map.Entry<String, Datum> e : values.entrySet()) {
 						final Scope loopScope = new Scope(scope.getStructure(), scope, false);
 						loopScope.setVariable(interpreter, variableD,
-								new Datum(Map.of("key", new Datum(e.getKey()), "value", e.getValue())), line, overrides);
+								new Datum(Map.of("key", new Datum(e.getKey()), "value", e.getValue())), line,
+								overrides);
 						final Datum result = b.evaluate(loopScope, overrides);
 						if (result.getType() == Datum.Type.I_BREAK)
 							break;

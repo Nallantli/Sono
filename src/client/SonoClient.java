@@ -43,7 +43,8 @@ public class SonoClient {
 	}
 
 	public static SonoWrapper startClient(final File filename, final boolean force, final boolean drawTree,
-			final Output stdout, final Output stderr, final Input stdin, final Scope override) {
+			final Output stdout, final Output stderr, final Input stdin, final Scope override)
+			throws InterruptedException {
 		SonoWrapper.setGlobalOption("WEB", "FALSE");
 
 		PhoneLoader pl = null;
@@ -192,8 +193,16 @@ public class SonoClient {
 			filename = new File(args[0]);
 		}
 
-		final SonoWrapper center = startClient(filename, force, drawTree, new StandardOutput(), new ErrorOutput(),
-				new StandardInput(sc), null);
+		SonoWrapper center = null;
+		try {
+			center = startClient(filename, force, drawTree, new StandardOutput(), new ErrorOutput(),
+					new StandardInput(sc), null);
+		} catch (InterruptedException e1) {
+			System.err.println("Could not start client");
+			e1.printStackTrace();
+			System.exit(1);
+			Thread.currentThread().interrupt();
+		}
 
 		if (filename == null) {
 			System.out.println("Sono " + SonoWrapper.VERSION);

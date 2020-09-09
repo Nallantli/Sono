@@ -17,7 +17,8 @@ public class DecRawObject extends Sequence {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Map<String, Datum> entries = new HashMap<>();
 		for (final Operator o : operators) {
 			if (o.getType() != Operator.Type.DEC_ENTRY)

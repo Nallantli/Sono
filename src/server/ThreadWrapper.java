@@ -24,29 +24,39 @@ public class ThreadWrapper extends Thread {
 
 	@Override
 	public void run() {
-		stdout.printHeader("STATUS", "TRUE");
-		server.pause(conn);
-		final Datum output = wrapper.run("examples", null, code, false, null, null);
+		try {
+			stdout.printHeader("STATUS", "TRUE");
+			server.pause(conn);
+			final Datum output = wrapper.run("examples", null, code, false, null, null);
 
-		final StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 
-		if (output.getType() == Datum.Type.VECTOR) {
-			sb.append("\n<details class=\"fold\">");
-			sb.append("<summary>Raw Output Vector (" + output.getVectorLength(null, null)
-					+ " <i class=\"fab fa-buffer\"></i>)</summary>");
-			for (int i = 0; i < output.getVectorLength(null, null); i++)
-				sb.append("\t" + i + ":\t" + SonoServer.validate(output.indexVector(i).toStringTrace(null, null)) + "\n");
-			sb.append("</details>");
-		} else {
-			sb.append("\n<span class=\"blue\">");
-			sb.append("\t" + SonoServer.validate(output.toStringTrace(null, null)) + "\n");
-			sb.append("</span>");
+			if (output.getType() == Datum.Type.VECTOR) {
+				sb.append("\n<details class=\"fold\">");
+				sb.append("<summary>Raw Output Vector (" + output.getVectorLength(null, null)
+						+ " <i class=\"fab fa-buffer\"></i>)</summary>");
+				for (int i = 0; i < output.getVectorLength(null, null); i++)
+					sb.append("\t" + i + ":\t" + SonoServer.validate(output.indexVector(i).toStringTrace(null, null))
+							+ "\n");
+				sb.append("</details>");
+			} else {
+				sb.append("\n<span class=\"blue\">");
+				sb.append("\t" + SonoServer.validate(output.toStringTrace(null, null)) + "\n");
+				sb.append("</span>");
+			}
+			stdout.printHeader("OUT", sb.toString() + "\n");
+
+			stdout.printHeader("OUT", SonoServer.validate("> "));
+
+			stdout.printHeader("STATUS", "FALSE");
+			server.unPause(conn);
+		} catch (final InterruptedException e) {
+			Thread.currentThread().interrupt();
+
+			stdout.printHeader("OUT", SonoServer.validate("> "));
+
+			stdout.printHeader("STATUS", "FALSE");
+			server.unPause(conn);
 		}
-		stdout.printHeader("OUT", sb.toString() + "\n");
-
-		stdout.printHeader("OUT", SonoServer.validate("> "));
-
-		stdout.printHeader("STATUS", "FALSE");
-		server.unPause(conn);
 	}
 }

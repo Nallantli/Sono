@@ -14,7 +14,8 @@ public class Inner extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum object = a.evaluate(scope, overrides);
 		if (object.getType() != Datum.Type.STRUCTURE) {
 			if (!object.isPrototypic())

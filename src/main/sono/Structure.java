@@ -34,7 +34,8 @@ public class Structure {
 		this.hash = HASHCODE++;
 	}
 
-	public Structure(final Structure structure, final Token line, final Object[] overrides) {
+	public Structure(final Structure structure, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		this.parentStructure = structure.parentStructure;
 		this.interpreter = structure.interpreter;
 		this.type = structure.type;
@@ -54,7 +55,8 @@ public class Structure {
 		return this.mainScope;
 	}
 
-	public Datum instantiate(final Datum[] params, final Token line, final Object[] overrides) {
+	public Datum instantiate(final Datum[] params, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		if (type != Type.STRUCT)
 			throw new SonoRuntimeException("Cannot instantiate a static class.", line);
 		final Structure structure = new Structure(this, line, overrides);
@@ -69,7 +71,7 @@ public class Structure {
 		return (parentStructure != null ? parentStructure.getName() + "." : "") + interpreter.deHash(key);
 	}
 
-	public String toStringTrace(final Token line, final Object[] overrides) {
+	public String toStringTrace(final Token line, final Object[] overrides) throws InterruptedException {
 		if (!instantiated)
 			return type.toString() + "-" + getName();
 		else {
@@ -88,7 +90,7 @@ public class Structure {
 		return type == Type.STATIC || (type == Type.STRUCT && instantiated);
 	}
 
-	public int getHash(final Object[] overrides) {
+	public int getHash(final Object[] overrides) throws InterruptedException {
 		if (instantiated && this.mainScope.variableExists(interpreter.GET_HASH))
 			return (int) this.mainScope.getVariable(interpreter.GET_HASH, interpreter, null, overrides)
 					.getFunction(Datum.Type.ANY, null, overrides).execute(null, null, overrides)
@@ -96,7 +98,7 @@ public class Structure {
 		return this.hash;
 	}
 
-	public boolean isEqual(final Structure o, final Token line, final Object[] overrides) {
+	public boolean isEqual(final Structure o, final Token line, final Object[] overrides) throws InterruptedException {
 		if (instantiated && this.mainScope.variableExists(interpreter.ISEQUALS))
 			return this.mainScope.getVariable(interpreter.ISEQUALS, interpreter, line, overrides)
 					.getFunction(Datum.Type.ANY, line, overrides).execute(new Datum[] { new Datum(o) }, line, overrides)
@@ -114,7 +116,12 @@ public class Structure {
 	@Override
 	@Deprecated(since = "1.5.13")
 	public int hashCode() {
-		return getHash(null);
+		try {
+			return getHash(null);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return 0;
+		}
 	}
 
 	/**
@@ -128,6 +135,11 @@ public class Structure {
 		if (o.getClass() != this.getClass())
 			return false;
 
-		return this.isEqual((Structure) o, null, null);
+		try {
+			return this.isEqual((Structure) o, null, null);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
+		}
 	}
 }

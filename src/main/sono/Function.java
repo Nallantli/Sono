@@ -18,7 +18,8 @@ public class Function {
 		this.interpreter = interpreter;
 	}
 
-	public Datum execute(final Datum[] pValues, final Token line, final Object[] overrides) {
+	public Datum execute(final Datum[] pValues, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final Scope scope = new Scope(parent.getStructure(), parent, false);
 		for (int i = 0; i < paramKeys.length; i++) {
 			if (pValues != null && i < pValues.length) {

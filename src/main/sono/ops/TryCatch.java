@@ -20,7 +20,8 @@ public class TryCatch extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		try {
 			return a.evaluate(new Scope(scope.getStructure(), scope, false), overrides);
 		} catch (final SonoRuntimeException e) {

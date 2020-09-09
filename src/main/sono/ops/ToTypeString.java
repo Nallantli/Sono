@@ -12,7 +12,8 @@ public class ToTypeString extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		return new Datum(datumA.getTypeString());
 	}

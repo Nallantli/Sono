@@ -13,7 +13,8 @@ public class ToNumber extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		if (datumA.getType() == Datum.Type.NUMBER) {
 			return datumA;
@@ -24,8 +25,8 @@ public class ToNumber extends Unary {
 				return new Datum();
 			}
 		} else {
-			throw new SonoRuntimeException("Cannot convert value <" + datumA.getDebugString(line, overrides) + "> to a Number.",
-					line);
+			throw new SonoRuntimeException(
+					"Cannot convert value <" + datumA.getDebugString(line, overrides) + "> to a Number.", line);
 		}
 	}
 

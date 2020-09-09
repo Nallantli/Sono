@@ -19,7 +19,8 @@ public class SoftList extends Sequence {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		Datum[] data = null;
 		if (this.containsRange) {
 			final List<Datum> list = new ArrayList<>();

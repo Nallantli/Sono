@@ -13,7 +13,8 @@ public class Length extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		switch (datumA.getType()) {
 			case STRING:
@@ -27,11 +28,12 @@ public class Length extends Unary {
 			case MATRIX:
 				return new Datum(datumA.getMatrix(line, overrides).size());
 			case STRUCTURE:
-				return datumA.getStructure(line, overrides).getScope().getVariable(interpreter.GET_LEN, interpreter, line, overrides)
+				return datumA.getStructure(line, overrides).getScope()
+						.getVariable(interpreter.GET_LEN, interpreter, line, overrides)
 						.getFunction(Datum.Type.ANY, line, overrides).execute(null, line, overrides);
 			default:
-				throw new SonoRuntimeException("Cannot get length of value <" + datumA.getDebugString(line, overrides) + ">",
-						line);
+				throw new SonoRuntimeException(
+						"Cannot get length of value <" + datumA.getDebugString(line, overrides) + ">", line);
 		}
 	}
 

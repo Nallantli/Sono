@@ -29,7 +29,7 @@ public class Scope {
 	}
 
 	public Scope instantiate(final Structure correspondent, final PhoneManager pm, final Token line,
-			final Object[] overrides) {
+			final Object[] overrides) throws InterruptedException {
 		final Scope scope = new Scope(correspondent, this.parent, false);
 		final Map<Integer, Datum> newMap = new HashMap<>();
 		for (final Map.Entry<Integer, Datum> e : data.entrySet())
@@ -38,7 +38,8 @@ public class Scope {
 		return scope;
 	}
 
-	public Datum getVariable(final int key, final Interpreter interpreter, final Token line, final Object[] overrides) {
+	public Datum getVariable(final int key, final Interpreter interpreter, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		Scope curr = this;
 		boolean blocked = false;
 		while (curr != null) {
@@ -62,7 +63,7 @@ public class Scope {
 	}
 
 	public Datum setVariable(final Interpreter interpreter, final int key, final Datum value, final Token line,
-			final Object[] overrides) {
+			final Object[] overrides) throws InterruptedException {
 		if (data.containsKey(key)) {
 			if (value != null)
 				this.data.get(key).set(interpreter.getManager(), value, line, overrides);

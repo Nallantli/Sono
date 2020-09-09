@@ -13,7 +13,8 @@ public class DecClass extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		Structure.Type stype = Structure.Type.STRUCT;
 		Operator objectOperator = null;
 		Structure extending = null;

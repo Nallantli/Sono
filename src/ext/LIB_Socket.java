@@ -17,7 +17,7 @@ public class LIB_Socket extends Library {
 		super(interpreter);
 	}
 
-	public Datum OPEN(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum OPEN(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Socket permissions are disabled for this interpreter.", line);
 		final String address = data[0].getString(line, overrides);
@@ -30,7 +30,7 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum OUT_OPEN(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum OUT_OPEN(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final Socket socket = (Socket) data[0].getPointer(line, overrides);
 		try {
 			final DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -40,7 +40,7 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum OUT_SEND(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum OUT_SEND(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final DataOutputStream out = (DataOutputStream) data[0].getPointer(line, overrides);
 		final String value = data[1].getString(line, overrides);
 		try {
@@ -51,7 +51,7 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum OUT_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum OUT_CLOSE(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final DataOutputStream out = (DataOutputStream) data[0].getPointer(line, overrides);
 		try {
 			out.close();
@@ -61,7 +61,7 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum IN_OPEN(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum IN_OPEN(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final Socket socket = (Socket) data[0].getPointer(line, overrides);
 		try {
 			final DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -71,7 +71,7 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum IN_READ(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum IN_READ(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final DataInputStream in = (DataInputStream) data[0].getPointer(line, overrides);
 		try {
 			final String s = in.readUTF();
@@ -81,7 +81,7 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum IN_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum IN_CLOSE(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final DataInputStream in = (DataInputStream) data[0].getPointer(line, overrides);
 		try {
 			in.close();
@@ -91,7 +91,7 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum CLOSE(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final Socket socket = (Socket) data[0].getPointer(line, overrides);
 		try {
 			socket.close();
@@ -101,7 +101,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum SERVER_OPEN(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SERVER_OPEN(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Socket permissions are disabled for this interpreter.", line);
 		final int port = (int) data[0].getNumber(line, overrides);
@@ -113,7 +114,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum SERVER_ACCEPT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SERVER_ACCEPT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final ServerSocket server = (ServerSocket) data[0].getPointer(line, overrides);
 		try {
 			final Socket socket = server.accept();
@@ -123,7 +125,8 @@ public class LIB_Socket extends Library {
 		}
 	}
 
-	public Datum SERVER_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum SERVER_CLOSE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final ServerSocket server = (ServerSocket) data[0].getPointer(line, overrides);
 		try {
 			server.close();

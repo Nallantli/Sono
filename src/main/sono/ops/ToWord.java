@@ -18,7 +18,8 @@ public class ToWord extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		if (datumA.getType() == Datum.Type.VECTOR) {
 			final List<Phone> phones = new ArrayList<>();
@@ -43,9 +44,8 @@ public class ToWord extends Unary {
 							delimits.add(Word.SyllableDelim.MORPHEME);
 							break;
 						default:
-							throw new SonoRuntimeException(
-									"Value <" + d.getDebugString(line, overrides) + "> is not applicable as a word delimiter",
-									line);
+							throw new SonoRuntimeException("Value <" + d.getDebugString(line, overrides)
+									+ "> is not applicable as a word delimiter", line);
 					}
 				}
 			}
@@ -58,8 +58,8 @@ public class ToWord extends Unary {
 						"Value <" + datumA.getDebugString(line, overrides) + "> cannot be converted to a Word.", line);
 			}
 		}
-		throw new SonoRuntimeException("Value <" + datumA.getDebugString(line, overrides) + "> cannot be converted to a Word.",
-				line);
+		throw new SonoRuntimeException(
+				"Value <" + datumA.getDebugString(line, overrides) + "> cannot be converted to a Word.", line);
 	}
 
 	@Override

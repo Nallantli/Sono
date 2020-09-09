@@ -12,7 +12,8 @@ public class And extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		if (datumA.getBool(line, overrides)) {
 			final Datum datumB = b.evaluate(scope, overrides);

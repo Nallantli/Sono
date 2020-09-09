@@ -12,7 +12,8 @@ public class Contrast extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		return new Datum(interpreter.getManager().getContrast(a.evaluate(scope, overrides).getPhone(line, overrides),
 				b.evaluate(scope, overrides).getPhone(line, overrides)));
 	}

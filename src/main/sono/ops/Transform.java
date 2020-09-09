@@ -15,7 +15,8 @@ public class Transform extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		final Datum datumB = b.evaluate(scope, overrides);
 		switch (datumB.getType()) {
@@ -25,7 +26,8 @@ public class Transform extends Binary {
 					return new Datum();
 				return new Datum(ret);
 			case RULE:
-				final Word result = datumB.getRule(line, overrides).transform(interpreter.getManager(), datumA.getWord(line, overrides));
+				final Word result = datumB.getRule(line, overrides).transform(interpreter.getManager(),
+						datumA.getWord(line, overrides));
 				return new Datum(result);
 			default:
 				throw new SonoRuntimeException("Cannot transform value <" + datumA.getDebugString(line, overrides)

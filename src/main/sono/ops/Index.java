@@ -13,7 +13,8 @@ public class Index extends Binary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Datum datumA = a.evaluate(scope, overrides);
 		final Datum datumB = b.evaluate(scope, overrides);
 		if (datumA.getType() == Datum.Type.VECTOR) {
@@ -25,7 +26,8 @@ public class Index extends Binary {
 						+ datumA.getVectorLength(line, overrides), line);
 			}
 		} else if (datumA.getType() == Datum.Type.STRUCTURE) {
-			return datumA.getStructure(line, overrides).getScope().getVariable(interpreter.GET_INDEX, interpreter, line, overrides)
+			return datumA.getStructure(line, overrides).getScope()
+					.getVariable(interpreter.GET_INDEX, interpreter, line, overrides)
 					.getFunction(Datum.Type.ANY, line, overrides).execute(new Datum[] { datumB }, line, overrides);
 		} else if (datumA.getType() == Datum.Type.DICTIONARY) {
 			return datumA.indexDictionary(datumB.getString(line, overrides));

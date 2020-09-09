@@ -13,7 +13,8 @@ public class CastFinal extends Casting {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		throw new SonoRuntimeException(
 				"Operator cannot exist as a terminal node (Must be used in Function declaration)", line);
 	}

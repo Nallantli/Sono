@@ -14,7 +14,8 @@ public class DecMatrix extends Sequence {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		final Matrix matrix = new Matrix(interpreter.getManager());
 		for (final Operator o : operators) {
 			final Feature p = o.evaluate(scope, overrides).getFeature(line, overrides);

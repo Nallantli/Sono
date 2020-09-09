@@ -19,12 +19,12 @@ public class LIB_FileIO extends Library {
 		super(interpreter);
 	}
 
-	public Datum INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum INIT(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final File file = new File(data[0].getString(line, overrides));
 		return new Datum((Object) file);
 	}
 
-	public Datum EXISTS(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum EXISTS(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		final File file = (File) data[0].getPointer(line, overrides);
 		if (file.exists())
 			return new Datum(true);
@@ -32,7 +32,7 @@ public class LIB_FileIO extends Library {
 			return new Datum(false);
 	}
 
-	public Datum CREATE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum CREATE(final Datum[] data, final Token line, final Object[] overrides) throws InterruptedException {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Write permissions are disabled for this interpreter.", line);
 		final File file = (File) data[0].getPointer(line, overrides);
@@ -46,7 +46,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum READER_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum READER_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final File file = (File) data[0].getPointer(line, overrides);
 		BufferedReader br;
 		try {
@@ -57,7 +58,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum READER_GETLINE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum READER_GETLINE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final BufferedReader br = (BufferedReader) data[0].getPointer(line, overrides);
 		try {
 			final String s = br.readLine();
@@ -70,7 +72,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum READER_GET(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum READER_GET(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final BufferedReader br = (BufferedReader) data[0].getPointer(line, overrides);
 		try {
 			final int c = br.read();
@@ -83,7 +86,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum READER_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum READER_CLOSE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final BufferedReader br = (BufferedReader) data[0].getPointer(line, overrides);
 		try {
 			br.close();
@@ -93,7 +97,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum WRITER_INIT(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum WRITER_INIT(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		if (SonoWrapper.getGlobalOption("WEB").equals("TRUE"))
 			throw error("Write permissions are disabled for this interpreter.", line);
 		final File file = (File) data[0].getPointer(line, overrides);
@@ -106,7 +111,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum WRITER_WRITE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum WRITER_WRITE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final BufferedWriter bw = (BufferedWriter) data[0].getPointer(line, overrides);
 		try {
 			bw.write(data[1].getString(line, overrides));
@@ -116,7 +122,8 @@ public class LIB_FileIO extends Library {
 		}
 	}
 
-	public Datum WRITER_CLOSE(final Datum[] data, final Token line, final Object[] overrides) {
+	public Datum WRITER_CLOSE(final Datum[] data, final Token line, final Object[] overrides)
+			throws InterruptedException {
 		final BufferedWriter bw = (BufferedWriter) data[0].getPointer(line, overrides);
 		try {
 			bw.close();

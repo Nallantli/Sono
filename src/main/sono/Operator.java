@@ -1,7 +1,6 @@
 package main.sono;
 
 import main.base.ConsoleColors;
-import main.sono.err.SonoRuntimeException;
 
 public abstract class Operator {
 
@@ -32,15 +31,12 @@ public abstract class Operator {
 
 	public abstract void condense();
 
-	public void checkInterrupt() throws InterruptedException {
-		if (!Thread.interrupted())
+	public void checkInterrupted() throws InterruptedException {
+		if (Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
 	}
 
-	public Datum evaluate(Scope scope, Object[] overrides) throws InterruptedException {
-		checkInterrupt();
-		return null;
-	}
+	public abstract Datum evaluate(Scope scope, Object[] overrides) throws InterruptedException;
 
 	public abstract String toString();
 
@@ -56,11 +52,11 @@ public abstract class Operator {
 		return this.interpreter;
 	}
 
-	protected String getInfo() {
+	protected String getInfo() throws InterruptedException {
 		return "";
 	}
 
-	public void printTree(String indent, boolean last) {
+	public void printTree(String indent, boolean last) throws InterruptedException {
 		System.out.print(indent);
 		if (last) {
 			System.out.print("└─");

@@ -20,7 +20,8 @@ public class DecRule extends Unary {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		while (a.getType() != Type.SLASH)
 			a = ((Sequence) a).operators[0];
 		final Datum dSearch = ((Binary) ((Binary) a).getA()).getA().evaluate(scope, overrides);
@@ -60,7 +61,8 @@ public class DecRule extends Unary {
 					break;
 				default:
 					throw new SonoRuntimeException(
-							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.", line);
+							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.",
+							line);
 			}
 		}
 
@@ -98,7 +100,8 @@ public class DecRule extends Unary {
 					break;
 				default:
 					throw new SonoRuntimeException(
-							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.", line);
+							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.",
+							line);
 			}
 		}
 
@@ -136,7 +139,8 @@ public class DecRule extends Unary {
 					break;
 				default:
 					throw new SonoRuntimeException(
-							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.", line);
+							"Value <" + d.getDebugString(line, overrides) + "> cannot be used in a Rule declaration.",
+							line);
 			}
 		}
 

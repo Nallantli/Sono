@@ -15,7 +15,8 @@ public class DecVariable extends Operator {
 	}
 
 	@Override
-	public Datum evaluate(final Scope scope, final Object[] overrides) {
+	public Datum evaluate(final Scope scope, final Object[] overrides) throws InterruptedException {
+		checkInterrupted();
 		return scope.setVariable(interpreter, varName, null, line, overrides);
 	}
 
