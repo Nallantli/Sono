@@ -1,2 +1,2 @@
 #!/bin/bash
-cp -r web/* "/var/www/sonolang.com/"
+cp -r web/* "/var/www/sono.nallant.li/"

@@ -8,7 +8,7 @@
 
 ## Overview
 
-Online interface available at [sonolang.com](https://www.sonolang.com).
+Online interface available at [sono.nallant.li](http://sono.nallant.li) (not https, the websocket is not working with the certificates I give it right now).
 
 Sono is a high-level object-oriented and procedural scripting language developed with linguistic capabilities in mind. For that it supports multiple operators revolving around phonological analysis based upon distinctive features.
 

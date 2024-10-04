@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
@@ -13,6 +14,8 @@ import java.nio.file.Path;
 import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -95,80 +98,8 @@ public class SonoServer extends WebSocketServer {
 		}
 
 		final SonoServer server = new SonoServer();
-		final SSLContext context = getContext();
-		if (context != null)
-			server.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(getContext()));
 		server.setConnectionLostTimeout(30);
 		server.start();
-	}
-
-	private static SSLContext getContext() {
-		SSLContext context;
-		final String password = "";
-		try {
-			context = SSLContext.getInstance("TLS");
-
-			final byte[] certBytes = parseDERFromPEM(
-					getBytes(Path.of("/", "etc", "letsencrypt", "live", "sonolang.com", "fullchain.pem").toFile()),
-					"-----BEGIN CERTIFICATE-----", "-----END CERTIFICATE-----");
-			final byte[] keyBytes = parseDERFromPEM(
-					getBytes(Path.of("/", "etc", "letsencrypt", "live", "sonolang.com", "privkey.pem").toFile()),
-					"-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
-
-			final X509Certificate cert = generateCertificateFromDER(certBytes);
-			final RSAPrivateKey key = generatePrivateKeyFromDER(keyBytes);
-
-			final KeyStore keystore = KeyStore.getInstance("JKS");
-			keystore.load(null);
-			keystore.setCertificateEntry("cert-alias", cert);
-			keystore.setKeyEntry("key-alias", key, password.toCharArray(), new Certificate[] { cert });
-
-			final KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-			kmf.init(keystore, password.toCharArray());
-
-			final KeyManager[] km = kmf.getKeyManagers();
-
-			context.init(km, null, null);
-		} catch (final Exception e) {
-			e.printStackTrace();
-			context = null;
-		}
-		return context;
-	}
-
-	private static byte[] parseDERFromPEM(final byte[] pem, final String beginDelimiter, final String endDelimiter) {
-		final String data = new String(pem);
-		System.out.println("PARSE DATA\t" + data);
-		String[] tokens = data.split(beginDelimiter);
-		tokens = tokens[1].split(endDelimiter);
-		System.out.println("PARSE TOKENS\t" + tokens[0]);
-		return Base64.getMimeDecoder().decode(tokens[0]);
-	}
-
-	private static RSAPrivateKey generatePrivateKeyFromDER(final byte[] keyBytes)
-			throws InvalidKeySpecException, NoSuchAlgorithmException {
-		final PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-
-		final KeyFactory factory = KeyFactory.getInstance("RSA");
-
-		return (RSAPrivateKey) factory.generatePrivate(spec);
-	}
-
-	private static X509Certificate generateCertificateFromDER(final byte[] certBytes) throws CertificateException {
-		final CertificateFactory factory = CertificateFactory.getInstance("X.509");
-
-		return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
-	}
-
-	private static byte[] getBytes(final File file) {
-		final byte[] bytesArray = new byte[(int) file.length()];
-
-		try (FileInputStream fis = new FileInputStream(file);) {
-			fis.read(bytesArray);
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-		return bytesArray;
 	}
 
 	public SonoServer() {
